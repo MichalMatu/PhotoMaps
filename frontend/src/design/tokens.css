@@ -31,6 +31,7 @@
     --surface-elevated: rgb(255 255 255 / 88%);
     --surface-glass: rgb(255 255 255 / 72%);
     --surface-inset: rgb(242 242 247 / 76%);
+    --surface-panel: rgb(255 255 255 / 96%);
     --surface-contrast: rgb(28 28 30 / 82%);
     --surface-overlay: rgb(16 18 22 / 72%);
 
@@ -102,6 +103,7 @@
       --surface-elevated: rgb(44 44 46 / 84%);
       --surface-glass: rgb(28 28 30 / 70%);
       --surface-inset: rgb(58 58 60 / 56%);
+      --surface-panel: rgb(44 44 46 / 96%);
       --surface-contrast: rgb(18 18 20 / 86%);
       --surface-overlay: rgb(0 0 0 / 74%);
 

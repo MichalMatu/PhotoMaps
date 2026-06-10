@@ -21,12 +21,7 @@ export function PublicMapPage() {
           </div>
         ) : null}
         <div className="map-frame">
-          <PlaceMap
-            places={placesQuery.data ?? []}
-            onPhotoUploaded={() => {
-              void placesQuery.refetch();
-            }}
-          />
+          <PlaceMap places={placesQuery.data ?? []} />
         </div>
       </main>
     </AppShell>

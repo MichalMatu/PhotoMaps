@@ -201,7 +201,7 @@
 
 .system-modal {
   animation: system-modal-in 180ms ease-out both;
-  background: var(--color-surface-strong);
+  background: var(--surface-panel);
   backdrop-filter: var(--blur-glass);
   border: 1px solid var(--color-border);
   border-radius: 8px;
@@ -211,6 +211,22 @@
   max-width: 460px;
   padding: 24px;
   width: min(460px, 100%);
+}
+
+.system-modal.is-dragging,
+.pm-sheet.is-dragging {
+  user-select: none;
+}
+
+.system-modal-drag-handle {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.system-modal.is-dragging .system-modal-drag-handle,
+.pm-sheet.is-dragging .pm-sheet__header {
+  cursor: grabbing;
 }
 
 .system-modal--danger,
@@ -244,20 +260,29 @@
 }
 
 .pm-sheet {
-  background: var(--surface-elevated);
+  background: var(--surface-panel);
   backdrop-filter: var(--blur-glass);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-sheet);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
-  max-height: calc(100vh - 24px);
+  height: min(720px, calc(100vh - 48px));
   overflow: hidden;
   position: fixed;
-  right: 12px;
-  top: 12px;
+  right: 24px;
+  top: 24px;
   width: min(430px, calc(100vw - 112px));
   z-index: 1600;
+}
+
+.pm-sheet--report {
+  z-index: 12050;
+}
+
+.pm-sheet--memory {
+  height: auto;
+  max-height: min(560px, calc(100vh - 48px));
 }
 
 .pm-sheet__handle {
@@ -267,10 +292,13 @@
 .pm-sheet__header {
   align-items: flex-start;
   border-bottom: 1px solid var(--border-subtle);
+  cursor: grab;
   display: flex;
   gap: var(--space-4);
   justify-content: space-between;
   padding: var(--space-5) var(--space-5) var(--space-4);
+  touch-action: none;
+  user-select: none;
 }
 
 .pm-sheet__header h2 {
@@ -310,6 +338,9 @@
 .pm-sheet__body {
   min-height: 0;
   overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
 }
 
 .pm-sheet__footer {
@@ -333,8 +364,9 @@
   .pm-sheet {
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     bottom: 0;
+    height: auto;
     left: 64px;
-    max-height: min(78vh, 720px);
+    max-height: min(70vh, 640px);
     right: 0;
     top: auto;
     width: auto;

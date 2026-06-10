@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
+import { stopFloatingWindowEvent, useDraggableWindow } from "../ui/useDraggableWindow";
+
 type Props = {
   cancelLabel?: string;
   confirmLabel?: string;
@@ -22,6 +24,8 @@ export function SystemModal({
   title,
   tone = "default",
 }: Props) {
+  const draggableWindow = useDraggableWindow<HTMLDivElement>("system-modal");
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !isBusy) {
@@ -38,9 +42,25 @@ export function SystemModal({
 
   return createPortal(
     <div className="system-modal-backdrop" role="presentation">
-      <div className={`system-modal system-modal--${tone}`} role="dialog" aria-modal="true" aria-labelledby="system-modal-title">
-        <span className="eyebrow">Komunikat systemowy</span>
-        <h2 id="system-modal-title">{title}</h2>
+      <div
+        className={`system-modal system-modal--${tone}${draggableWindow.isDragging ? " is-dragging" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="system-modal-title"
+        ref={draggableWindow.windowRef}
+        style={draggableWindow.style}
+        onClick={stopFloatingWindowEvent}
+        onContextMenu={stopFloatingWindowEvent}
+        onDoubleClick={stopFloatingWindowEvent}
+        onMouseDown={stopFloatingWindowEvent}
+        onPointerDown={stopFloatingWindowEvent}
+        onTouchStart={stopFloatingWindowEvent}
+        onWheel={stopFloatingWindowEvent}
+      >
+        <div className="system-modal-drag-handle" {...draggableWindow.handleProps}>
+          <span className="eyebrow">Komunikat systemowy</span>
+          <h2 id="system-modal-title">{title}</h2>
+        </div>
         <p>{message}</p>
         <div className="system-modal-actions">
           {onConfirm ? (

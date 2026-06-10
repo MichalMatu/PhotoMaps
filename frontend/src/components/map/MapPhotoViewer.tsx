@@ -5,11 +5,12 @@ import { mediaUrl, type Photo, type PlaceMapItem } from "../../api/client";
 
 type Props = {
   onClose: () => void;
+  onOpenDetails: () => void;
   photo: Photo;
   place: PlaceMapItem;
 };
 
-export function MapPhotoViewer({ onClose, photo, place }: Props) {
+export function MapPhotoViewer({ onClose, onOpenDetails, photo, place }: Props) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -33,9 +34,8 @@ export function MapPhotoViewer({ onClose, photo, place }: Props) {
       onClick={onClose}
     >
       <div className="map-photo-viewer-image-wrap" onClick={(event) => event.stopPropagation()}>
-        <img src={mediaUrl(photo.public_path)} alt={photo.caption ?? place.title} />
-        <button className="map-photo-viewer-close" type="button" onClick={onClose} aria-label="Zamknij">
-          x
+        <button className="map-photo-viewer-image-button" type="button" onClick={onOpenDetails}>
+          <img src={mediaUrl(photo.public_path)} alt={photo.caption ?? place.title} />
         </button>
       </div>
     </div>,

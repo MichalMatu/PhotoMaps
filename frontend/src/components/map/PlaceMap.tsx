@@ -1,17 +1,18 @@
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents, ZoomControl } from "react-leaflet";
 
-import type { Photo, PlaceMapItem } from "../../api/client";
+import type { PlaceMapItem } from "../../api/client";
 import { DistanceMeasureTool } from "./DistanceMeasureTool";
 import { MapPhotoViewer } from "./MapPhotoViewer";
-import { PlaceDetailSheet } from "./PlaceDetailSheet";
+import { MemorySheet } from "./MemorySheet";
+import { PhotoDetailModal } from "./PhotoDetailModal";
 import { PlaceMarker } from "./PlaceMarker";
+import { ReportSheet } from "./ReportSheet";
 
 type Props = {
   places: PlaceMapItem[];
-  onPhotoUploaded?: () => void;
 };
 
 const WROCLAW_CENTER: [number, number] = [51.1079, 17.0385];
@@ -85,17 +86,21 @@ function clusterPlaces(places: PlaceMapItem[], zoom: number): PlaceCluster[] {
   }));
 }
 
-function PlaceLayer({ onPhotoUploaded, places }: Props) {
+function PlaceLayer({ places }: Props) {
   const map = useMap();
   const [expandedPlaceId, setExpandedPlaceId] = useState<string | null>(null);
-  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
-  const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
+  const [memoryPlace, setMemoryPlace] = useState<PlaceMapItem | null>(null);
+  const [photoDetail, setPhotoDetail] = useState<{ photoId: string; placeId: string } | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<{ photoId: string; placeId: string } | null>(null);
+  const [reportTarget, setReportTarget] = useState<{ photoId: string; placeId: string } | null>(null);
   const [zoom, setZoom] = useState(map.getZoom());
   const clusters = clusterPlaces(places, zoom);
-  const selectedPlace = useMemo(
-    () => places.find((place) => place.id === selectedPlaceId) ?? null,
-    [places, selectedPlaceId],
-  );
+  const previewPlace = photoPreview ? places.find((place) => place.id === photoPreview.placeId) ?? null : null;
+  const previewPhoto = previewPlace?.photos.find((photo) => photo.id === photoPreview?.photoId) ?? null;
+  const detailPlace = photoDetail ? places.find((place) => place.id === photoDetail.placeId) ?? null : null;
+  const detailPhoto = detailPlace?.photos.find((photo) => photo.id === photoDetail?.photoId) ?? null;
+  const reportPlace = reportTarget ? places.find((place) => place.id === reportTarget.placeId) ?? null : null;
+  const reportPhoto = reportPlace?.photos.find((photo) => photo.id === reportTarget?.photoId) ?? null;
 
   useMapEvents({
     zoomend: () => setZoom(map.getZoom()),
@@ -105,10 +110,19 @@ function PlaceLayer({ onPhotoUploaded, places }: Props) {
     if (expandedPlaceId && !places.some((place) => place.id === expandedPlaceId)) {
       setExpandedPlaceId(null);
     }
-    if (selectedPlaceId && !places.some((place) => place.id === selectedPlaceId)) {
-      setSelectedPlaceId(null);
+    if (memoryPlace && !places.some((place) => place.id === memoryPlace.id)) {
+      setMemoryPlace(null);
     }
-  }, [expandedPlaceId, places, selectedPlaceId]);
+    if (photoPreview && !places.some((place) => place.id === photoPreview.placeId)) {
+      setPhotoPreview(null);
+    }
+    if (photoDetail && !places.some((place) => place.id === photoDetail.placeId)) {
+      setPhotoDetail(null);
+    }
+    if (reportTarget && !places.some((place) => place.id === reportTarget.placeId)) {
+      setReportTarget(null);
+    }
+  }, [expandedPlaceId, memoryPlace, photoDetail, photoPreview, places, reportTarget]);
 
   return (
     <>
@@ -135,30 +149,45 @@ function PlaceLayer({ onPhotoUploaded, places }: Props) {
             place={place}
             photos={place.photos}
             isExpanded={expandedPlaceId === place.id}
-            isSelected={selectedPlaceId === place.id}
-            onPhotoSelected={setSelectedPhoto}
-            onSelect={() => setSelectedPlaceId(place.id)}
+            onMemoryOpen={setMemoryPlace}
+            onPhotoPreview={(nextPlace, nextPhoto) => {
+              setPhotoPreview({ photoId: nextPhoto.id, placeId: nextPlace.id });
+            }}
             onToggleFan={() => setExpandedPlaceId((currentPlaceId) => (currentPlaceId === place.id ? null : place.id))}
           />
         );
       })}
-      <PlaceDetailSheet
-        place={selectedPlace}
-        onClose={() => {
-          setSelectedPlaceId(null);
-          setExpandedPlaceId(null);
-        }}
-        onPhotoSelected={setSelectedPhoto}
-        onPhotoUploaded={onPhotoUploaded}
-      />
-      {selectedPhoto && selectedPlace ? (
-        <MapPhotoViewer photo={selectedPhoto} place={selectedPlace} onClose={() => setSelectedPhoto(null)} />
+      <MemorySheet place={memoryPlace} onClose={() => setMemoryPlace(null)} />
+      {previewPhoto && previewPlace ? (
+        <MapPhotoViewer
+          photo={previewPhoto}
+          place={previewPlace}
+          onClose={() => setPhotoPreview(null)}
+          onOpenDetails={() => {
+            setPhotoDetail({ photoId: previewPhoto.id, placeId: previewPlace.id });
+            setPhotoPreview(null);
+          }}
+        />
       ) : null}
+      {detailPhoto && detailPlace ? (
+        <PhotoDetailModal
+          photo={detailPhoto}
+          place={detailPlace}
+          onReport={() => setReportTarget({ photoId: detailPhoto.id, placeId: detailPlace.id })}
+          onClose={() => {
+            setPhotoDetail(null);
+          }}
+        />
+      ) : null}
+      <ReportSheet
+        target={reportPhoto && reportPlace ? { photo: reportPhoto, place: reportPlace } : null}
+        onClose={() => setReportTarget(null)}
+      />
     </>
   );
 }
 
-export function PlaceMap({ places, onPhotoUploaded }: Props) {
+export function PlaceMap({ places }: Props) {
   return (
     <MapContainer center={WROCLAW_CENTER} zoom={13} className="place-map" scrollWheelZoom zoomControl={false}>
       <MapSizeUpdater />
@@ -168,7 +197,7 @@ export function PlaceMap({ places, onPhotoUploaded }: Props) {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <PlaceLayer places={places} onPhotoUploaded={onPhotoUploaded} />
+      <PlaceLayer places={places} />
     </MapContainer>
   );
 }

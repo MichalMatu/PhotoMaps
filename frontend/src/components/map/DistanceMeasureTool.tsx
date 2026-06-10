@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 import { CircleMarker, Marker, Polyline, useMapEvents } from "react-leaflet";
 import { divIcon, latLng, type LatLngLiteral } from "leaflet";
 
+import { stopFloatingWindowEvent, useDraggableWindow } from "../ui/useDraggableWindow";
+
 type ContextMenuState = {
   latLng: LatLngLiteral;
   x: number;
@@ -67,6 +69,7 @@ export function DistanceMeasureTool() {
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
   const [isMeasuring, setIsMeasuring] = useState(false);
   const [points, setPoints] = useState<LatLngLiteral[]>([]);
+  const measureWindow = useDraggableWindow<HTMLDivElement>("distance-measure-panel", points.length > 0);
 
   const segments = useMemo<Segment[]>(
     () =>
@@ -229,10 +232,23 @@ export function DistanceMeasureTool() {
         : null}
       {points.length > 0
         ? createPortal(
-            <div className="measure-panel">
-              <span>{isMeasuring ? "Pomiar aktywny" : "Pomiar"}</span>
-              <strong>{formatDistance(totalDistanceMeters)}</strong>
-              <div>
+            <div
+              className={measureWindow.isDragging ? "measure-panel is-dragging" : "measure-panel"}
+              ref={measureWindow.windowRef}
+              style={measureWindow.style}
+              onClick={stopFloatingWindowEvent}
+              onContextMenu={stopFloatingWindowEvent}
+              onDoubleClick={stopFloatingWindowEvent}
+              onMouseDown={stopFloatingWindowEvent}
+              onPointerDown={stopFloatingWindowEvent}
+              onTouchStart={stopFloatingWindowEvent}
+              onWheel={stopFloatingWindowEvent}
+            >
+              <div className="measure-panel-drag-handle" {...measureWindow.handleProps}>
+                <span>{isMeasuring ? "Pomiar aktywny" : "Pomiar"}</span>
+                <strong>{formatDistance(totalDistanceMeters)}</strong>
+              </div>
+              <div className="measure-panel-actions">
                 <button type="button" disabled={points.length === 0} onClick={undoPoint}>
                   Cofnij
                 </button>

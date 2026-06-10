@@ -5,12 +5,13 @@ import { getPlaceMemories, mediaUrl, uploadPlaceMemory } from "../../api/client"
 
 type Props = {
   placeId: string;
+  showHeading?: boolean;
 };
 
 const CONSENT_TEXT =
   "Potwierdzam, że jestem autorem zdjęcia albo mam prawo je opublikować. Jeśli na zdjęciu są rozpoznawalne osoby jako główny temat, mam ich zgodę.";
 
-export function MemoryPanel({ placeId }: Props) {
+export function MemoryPanel({ placeId, showHeading = true }: Props) {
   const queryClient = useQueryClient();
   const [authorCity, setAuthorCity] = useState("");
   const [authorName, setAuthorName] = useState("");
@@ -56,10 +57,12 @@ export function MemoryPanel({ placeId }: Props) {
 
   return (
     <section className="memory-panel">
-      <div className="section-heading compact-heading">
-        <h3>Byłem tutaj</h3>
-        <span>{memoriesQuery.data?.length ?? 0}</span>
-      </div>
+      {showHeading ? (
+        <div className="section-heading compact-heading">
+          <h3>Byłem tutaj</h3>
+          <span>{memoriesQuery.data?.length ?? 0}</span>
+        </div>
+      ) : null}
       {memoriesQuery.isLoading ? <p className="inline-status">Ładowanie pamiątek...</p> : null}
       <div className="memory-list">
         {memoriesQuery.data?.map((memory) => (

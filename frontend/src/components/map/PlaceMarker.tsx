@@ -80,16 +80,16 @@ type Props = {
   place: PlaceMapItem;
   photos: Photo[];
   isExpanded: boolean;
-  isSelected: boolean;
-  onPhotoSelected: (photo: Photo) => void;
-  onSelect: () => void;
+  onMemoryOpen: (place: PlaceMapItem) => void;
+  onPhotoPreview: (place: PlaceMapItem, photo: Photo) => void;
   onToggleFan: () => void;
 };
 
-export function PlaceMarker({ place, photos, isExpanded, isSelected, onPhotoSelected, onSelect, onToggleFan }: Props) {
+export function PlaceMarker({ place, photos, isExpanded, onMemoryOpen, onPhotoPreview, onToggleFan }: Props) {
   const map = useMap();
   const [layoutVersion, setLayoutVersion] = useState(0);
   const fanItemCount = photos.length + 1;
+  const placeIcon = useMemo(() => markerIcon(place, isExpanded), [isExpanded, place]);
 
   useEffect(() => {
     if (!isExpanded) {
@@ -114,11 +114,19 @@ export function PlaceMarker({ place, photos, isExpanded, isSelected, onPhotoSele
       position: map.unproject(origin.add([offset.x, offset.y]), map.getZoom()),
     }));
   }, [fanItemCount, layoutVersion, map, place.lat, place.lon]);
+  const fanPhotoIcons = useMemo(
+    () => photos.map((photo, index) => fanPhotoIcon(photo, fanLayout[index].offset, index)),
+    [fanLayout, photos],
+  );
+  const fanAddMarkerIcon = useMemo(
+    () => fanAddIcon(fanLayout[photos.length].offset, photos.length),
+    [fanLayout, photos.length],
+  );
 
   return (
     <>
       <Marker
-        icon={markerIcon(place, isSelected)}
+        icon={placeIcon}
         position={[place.lat, place.lon]}
         riseOnHover
         title={place.title}
@@ -126,7 +134,6 @@ export function PlaceMarker({ place, photos, isExpanded, isSelected, onPhotoSele
         eventHandlers={{
           click: (event) => {
             stopMarkerClick(event);
-            onSelect();
             onToggleFan();
           },
         }}
@@ -135,7 +142,7 @@ export function PlaceMarker({ place, photos, isExpanded, isSelected, onPhotoSele
       {isExpanded
         ? photos.map((photo, index) => (
             <Marker
-              icon={fanPhotoIcon(photo, fanLayout[index].offset, index)}
+              icon={fanPhotoIcons[index]}
               key={photo.id}
               position={fanLayout[index].position}
               riseOnHover
@@ -144,7 +151,7 @@ export function PlaceMarker({ place, photos, isExpanded, isSelected, onPhotoSele
               eventHandlers={{
                 click: (event) => {
                   stopMarkerClick(event);
-                  onPhotoSelected(photo);
+                  onPhotoPreview(place, photo);
                 },
               }}
             />
@@ -153,15 +160,15 @@ export function PlaceMarker({ place, photos, isExpanded, isSelected, onPhotoSele
 
       {isExpanded ? (
         <Marker
-          icon={fanAddIcon(fanLayout[photos.length].offset, photos.length)}
+          icon={fanAddMarkerIcon}
           position={fanLayout[photos.length].position}
           riseOnHover
-          title={`Dodaj zdjęcie: ${place.title}`}
+          title={`Byłem tutaj: ${place.title}`}
           zIndexOffset={1400 + photos.length}
           eventHandlers={{
             click: (event) => {
               stopMarkerClick(event);
-              onSelect();
+              onMemoryOpen(place);
             },
           }}
         />

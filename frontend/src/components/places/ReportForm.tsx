@@ -3,11 +3,12 @@ import { FormEvent, useState } from "react";
 import { createReport, type ReportTargetType } from "../../api/client";
 
 type Props = {
+  showHeading?: boolean;
   targetId: string;
   targetType: ReportTargetType;
 };
 
-export function ReportForm({ targetId, targetType }: Props) {
+export function ReportForm({ showHeading = true, targetId, targetType }: Props) {
   const [message, setMessage] = useState("");
   const [reason, setReason] = useState("wrong_data");
   const [status, setStatus] = useState<string | null>(null);
@@ -36,9 +37,11 @@ export function ReportForm({ targetId, targetType }: Props) {
 
   return (
     <form className="report-form" onSubmit={handleSubmit}>
-      <div className="section-heading compact-heading">
-        <h3>Zgłoś problem</h3>
-      </div>
+      {showHeading ? (
+        <div className="section-heading compact-heading">
+          <h3>Zgłoś problem</h3>
+        </div>
+      ) : null}
       <label>
         Powód
         <select value={reason} onChange={(event) => setReason(event.target.value)}>

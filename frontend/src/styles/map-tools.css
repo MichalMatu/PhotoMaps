@@ -43,13 +43,13 @@
 }
 
 .measure-panel {
-  background: var(--color-surface-dark);
+  background: var(--surface-panel);
   backdrop-filter: var(--blur-glass);
   border: 1px solid var(--color-border-strong);
   border-radius: 8px;
   bottom: 18px;
   box-shadow: var(--shadow-floating);
-  color: #ffffff;
+  color: var(--content-primary);
   display: grid;
   gap: 8px;
   left: 94px;
@@ -59,8 +59,24 @@
   z-index: 9000;
 }
 
+.measure-panel.is-dragging {
+  user-select: none;
+}
+
+.measure-panel-drag-handle {
+  cursor: grab;
+  display: grid;
+  gap: 8px;
+  touch-action: none;
+  user-select: none;
+}
+
+.measure-panel.is-dragging .measure-panel-drag-handle {
+  cursor: grabbing;
+}
+
 .measure-panel span {
-  color: rgb(245 245 247 / 72%);
+  color: var(--content-secondary);
   font-size: 0.72rem;
   font-weight: 600;
 }
@@ -71,16 +87,17 @@
   line-height: 1;
 }
 
-.measure-panel div {
+.measure-panel-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
 
 .measure-panel button {
-  background: rgb(255 255 255 / 10%);
+  background: var(--surface-inset);
+  border: 1px solid var(--border-subtle);
   border-radius: 5px;
-  color: #ffffff;
+  color: var(--content-primary);
   font-size: 0.72rem;
   font-weight: 500;
   min-height: 28px;
@@ -88,7 +105,8 @@
 }
 
 .measure-panel button:hover {
-  background: rgb(255 255 255 / 16%);
+  background: var(--accent-soft);
+  color: var(--accent-primary);
 }
 
 .measure-segment-label {
