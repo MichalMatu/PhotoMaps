@@ -1,0 +1,64 @@
+import type { Category, Place } from "../../api/client";
+
+type Props = {
+  categories: Category[];
+  editingPlaceId: string | null;
+  onArchive: (place: Place) => void;
+  onCreate: () => void;
+  onEdit: (place: Place) => void;
+  places: Place[];
+};
+
+export function AdminPlacesSection({ categories, editingPlaceId, onArchive, onCreate, onEdit, places }: Props) {
+  const categoryById = new Map(categories.map((category) => [category.id, category]));
+  const placeStatusCounts = {
+    archived: places.filter((place) => place.status === "archived").length,
+    draft: places.filter((place) => place.status === "draft").length,
+    published: places.filter((place) => place.status === "published").length,
+  };
+
+  return (
+    <section className="admin-section admin-section-single places-manager">
+      <div className="place-toolbar">
+        <div className="admin-summary-pills" aria-label="Status miejsc">
+          <span>Wszystkie {places.length}</span>
+          <span>Opublikowane {placeStatusCounts.published}</span>
+          <span>Szkice {placeStatusCounts.draft}</span>
+          <span>Archiwalne {placeStatusCounts.archived}</span>
+        </div>
+        <button type="button" onClick={onCreate}>
+          Dodaj miejsce
+        </button>
+      </div>
+
+      <div className="admin-list">
+        <div className="place-table" role="table">
+          <div className="table-row table-head" role="row">
+            <span>Nazwa</span>
+            <span>Status</span>
+            <span>Kategoria</span>
+            <span>Priorytet</span>
+            <span>Akcje</span>
+          </div>
+          {places.map((place) => (
+            <div className={editingPlaceId === place.id ? "table-row is-selected" : "table-row"} role="row" key={place.id}>
+              <span>{place.title}</span>
+              <span>{place.status}</span>
+              <span>{place.category_id ? categoryById.get(place.category_id)?.label ?? place.category_id : "-"}</span>
+              <span>{place.weight.toFixed(1)}</span>
+              <span className="table-actions">
+                <button type="button" onClick={() => onEdit(place)}>
+                  Edytuj
+                </button>
+                <button className="secondary-button" type="button" disabled={place.status === "archived"} onClick={() => onArchive(place)}>
+                  Archiwizuj
+                </button>
+              </span>
+            </div>
+          ))}
+          {places.length === 0 ? <p className="notice">Brak miejsc w bazie.</p> : null}
+        </div>
+      </div>
+    </section>
+  );
+}
