@@ -1,53 +1,66 @@
 .review-actions button,
 .table-actions button {
   font-size: 0.82rem;
-  min-height: 34px;
-  padding: 0 10px;
+  border-radius: 999px;
+  min-height: 32px;
+  padding: 0 11px;
 }
 
 .secondary-button {
-  background: #6b3f35;
+  background: var(--color-surface-soft);
+  color: var(--color-text);
+}
+
+.secondary-button:hover {
+  background: var(--color-border);
+  color: var(--color-text-strong);
 }
 
 .danger-button {
-  background: #8e2e24;
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.danger-button:hover {
+  background: var(--color-danger);
+  color: #ffffff;
 }
 
 .status-badge {
   border-radius: 999px;
   display: inline-block;
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1;
   padding: 5px 8px;
 }
 
 .status-badge--pending {
-  background: #fff1d8;
-  color: #8a5511;
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
 }
 
 .status-badge--approved {
-  background: #dcefe7;
-  color: #126a5a;
+  background: var(--color-success-soft);
+  color: var(--color-success);
 }
 
 .status-badge--rejected {
-  background: #f2ded8;
-  color: #7a382d;
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
 }
 
 .status-badge--cover {
-  background: #e3ecf6;
-  color: #25507a;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
 }
 
 .status-badge--active {
-  background: #dcefe7;
-  color: #126a5a;
+  background: var(--color-success-soft);
+  color: var(--color-success);
 }
 
 .status-badge--archived {
-  background: #e6e1dc;
-  color: #5d5550;
+  background: var(--color-surface-soft);
+  color: var(--color-muted);
 }

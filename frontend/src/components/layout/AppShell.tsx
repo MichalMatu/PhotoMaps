@@ -65,21 +65,34 @@ export function AppShell({ activeSection, children }: Props) {
 
       <aside className={isMenuOpen ? "side-drawer is-open" : "side-drawer"} aria-hidden={!isMenuOpen}>
         <div className="drawer-header">
-          <a className="drawer-brand" href="/">
-            {APP_NAME}
-          </a>
+          {activeSection === "map" ? (
+            <button className="drawer-brand drawer-brand-button" type="button" onClick={() => setIsMenuOpen(false)}>
+              {APP_NAME}
+            </button>
+          ) : (
+            <a className="drawer-brand" href="/">
+              {APP_NAME}
+            </a>
+          )}
           <button className="drawer-close-button" type="button" onClick={() => setIsMenuOpen(false)} aria-label="Zamknij menu">
             <X aria-hidden="true" size={28} />
           </button>
         </div>
 
         <nav className="drawer-section">
-          {primaryItems.map(({ href, label, section, Icon }) => (
-            <a className={section === activeSection ? "drawer-item is-active" : "drawer-item"} href={href} key={section}>
-              <Icon aria-hidden="true" size={26} />
-              <span>{label}</span>
-            </a>
-          ))}
+          {primaryItems.map(({ href, label, section, Icon }) =>
+            section === activeSection ? (
+              <button className="drawer-item is-active" type="button" key={section} onClick={() => setIsMenuOpen(false)}>
+                <Icon aria-hidden="true" size={26} />
+                <span>{label}</span>
+              </button>
+            ) : (
+              <a className="drawer-item" href={href} key={section}>
+                <Icon aria-hidden="true" size={26} />
+                <span>{label}</span>
+              </a>
+            ),
+          )}
         </nav>
 
         <nav className="drawer-section">

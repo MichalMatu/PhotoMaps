@@ -4,16 +4,17 @@
 }
 
 .admin-editor h2 {
-  font-size: 1.65rem;
+  font-size: 1.35rem;
+  font-weight: 650;
   line-height: 1.12;
   margin-bottom: 18px;
 }
 
 .admin-form label {
-  color: #37403c;
+  color: var(--color-muted-strong);
   display: grid;
   font-size: 0.92rem;
-  font-weight: 700;
+  font-weight: 500;
   gap: 6px;
   min-width: 0;
 }
@@ -21,12 +22,25 @@
 .admin-form input,
 .admin-form select,
 .admin-form textarea {
-  border: 1px solid #cfd4d0;
-  border-radius: 6px;
-  min-height: 38px;
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  min-height: 40px;
   min-width: 0;
-  padding: 8px 10px;
+  padding: 9px 11px;
   width: 100%;
+}
+
+.admin-form input:focus,
+.admin-form select:focus,
+.admin-form textarea:focus,
+.admin-access-form input:focus,
+.category-form input:focus,
+.category-form select:focus,
+.photo-upload input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+  outline: none;
 }
 
 .admin-form textarea {
@@ -35,13 +49,14 @@
 
 .ghost-button {
   background: transparent;
-  border: 1px solid #cbd6d2;
-  color: #37403c;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-muted-strong);
 }
 
 .ghost-button:hover {
-  background: #edf4f1;
-  color: #126a5a;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
 }
 
 .field-row {
@@ -61,18 +76,18 @@
 }
 
 .location-field {
-  color: #37403c;
+  color: var(--color-muted-strong);
   display: grid;
   font-size: 0.92rem;
-  font-weight: 700;
+  font-weight: 500;
   gap: 6px;
   min-width: 0;
 }
 
 .location-picker {
-  background: #ffffff;
-  border: 1px solid #cfd4d0;
-  border-radius: 6px;
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
   overflow: hidden;
 }
 
@@ -88,11 +103,11 @@
 }
 
 .location-readout {
-  background: #f4f7f5;
-  border-top: 1px solid #dfe5e1;
-  color: #56605c;
+  background: var(--color-surface-soft);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-muted);
   font-size: 0.8rem;
-  font-weight: 750;
+  font-weight: 500;
   margin: 0;
   padding: 8px 10px;
 }
@@ -105,9 +120,9 @@
 }
 
 .section-heading span {
-  background: #e7eee9;
+  background: var(--color-accent-soft);
   border-radius: 999px;
-  color: #126a5a;
-  font-weight: 800;
+  color: var(--color-accent);
+  font-weight: 600;
   padding: 4px 10px;
 }

@@ -1,18 +1,19 @@
 .notice {
-  background: #ffffff;
-  border: 1px solid #dfded9;
+  background: var(--color-surface-strong);
+  backdrop-filter: var(--blur-glass);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   margin: 18px 0 0;
   padding: 12px 14px;
 }
 
 .notice.error {
-  border-color: #b44a3d;
-  color: #8e2e24;
+  border-color: var(--color-danger);
+  color: var(--color-danger);
 }
 
 .photo-upload {
-  border-top: 1px solid #d9ded9;
+  border-top: 1px solid var(--color-border);
   display: grid;
   gap: 8px;
   margin-top: 12px;
@@ -20,15 +21,16 @@
 }
 
 .photo-upload label {
-  color: #37403c;
+  color: var(--color-muted-strong);
   display: grid;
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 500;
   gap: 4px;
 }
 
 .photo-upload input {
-  border: 1px solid #cfd4d0;
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   max-width: 100%;
   min-height: 34px;
@@ -45,22 +47,22 @@
 
 .consent-field {
   align-items: flex-start;
-  color: #58615e !important;
+  color: var(--color-muted) !important;
   font-size: 0.72rem !important;
   font-weight: 600 !important;
   line-height: 1.35;
 }
 
 .inline-status {
-  color: #126a5a !important;
+  color: var(--color-accent) !important;
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 600;
   margin: 0;
 }
 
 .system-modal-backdrop {
   align-items: center;
-  background: rgb(17 20 19 / 42%);
+  background: rgb(0 0 0 / 42%);
   display: flex;
   inset: 0;
   justify-content: center;
@@ -71,10 +73,11 @@
 
 .system-modal {
   animation: system-modal-in 180ms ease-out both;
-  background: #ffffff;
-  border: 1px solid #d8dfdb;
+  background: var(--color-surface-strong);
+  backdrop-filter: var(--blur-glass);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
-  box-shadow: 0 24px 70px rgb(0 0 0 / 22%);
+  box-shadow: var(--shadow-floating);
   display: grid;
   gap: 14px;
   max-width: 460px;
@@ -84,17 +87,18 @@
 
 .system-modal--danger,
 .system-modal--error {
-  border-color: #e2c9c2;
+  border-color: var(--color-danger);
 }
 
 .system-modal h2 {
-  font-size: 1.35rem;
+  font-size: 1.22rem;
+  font-weight: 650;
   line-height: 1.15;
   margin: 0;
 }
 
 .system-modal p {
-  color: #46504c;
+  color: var(--color-muted-strong);
   line-height: 1.5;
   margin: 0;
 }

@@ -3,9 +3,10 @@
 }
 
 .category-form {
-  background: #ffffff;
-  border: 1px solid #dfded9;
-  border-radius: 6px;
+  background: var(--color-surface-strong);
+  backdrop-filter: var(--blur-glass);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
   display: grid;
   gap: 12px;
   grid-template-columns: 1fr 1.4fr 1fr 0.7fr;
@@ -14,19 +15,20 @@
 }
 
 .category-form label {
-  color: #37403c;
+  color: var(--color-muted-strong);
   display: grid;
   font-size: 0.82rem;
-  font-weight: 800;
+  font-weight: 500;
   gap: 6px;
   min-width: 0;
 }
 
 .category-form input,
 .category-form select {
-  border: 1px solid #cfd4d0;
-  border-radius: 6px;
-  min-height: 38px;
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  min-height: 40px;
   min-width: 0;
   padding: 8px 10px;
   width: 100%;
@@ -48,9 +50,10 @@
 }
 
 .category-list {
-  background: #ffffff;
-  border: 1px solid #dfded9;
-  border-radius: 6px;
+  background: var(--color-surface-strong);
+  backdrop-filter: var(--blur-glass);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
   overflow: hidden;
 }
 
@@ -59,16 +62,16 @@
   display: grid;
   gap: 12px;
   grid-template-columns: minmax(140px, 1fr) 100px 70px 100px minmax(240px, auto);
-  min-height: 54px;
-  padding: 12px 14px;
+  min-height: 52px;
+  padding: 11px 14px;
 }
 
 .category-row + .category-row {
-  border-top: 1px solid #e7e5df;
+  border-top: 1px solid var(--color-border);
 }
 
 .category-row.is-selected {
-  background: #eef6f2;
+  background: var(--color-accent-soft);
 }
 
 .category-row strong,
@@ -84,7 +87,7 @@
 }
 
 .category-row div > span {
-  color: #65706c;
+  color: var(--color-muted);
   display: block;
   font-size: 0.78rem;
   margin-top: 3px;
@@ -102,6 +105,6 @@
 
 .category-actions button {
   font-size: 0.82rem;
-  min-height: 34px;
-  padding: 0 10px;
+  min-height: 32px;
+  padding: 0 11px;
 }

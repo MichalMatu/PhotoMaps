@@ -10,22 +10,23 @@
 }
 
 .status-tab {
-  background: #ffffff;
-  border: 1px solid #cfd8d4;
-  color: #4a5450;
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-muted-strong);
   min-height: 36px;
   padding: 0 12px;
 }
 
 .status-tab:hover,
 .status-tab.is-active {
-  background: #126a5a;
-  border-color: #126a5a;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
   color: #ffffff;
 }
 
 .status-tab span {
-  background: rgb(18 106 90 / 10%);
+  background: var(--color-accent-soft);
   border-radius: 999px;
   display: inline-block;
   margin-left: 6px;
@@ -44,9 +45,10 @@
 }
 
 .photo-review-item {
-  background: #ffffff;
-  border: 1px solid #dfded9;
-  border-radius: 6px;
+  background: var(--color-surface-strong);
+  backdrop-filter: var(--blur-glass);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
   display: grid;
   gap: 14px;
   grid-template-columns: 116px minmax(0, 1fr);
@@ -55,8 +57,8 @@
 
 .photo-review-item img {
   aspect-ratio: 1;
-  background: #eef3f0;
-  border-radius: 6px;
+  background: var(--color-surface-soft);
+  border-radius: 8px;
   object-fit: cover;
   width: 100%;
 }
@@ -73,7 +75,7 @@
 }
 
 .photo-review-item p {
-  color: #58615e;
+  color: var(--color-muted);
   margin: 10px 0 12px;
 }
 
