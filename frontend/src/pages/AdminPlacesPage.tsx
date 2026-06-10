@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import {
   archivePlace,
   createPlace,
+  getAdminCategories,
   getAdminPlaces,
   getAdminPhotos,
-  getCategories,
   updatePlace,
   type Category,
   type Photo,
@@ -14,6 +14,7 @@ import {
   type PlacePayload,
 } from "../api/client";
 import { AppShell } from "../components/layout/AppShell";
+import { CategoryManager } from "../components/admin/CategoryManager";
 import { PlaceForm } from "../components/admin/PlaceForm";
 import { PhotoQueue } from "../components/admin/PhotoQueue";
 import { SystemModal } from "../components/admin/SystemModal";
@@ -37,7 +38,7 @@ export function AdminPlacesPage() {
 
   async function refresh(nextPhotoStatusFilter = photoStatusFilter) {
     const [nextCategories, nextPlaces, nextPhotos, pendingPhotos, approvedPhotos, rejectedPhotos] = await Promise.all([
-      getCategories(),
+      getAdminCategories(),
       getAdminPlaces(),
       getAdminPhotos(nextPhotoStatusFilter),
       getAdminPhotos("pending"),
@@ -114,6 +115,7 @@ export function AdminPlacesPage() {
           </div>
 
           <div className="admin-list">
+            <CategoryManager categories={categories} onChanged={refresh} />
             <div className="section-heading">
               <h2>Miejsca</h2>
               <span>{places.length}</span>

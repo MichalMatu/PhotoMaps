@@ -6,7 +6,21 @@ export type Category = {
   description: string | null;
   icon: string | null;
   sort_order: number;
+  status: CategoryStatus;
 };
+
+export type CategoryStatus = "active" | "archived";
+
+export type CategoryPayload = {
+  id: string;
+  label: string;
+  description: string | null;
+  icon: string | null;
+  sort_order: number;
+  status: CategoryStatus;
+};
+
+export type CategoryUpdatePayload = Omit<CategoryPayload, "id">;
 
 export type PlaceStatus = "draft" | "published" | "archived";
 
@@ -81,6 +95,36 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
 export function getCategories(): Promise<Category[]> {
   return request<Category[]>("/api/categories");
+}
+
+export function getAdminCategories(): Promise<Category[]> {
+  return request<Category[]>("/api/admin/categories");
+}
+
+export function createCategory(payload: CategoryPayload): Promise<Category> {
+  return request<Category>("/api/admin/categories", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateCategory(categoryId: string, payload: CategoryUpdatePayload): Promise<Category> {
+  return request<Category>(`/api/admin/categories/${categoryId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function archiveCategory(categoryId: string): Promise<Category> {
+  return request<Category>(`/api/admin/categories/${categoryId}`, {
+    method: "DELETE",
+  });
+}
+
+export function deleteCategoryPermanently(categoryId: string): Promise<void> {
+  return request<void>(`/api/admin/categories/${categoryId}?force=true`, {
+    method: "DELETE",
+  });
 }
 
 export function getPlaces(): Promise<Place[]> {

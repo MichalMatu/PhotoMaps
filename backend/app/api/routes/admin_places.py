@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.db.session import get_session
+from app.models.category import Category
 from app.models.place import Place
 from app.schemas.place import PlaceCreate, PlaceRead, PlaceUpdate
 from app.api.routes.places import place_to_read
@@ -25,6 +26,12 @@ def ensure_slug_available(session: Session, slug: str, place_id: str | None = No
         raise HTTPException(status_code=409, detail="Slug already exists")
 
 
+def ensure_active_category(session: Session, category_id: str) -> None:
+    category = session.get(Category, category_id)
+    if category is None or category.status != "active":
+        raise HTTPException(status_code=422, detail="Category must be active")
+
+
 @router.get("", response_model=list[PlaceRead])
 def list_admin_places(session: Session = Depends(get_session)) -> list[PlaceRead]:
     statement = select(Place).order_by(Place.created_at.desc())
@@ -35,6 +42,8 @@ def list_admin_places(session: Session = Depends(get_session)) -> list[PlaceRead
 def create_place(payload: PlaceCreate, session: Session = Depends(get_session)) -> PlaceRead:
     ensure_status(payload.status)
     ensure_slug_available(session, payload.slug)
+    if payload.category_id is not None:
+        ensure_active_category(session, payload.category_id)
     place = Place.model_validate(payload)
     session.add(place)
     session.commit()
@@ -57,6 +66,8 @@ def update_place(
         ensure_status(data["status"])
     if "slug" in data and data["slug"] is not None:
         ensure_slug_available(session, data["slug"], place.id)
+    if "category_id" in data and data["category_id"] is not None and data["category_id"] != place.category_id:
+        ensure_active_category(session, data["category_id"])
 
     for key, value in data.items():
         setattr(place, key, value)

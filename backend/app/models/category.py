@@ -7,3 +7,4 @@ class Category(SQLModel, table=True):
     description: str | None = None
     icon: str | None = None
     sort_order: int = 0
+    status: str = Field(default="active", index=True)

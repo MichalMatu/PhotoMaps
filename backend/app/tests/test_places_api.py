@@ -4,7 +4,6 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
-from app.db.init_db import seed_categories
 from app.db.session import get_session
 from app.main import app
 from app.models.place import Place
@@ -19,8 +18,6 @@ def client_with_session() -> Generator[tuple[TestClient, Session], None, None]:
     SQLModel.metadata.create_all(engine)
 
     with Session(engine) as session:
-        seed_categories(session)
-
         def override_session() -> Generator[Session, None, None]:
             yield session
 

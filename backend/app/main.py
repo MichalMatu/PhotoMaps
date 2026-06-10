@@ -3,19 +3,15 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from sqlmodel import Session
 
-from app.api.routes import admin_photos, admin_places, categories, photos, places
+from app.api.routes import admin_categories, admin_photos, admin_places, categories, photos, places
 from app.core.config import API_TITLE, FRONTEND_ORIGINS, PUBLIC_STORAGE_DIR
-from app.db.init_db import seed_categories
-from app.db.session import create_db_and_tables, engine
+from app.db.session import create_db_and_tables
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_db_and_tables()
-    with Session(engine) as session:
-        seed_categories(session)
     yield
 
 
@@ -32,6 +28,7 @@ app.add_middleware(
 app.include_router(categories.router)
 app.include_router(places.router)
 app.include_router(photos.router)
+app.include_router(admin_categories.router)
 app.include_router(admin_places.router)
 app.include_router(admin_photos.router)
 app.mount("/media", StaticFiles(directory=PUBLIC_STORAGE_DIR, check_dir=False), name="media")

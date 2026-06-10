@@ -35,6 +35,10 @@ export function PlaceForm({ categories, onCancel, onSubmit, place }: Props) {
   const [isSaving, setIsSaving] = useState(false);
 
   const generatedSlug = useMemo(() => slugify(title), [title]);
+  const availableCategories = useMemo(
+    () => categories.filter((category) => category.status === "active" || category.id === place?.category_id),
+    [categories, place?.category_id],
+  );
 
   useEffect(() => {
     if (!place) {
@@ -104,7 +108,7 @@ export function PlaceForm({ categories, onCancel, onSubmit, place }: Props) {
         Kategoria
         <select value={categoryId} onChange={(event) => setCategoryId(event.target.value)}>
           <option value="">Bez kategorii</option>
-          {categories.map((category) => (
+          {availableCategories.map((category) => (
             <option key={category.id} value={category.id}>
               {category.label}
             </option>
