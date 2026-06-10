@@ -7,6 +7,7 @@ type Props = {
   claimToken: string;
   onUploaded?: () => void;
   placeId: string;
+  showExistingMemories?: boolean;
   showHeading?: boolean;
 };
 
@@ -17,7 +18,7 @@ const MEMORY_AUTHOR_MAX_LENGTH = 40;
 const MEMORY_CAPTION_MAX_LENGTH = 80;
 const MEMORY_TEXT_MAX_LENGTH = 240;
 
-export function MemoryPanel({ claimToken, onUploaded, placeId, showHeading = true }: Props) {
+export function MemoryPanel({ claimToken, onUploaded, placeId, showExistingMemories = true, showHeading = true }: Props) {
   const queryClient = useQueryClient();
   const [authorCity, setAuthorCity] = useState("");
   const [authorName, setAuthorName] = useState("");
@@ -27,7 +28,9 @@ export function MemoryPanel({ claimToken, onUploaded, placeId, showHeading = tru
   const [memoryText, setMemoryText] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const shouldLoadMemories = showExistingMemories || showHeading;
   const memoriesQuery = useQuery({
+    enabled: shouldLoadMemories,
     queryKey: ["place-memories", placeId],
     queryFn: () => getPlaceMemories(placeId),
   });
@@ -89,20 +92,22 @@ export function MemoryPanel({ claimToken, onUploaded, placeId, showHeading = tru
           <span>{memoriesQuery.data?.length ?? 0}</span>
         </div>
       ) : null}
-      {memoriesQuery.isLoading ? <p className="inline-status">Ładowanie pamiątek...</p> : null}
-      <div className="memory-list">
-        {memoriesQuery.data?.map((memory) => (
-          <article className="memory-card" key={memory.id}>
-            <img src={mediaUrl(memory.thumb_path)} alt={memory.caption} />
-            <div>
-              <strong>{memory.author_name ?? "Gość"}</strong>
-              {memory.author_city ? <span>{memory.author_city}</span> : null}
-              <p>{memory.caption}</p>
-              <p className="memory-card-note">{memory.memory_text}</p>
-            </div>
-          </article>
-        ))}
-      </div>
+      {showExistingMemories && memoriesQuery.isLoading ? <p className="inline-status">Ładowanie pamiątek...</p> : null}
+      {showExistingMemories ? (
+        <div className="memory-list">
+          {memoriesQuery.data?.map((memory) => (
+            <article className="memory-card" key={memory.id}>
+              <img src={mediaUrl(memory.thumb_path)} alt={memory.caption} />
+              <div>
+                <strong>{memory.author_name ?? "Gość"}</strong>
+                {memory.author_city ? <span>{memory.author_city}</span> : null}
+                <p>{memory.caption}</p>
+                <p className="memory-card-note">{memory.memory_text}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : null}
       <form className="photo-upload" onSubmit={handleSubmit}>
         <label>
           Zdjęcie pamiątki

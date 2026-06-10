@@ -358,7 +358,7 @@
 .memory-sheet-content,
 .report-sheet-content {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-3);
   padding: var(--space-5);
 }
 
@@ -420,8 +420,19 @@
 
 .memory-sheet-content .memory-panel {
   border-top: 0;
+  gap: var(--space-2);
   margin-top: 0;
   padding-top: 0;
+}
+
+.memory-sheet-content .memory-list:empty {
+  display: none;
+}
+
+.memory-sheet-content .photo-upload {
+  border-top: 0;
+  margin-top: 0;
+  padding-top: 2px;
 }
 
 .report-sheet-content .report-form {

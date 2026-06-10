@@ -57,7 +57,13 @@ export function MemorySheet({ onClose, onUploaded, place }: Props) {
             />
           </label>
           {isUnlocked ? (
-            <MemoryPanel claimToken={visitToken} placeId={place.id} showHeading={false} onUploaded={onUploaded} />
+            <MemoryPanel
+              claimToken={visitToken}
+              placeId={place.id}
+              showExistingMemories={false}
+              showHeading={false}
+              onUploaded={onUploaded}
+            />
           ) : null}
         </div>
       ) : null}
