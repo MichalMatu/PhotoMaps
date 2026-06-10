@@ -68,6 +68,7 @@ export function PhotoQueue({ photos, places, statusCounts, statusFilter, onRevie
       setPhotoToDelete(null);
       await onReviewed();
     } catch (reason) {
+      setPhotoToDelete(null);
       setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się trwale usunąć zdjęcia.");
     } finally {
       setIsDeleting(false);

@@ -58,6 +58,7 @@ export function MemoryQueue({
       setMemoryToDelete(null);
       await onReviewed();
     } catch (reason) {
+      setMemoryToDelete(null);
       setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się trwale usunąć pamiątki.");
     } finally {
       setIsDeleting(false);

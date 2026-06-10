@@ -33,6 +33,7 @@ import { PlaceForm } from "../components/admin/PlaceForm";
 import { PhotoQueue } from "../components/admin/PhotoQueue";
 import { ReportQueue } from "../components/admin/ReportQueue";
 import { SystemModal } from "../components/admin/SystemModal";
+import { ErrorModal, errorDetails, type OperationError } from "../components/ui/ErrorModal";
 
 type AdminSection = "places" | "categories" | "photos" | "memories" | "guides" | "reports";
 
@@ -51,8 +52,8 @@ export function AdminPlacesPage() {
   const [reports, setReports] = useState<Report[]>([]);
   const [reportStatusFilter, setReportStatusFilter] = useState<ReportStatus | "all">("all");
   const [accessMessage, setAccessMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [isArchiving, setIsArchiving] = useState(false);
+  const [operationError, setOperationError] = useState<OperationError | null>(null);
   const categoryById = new Map(categories.map((category) => [category.id, category]));
   const visiblePhotos = useMemo(
     () => (photoStatusFilter === "all" ? photos : photos.filter((photo) => photo.status === photoStatusFilter)),
@@ -109,7 +110,7 @@ export function AdminPlacesPage() {
     setPhotos(nextPhotos);
     setReports(nextReports);
     setAccessMessage(null);
-    setError(null);
+    setOperationError(null);
   }
 
   useEffect(() => {
@@ -131,7 +132,11 @@ export function AdminPlacesPage() {
         setReports([]);
         return;
       }
-      setError(reason instanceof Error ? reason.message : "Nie udalo sie pobrac danych");
+      setOperationError({
+        details: errorDetails(reason),
+        message: "Nie udało się pobrać danych panelu admina. Sprawdź backend i spróbuj ponownie.",
+        title: "Nie udało się pobrać danych",
+      });
     });
   }, [adminToken]);
 
@@ -139,7 +144,7 @@ export function AdminPlacesPage() {
     clearAdminToken();
     setAdminToken("");
     setAccessMessage(null);
-    setError(null);
+    setOperationError(null);
     setCategories([]);
     setEditingPlace(null);
     setGuides([]);
@@ -157,7 +162,7 @@ export function AdminPlacesPage() {
             message={accessMessage}
             onUnlocked={(token) => {
               setAccessMessage(null);
-              setError(null);
+              setOperationError(null);
               setAdminToken(token);
             }}
           />
@@ -167,7 +172,7 @@ export function AdminPlacesPage() {
   }
 
   async function handleSubmitPlace(payload: PlacePayload) {
-    setError(null);
+    setOperationError(null);
     try {
       if (editingPlace) {
         await updatePlace(editingPlace.id, payload);
@@ -177,7 +182,11 @@ export function AdminPlacesPage() {
       }
       await refresh();
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Nie udalo sie zapisac miejsca");
+      setOperationError({
+        details: errorDetails(reason),
+        message: "Nie udało się zapisać miejsca. Sprawdź dane i spróbuj ponownie.",
+        title: "Nie udało się zapisać miejsca",
+      });
     }
   }
 
@@ -186,7 +195,7 @@ export function AdminPlacesPage() {
       return;
     }
 
-    setError(null);
+    setOperationError(null);
     setIsArchiving(true);
     try {
       await archivePlace(placeToArchive.id);
@@ -196,7 +205,12 @@ export function AdminPlacesPage() {
       setPlaceToArchive(null);
       await refresh();
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Nie udalo sie zarchiwizowac miejsca");
+      setPlaceToArchive(null);
+      setOperationError({
+        details: errorDetails(reason),
+        message: "Nie udało się zarchiwizować miejsca. Spróbuj ponownie.",
+        title: "Nie udało się zarchiwizować miejsca",
+      });
     } finally {
       setIsArchiving(false);
     }
@@ -214,9 +228,6 @@ export function AdminPlacesPage() {
               Zmień token
             </button>
           </header>
-
-          {error ? <p className="notice error">{error}</p> : null}
-
           <nav className="admin-section-tabs" aria-label="Sekcje panelu admina">
             <button
               className={activeSection === "places" ? "admin-section-tab is-active" : "admin-section-tab"}
@@ -379,6 +390,7 @@ export function AdminPlacesPage() {
             onConfirm={handleConfirmArchivePlace}
           />
         ) : null}
+        {operationError ? <ErrorModal {...operationError} onClose={() => setOperationError(null)} /> : null}
       </main>
     </AppShell>
   );

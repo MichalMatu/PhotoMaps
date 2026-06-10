@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { getGuide, getGuides } from "../api/client";
 import { AppShell } from "../components/layout/AppShell";
+import { ErrorModal, errorDetails } from "../components/ui/ErrorModal";
 
 function currentGuideSlug() {
   const match = window.location.pathname.match(/^\/guides\/([^/]+)$/);
@@ -10,6 +12,7 @@ function currentGuideSlug() {
 
 export function GuidesPage() {
   const slug = currentGuideSlug();
+  const [dismissedErrorKey, setDismissedErrorKey] = useState<string | null>(null);
   const guidesQuery = useQuery({
     queryKey: ["guides"],
     queryFn: getGuides,
@@ -20,6 +23,21 @@ export function GuidesPage() {
     queryFn: () => getGuide(slug ?? ""),
     enabled: slug !== null,
   });
+  const errorKey = slug === null ? "guides" : `guide:${slug}`;
+  const activeError =
+    guidesQuery.isError && slug === null
+      ? {
+          details: errorDetails(guidesQuery.error),
+          message: "Nie udało się pobrać listy przewodników. Sprawdź połączenie i spróbuj ponownie.",
+          title: "Nie udało się pobrać przewodników",
+        }
+      : guideQuery.isError && slug !== null
+        ? {
+            details: errorDetails(guideQuery.error),
+            message: "Nie udało się pobrać tego przewodnika. Sprawdź połączenie i spróbuj ponownie.",
+            title: "Nie udało się pobrać przewodnika",
+          }
+        : null;
 
   return (
     <AppShell activeSection="guides">
@@ -31,7 +49,6 @@ export function GuidesPage() {
               <span>{guidesQuery.data?.length ?? 0}</span>
             </div>
             {guidesQuery.isLoading ? <p className="notice">Ładowanie przewodników...</p> : null}
-            {guidesQuery.isError ? <p className="notice error">Nie udało się pobrać przewodników.</p> : null}
             <div className="simple-card-grid">
               {guidesQuery.data?.map((guide) => (
                 <a className="simple-card" href={`/guides/${guide.slug}`} key={guide.id}>
@@ -45,7 +62,6 @@ export function GuidesPage() {
         ) : (
           <section className="content-panel">
             {guideQuery.isLoading ? <p className="notice">Ładowanie przewodnika...</p> : null}
-            {guideQuery.isError ? <p className="notice error">Nie udało się pobrać przewodnika.</p> : null}
             {guideQuery.data ? (
               <>
                 <a className="ghost-link" href="/guides">
@@ -69,6 +85,9 @@ export function GuidesPage() {
             ) : null}
           </section>
         )}
+        {activeError && dismissedErrorKey !== errorKey ? (
+          <ErrorModal {...activeError} onClose={() => setDismissedErrorKey(errorKey)} />
+        ) : null}
       </main>
     </AppShell>
   );

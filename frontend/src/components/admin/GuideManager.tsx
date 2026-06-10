@@ -12,6 +12,7 @@ import {
   type GuideStatus,
   type Place,
 } from "../../api/client";
+import { ErrorModal, errorDetails, type OperationError } from "../ui/ErrorModal";
 
 type Props = {
   guides: Guide[];
@@ -31,8 +32,8 @@ function slugify(value: string) {
 
 export function GuideManager({ guides, places, onChanged }: Props) {
   const [description, setDescription] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [guideDetail, setGuideDetail] = useState<GuideDetail | null>(null);
+  const [operationError, setOperationError] = useState<OperationError | null>(null);
   const [placeId, setPlaceId] = useState("");
   const [selectedGuideId, setSelectedGuideId] = useState<string>("");
   const [sortOrder, setSortOrder] = useState("0");
@@ -57,7 +58,11 @@ export function GuideManager({ guides, places, onChanged }: Props) {
     getAdminGuide(selectedGuide.id)
       .then(setGuideDetail)
       .catch((reason: unknown) => {
-        setError(reason instanceof Error ? reason.message : "Nie udało się pobrać przewodnika.");
+        setOperationError({
+          details: errorDetails(reason),
+          message: "Nie udało się pobrać szczegółów przewodnika. Spróbuj ponownie.",
+          title: "Nie udało się pobrać przewodnika",
+        });
       });
   }, [selectedGuide]);
 
@@ -68,7 +73,7 @@ export function GuideManager({ guides, places, onChanged }: Props) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError(null);
+    setOperationError(null);
     const payload: GuidePayload = {
       slug: selectedGuide?.slug ?? generatedSlug,
       title,
@@ -82,7 +87,11 @@ export function GuideManager({ guides, places, onChanged }: Props) {
       await onChanged();
       await refreshGuideDetail(savedGuide.id);
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Nie udało się zapisać przewodnika.");
+      setOperationError({
+        details: errorDetails(reason),
+        message: "Nie udało się zapisać przewodnika. Sprawdź dane i spróbuj ponownie.",
+        title: "Nie udało się zapisać przewodnika",
+      });
     }
   }
 
@@ -91,7 +100,7 @@ export function GuideManager({ guides, places, onChanged }: Props) {
     if (!selectedGuide || !placeId) {
       return;
     }
-    setError(null);
+    setOperationError(null);
     try {
       const detail = await addPlaceToGuide(selectedGuide.id, {
         place_id: placeId,
@@ -102,7 +111,11 @@ export function GuideManager({ guides, places, onChanged }: Props) {
       setSortOrder("0");
       await onChanged();
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Nie udało się dodać miejsca.");
+      setOperationError({
+        details: errorDetails(reason),
+        message: "Nie udało się dodać miejsca do przewodnika. Spróbuj ponownie.",
+        title: "Nie udało się dodać miejsca",
+      });
     }
   }
 
@@ -110,13 +123,17 @@ export function GuideManager({ guides, places, onChanged }: Props) {
     if (!selectedGuide) {
       return;
     }
-    setError(null);
+    setOperationError(null);
     try {
       const detail = await removePlaceFromGuide(selectedGuide.id, nextPlaceId);
       setGuideDetail(detail);
       await onChanged();
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Nie udało się usunąć miejsca z przewodnika.");
+      setOperationError({
+        details: errorDetails(reason),
+        message: "Nie udało się usunąć miejsca z przewodnika. Spróbuj ponownie.",
+        title: "Nie udało się usunąć miejsca",
+      });
     }
   }
 
@@ -124,7 +141,6 @@ export function GuideManager({ guides, places, onChanged }: Props) {
     <section className="admin-layout admin-section">
       <div className="admin-editor">
         <h2>{selectedGuide ? "Edytuj przewodnik" : "Dodaj przewodnik"}</h2>
-        {error ? <p className="notice error">{error}</p> : null}
         <form className="admin-form" onSubmit={handleSubmit}>
           <label>
             Edycja
@@ -203,6 +219,7 @@ export function GuideManager({ guides, places, onChanged }: Props) {
           {!guideDetail ? <p className="notice">Wybierz przewodnik, żeby zarządzać miejscami.</p> : null}
         </div>
       </div>
+      {operationError ? <ErrorModal {...operationError} onClose={() => setOperationError(null)} /> : null}
     </section>
   );
 }

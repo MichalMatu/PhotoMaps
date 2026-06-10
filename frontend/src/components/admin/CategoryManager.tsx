@@ -9,6 +9,7 @@ import {
   type CategoryPayload,
   type CategoryStatus,
 } from "../../api/client";
+import { ErrorModal, errorDetails, type OperationError } from "../ui/ErrorModal";
 import { SystemModal } from "./SystemModal";
 
 type Props = {
@@ -67,9 +68,9 @@ export function CategoryManager({ categories, onChanged }: Props) {
   const [sortOrder, setSortOrder] = useState("0");
   const [status, setStatus] = useState<CategoryStatus>(INITIAL_STATUS);
   const [categoryAction, setCategoryAction] = useState<CategoryAction | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isProcessingAction, setIsProcessingAction] = useState(false);
+  const [operationError, setOperationError] = useState<OperationError | null>(null);
 
   const generatedId = useMemo(() => slugify(label), [label]);
   const categoryId = editingCategory ? editingCategory.id : id || generatedId;
@@ -99,7 +100,7 @@ export function CategoryManager({ categories, onChanged }: Props) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError(null);
+    setOperationError(null);
     setIsSaving(true);
     try {
       const payload = categoryPayload({
@@ -126,7 +127,11 @@ export function CategoryManager({ categories, onChanged }: Props) {
       resetForm();
       await onChanged();
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Nie udalo sie zapisac kategorii");
+      setOperationError({
+        details: errorDetails(reason),
+        message: "Nie udało się zapisać kategorii. Sprawdź dane i spróbuj ponownie.",
+        title: "Nie udało się zapisać kategorii",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -137,7 +142,7 @@ export function CategoryManager({ categories, onChanged }: Props) {
       return;
     }
 
-    setError(null);
+    setOperationError(null);
     setIsProcessingAction(true);
     try {
       if (categoryAction.type === "archive") {
@@ -151,7 +156,16 @@ export function CategoryManager({ categories, onChanged }: Props) {
       setCategoryAction(null);
       await onChanged();
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Nie udalo sie wykonac operacji na kategorii");
+      const failedAction = categoryAction.type;
+      setCategoryAction(null);
+      setOperationError({
+        details: errorDetails(reason),
+        message:
+          failedAction === "delete"
+            ? "Nie można trwale usunąć tej kategorii. Jeśli jest używana przez miejsca, najpierw zmień kategorię tych miejsc albo użyj archiwizacji."
+            : "Nie udało się zarchiwizować kategorii. Spróbuj ponownie.",
+        title: failedAction === "delete" ? "Nie udało się usunąć kategorii" : "Nie udało się zarchiwizować kategorii",
+      });
     } finally {
       setIsProcessingAction(false);
     }
@@ -159,7 +173,6 @@ export function CategoryManager({ categories, onChanged }: Props) {
 
   return (
     <section className="admin-panel category-manager">
-      {error ? <p className="notice error">{error}</p> : null}
       <form className="category-form" onSubmit={handleSubmit}>
         <label>
           ID
@@ -252,6 +265,7 @@ export function CategoryManager({ categories, onChanged }: Props) {
           onConfirm={handleConfirmCategoryAction}
         />
       ) : null}
+      {operationError ? <ErrorModal {...operationError} onClose={() => setOperationError(null)} /> : null}
     </section>
   );
 }
