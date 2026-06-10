@@ -1,0 +1,106 @@
+.map-context-menu {
+  background: rgb(17 20 19 / 90%);
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 8px;
+  box-shadow: 0 18px 46px rgb(0 0 0 / 32%);
+  display: grid;
+  gap: 4px;
+  min-width: 210px;
+  padding: 6px;
+  position: fixed;
+  z-index: 10050;
+}
+
+.map-context-menu-coords {
+  border-bottom: 1px solid rgb(255 255 255 / 10%);
+  color: #b9c7c1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 800;
+  margin-bottom: 2px;
+  padding: 5px 7px 7px;
+}
+
+.map-context-menu button {
+  background: transparent;
+  border-radius: 6px;
+  color: #ffffff;
+  justify-content: flex-start;
+  min-height: 34px;
+  padding: 0 9px;
+  text-align: left;
+  width: 100%;
+}
+
+.map-context-menu button:hover {
+  background: rgb(255 255 255 / 10%);
+}
+
+.map-context-menu-danger {
+  color: #ffd8d1 !important;
+}
+
+.measure-panel {
+  background: rgb(17 20 19 / 82%);
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 8px;
+  bottom: 18px;
+  box-shadow: 0 18px 46px rgb(0 0 0 / 24%);
+  color: #ffffff;
+  display: grid;
+  gap: 8px;
+  left: 94px;
+  min-width: 184px;
+  padding: 10px 12px;
+  position: fixed;
+  z-index: 9000;
+}
+
+.measure-panel span {
+  color: #cdd8d4;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.measure-panel strong {
+  font-size: 1.28rem;
+  line-height: 1;
+}
+
+.measure-panel div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.measure-panel button {
+  background: rgb(255 255 255 / 10%);
+  border-radius: 5px;
+  color: #ffffff;
+  font-size: 0.72rem;
+  min-height: 28px;
+  padding: 0 8px;
+}
+
+.measure-panel button:hover {
+  background: rgb(255 255 255 / 16%);
+}
+
+.measure-segment-label {
+  background: transparent;
+  border: 0;
+}
+
+.measure-segment-label span {
+  background: rgb(255 255 255 / 88%);
+  border-radius: 999px;
+  box-shadow: 0 8px 18px rgb(0 0 0 / 18%);
+  color: #111413;
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1;
+  padding: 5px 8px;
+  white-space: nowrap;
+}

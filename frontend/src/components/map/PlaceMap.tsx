@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, useMap, useMapEvents, ZoomControl } from "react-leaflet";
 
 import type { Photo, Place } from "../../api/client";
+import { DistanceMeasureTool } from "./DistanceMeasureTool";
 import { PlaceMarker } from "./PlaceMarker";
 
 type Props = {
@@ -54,6 +55,7 @@ export function PlaceMap({ places, photosByPlaceId, onPhotoUploaded }: Props) {
     <MapContainer center={WROCLAW_CENTER} zoom={13} className="place-map" scrollWheelZoom zoomControl={false}>
       <MapSizeUpdater />
       <FanCloseEvents onClose={() => setExpandedPlaceId(null)} />
+      <DistanceMeasureTool />
       <ZoomControl position="bottomright" />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
