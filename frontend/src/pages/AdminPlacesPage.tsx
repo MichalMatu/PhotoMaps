@@ -335,13 +335,14 @@ export function AdminPlacesPage() {
 
           {activeSection === "categories" ? (
             <section className="admin-section admin-section-single">
-              <CategoryManager categories={categories} onChanged={refresh} />
+              <CategoryManager categories={categories} places={places} onChanged={refresh} />
             </section>
           ) : null}
 
           {activeSection === "photos" ? (
             <section className="admin-section admin-section-single">
               <PhotoQueue
+                categories={categories}
                 photos={visiblePhotos}
                 places={places}
                 statusCounts={photoStatusCounts}

@@ -37,6 +37,8 @@
 .admin-access-form input:focus,
 .category-form input:focus,
 .category-form select:focus,
+.admin-photo-upload input:focus,
+.admin-photo-upload select:focus,
 .photo-upload input:focus {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 3px var(--color-accent-soft);

@@ -2,6 +2,38 @@
   margin-top: 28px;
 }
 
+.admin-photo-upload {
+  align-items: end;
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(180px, 1.1fr) minmax(180px, 1fr) minmax(160px, 1fr) auto;
+  margin-bottom: 14px;
+  padding: 12px;
+}
+
+.admin-photo-upload label {
+  color: var(--color-muted-strong);
+  display: grid;
+  font-size: 0.82rem;
+  font-weight: 650;
+  gap: 5px;
+  min-width: 0;
+}
+
+.admin-photo-upload input,
+.admin-photo-upload select {
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  min-height: 38px;
+  min-width: 0;
+  padding: 8px 10px;
+  width: 100%;
+}
+
 .status-tabs {
   display: flex;
   flex-wrap: wrap;
@@ -44,6 +76,38 @@
   gap: 14px;
 }
 
+.photo-place-groups {
+  display: grid;
+  gap: 16px;
+}
+
+.photo-place-group {
+  display: grid;
+  gap: 10px;
+}
+
+.photo-place-group-header {
+  align-items: center;
+  color: var(--color-muted-strong);
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.photo-place-group-header div {
+  display: grid;
+  gap: 2px;
+}
+
+.photo-place-group-header strong {
+  color: var(--color-text);
+  font-size: 1rem;
+}
+
+.photo-place-group-header span {
+  font-size: 0.78rem;
+}
+
 .photo-review-item {
   background: var(--color-surface-strong);
   backdrop-filter: var(--blur-glass);
@@ -51,8 +115,12 @@
   border-radius: 8px;
   display: grid;
   gap: 14px;
-  grid-template-columns: 116px minmax(0, 1fr);
+  grid-template-columns: 116px minmax(180px, 1fr);
   padding: 12px;
+}
+
+.photo-review-item > div {
+  min-width: 0;
 }
 
 .photo-review-item img {
@@ -80,7 +148,28 @@
 }
 
 .review-actions {
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.review-actions button {
+  flex: 0 1 auto;
+  min-height: 34px;
+  padding-inline: 14px;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .admin-photo-upload {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-photo-upload,
+  .photo-review-item {
+    grid-template-columns: 1fr;
+  }
 }

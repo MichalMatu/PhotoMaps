@@ -8,12 +8,14 @@ import {
   type Category,
   type CategoryPayload,
   type CategoryStatus,
+  type Place,
 } from "../../api/client";
 import { ErrorModal, errorDetails, type OperationError } from "../ui/ErrorModal";
 import { SystemModal } from "./SystemModal";
 
 type Props = {
   categories: Category[];
+  places: Place[];
   onChanged: () => Promise<void>;
 };
 
@@ -59,7 +61,7 @@ function categoryPayload({
   };
 }
 
-export function CategoryManager({ categories, onChanged }: Props) {
+export function CategoryManager({ categories, onChanged, places }: Props) {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [id, setId] = useState("");
   const [label, setLabel] = useState("");
@@ -74,6 +76,12 @@ export function CategoryManager({ categories, onChanged }: Props) {
 
   const generatedId = useMemo(() => slugify(label), [label]);
   const categoryId = editingCategory ? editingCategory.id : id || generatedId;
+  const categoryBlockers = categoryAction
+    ? places.filter((place) => place.category_id === categoryAction.category.id)
+    : [];
+  const categoryBlockerDetails = categoryBlockers.length
+    ? categoryBlockers.map((place) => `- ${place.title} (${place.status})`).join("\n")
+    : null;
 
   useEffect(() => {
     if (!editingCategory) {
@@ -159,7 +167,7 @@ export function CategoryManager({ categories, onChanged }: Props) {
       const failedAction = categoryAction.type;
       setCategoryAction(null);
       setOperationError({
-        details: errorDetails(reason),
+        details: categoryBlockerDetails ?? errorDetails(reason),
         message:
           failedAction === "delete"
             ? "Nie można trwale usunąć tej kategorii. Jeśli jest używana przez miejsca, najpierw zmień kategorię tych miejsc albo użyj archiwizacji."
@@ -257,8 +265,11 @@ export function CategoryManager({ categories, onChanged }: Props) {
           message={
             categoryAction.type === "archive"
               ? `Kategoria "${categoryAction.category.label}" zniknie z publicznych formularzy i list, ale zostanie w bazie.`
-              : `Kategoria "${categoryAction.category.label}" zostanie fizycznie usunięta tylko wtedy, gdy nie używa jej żadne miejsce.`
+              : categoryBlockers.length > 0
+                ? `Kategoria "${categoryAction.category.label}" jest używana przez ${categoryBlockers.length} miejsc. Trwałe usunięcie będzie zablokowane, dopóki nie zmienisz kategorii tych miejsc.`
+                : `Kategoria "${categoryAction.category.label}" zostanie fizycznie usunięta.`
           }
+          details={categoryAction.type === "delete" ? categoryBlockerDetails : null}
           title={categoryAction.type === "archive" ? "Archiwizować kategorię?" : "Usunąć kategorię trwale?"}
           tone="danger"
           onClose={() => setCategoryAction(null)}
