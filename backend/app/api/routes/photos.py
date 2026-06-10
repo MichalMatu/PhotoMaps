@@ -12,7 +12,7 @@ router = APIRouter(prefix="/api/places/{place_id}/photos", tags=["photos"])
 
 def ensure_public_place(place_id: str, session: Session) -> Place:
     place = session.get(Place, place_id)
-    if place is None or place.status != "published" or place.is_chain:
+    if place is None or place.status != "published":
         raise HTTPException(status_code=404, detail="Place not found")
     return place
 

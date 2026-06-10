@@ -44,9 +44,9 @@ function fanAddIcon(offset: FanOffset, index: number) {
   return L.divIcon({
     className: "photo-fan-add-marker",
     html: `<span style="${fanAnimationStyle(offset, index)}">+</span>`,
-    iconAnchor: [25, 25],
-    iconSize: [50, 50],
-    popupAnchor: [0, -22],
+    iconAnchor: [21, 21],
+    iconSize: [42, 42],
+    popupAnchor: [0, -18],
   });
 }
 

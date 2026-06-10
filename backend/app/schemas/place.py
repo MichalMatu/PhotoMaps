@@ -13,7 +13,6 @@ class PlaceBase(SQLModel):
     lon: float
     weight: float = 1.0
     status: str = "draft"
-    is_chain: bool = False
 
 
 class PlaceCreate(PlaceBase):
@@ -30,7 +29,6 @@ class PlaceUpdate(SQLModel):
     lon: float | None = None
     weight: float | None = None
     status: str | None = None
-    is_chain: bool | None = None
     cover_photo_id: str | None = None
 
 
@@ -45,7 +43,6 @@ class PlaceRead(SQLModel):
     lon: float
     weight: float
     status: str
-    is_chain: bool
     photo_count: int
     memory_count: int
     cover_photo_id: str | None

@@ -33,7 +33,6 @@ export function PlaceForm({ categories, onCancel, onSubmit, place }: Props) {
   const [localComment, setLocalComment] = useState("");
   const [weight, setWeight] = useState("1");
   const [status, setStatus] = useState<PlaceStatus>("draft");
-  const [isChain, setIsChain] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   const generatedSlug = useMemo(() => slugify(title), [title]);
@@ -51,7 +50,6 @@ export function PlaceForm({ categories, onCancel, onSubmit, place }: Props) {
       setLocalComment("");
       setWeight("1");
       setStatus("draft");
-      setIsChain(false);
       return;
     }
 
@@ -62,7 +60,6 @@ export function PlaceForm({ categories, onCancel, onSubmit, place }: Props) {
     setLocalComment(place.local_comment ?? "");
     setWeight(String(place.weight));
     setStatus(place.status);
-    setIsChain(place.is_chain);
   }, [place]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -79,7 +76,6 @@ export function PlaceForm({ categories, onCancel, onSubmit, place }: Props) {
         local_comment: localComment.trim() || null,
         weight: Number(weight),
         status,
-        is_chain: isChain,
       });
       if (!place) {
         setTitle("");
@@ -89,7 +85,6 @@ export function PlaceForm({ categories, onCancel, onSubmit, place }: Props) {
         setLocalComment("");
         setWeight("1");
         setStatus("draft");
-        setIsChain(false);
       }
     } finally {
       setIsSaving(false);
@@ -151,11 +146,6 @@ export function PlaceForm({ categories, onCancel, onSubmit, place }: Props) {
           </select>
         </label>
       </div>
-
-      <label className="checkbox-field">
-        <input type="checkbox" checked={isChain} onChange={(event) => setIsChain(event.target.checked)} />
-        Sieciowka
-      </label>
 
       <button type="submit" disabled={!generatedSlug || isSaving}>
         {isSaving ? "Zapisywanie..." : place ? "Zapisz zmiany" : "Dodaj miejsce"}

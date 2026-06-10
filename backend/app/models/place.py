@@ -19,7 +19,6 @@ class Place(SQLModel, table=True):
     lon: float
     weight: float = 1.0
     status: str = Field(default="draft", index=True)
-    is_chain: bool = Field(default=False, index=True)
     photo_count: int = 0
     memory_count: int = 0
     cover_photo_id: str | None = None

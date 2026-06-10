@@ -21,7 +21,6 @@ def place_to_read(place: Place) -> PlaceRead:
         lon=place.lon,
         weight=place.weight,
         status=place.status,
-        is_chain=place.is_chain,
         photo_count=place.photo_count,
         memory_count=place.memory_count,
         cover_photo_id=place.cover_photo_id,
@@ -36,7 +35,6 @@ def list_places(session: Session = Depends(get_session)) -> list[PlaceRead]:
     statement = (
         select(Place)
         .where(Place.status == "published")
-        .where(Place.is_chain == False)  # noqa: E712
         .order_by(Place.weight.desc(), Place.created_at.desc())
     )
     return [place_to_read(place) for place in session.exec(statement).all()]
@@ -48,7 +46,6 @@ def get_place(id_or_slug: str, session: Session = Depends(get_session)) -> Place
         select(Place)
         .where((Place.id == id_or_slug) | (Place.slug == id_or_slug))
         .where(Place.status == "published")
-        .where(Place.is_chain == False)  # noqa: E712
     )
     place = session.exec(statement).first()
     if place is None:

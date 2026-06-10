@@ -36,7 +36,6 @@ export type Place = {
   lon: number;
   weight: number;
   status: PlaceStatus;
-  is_chain: boolean;
   photo_count: number;
   memory_count: number;
   cover_photo_id: string | null;
@@ -68,7 +67,6 @@ export type PlacePayload = {
   lon: number;
   weight: number;
   status: PlaceStatus;
-  is_chain: boolean;
 };
 
 export function getStoredAdminToken(): string {

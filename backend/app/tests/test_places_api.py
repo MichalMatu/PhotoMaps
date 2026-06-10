@@ -31,11 +31,10 @@ def client_with_session(monkeypatch: MonkeyPatch) -> Generator[tuple[TestClient,
         app.dependency_overrides.clear()
 
 
-def test_public_places_only_show_published_non_chain(monkeypatch: MonkeyPatch) -> None:
+def test_public_places_only_show_published(monkeypatch: MonkeyPatch) -> None:
     for client, session in client_with_session(monkeypatch):
         session.add(Place(slug="public-place", title="Public", lat=51.11, lon=17.03, status="published"))
         session.add(Place(slug="draft-place", title="Draft", lat=51.12, lon=17.04, status="draft"))
-        session.add(Place(slug="chain-place", title="Chain", lat=51.13, lon=17.05, status="published", is_chain=True))
         session.commit()
 
         response = client.get("/api/places")

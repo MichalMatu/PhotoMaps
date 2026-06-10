@@ -393,15 +393,23 @@ h2 {
 
 .photo-fan-add-marker span {
   align-items: center;
-  background: #126a5a;
+  background: rgb(17 20 19 / 78%);
+  border: 1px solid rgb(255 255 255 / 22%);
+  border-radius: 50%;
+  backdrop-filter: blur(6px);
   color: #ffffff;
   display: flex;
-  font-size: 2rem;
+  font-size: 1.45rem;
   font-weight: 800;
-  height: 50px;
+  height: 42px;
   justify-content: center;
   line-height: 1;
-  width: 50px;
+  width: 42px;
+}
+
+.photo-fan-add-marker:hover span {
+  background: rgb(17 20 19 / 88%);
+  border-color: rgb(255 255 255 / 34%);
 }
 
 @keyframes photo-fan-in {
