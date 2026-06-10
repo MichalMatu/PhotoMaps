@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { mediaUrl, uploadPlaceMemory } from "./client";
+import { apiErrorMessageFromBody, mediaUrl, uploadPlaceMemory } from "./client";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -13,6 +13,30 @@ describe("mediaUrl", () => {
 
   it("prefixes API base URL for local media paths", () => {
     expect(mediaUrl("/media/photos/test.jpg")).toBe("http://127.0.0.1:8000/media/photos/test.jpg");
+  });
+});
+
+describe("apiErrorMessageFromBody", () => {
+  it("formats FastAPI validation errors without leaking raw JSON", () => {
+    expect(
+      apiErrorMessageFromBody(
+        JSON.stringify({
+          detail: [
+            {
+              loc: ["body", "memory_text"],
+              msg: "Field required",
+            },
+          ],
+        }),
+        "Request failed",
+      ),
+    ).toBe("body.memory_text: Field required");
+  });
+
+  it("uses string details directly", () => {
+    expect(apiErrorMessageFromBody(JSON.stringify({ detail: "Invalid memory token" }), "Request failed")).toBe(
+      "Invalid memory token",
+    );
   });
 });
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import type { PlaceMapItem } from "../../api/client";
 import { MemoryPanel } from "../places/MemoryPanel";
+import { CLAIM_TOKEN_MAX_LENGTH, CLAIM_TOKEN_MIN_LENGTH, validateClaimToken } from "../places/memoryValidation";
 import { ResponsiveSheet } from "../ui/ResponsiveSheet";
 
 type Props = {
@@ -10,8 +11,6 @@ type Props = {
   place: PlaceMapItem | null;
 };
 
-const CLAIM_TOKEN_MIN_LENGTH = 8;
-const CLAIM_TOKEN_MAX_LENGTH = 64;
 const CLAIM_TOKEN_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%";
 
 function generateClaimToken() {
@@ -22,7 +21,8 @@ function generateClaimToken() {
 
 export function MemorySheet({ onClose, onUploaded, place }: Props) {
   const [visitToken, setVisitToken] = useState("");
-  const isUnlocked = visitToken.trim().length >= CLAIM_TOKEN_MIN_LENGTH;
+  const tokenError = visitToken.trim() ? validateClaimToken(visitToken).claimToken ?? null : null;
+  const isUnlocked = visitToken.trim().length >= CLAIM_TOKEN_MIN_LENGTH && !tokenError;
 
   useEffect(() => {
     setVisitToken("");
@@ -49,12 +49,19 @@ export function MemorySheet({ onClose, onUploaded, place }: Props) {
             <span className="memory-token-hint">wpisz swój token, minimum 8 cyfr, znaków lub znaków specjalnych</span>
             <input
               autoComplete="off"
+              aria-describedby={tokenError ? "memory-token-error" : undefined}
+              aria-invalid={Boolean(tokenError)}
               maxLength={CLAIM_TOKEN_MAX_LENGTH}
               minLength={CLAIM_TOKEN_MIN_LENGTH}
               placeholder="Wpisz token"
               value={visitToken}
               onChange={(event) => setVisitToken(event.target.value)}
             />
+            {tokenError ? (
+              <span className="field-error" id="memory-token-error">
+                {tokenError}
+              </span>
+            ) : null}
           </label>
           {isUnlocked ? (
             <MemoryPanel

@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 
 import { createReport, type ReportTargetType } from "../../api/client";
+import { ErrorModal, errorDetails, type OperationError } from "../ui/ErrorModal";
 
 type Props = {
   showHeading?: boolean;
@@ -10,6 +11,7 @@ type Props = {
 
 export function ReportForm({ showHeading = true, targetId, targetType }: Props) {
   const [message, setMessage] = useState("");
+  const [operationError, setOperationError] = useState<OperationError | null>(null);
   const [reason, setReason] = useState("wrong_data");
   const [status, setStatus] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -17,6 +19,7 @@ export function ReportForm({ showHeading = true, targetId, targetType }: Props) 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSaving(true);
+    setOperationError(null);
     setStatus(null);
     try {
       await createReport({
@@ -29,7 +32,11 @@ export function ReportForm({ showHeading = true, targetId, targetType }: Props) 
       setReason("wrong_data");
       setStatus("Zgłoszenie trafiło do redakcji.");
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Nie udało się wysłać zgłoszenia.");
+      setOperationError({
+        details: errorDetails(error),
+        message: "Nie udało się wysłać zgłoszenia do redakcji. Sprawdź połączenie i spróbuj ponownie.",
+        title: "Nie udało się wysłać zgłoszenia",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -59,6 +66,7 @@ export function ReportForm({ showHeading = true, targetId, targetType }: Props) 
         {isSaving ? "Wysyłanie..." : "Wyślij zgłoszenie"}
       </button>
       {status ? <p className="inline-status">{status}</p> : null}
+      {operationError ? <ErrorModal {...operationError} onClose={() => setOperationError(null)} /> : null}
     </form>
   );
 }

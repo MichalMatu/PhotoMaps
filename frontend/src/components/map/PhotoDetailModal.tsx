@@ -4,6 +4,16 @@ import { useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 
 import { deleteMemory, mediaUrl, updateMemory, verifyMemoryClaim, type PlaceMapItem } from "../../api/client";
+import {
+  CLAIM_TOKEN_MAX_LENGTH,
+  MEMORY_AUTHOR_MAX_LENGTH,
+  MEMORY_CAPTION_MAX_LENGTH,
+  MEMORY_TEXT_MAX_LENGTH,
+  hasMemoryFieldErrors,
+  validateClaimToken,
+  validateMemoryEditForm,
+} from "../places/memoryValidation";
+import { ErrorModal, errorDetails, type OperationError } from "../ui/ErrorModal";
 import type { PlaceMapVisualItem } from "./placePreview";
 import { stopFloatingWindowEvent, useDraggableWindow } from "../ui/useDraggableWindow";
 
@@ -14,12 +24,6 @@ type Props = {
   place: PlaceMapItem;
 };
 
-const CLAIM_TOKEN_MIN_LENGTH = 8;
-const CLAIM_TOKEN_MAX_LENGTH = 64;
-const MEMORY_AUTHOR_MAX_LENGTH = 40;
-const MEMORY_CAPTION_MAX_LENGTH = 80;
-const MEMORY_TEXT_MAX_LENGTH = 240;
-
 export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
   const queryClient = useQueryClient();
   const draggableWindow = useDraggableWindow<HTMLDivElement>("photo-detail-modal");
@@ -29,11 +33,13 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
   const [draftAuthorName, setDraftAuthorName] = useState("");
   const [draftCaption, setDraftCaption] = useState("");
   const [draftMemoryText, setDraftMemoryText] = useState("");
+  const [hasClaimSubmitted, setHasClaimSubmitted] = useState(false);
+  const [hasEditSubmitted, setHasEditSubmitted] = useState(false);
   const [isClaimVerified, setIsClaimVerified] = useState(false);
   const [isOwnerSaving, setIsOwnerSaving] = useState(false);
   const [isOwnerToolsOpen, setIsOwnerToolsOpen] = useState(false);
-  const [ownerMessage, setOwnerMessage] = useState<string | null>(null);
-  const isClaimTokenReady = claimToken.trim().length >= CLAIM_TOKEN_MIN_LENGTH;
+  const [operationError, setOperationError] = useState<OperationError | null>(null);
+  const [ownerSuccessMessage, setOwnerSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -55,26 +61,37 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
     setDraftAuthorName(memorySource?.author_name ?? "");
     setDraftCaption(memorySource?.caption ?? "");
     setDraftMemoryText(memorySource?.memory_text ?? "");
+    setHasClaimSubmitted(false);
+    setHasEditSubmitted(false);
     setIsClaimVerified(false);
     setIsOwnerSaving(false);
     setIsOwnerToolsOpen(false);
-    setOwnerMessage(null);
+    setOperationError(null);
+    setOwnerSuccessMessage(null);
   }, [item.id, item.kind, memorySource?.author_city, memorySource?.author_name, memorySource?.caption, memorySource?.memory_text]);
 
   async function handleVerifyClaim(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!memorySource || !isClaimTokenReady) {
+    setHasClaimSubmitted(true);
+    const claimErrors = validateClaimToken(claimToken);
+    if (!memorySource || hasMemoryFieldErrors(claimErrors)) {
       return;
     }
 
     setIsOwnerSaving(true);
-    setOwnerMessage(null);
+    setOperationError(null);
+    setOwnerSuccessMessage(null);
     try {
       await verifyMemoryClaim(place.id, memorySource.id, claimToken.trim());
       setIsClaimVerified(true);
+      setHasClaimSubmitted(false);
     } catch (reason) {
       setIsClaimVerified(false);
-      setOwnerMessage(reason instanceof Error ? reason.message : "Token pamiątki jest nieprawidłowy.");
+      setOperationError({
+        details: errorDetails(reason),
+        message: "Nie udało się odblokować edycji. Sprawdź token pamiątki i spróbuj ponownie.",
+        title: "Nie udało się odblokować pamiątki",
+      });
     } finally {
       setIsOwnerSaving(false);
     }
@@ -82,26 +99,23 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
 
   async function handleUpdateMemory(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setHasEditSubmitted(true);
     const normalizedCaption = draftCaption.trim();
     const normalizedMemoryText = draftMemoryText.trim();
-    const isAuthorNameValid = draftAuthorName.trim().length <= MEMORY_AUTHOR_MAX_LENGTH;
-    const isAuthorCityValid = draftAuthorCity.trim().length <= MEMORY_AUTHOR_MAX_LENGTH;
+    const editErrors = validateMemoryEditForm({
+      authorCity: draftAuthorCity,
+      authorName: draftAuthorName,
+      caption: draftCaption,
+      memoryText: draftMemoryText,
+    });
 
-    if (
-      !memorySource ||
-      !isClaimTokenReady ||
-      !normalizedCaption ||
-      normalizedCaption.length > MEMORY_CAPTION_MAX_LENGTH ||
-      !normalizedMemoryText ||
-      normalizedMemoryText.length > MEMORY_TEXT_MAX_LENGTH ||
-      !isAuthorNameValid ||
-      !isAuthorCityValid
-    ) {
+    if (!memorySource || hasMemoryFieldErrors(editErrors)) {
       return;
     }
 
     setIsOwnerSaving(true);
-    setOwnerMessage(null);
+    setOperationError(null);
+    setOwnerSuccessMessage(null);
     try {
       await updateMemory(place.id, memorySource.id, {
         author_city: draftAuthorCity.trim() || null,
@@ -112,31 +126,51 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
       });
       await queryClient.invalidateQueries({ queryKey: ["places-map"] });
       await queryClient.invalidateQueries({ queryKey: ["place-memories", place.id] });
-      setOwnerMessage("Zapisano zmiany.");
+      setHasEditSubmitted(false);
+      setOwnerSuccessMessage("Zapisano zmiany.");
     } catch (reason) {
-      setOwnerMessage(reason instanceof Error ? reason.message : "Nie udało się zapisać zmian.");
+      setOperationError({
+        details: errorDetails(reason),
+        message: "Nie udało się zapisać zmian w pamiątce. Sprawdź dane i spróbuj ponownie.",
+        title: "Nie udało się zapisać pamiątki",
+      });
     } finally {
       setIsOwnerSaving(false);
     }
   }
 
   async function handleDeleteMemory() {
-    if (!memorySource || !isClaimTokenReady) {
+    if (!memorySource) {
       return;
     }
 
     setIsOwnerSaving(true);
-    setOwnerMessage(null);
+    setOperationError(null);
+    setOwnerSuccessMessage(null);
     try {
       await deleteMemory(place.id, memorySource.id, claimToken.trim());
       await queryClient.invalidateQueries({ queryKey: ["places-map"] });
       await queryClient.invalidateQueries({ queryKey: ["place-memories", place.id] });
       onClose();
     } catch (reason) {
-      setOwnerMessage(reason instanceof Error ? reason.message : "Nie udało się usunąć pamiątki.");
+      setOperationError({
+        details: errorDetails(reason),
+        message: "Nie udało się trwale usunąć pamiątki. Spróbuj ponownie.",
+        title: "Nie udało się usunąć pamiątki",
+      });
       setIsOwnerSaving(false);
     }
   }
+
+  const claimFieldErrors = hasClaimSubmitted ? validateClaimToken(claimToken) : {};
+  const editFieldErrors = hasEditSubmitted
+    ? validateMemoryEditForm({
+        authorCity: draftAuthorCity,
+        authorName: draftAuthorName,
+        caption: draftCaption,
+        memoryText: draftMemoryText,
+      })
+    : {};
 
   return createPortal(
     <div className="photo-detail-backdrop" role="presentation" onClick={onClose}>
@@ -189,7 +223,10 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
                 type="button"
                 onClick={() => {
                   setIsOwnerToolsOpen((current) => !current);
-                  setOwnerMessage(null);
+                  setHasClaimSubmitted(false);
+                  setHasEditSubmitted(false);
+                  setOperationError(null);
+                  setOwnerSuccessMessage(null);
                 }}
               >
                 Edytuj moją pamiątkę
@@ -197,62 +234,96 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
               {isOwnerToolsOpen ? (
                 <>
                   {!isClaimVerified ? (
-                    <form className="memory-owner-form" onSubmit={handleVerifyClaim}>
+                    <form className="memory-owner-form" noValidate onSubmit={handleVerifyClaim}>
                       <label>
                         Token pamiątki
                         <input
                           autoComplete="off"
+                          aria-describedby={claimFieldErrors.claimToken ? "photo-detail-claim-token-error" : undefined}
+                          aria-invalid={Boolean(claimFieldErrors.claimToken)}
                           maxLength={CLAIM_TOKEN_MAX_LENGTH}
-                          minLength={CLAIM_TOKEN_MIN_LENGTH}
                           value={claimToken}
                           onChange={(event) => setClaimToken(event.target.value)}
                         />
+                        {claimFieldErrors.claimToken ? (
+                          <span className="field-error" id="photo-detail-claim-token-error">
+                            {claimFieldErrors.claimToken}
+                          </span>
+                        ) : null}
                       </label>
-                      <button type="submit" disabled={!isClaimTokenReady || isOwnerSaving}>
+                      <button type="submit" disabled={isOwnerSaving}>
                         {isOwnerSaving ? "Sprawdzanie..." : "Odblokuj"}
                       </button>
                     </form>
                   ) : (
-                    <form className="memory-owner-form" onSubmit={handleUpdateMemory}>
+                    <form className="memory-owner-form" noValidate onSubmit={handleUpdateMemory}>
                       <label>
                         Podpis
                         <input
+                          aria-describedby={editFieldErrors.caption ? "photo-detail-caption-error" : undefined}
+                          aria-invalid={Boolean(editFieldErrors.caption)}
                           maxLength={MEMORY_CAPTION_MAX_LENGTH}
                           value={draftCaption}
                           onChange={(event) => setDraftCaption(event.target.value)}
                           required
                         />
+                        {editFieldErrors.caption ? (
+                          <span className="field-error" id="photo-detail-caption-error">
+                            {editFieldErrors.caption}
+                          </span>
+                        ) : null}
                       </label>
                       <label>
                         Myśl / wspomnienie
                         <textarea
+                          aria-describedby={editFieldErrors.memoryText ? "photo-detail-memory-text-error" : undefined}
+                          aria-invalid={Boolean(editFieldErrors.memoryText)}
                           maxLength={MEMORY_TEXT_MAX_LENGTH}
                           rows={3}
                           value={draftMemoryText}
                           onChange={(event) => setDraftMemoryText(event.target.value)}
                           required
                         />
+                        {editFieldErrors.memoryText ? (
+                          <span className="field-error" id="photo-detail-memory-text-error">
+                            {editFieldErrors.memoryText}
+                          </span>
+                        ) : null}
                       </label>
                       <div className="memory-owner-field-row">
                         <label>
                           Imię
                           <input
+                            aria-describedby={editFieldErrors.authorName ? "photo-detail-author-name-error" : undefined}
+                            aria-invalid={Boolean(editFieldErrors.authorName)}
                             maxLength={MEMORY_AUTHOR_MAX_LENGTH}
                             value={draftAuthorName}
                             onChange={(event) => setDraftAuthorName(event.target.value)}
                           />
+                          {editFieldErrors.authorName ? (
+                            <span className="field-error" id="photo-detail-author-name-error">
+                              {editFieldErrors.authorName}
+                            </span>
+                          ) : null}
                         </label>
                         <label>
                           Miasto
                           <input
+                            aria-describedby={editFieldErrors.authorCity ? "photo-detail-author-city-error" : undefined}
+                            aria-invalid={Boolean(editFieldErrors.authorCity)}
                             maxLength={MEMORY_AUTHOR_MAX_LENGTH}
                             value={draftAuthorCity}
                             onChange={(event) => setDraftAuthorCity(event.target.value)}
                           />
+                          {editFieldErrors.authorCity ? (
+                            <span className="field-error" id="photo-detail-author-city-error">
+                              {editFieldErrors.authorCity}
+                            </span>
+                          ) : null}
                         </label>
                       </div>
                       <div className="memory-owner-actions">
-                        <button type="submit" disabled={!draftCaption.trim() || !draftMemoryText.trim() || isOwnerSaving}>
+                        <button type="submit" disabled={isOwnerSaving}>
                           {isOwnerSaving ? "Zapisywanie..." : "Zapisz zmiany"}
                         </button>
                         <button className="danger-button" type="button" disabled={isOwnerSaving} onClick={handleDeleteMemory}>
@@ -261,7 +332,7 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
                       </div>
                     </form>
                   )}
-                  {ownerMessage ? <p className="memory-owner-message">{ownerMessage}</p> : null}
+                  {ownerSuccessMessage ? <p className="memory-owner-message">{ownerSuccessMessage}</p> : null}
                 </>
               ) : null}
             </div>
@@ -272,6 +343,7 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
             </button>
           </div>
         </div>
+        {operationError ? <ErrorModal {...operationError} onClose={() => setOperationError(null)} /> : null}
       </article>
     </div>,
     document.body,

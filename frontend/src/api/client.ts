@@ -11,6 +11,44 @@ export class ApiError extends Error {
   }
 }
 
+export function apiErrorMessageFromBody(body: string, fallback: string): string {
+  const trimmedBody = body.trim();
+  if (!trimmedBody) {
+    return fallback;
+  }
+
+  try {
+    const parsed = JSON.parse(trimmedBody) as { detail?: unknown; message?: unknown };
+    const detail = parsed.detail ?? parsed.message;
+    if (typeof detail === "string" && detail.trim()) {
+      return detail.trim();
+    }
+    if (Array.isArray(detail)) {
+      const messages = detail
+        .map((item) => {
+          if (!item || typeof item !== "object") {
+            return null;
+          }
+          const record = item as { loc?: unknown; msg?: unknown };
+          const message = typeof record.msg === "string" ? record.msg : null;
+          if (!message) {
+            return null;
+          }
+          const location = Array.isArray(record.loc) ? record.loc.join(".") : null;
+          return location ? `${location}: ${message}` : message;
+        })
+        .filter((message): message is string => Boolean(message));
+      if (messages.length > 0) {
+        return messages.join("\n");
+      }
+    }
+  } catch {
+    return trimmedBody;
+  }
+
+  return fallback;
+}
+
 export type Category = {
   id: string;
   label: string;
@@ -198,14 +236,14 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   }
 
   if (!response.ok) {
-    const message = await response.text();
+    const body = await response.text();
     if (response.status === 401) {
       throw new ApiError("Token admina jest nieprawidłowy.", response.status);
     }
     if (response.status === 503) {
       throw new ApiError("Token admina nie jest skonfigurowany w backendzie.", response.status);
     }
-    throw new ApiError(message || `Request failed: ${response.status}`, response.status);
+    throw new ApiError(apiErrorMessageFromBody(body, `Request failed: ${response.status}`), response.status);
   }
 
   if (response.status === 204) {

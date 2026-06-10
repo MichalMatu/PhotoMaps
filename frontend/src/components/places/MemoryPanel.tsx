@@ -2,7 +2,16 @@ import { FormEvent, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { getPlaceMemories, mediaUrl, uploadPlaceMemory } from "../../api/client";
+import { ErrorModal, errorDetails, type OperationError } from "../ui/ErrorModal";
 import { getMemoryPanelVisibility, type MemoryPanelMode } from "./memoryPanelMode";
+import {
+  CLAIM_TOKEN_MIN_LENGTH,
+  MEMORY_AUTHOR_MAX_LENGTH,
+  MEMORY_CAPTION_MAX_LENGTH,
+  MEMORY_TEXT_MAX_LENGTH,
+  hasMemoryFieldErrors,
+  validateMemoryUploadForm,
+} from "./memoryValidation";
 
 type Props = {
   claimToken: string;
@@ -13,10 +22,6 @@ type Props = {
 
 const CONSENT_TEXT =
   "Potwierdzam, że jestem autorem zdjęcia albo mam prawo je opublikować. Jeśli na zdjęciu są rozpoznawalne osoby jako główny temat, mam ich zgodę.";
-const CLAIM_TOKEN_MIN_LENGTH = 8;
-const MEMORY_AUTHOR_MAX_LENGTH = 40;
-const MEMORY_CAPTION_MAX_LENGTH = 80;
-const MEMORY_TEXT_MAX_LENGTH = 240;
 
 export function MemoryPanel({ claimToken, mode = "with-list", onUploaded, placeId }: Props) {
   const queryClient = useQueryClient();
@@ -26,9 +31,10 @@ export function MemoryPanel({ claimToken, mode = "with-list", onUploaded, placeI
   const [caption, setCaption] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [hasConsent, setHasConsent] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   const [memoryText, setMemoryText] = useState("");
-  const [message, setMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [operationError, setOperationError] = useState<OperationError | null>(null);
   const memoriesQuery = useQuery({
     enabled: visibility.loadExistingMemories,
     queryKey: ["place-memories", placeId],
@@ -37,27 +43,23 @@ export function MemoryPanel({ claimToken, mode = "with-list", onUploaded, placeI
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const normalizedCaption = caption.trim();
-    const normalizedMemoryText = memoryText.trim();
-    const isAuthorNameValid = authorName.trim().length <= MEMORY_AUTHOR_MAX_LENGTH;
-    const isAuthorCityValid = authorCity.trim().length <= MEMORY_AUTHOR_MAX_LENGTH;
+    setHasSubmitted(true);
 
-    if (
-      !file ||
-      !normalizedCaption ||
-      normalizedCaption.length > MEMORY_CAPTION_MAX_LENGTH ||
-      !normalizedMemoryText ||
-      normalizedMemoryText.length > MEMORY_TEXT_MAX_LENGTH ||
-      !isAuthorNameValid ||
-      !isAuthorCityValid ||
-      claimToken.trim().length < CLAIM_TOKEN_MIN_LENGTH ||
-      !hasConsent
-    ) {
+    const nextFieldErrors = validateMemoryUploadForm({
+      authorCity,
+      authorName,
+      caption,
+      file,
+      hasConsent,
+      memoryText,
+    });
+
+    if (!file || claimToken.trim().length < CLAIM_TOKEN_MIN_LENGTH || hasMemoryFieldErrors(nextFieldErrors)) {
       return;
     }
 
     setIsSaving(true);
-    setMessage(null);
+    setOperationError(null);
     try {
       await uploadPlaceMemory(placeId, {
         authorCity,
@@ -73,16 +75,32 @@ export function MemoryPanel({ claimToken, mode = "with-list", onUploaded, placeI
       setCaption("");
       setFile(null);
       setHasConsent(false);
+      setHasSubmitted(false);
       setMemoryText("");
       await queryClient.invalidateQueries({ queryKey: ["place-memories", placeId] });
       await queryClient.invalidateQueries({ queryKey: ["places-map"] });
       onUploaded?.();
     } catch (reason) {
-      setMessage(reason instanceof Error ? reason.message : "Nie udało się wysłać pamiątki.");
+      setOperationError({
+        details: errorDetails(reason),
+        message: "Nie udało się wysłać pamiątki do moderacji. Sprawdź połączenie i spróbuj ponownie.",
+        title: "Nie udało się dodać pamiątki",
+      });
     } finally {
       setIsSaving(false);
     }
   }
+
+  const fieldErrors = hasSubmitted
+    ? validateMemoryUploadForm({
+        authorCity,
+        authorName,
+        caption,
+        file,
+        hasConsent,
+        memoryText,
+      })
+    : {};
 
   return (
     <section className="memory-panel">
@@ -110,23 +128,43 @@ export function MemoryPanel({ claimToken, mode = "with-list", onUploaded, placeI
           ))}
         </div>
       ) : null}
-      <form className="photo-upload" onSubmit={handleSubmit}>
+      <form className="photo-upload" noValidate onSubmit={handleSubmit}>
         <label>
           Zdjęcie pamiątki
-          <input accept="image/*" type="file" onChange={(event) => setFile(event.target.files?.[0] ?? null)} />
+          <input
+            accept="image/*"
+            aria-describedby={fieldErrors.file ? "memory-file-error" : undefined}
+            aria-invalid={Boolean(fieldErrors.file)}
+            type="file"
+            onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+          />
+          {fieldErrors.file ? (
+            <span className="field-error" id="memory-file-error">
+              {fieldErrors.file}
+            </span>
+          ) : null}
         </label>
         <label>
           Podpis
           <input
+            aria-describedby={fieldErrors.caption ? "memory-caption-error" : undefined}
+            aria-invalid={Boolean(fieldErrors.caption)}
             maxLength={MEMORY_CAPTION_MAX_LENGTH}
             value={caption}
             onChange={(event) => setCaption(event.target.value)}
             required
           />
+          {fieldErrors.caption ? (
+            <span className="field-error" id="memory-caption-error">
+              {fieldErrors.caption}
+            </span>
+          ) : null}
         </label>
         <label>
           Myśl / wspomnienie
           <textarea
+            aria-describedby={fieldErrors.memoryText ? "memory-text-error" : undefined}
+            aria-invalid={Boolean(fieldErrors.memoryText)}
             maxLength={MEMORY_TEXT_MAX_LENGTH}
             rows={3}
             value={memoryText}
@@ -134,44 +172,64 @@ export function MemoryPanel({ claimToken, mode = "with-list", onUploaded, placeI
             required
           />
           <span className="field-limit">{memoryText.trim().length}/{MEMORY_TEXT_MAX_LENGTH}</span>
+          {fieldErrors.memoryText ? (
+            <span className="field-error" id="memory-text-error">
+              {fieldErrors.memoryText}
+            </span>
+          ) : null}
         </label>
         <div className="field-row">
           <label>
             Imię
             <input
+              aria-describedby={fieldErrors.authorName ? "memory-author-name-error" : undefined}
+              aria-invalid={Boolean(fieldErrors.authorName)}
               maxLength={MEMORY_AUTHOR_MAX_LENGTH}
               value={authorName}
               onChange={(event) => setAuthorName(event.target.value)}
             />
+            {fieldErrors.authorName ? (
+              <span className="field-error" id="memory-author-name-error">
+                {fieldErrors.authorName}
+              </span>
+            ) : null}
           </label>
           <label>
             Miasto
             <input
+              aria-describedby={fieldErrors.authorCity ? "memory-author-city-error" : undefined}
+              aria-invalid={Boolean(fieldErrors.authorCity)}
               maxLength={MEMORY_AUTHOR_MAX_LENGTH}
               value={authorCity}
               onChange={(event) => setAuthorCity(event.target.value)}
             />
+            {fieldErrors.authorCity ? (
+              <span className="field-error" id="memory-author-city-error">
+                {fieldErrors.authorCity}
+              </span>
+            ) : null}
           </label>
         </div>
         <label className="checkbox-field consent-field">
-          <input checked={hasConsent} type="checkbox" onChange={(event) => setHasConsent(event.target.checked)} />
+          <input
+            aria-describedby={fieldErrors.hasConsent ? "memory-consent-error" : undefined}
+            aria-invalid={Boolean(fieldErrors.hasConsent)}
+            checked={hasConsent}
+            type="checkbox"
+            onChange={(event) => setHasConsent(event.target.checked)}
+          />
           {CONSENT_TEXT}
+          {fieldErrors.hasConsent ? (
+            <span className="field-error" id="memory-consent-error">
+              {fieldErrors.hasConsent}
+            </span>
+          ) : null}
         </label>
-        <button
-          type="submit"
-          disabled={
-            !file ||
-            !caption.trim() ||
-            !memoryText.trim() ||
-            claimToken.trim().length < CLAIM_TOKEN_MIN_LENGTH ||
-            !hasConsent ||
-            isSaving
-          }
-        >
+        <button type="submit" disabled={isSaving}>
           {isSaving ? "Wysyłanie..." : "Dodaj pamiątkę"}
         </button>
-        {message ? <p className="inline-status inline-status--error">{message}</p> : null}
       </form>
+      {operationError ? <ErrorModal {...operationError} onClose={() => setOperationError(null)} /> : null}
     </section>
   );
 }
