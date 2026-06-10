@@ -6,6 +6,7 @@ import { stopFloatingWindowEvent, useDraggableWindow } from "../ui/useDraggableW
 type Props = {
   cancelLabel?: string;
   confirmLabel?: string;
+  eyebrow?: string;
   isBusy?: boolean;
   message: string;
   onClose: () => void;
@@ -17,6 +18,7 @@ type Props = {
 export function SystemModal({
   cancelLabel = "Anuluj",
   confirmLabel = "OK",
+  eyebrow = "Komunikat systemowy",
   isBusy = false,
   message,
   onClose,
@@ -58,7 +60,7 @@ export function SystemModal({
         onWheel={stopFloatingWindowEvent}
       >
         <div className="system-modal-drag-handle" {...draggableWindow.handleProps}>
-          <span className="eyebrow">Komunikat systemowy</span>
+          <span className="eyebrow">{eyebrow}</span>
           <h2 id="system-modal-title">{title}</h2>
         </div>
         <p>{message}</p>

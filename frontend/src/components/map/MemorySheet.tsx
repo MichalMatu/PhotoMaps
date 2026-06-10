@@ -6,10 +6,11 @@ import { ResponsiveSheet } from "../ui/ResponsiveSheet";
 
 type Props = {
   onClose: () => void;
+  onUploaded?: () => void;
   place: PlaceMapItem | null;
 };
 
-export function MemorySheet({ onClose, place }: Props) {
+export function MemorySheet({ onClose, onUploaded, place }: Props) {
   const [visitToken, setVisitToken] = useState("");
   const isUnlocked = visitToken.trim().length > 0;
 
@@ -37,7 +38,7 @@ export function MemorySheet({ onClose, place }: Props) {
               onChange={(event) => setVisitToken(event.target.value)}
             />
           </label>
-          {isUnlocked ? <MemoryPanel placeId={place.id} showHeading={false} /> : null}
+          {isUnlocked ? <MemoryPanel placeId={place.id} showHeading={false} onUploaded={onUploaded} /> : null}
         </div>
       ) : null}
     </ResponsiveSheet>

@@ -2,12 +2,12 @@ import L from "leaflet";
 import { useEffect, useMemo, useState } from "react";
 import { Marker, useMap } from "react-leaflet";
 
-import { mediaUrl, type Photo, type PlaceMapItem } from "../../api/client";
-import { getPlacePreviewPhoto } from "./placePreview";
+import { mediaUrl, type PlaceMapItem } from "../../api/client";
+import { getPlaceFanItems, getPlacePreviewVisual, type PlaceMapVisualItem } from "./placePreview";
 
 function markerIcon(place: PlaceMapItem, isSelected: boolean) {
-  const coverPhoto = getPlacePreviewPhoto(place);
-  if (!coverPhoto) {
+  const previewItem = getPlacePreviewVisual(place);
+  if (!previewItem) {
     return L.divIcon({
       className: isSelected ? "place-marker-icon is-selected" : "place-marker-icon",
       html: "<span></span>",
@@ -16,9 +16,15 @@ function markerIcon(place: PlaceMapItem, isSelected: boolean) {
     });
   }
 
-  const imageUrl = escapeAttribute(mediaUrl(coverPhoto.thumb_path));
+  const imageUrl = escapeAttribute(mediaUrl(previewItem.thumb_path));
   return L.divIcon({
-    className: isSelected ? "place-photo-marker is-selected" : "place-photo-marker",
+    className: [
+      "place-photo-marker",
+      previewItem.kind === "memory" ? "is-memory" : "is-photo",
+      isSelected ? "is-selected" : null,
+    ]
+      .filter(Boolean)
+      .join(" "),
     html: `<span><img src="${imageUrl}" alt="" width="64" height="52" decoding="async" /></span>`,
     iconAnchor: [32, 26],
     iconSize: [64, 52],
@@ -30,10 +36,10 @@ type FanOffset = {
   y: number;
 };
 
-function fanPhotoIcon(photo: Photo, offset: FanOffset, index: number) {
+function fanVisualIcon(item: PlaceMapVisualItem, offset: FanOffset, index: number) {
   return L.divIcon({
-    className: "photo-fan-marker",
-    html: `<span style="background-image: url('${escapeAttribute(mediaUrl(photo.thumb_path))}'); ${fanAnimationStyle(offset, index)}"></span>`,
+    className: `photo-fan-marker ${item.kind === "memory" ? "is-memory" : "is-photo"}`,
+    html: `<span style="background-image: url('${escapeAttribute(mediaUrl(item.thumb_path))}'); ${fanAnimationStyle(offset, index)}"></span>`,
     iconAnchor: [31, 31],
     iconSize: [62, 62],
   });
@@ -78,17 +84,17 @@ function fanOffsets(itemCount: number) {
 
 type Props = {
   place: PlaceMapItem;
-  photos: Photo[];
   isExpanded: boolean;
   onMemoryOpen: (place: PlaceMapItem) => void;
-  onPhotoPreview: (place: PlaceMapItem, photo: Photo) => void;
+  onVisualPreview: (place: PlaceMapItem, item: PlaceMapVisualItem) => void;
   onToggleFan: () => void;
 };
 
-export function PlaceMarker({ place, photos, isExpanded, onMemoryOpen, onPhotoPreview, onToggleFan }: Props) {
+export function PlaceMarker({ place, isExpanded, onMemoryOpen, onToggleFan, onVisualPreview }: Props) {
   const map = useMap();
   const [layoutVersion, setLayoutVersion] = useState(0);
-  const fanItemCount = photos.length + 1;
+  const fanItems = useMemo(() => getPlaceFanItems(place), [place]);
+  const fanItemCount = fanItems.length + 1;
   const placeIcon = useMemo(() => markerIcon(place, isExpanded), [isExpanded, place]);
 
   useEffect(() => {
@@ -114,13 +120,13 @@ export function PlaceMarker({ place, photos, isExpanded, onMemoryOpen, onPhotoPr
       position: map.unproject(origin.add([offset.x, offset.y]), map.getZoom()),
     }));
   }, [fanItemCount, layoutVersion, map, place.lat, place.lon]);
-  const fanPhotoIcons = useMemo(
-    () => photos.map((photo, index) => fanPhotoIcon(photo, fanLayout[index].offset, index)),
-    [fanLayout, photos],
+  const fanVisualIcons = useMemo(
+    () => fanItems.map((item, index) => fanVisualIcon(item, fanLayout[index].offset, index)),
+    [fanItems, fanLayout],
   );
   const fanAddMarkerIcon = useMemo(
-    () => fanAddIcon(fanLayout[photos.length].offset, photos.length),
-    [fanLayout, photos.length],
+    () => fanAddIcon(fanLayout[fanItems.length].offset, fanItems.length),
+    [fanItems.length, fanLayout],
   );
 
   return (
@@ -140,18 +146,18 @@ export function PlaceMarker({ place, photos, isExpanded, onMemoryOpen, onPhotoPr
       />
 
       {isExpanded
-        ? photos.map((photo, index) => (
+        ? fanItems.map((item, index) => (
             <Marker
-              icon={fanPhotoIcons[index]}
-              key={photo.id}
+              icon={fanVisualIcons[index]}
+              key={`${item.kind}:${item.id}`}
               position={fanLayout[index].position}
               riseOnHover
-              title={photo.caption ?? place.title}
+              title={item.caption ?? place.title}
               zIndexOffset={1300 + index}
               eventHandlers={{
                 click: (event) => {
                   stopMarkerClick(event);
-                  onPhotoPreview(place, photo);
+                  onVisualPreview(place, item);
                 },
               }}
             />
@@ -161,10 +167,10 @@ export function PlaceMarker({ place, photos, isExpanded, onMemoryOpen, onPhotoPr
       {isExpanded ? (
         <Marker
           icon={fanAddMarkerIcon}
-          position={fanLayout[photos.length].position}
+          position={fanLayout[fanItems.length].position}
           riseOnHover
           title={`Byłem tutaj: ${place.title}`}
-          zIndexOffset={1400 + photos.length}
+          zIndexOffset={1400 + fanItems.length}
           eventHandlers={{
             click: (event) => {
               stopMarkerClick(event);

@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getPlaceMemories, mediaUrl, uploadPlaceMemory } from "../../api/client";
 
 type Props = {
+  onUploaded?: () => void;
   placeId: string;
   showHeading?: boolean;
 };
@@ -11,7 +12,7 @@ type Props = {
 const CONSENT_TEXT =
   "Potwierdzam, że jestem autorem zdjęcia albo mam prawo je opublikować. Jeśli na zdjęciu są rozpoznawalne osoby jako główny temat, mam ich zgodę.";
 
-export function MemoryPanel({ placeId, showHeading = true }: Props) {
+export function MemoryPanel({ onUploaded, placeId, showHeading = true }: Props) {
   const queryClient = useQueryClient();
   const [authorCity, setAuthorCity] = useState("");
   const [authorName, setAuthorName] = useState("");
@@ -46,8 +47,8 @@ export function MemoryPanel({ placeId, showHeading = true }: Props) {
       setCaption("");
       setFile(null);
       setHasConsent(false);
-      setMessage("Pamiątka trafiła do moderacji.");
       await queryClient.invalidateQueries({ queryKey: ["place-memories", placeId] });
+      onUploaded?.();
     } catch (reason) {
       setMessage(reason instanceof Error ? reason.message : "Nie udało się wysłać pamiątki.");
     } finally {
@@ -102,7 +103,7 @@ export function MemoryPanel({ placeId, showHeading = true }: Props) {
         <button type="submit" disabled={!file || !caption.trim() || !hasConsent || isSaving}>
           {isSaving ? "Wysyłanie..." : "Dodaj pamiątkę"}
         </button>
-        {message ? <p className="inline-status">{message}</p> : null}
+        {message ? <p className="inline-status inline-status--error">{message}</p> : null}
       </form>
     </section>
   );

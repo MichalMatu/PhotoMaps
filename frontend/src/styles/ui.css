@@ -60,6 +60,10 @@
   margin: 0;
 }
 
+.inline-status--error {
+  color: var(--color-danger) !important;
+}
+
 .compact-heading {
   margin-top: 12px;
 }

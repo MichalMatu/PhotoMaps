@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlmodel import SQLModel
 
 from app.schemas.category import CategoryRead
+from app.schemas.memory import MemoryRead
 from app.schemas.photo import PhotoRead
 
 
@@ -58,3 +59,4 @@ class PlaceMapRead(PlaceRead):
     category: CategoryRead | None
     cover_photo: PhotoRead | None
     photos: list[PhotoRead]
+    memories: list[MemoryRead]

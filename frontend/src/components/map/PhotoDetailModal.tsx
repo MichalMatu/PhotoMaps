@@ -2,17 +2,18 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
-import { mediaUrl, type Photo, type PlaceMapItem } from "../../api/client";
+import { mediaUrl, type PlaceMapItem } from "../../api/client";
+import type { PlaceMapVisualItem } from "./placePreview";
 import { stopFloatingWindowEvent, useDraggableWindow } from "../ui/useDraggableWindow";
 
 type Props = {
+  item: PlaceMapVisualItem;
   onClose: () => void;
   onReport: () => void;
-  photo: Photo;
   place: PlaceMapItem;
 };
 
-export function PhotoDetailModal({ onClose, onReport, photo, place }: Props) {
+export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
   const draggableWindow = useDraggableWindow<HTMLDivElement>("photo-detail-modal");
 
   useEffect(() => {
@@ -64,10 +65,10 @@ export function PhotoDetailModal({ onClose, onReport, photo, place }: Props) {
           </button>
         </header>
 
-        <img className="photo-detail-image" src={mediaUrl(photo.public_path)} alt={photo.caption ?? place.title} />
+        <img className="photo-detail-image" src={mediaUrl(item.public_path)} alt={item.caption ?? place.title} />
 
         <div className="photo-detail-body">
-          {photo.caption ? <p>{photo.caption}</p> : null}
+          {item.caption ? <p>{item.caption}</p> : null}
           {place.description ? <p>{place.description}</p> : null}
           {place.local_comment ? <p className="photo-detail-local-comment">{place.local_comment}</p> : null}
           <button className="photo-detail-report-link" type="button" onClick={onReport}>

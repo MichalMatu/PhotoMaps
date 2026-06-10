@@ -159,6 +159,19 @@
   transform: translateY(-2px);
 }
 
+.place-photo-marker.is-memory span {
+  box-shadow:
+    0 0 0 3px var(--color-success),
+    0 10px 18px rgb(0 0 0 / 30%);
+}
+
+.place-photo-marker.is-memory.is-selected span {
+  box-shadow:
+    0 0 0 4px var(--surface-elevated),
+    0 0 0 8px var(--color-success),
+    0 16px 28px rgb(0 0 0 / 34%);
+}
+
 .place-cluster-marker {
   background: transparent;
   border: 0;
@@ -215,6 +228,12 @@
   background-size: cover;
   height: 62px;
   width: 62px;
+}
+
+.photo-fan-marker.is-memory span {
+  box-shadow:
+    0 0 0 3px var(--color-success),
+    0 14px 24px rgb(0 0 0 / 32%);
 }
 
 .photo-fan-add-marker span {

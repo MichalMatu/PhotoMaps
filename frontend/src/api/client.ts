@@ -88,6 +88,7 @@ export type PlaceMapItem = Place & {
   category: Category | null;
   cover_photo: Photo | null;
   photos: Photo[];
+  memories: Memory[];
 };
 
 export type GuideStatus = "draft" | "published" | "archived";

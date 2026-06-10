@@ -1,16 +1,17 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
-import { mediaUrl, type Photo, type PlaceMapItem } from "../../api/client";
+import { mediaUrl, type PlaceMapItem } from "../../api/client";
+import type { PlaceMapVisualItem } from "./placePreview";
 
 type Props = {
+  item: PlaceMapVisualItem;
   onClose: () => void;
   onOpenDetails: () => void;
-  photo: Photo;
   place: PlaceMapItem;
 };
 
-export function MapPhotoViewer({ onClose, onOpenDetails, photo, place }: Props) {
+export function MapPhotoViewer({ item, onClose, onOpenDetails, place }: Props) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -35,7 +36,7 @@ export function MapPhotoViewer({ onClose, onOpenDetails, photo, place }: Props) 
     >
       <div className="map-photo-viewer-image-wrap" onClick={(event) => event.stopPropagation()}>
         <button className="map-photo-viewer-image-button" type="button" onClick={onOpenDetails}>
-          <img src={mediaUrl(photo.public_path)} alt={photo.caption ?? place.title} />
+          <img src={mediaUrl(item.public_path)} alt={item.caption ?? place.title} />
         </button>
       </div>
     </div>,

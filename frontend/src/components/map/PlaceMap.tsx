@@ -9,10 +9,18 @@ import { MapPhotoViewer } from "./MapPhotoViewer";
 import { MemorySheet } from "./MemorySheet";
 import { PhotoDetailModal } from "./PhotoDetailModal";
 import { PlaceMarker } from "./PlaceMarker";
+import { findPlaceFanItem, type PlaceMapVisualItem } from "./placePreview";
 import { ReportSheet } from "./ReportSheet";
+import { SystemModal } from "../admin/SystemModal";
 
 type Props = {
   places: PlaceMapItem[];
+};
+
+type VisualTarget = {
+  id: string;
+  kind: PlaceMapVisualItem["kind"];
+  placeId: string;
 };
 
 const WROCLAW_CENTER: [number, number] = [51.1079, 17.0385];
@@ -90,17 +98,18 @@ function PlaceLayer({ places }: Props) {
   const map = useMap();
   const [expandedPlaceId, setExpandedPlaceId] = useState<string | null>(null);
   const [memoryPlace, setMemoryPlace] = useState<PlaceMapItem | null>(null);
-  const [photoDetail, setPhotoDetail] = useState<{ photoId: string; placeId: string } | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<{ photoId: string; placeId: string } | null>(null);
-  const [reportTarget, setReportTarget] = useState<{ photoId: string; placeId: string } | null>(null);
+  const [visualDetail, setVisualDetail] = useState<VisualTarget | null>(null);
+  const [visualPreview, setVisualPreview] = useState<VisualTarget | null>(null);
+  const [reportTarget, setReportTarget] = useState<VisualTarget | null>(null);
+  const [isThanksOpen, setIsThanksOpen] = useState(false);
   const [zoom, setZoom] = useState(map.getZoom());
   const clusters = clusterPlaces(places, zoom);
-  const previewPlace = photoPreview ? places.find((place) => place.id === photoPreview.placeId) ?? null : null;
-  const previewPhoto = previewPlace?.photos.find((photo) => photo.id === photoPreview?.photoId) ?? null;
-  const detailPlace = photoDetail ? places.find((place) => place.id === photoDetail.placeId) ?? null : null;
-  const detailPhoto = detailPlace?.photos.find((photo) => photo.id === photoDetail?.photoId) ?? null;
+  const previewPlace = visualPreview ? places.find((place) => place.id === visualPreview.placeId) ?? null : null;
+  const previewItem = previewPlace && visualPreview ? findPlaceFanItem(previewPlace, visualPreview) : null;
+  const detailPlace = visualDetail ? places.find((place) => place.id === visualDetail.placeId) ?? null : null;
+  const detailItem = detailPlace && visualDetail ? findPlaceFanItem(detailPlace, visualDetail) : null;
   const reportPlace = reportTarget ? places.find((place) => place.id === reportTarget.placeId) ?? null : null;
-  const reportPhoto = reportPlace?.photos.find((photo) => photo.id === reportTarget?.photoId) ?? null;
+  const reportItem = reportPlace && reportTarget ? findPlaceFanItem(reportPlace, reportTarget) : null;
 
   useMapEvents({
     zoomend: () => setZoom(map.getZoom()),
@@ -113,16 +122,16 @@ function PlaceLayer({ places }: Props) {
     if (memoryPlace && !places.some((place) => place.id === memoryPlace.id)) {
       setMemoryPlace(null);
     }
-    if (photoPreview && !places.some((place) => place.id === photoPreview.placeId)) {
-      setPhotoPreview(null);
+    if (visualPreview && !places.some((place) => place.id === visualPreview.placeId)) {
+      setVisualPreview(null);
     }
-    if (photoDetail && !places.some((place) => place.id === photoDetail.placeId)) {
-      setPhotoDetail(null);
+    if (visualDetail && !places.some((place) => place.id === visualDetail.placeId)) {
+      setVisualDetail(null);
     }
     if (reportTarget && !places.some((place) => place.id === reportTarget.placeId)) {
       setReportTarget(null);
     }
-  }, [expandedPlaceId, memoryPlace, photoDetail, photoPreview, places, reportTarget]);
+  }, [expandedPlaceId, memoryPlace, places, reportTarget, visualDetail, visualPreview]);
 
   return (
     <>
@@ -147,42 +156,57 @@ function PlaceLayer({ places }: Props) {
           <PlaceMarker
             key={place.id}
             place={place}
-            photos={place.photos}
             isExpanded={expandedPlaceId === place.id}
             onMemoryOpen={setMemoryPlace}
-            onPhotoPreview={(nextPlace, nextPhoto) => {
-              setPhotoPreview({ photoId: nextPhoto.id, placeId: nextPlace.id });
+            onVisualPreview={(nextPlace, nextItem) => {
+              setVisualPreview({ id: nextItem.id, kind: nextItem.kind, placeId: nextPlace.id });
             }}
             onToggleFan={() => setExpandedPlaceId((currentPlaceId) => (currentPlaceId === place.id ? null : place.id))}
           />
         );
       })}
-      <MemorySheet place={memoryPlace} onClose={() => setMemoryPlace(null)} />
-      {previewPhoto && previewPlace ? (
+      <MemorySheet
+        place={memoryPlace}
+        onClose={() => setMemoryPlace(null)}
+        onUploaded={() => {
+          setMemoryPlace(null);
+          setIsThanksOpen(true);
+        }}
+      />
+      {previewItem && previewPlace ? (
         <MapPhotoViewer
-          photo={previewPhoto}
+          item={previewItem}
           place={previewPlace}
-          onClose={() => setPhotoPreview(null)}
+          onClose={() => setVisualPreview(null)}
           onOpenDetails={() => {
-            setPhotoDetail({ photoId: previewPhoto.id, placeId: previewPlace.id });
-            setPhotoPreview(null);
+            setVisualDetail({ id: previewItem.id, kind: previewItem.kind, placeId: previewPlace.id });
+            setVisualPreview(null);
           }}
         />
       ) : null}
-      {detailPhoto && detailPlace ? (
+      {detailItem && detailPlace ? (
         <PhotoDetailModal
-          photo={detailPhoto}
+          item={detailItem}
           place={detailPlace}
-          onReport={() => setReportTarget({ photoId: detailPhoto.id, placeId: detailPlace.id })}
+          onReport={() => setReportTarget({ id: detailItem.id, kind: detailItem.kind, placeId: detailPlace.id })}
           onClose={() => {
-            setPhotoDetail(null);
+            setVisualDetail(null);
           }}
         />
       ) : null}
       <ReportSheet
-        target={reportPhoto && reportPlace ? { photo: reportPhoto, place: reportPlace } : null}
+        target={reportItem && reportPlace ? { item: reportItem, place: reportPlace } : null}
         onClose={() => setReportTarget(null)}
       />
+      {isThanksOpen ? (
+        <SystemModal
+          eyebrow="Dziękujemy"
+          title="Pamiątka trafiła do moderacji"
+          message="Pamiątka została dodana i pojawi się publicznie po zatwierdzeniu przez redakcję."
+          confirmLabel="OK"
+          onClose={() => setIsThanksOpen(false)}
+        />
+      ) : null}
     </>
   );
 }

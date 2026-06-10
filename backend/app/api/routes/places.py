@@ -3,12 +3,15 @@ from sqlmodel import Session, select
 
 from app.db.session import get_session
 from app.models.category import Category
+from app.models.memory import Memory
 from app.models.photo import Photo
 from app.models.place import Place
-from app.schemas.category import CategoryRead
-from app.schemas.place import PlaceMapRead, PlaceRead
+from app.api.routes.memories import memory_to_read
 from app.api.routes.photos import photo_to_read
+from app.schemas.category import CategoryRead
+from app.schemas.memory import MemoryRead
 from app.schemas.photo import PhotoRead
+from app.schemas.place import PlaceMapRead, PlaceRead
 from app.services.places import sort_places_for_public_map
 from app.services.ranking import place_score
 
@@ -51,6 +54,7 @@ def place_to_map_read(
     place: Place,
     category: Category | None,
     photos: list[PhotoRead],
+    memories: list[MemoryRead],
 ) -> PlaceMapRead:
     cover_photo = next((photo for photo in photos if photo.id == place.cover_photo_id), photos[0] if photos else None)
     return PlaceMapRead(
@@ -58,6 +62,7 @@ def place_to_map_read(
         category=category_to_read(category) if category else None,
         cover_photo=cover_photo,
         photos=photos,
+        memories=memories,
     )
 
 
@@ -92,6 +97,16 @@ def list_map_places(session: Session = Depends(get_session)) -> list[PlaceMapRea
     for photo in photos:
         photos_by_place_id[photo.place_id].append(photo_to_read(photo))
 
+    memories_by_place_id: dict[str, list[MemoryRead]] = {place_id: [] for place_id in place_ids}
+    memories = session.exec(
+        select(Memory)
+        .where(Memory.place_id.in_(place_ids))
+        .where(Memory.status == "approved")
+        .order_by(Memory.approved_at.desc(), Memory.created_at.desc())
+    ).all()
+    for memory in memories:
+        memories_by_place_id[memory.place_id].append(memory_to_read(memory))
+
     for place in places:
         if place.cover_photo_id is not None:
             photos_by_place_id[place.id].sort(key=lambda photo: photo.id != place.cover_photo_id)
@@ -101,6 +116,7 @@ def list_map_places(session: Session = Depends(get_session)) -> list[PlaceMapRea
             place,
             category_by_id.get(place.category_id) if place.category_id else None,
             photos_by_place_id[place.id],
+            memories_by_place_id[place.id],
         )
         for place in places
     ]

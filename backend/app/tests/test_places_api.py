@@ -9,6 +9,7 @@ from sqlmodel.pool import StaticPool
 from app.db.session import get_session
 from app.main import app
 from app.models.category import Category
+from app.models.memory import Memory
 from app.models.photo import Photo
 from app.models.place import Place
 
@@ -113,9 +114,21 @@ def test_map_places_return_ranked_public_summary_without_private_paths(monkeypat
             status="approved",
             approved_at=datetime(2026, 1, 1, tzinfo=timezone.utc),
         )
+        memory = Memory(
+            place_id=top_place.id,
+            author_name="Gość",
+            caption="Byłem tutaj",
+            original_path="memories/private-original.jpg",
+            public_path="/media/memories/public.jpg",
+            thumb_path="/media/memories/thumb.jpg",
+            status="approved",
+            approved_at=datetime(2026, 1, 2, tzinfo=timezone.utc),
+        )
         session.add(cover_photo)
+        session.add(memory)
         session.commit()
         session.refresh(cover_photo)
+        session.refresh(memory)
         top_place.cover_photo_id = cover_photo.id
         session.add(top_place)
         session.commit()
@@ -129,3 +142,6 @@ def test_map_places_return_ranked_public_summary_without_private_paths(monkeypat
         assert body[0]["cover_photo"]["thumb_path"] == "/media/photos/thumb.jpg"
         assert "original_path" not in body[0]["cover_photo"]
         assert body[0]["photos"][0]["id"] == cover_photo.id
+        assert body[0]["memories"][0]["id"] == memory.id
+        assert body[0]["memories"][0]["thumb_path"] == "/media/memories/thumb.jpg"
+        assert "original_path" not in body[0]["memories"][0]
