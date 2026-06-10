@@ -15,11 +15,15 @@ from app.models.photo import Photo
 from app.models.place import Place
 from app.services.media import images
 
+ADMIN_TOKEN = "test-admin-token"
+ADMIN_HEADERS = {"Authorization": f"Bearer {ADMIN_TOKEN}"}
+
 
 def client_with_session(
     monkeypatch: MonkeyPatch,
     tmp_path: Path,
 ) -> Generator[tuple[TestClient, Session], None, None]:
+    monkeypatch.setenv("ADMIN_TOKEN", ADMIN_TOKEN)
     private_dir = tmp_path / "private"
     public_dir = tmp_path / "public"
     monkeypatch.setattr(images, "PRIVATE_STORAGE_DIR", private_dir)
@@ -85,7 +89,11 @@ def test_photo_review_approves_and_updates_place_count(monkeypatch: MonkeyPatch,
             files={"file": image_upload()},
         )
         photo_id = upload_response.json()["id"]
-        review_response = client.post(f"/api/admin/photos/{photo_id}/review", json={"status": "approved"})
+        review_response = client.post(
+            f"/api/admin/photos/{photo_id}/review",
+            headers=ADMIN_HEADERS,
+            json={"status": "approved"},
+        )
         public_response = client.get(f"/api/places/{place.id}/photos")
         session.refresh(place)
 
@@ -117,7 +125,11 @@ def test_rejecting_approved_photo_decrements_place_count(monkeypatch: MonkeyPatc
         session.commit()
         session.refresh(photo)
 
-        response = client.post(f"/api/admin/photos/{photo.id}/review", json={"status": "rejected"})
+        response = client.post(
+            f"/api/admin/photos/{photo.id}/review",
+            headers=ADMIN_HEADERS,
+            json={"status": "rejected"},
+        )
         session.refresh(place)
 
         assert response.status_code == 200
@@ -145,8 +157,8 @@ def test_admin_photo_list_can_return_all_or_filtered_statuses(monkeypatch: Monke
             )
         session.commit()
 
-        all_response = client.get("/api/admin/photos")
-        pending_response = client.get("/api/admin/photos?status=pending")
+        all_response = client.get("/api/admin/photos", headers=ADMIN_HEADERS)
+        pending_response = client.get("/api/admin/photos?status=pending", headers=ADMIN_HEADERS)
 
         assert all_response.status_code == 200
         assert {photo["status"] for photo in all_response.json()} == {"pending", "approved", "rejected"}
@@ -181,8 +193,8 @@ def test_admin_can_set_approved_photo_as_cover(monkeypatch: MonkeyPatch, tmp_pat
         session.refresh(pending_photo)
         session.refresh(approved_photo)
 
-        pending_response = client.post(f"/api/admin/photos/{pending_photo.id}/cover")
-        approved_response = client.post(f"/api/admin/photos/{approved_photo.id}/cover")
+        pending_response = client.post(f"/api/admin/photos/{pending_photo.id}/cover", headers=ADMIN_HEADERS)
+        approved_response = client.post(f"/api/admin/photos/{approved_photo.id}/cover", headers=ADMIN_HEADERS)
         session.refresh(place)
 
         assert pending_response.status_code == 422
@@ -272,7 +284,7 @@ def test_admin_delete_photo_removes_record_files_and_updates_place(monkeypatch: 
         session.add(place)
         session.commit()
 
-        response = client.delete(f"/api/admin/photos/{first_photo.id}")
+        response = client.delete(f"/api/admin/photos/{first_photo.id}", headers=ADMIN_HEADERS)
         session.refresh(place)
 
         assert response.status_code == 204

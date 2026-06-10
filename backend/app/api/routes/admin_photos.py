@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
 
+from app.api.admin_auth import require_admin_token
 from app.db.session import get_session
 from app.models.photo import Photo
 from app.models.place import Place
@@ -12,7 +13,7 @@ from app.api.routes.photos import photo_to_read
 from app.api.routes.places import place_to_read
 from app.services.media.images import delete_stored_image
 
-router = APIRouter(prefix="/api/admin/photos", tags=["admin photos"])
+router = APIRouter(prefix="/api/admin/photos", tags=["admin photos"], dependencies=[Depends(require_admin_token)])
 
 VISIBLE_REVIEW_STATUSES = {"pending", "approved", "rejected"}
 FINAL_REVIEW_STATUSES = {"approved", "rejected"}

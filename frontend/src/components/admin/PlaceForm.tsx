@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
 import type { Category, Place, PlacePayload, PlaceStatus } from "../../api/client";
+import { PlaceLocationPicker } from "./PlaceLocationPicker";
 
 type Props = {
   categories: Category[];
@@ -9,8 +10,10 @@ type Props = {
   onSubmit: (payload: PlacePayload) => Promise<void>;
 };
 
-const INITIAL_LAT = "51.1079";
-const INITIAL_LON = "17.0385";
+const INITIAL_LOCATION = {
+  lat: 51.1079,
+  lon: 17.0385,
+};
 
 function slugify(value: string) {
   return value
@@ -25,8 +28,7 @@ function slugify(value: string) {
 export function PlaceForm({ categories, onCancel, onSubmit, place }: Props) {
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState("");
-  const [lat, setLat] = useState(INITIAL_LAT);
-  const [lon, setLon] = useState(INITIAL_LON);
+  const [location, setLocation] = useState(INITIAL_LOCATION);
   const [description, setDescription] = useState("");
   const [localComment, setLocalComment] = useState("");
   const [weight, setWeight] = useState("1");
@@ -44,8 +46,7 @@ export function PlaceForm({ categories, onCancel, onSubmit, place }: Props) {
     if (!place) {
       setTitle("");
       setCategoryId("");
-      setLat(INITIAL_LAT);
-      setLon(INITIAL_LON);
+      setLocation(INITIAL_LOCATION);
       setDescription("");
       setLocalComment("");
       setWeight("1");
@@ -56,8 +57,7 @@ export function PlaceForm({ categories, onCancel, onSubmit, place }: Props) {
 
     setTitle(place.title);
     setCategoryId(place.category_id ?? "");
-    setLat(String(place.lat));
-    setLon(String(place.lon));
+    setLocation({ lat: place.lat, lon: place.lon });
     setDescription(place.description ?? "");
     setLocalComment(place.local_comment ?? "");
     setWeight(String(place.weight));
@@ -73,8 +73,8 @@ export function PlaceForm({ categories, onCancel, onSubmit, place }: Props) {
         slug: place?.slug ?? generatedSlug,
         title,
         category_id: categoryId || null,
-        lat: Number(lat),
-        lon: Number(lon),
+        lat: location.lat,
+        lon: location.lon,
         description: description.trim() || null,
         local_comment: localComment.trim() || null,
         weight: Number(weight),
@@ -84,8 +84,7 @@ export function PlaceForm({ categories, onCancel, onSubmit, place }: Props) {
       if (!place) {
         setTitle("");
         setCategoryId("");
-        setLat(INITIAL_LAT);
-        setLon(INITIAL_LON);
+        setLocation(INITIAL_LOCATION);
         setDescription("");
         setLocalComment("");
         setWeight("1");
@@ -116,15 +115,9 @@ export function PlaceForm({ categories, onCancel, onSubmit, place }: Props) {
         </select>
       </label>
 
-      <div className="field-row">
-        <label>
-          Lat
-          <input value={lat} onChange={(event) => setLat(event.target.value)} required />
-        </label>
-        <label>
-          Lon
-          <input value={lon} onChange={(event) => setLon(event.target.value)} required />
-        </label>
+      <div className="location-field">
+        <span>Lokalizacja</span>
+        <PlaceLocationPicker position={location} onChange={setLocation} />
       </div>
 
       <label>

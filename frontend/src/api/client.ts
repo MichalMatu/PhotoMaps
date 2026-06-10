@@ -1,4 +1,5 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000";
+const ADMIN_TOKEN_STORAGE_KEY = "photomaps_admin_token";
 
 export type Category = {
   id: string;
@@ -70,10 +71,28 @@ export type PlacePayload = {
   is_chain: boolean;
 };
 
+export function getStoredAdminToken(): string {
+  return window.sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY) ?? "";
+}
+
+export function saveAdminToken(token: string) {
+  window.sessionStorage.setItem(ADMIN_TOKEN_STORAGE_KEY, token);
+}
+
+export function clearAdminToken() {
+  window.sessionStorage.removeItem(ADMIN_TOKEN_STORAGE_KEY);
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const headers = new Headers(options?.headers);
   if (!(options?.body instanceof FormData) && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
+  }
+  if (path.startsWith("/api/admin")) {
+    const token = getStoredAdminToken();
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
   }
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -83,6 +102,12 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
   if (!response.ok) {
     const message = await response.text();
+    if (response.status === 401) {
+      throw new Error("Token admina jest nieprawidłowy.");
+    }
+    if (response.status === 503) {
+      throw new Error("Token admina nie jest skonfigurowany w backendzie.");
+    }
     throw new Error(message || `Request failed: ${response.status}`);
   }
 

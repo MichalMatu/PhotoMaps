@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlmodel import Session, select
 
+from app.api.admin_auth import require_admin_token
 from app.db.session import get_session
 from app.models.category import Category
 from app.models.place import Place
 from app.schemas.category import CategoryCreate, CategoryRead, CategoryUpdate
 
-router = APIRouter(prefix="/api/admin/categories", tags=["admin categories"])
+router = APIRouter(prefix="/api/admin/categories", tags=["admin categories"], dependencies=[Depends(require_admin_token)])
 
 ALLOWED_CATEGORY_STATUSES = {"active", "archived"}
 

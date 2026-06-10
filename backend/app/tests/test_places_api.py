@@ -1,6 +1,7 @@
 from collections.abc import Generator
 
 from fastapi.testclient import TestClient
+from pytest import MonkeyPatch
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
@@ -8,8 +9,12 @@ from app.db.session import get_session
 from app.main import app
 from app.models.place import Place
 
+ADMIN_TOKEN = "test-admin-token"
+ADMIN_HEADERS = {"Authorization": f"Bearer {ADMIN_TOKEN}"}
 
-def client_with_session() -> Generator[tuple[TestClient, Session], None, None]:
+
+def client_with_session(monkeypatch: MonkeyPatch) -> Generator[tuple[TestClient, Session], None, None]:
+    monkeypatch.setenv("ADMIN_TOKEN", ADMIN_TOKEN)
     engine = create_engine(
         "sqlite://",
         connect_args={"check_same_thread": False},
@@ -26,8 +31,8 @@ def client_with_session() -> Generator[tuple[TestClient, Session], None, None]:
         app.dependency_overrides.clear()
 
 
-def test_public_places_only_show_published_non_chain() -> None:
-    for client, session in client_with_session():
+def test_public_places_only_show_published_non_chain(monkeypatch: MonkeyPatch) -> None:
+    for client, session in client_with_session(monkeypatch):
         session.add(Place(slug="public-place", title="Public", lat=51.11, lon=17.03, status="published"))
         session.add(Place(slug="draft-place", title="Draft", lat=51.12, lon=17.04, status="draft"))
         session.add(Place(slug="chain-place", title="Chain", lat=51.13, lon=17.05, status="published", is_chain=True))
@@ -39,8 +44,8 @@ def test_public_places_only_show_published_non_chain() -> None:
         assert [place["slug"] for place in response.json()] == ["public-place"]
 
 
-def test_public_place_detail_hides_draft_and_archived() -> None:
-    for client, session in client_with_session():
+def test_public_place_detail_hides_draft_and_archived(monkeypatch: MonkeyPatch) -> None:
+    for client, session in client_with_session(monkeypatch):
         session.add(Place(slug="draft-place", title="Draft", lat=51.12, lon=17.04, status="draft"))
         session.add(Place(slug="old-place", title="Old", lat=51.13, lon=17.05, status="archived"))
         session.commit()
@@ -49,15 +54,15 @@ def test_public_place_detail_hides_draft_and_archived() -> None:
         assert client.get("/api/places/old-place").status_code == 404
 
 
-def test_admin_can_list_and_archive_places() -> None:
-    for client, session in client_with_session():
+def test_admin_can_list_and_archive_places(monkeypatch: MonkeyPatch) -> None:
+    for client, session in client_with_session(monkeypatch):
         place = Place(slug="admin-place", title="Admin", lat=51.12, lon=17.04, status="draft")
         session.add(place)
         session.commit()
         session.refresh(place)
 
-        list_response = client.get("/api/admin/places")
-        archive_response = client.delete(f"/api/admin/places/{place.id}")
+        list_response = client.get("/api/admin/places", headers=ADMIN_HEADERS)
+        archive_response = client.delete(f"/api/admin/places/{place.id}", headers=ADMIN_HEADERS)
 
         assert list_response.status_code == 200
         assert list_response.json()[0]["slug"] == "admin-place"

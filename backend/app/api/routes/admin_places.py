@@ -3,13 +3,14 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
+from app.api.admin_auth import require_admin_token
 from app.db.session import get_session
 from app.models.category import Category
 from app.models.place import Place
 from app.schemas.place import PlaceCreate, PlaceRead, PlaceUpdate
 from app.api.routes.places import place_to_read
 
-router = APIRouter(prefix="/api/admin/places", tags=["admin places"])
+router = APIRouter(prefix="/api/admin/places", tags=["admin places"], dependencies=[Depends(require_admin_token)])
 
 ALLOWED_STATUSES = {"draft", "published", "archived"}
 

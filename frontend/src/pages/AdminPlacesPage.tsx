@@ -3,10 +3,12 @@ import { Images, MapPin, Tags } from "lucide-react";
 
 import {
   archivePlace,
+  clearAdminToken,
   createPlace,
   getAdminCategories,
   getAdminPlaces,
   getAdminPhotos,
+  getStoredAdminToken,
   updatePlace,
   type Category,
   type Photo,
@@ -15,6 +17,7 @@ import {
   type PlacePayload,
 } from "../api/client";
 import { AppShell } from "../components/layout/AppShell";
+import { AdminAccessGate } from "../components/admin/AdminAccessGate";
 import { CategoryManager } from "../components/admin/CategoryManager";
 import { PlaceForm } from "../components/admin/PlaceForm";
 import { PhotoQueue } from "../components/admin/PhotoQueue";
@@ -23,6 +26,7 @@ import { SystemModal } from "../components/admin/SystemModal";
 type AdminSection = "places" | "categories" | "photos";
 
 export function AdminPlacesPage() {
+  const [adminToken, setAdminToken] = useState(() => getStoredAdminToken());
   const [activeSection, setActiveSection] = useState<AdminSection>("places");
   const [categories, setCategories] = useState<Category[]>([]);
   const [editingPlace, setEditingPlace] = useState<Place | null>(null);
@@ -62,10 +66,34 @@ export function AdminPlacesPage() {
   }
 
   useEffect(() => {
+    if (!adminToken) {
+      return;
+    }
+
     refresh(photoStatusFilter).catch((reason: unknown) => {
       setError(reason instanceof Error ? reason.message : "Nie udalo sie pobrac danych");
     });
-  }, [photoStatusFilter]);
+  }, [adminToken, photoStatusFilter]);
+
+  function handleClearAdminToken() {
+    clearAdminToken();
+    setAdminToken("");
+    setError(null);
+    setCategories([]);
+    setEditingPlace(null);
+    setPhotos([]);
+    setPlaces([]);
+  }
+
+  if (!adminToken) {
+    return (
+      <AppShell activeSection="admin">
+        <main className="page-shell admin-page">
+          <AdminAccessGate onUnlocked={setAdminToken} />
+        </main>
+      </AppShell>
+    );
+  }
 
   async function handleSubmitPlace(payload: PlacePayload) {
     setError(null);
@@ -116,6 +144,9 @@ export function AdminPlacesPage() {
               <span>{places.length} miejsc</span>
               <span>{activeCategoryCount}/{categories.length} kategorii</span>
               <span>{photoStatusCounts.pending} zdjęć do sprawdzenia</span>
+              <button className="ghost-button admin-token-button" type="button" onClick={handleClearAdminToken}>
+                Zmień token
+              </button>
             </div>
           </header>
 
