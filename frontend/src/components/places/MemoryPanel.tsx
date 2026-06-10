@@ -2,13 +2,13 @@ import { FormEvent, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { getPlaceMemories, mediaUrl, uploadPlaceMemory } from "../../api/client";
+import { getMemoryPanelVisibility, type MemoryPanelMode } from "./memoryPanelMode";
 
 type Props = {
   claimToken: string;
+  mode?: MemoryPanelMode;
   onUploaded?: () => void;
   placeId: string;
-  showExistingMemories?: boolean;
-  showHeading?: boolean;
 };
 
 const CONSENT_TEXT =
@@ -18,8 +18,9 @@ const MEMORY_AUTHOR_MAX_LENGTH = 40;
 const MEMORY_CAPTION_MAX_LENGTH = 80;
 const MEMORY_TEXT_MAX_LENGTH = 240;
 
-export function MemoryPanel({ claimToken, onUploaded, placeId, showExistingMemories = true, showHeading = true }: Props) {
+export function MemoryPanel({ claimToken, mode = "with-list", onUploaded, placeId }: Props) {
   const queryClient = useQueryClient();
+  const visibility = getMemoryPanelVisibility(mode);
   const [authorCity, setAuthorCity] = useState("");
   const [authorName, setAuthorName] = useState("");
   const [caption, setCaption] = useState("");
@@ -28,9 +29,8 @@ export function MemoryPanel({ claimToken, onUploaded, placeId, showExistingMemor
   const [memoryText, setMemoryText] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const shouldLoadMemories = showExistingMemories || showHeading;
   const memoriesQuery = useQuery({
-    enabled: shouldLoadMemories,
+    enabled: visibility.loadExistingMemories,
     queryKey: ["place-memories", placeId],
     queryFn: () => getPlaceMemories(placeId),
   });
@@ -86,14 +86,16 @@ export function MemoryPanel({ claimToken, onUploaded, placeId, showExistingMemor
 
   return (
     <section className="memory-panel">
-      {showHeading ? (
+      {visibility.showHeading ? (
         <div className="section-heading compact-heading">
           <h3>Byłem tutaj</h3>
           <span>{memoriesQuery.data?.length ?? 0}</span>
         </div>
       ) : null}
-      {showExistingMemories && memoriesQuery.isLoading ? <p className="inline-status">Ładowanie pamiątek...</p> : null}
-      {showExistingMemories ? (
+      {visibility.showExistingMemories && memoriesQuery.isLoading ? (
+        <p className="inline-status">Ładowanie pamiątek...</p>
+      ) : null}
+      {visibility.showExistingMemories ? (
         <div className="memory-list">
           {memoriesQuery.data?.map((memory) => (
             <article className="memory-card" key={memory.id}>
