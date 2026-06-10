@@ -1,11 +1,13 @@
 import type { Category, Place } from "../../api/client";
+import { PhotoUploadForm } from "./PhotoUploadForm";
 
 type Props = {
   place: Place;
   category?: Category;
+  onPhotoUploaded?: () => void;
 };
 
-export function PlacePopup({ place, category }: Props) {
+export function PlacePopup({ place, category, onPhotoUploaded }: Props) {
   return (
     <div className="place-popup">
       <strong>{place.title}</strong>
@@ -25,6 +27,7 @@ export function PlacePopup({ place, category }: Props) {
           <dd>{place.memory_count}</dd>
         </div>
       </dl>
+      <PhotoUploadForm placeId={place.id} onUploaded={onPhotoUploaded} />
     </div>
   );
 }

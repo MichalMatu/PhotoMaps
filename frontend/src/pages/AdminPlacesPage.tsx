@@ -3,22 +3,31 @@ import { useEffect, useState } from "react";
 import {
   createPlace,
   getAdminPlaces,
+  getAdminPhotos,
   getCategories,
   type Category,
+  type Photo,
   type Place,
   type PlacePayload,
 } from "../api/client";
 import { PlaceForm } from "../components/admin/PlaceForm";
+import { PhotoQueue } from "../components/admin/PhotoQueue";
 
 export function AdminPlacesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [photos, setPhotos] = useState<Photo[]>([]);
   const [places, setPlaces] = useState<Place[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   async function refresh() {
-    const [nextCategories, nextPlaces] = await Promise.all([getCategories(), getAdminPlaces()]);
+    const [nextCategories, nextPlaces, nextPhotos] = await Promise.all([
+      getCategories(),
+      getAdminPlaces(),
+      getAdminPhotos("pending"),
+    ]);
     setCategories(nextCategories);
     setPlaces(nextPlaces);
+    setPhotos(nextPhotos);
   }
 
   useEffect(() => {
@@ -79,6 +88,7 @@ export function AdminPlacesPage() {
             ))}
             {places.length === 0 ? <p className="notice">Brak miejsc w bazie.</p> : null}
           </div>
+          <PhotoQueue photos={photos} places={places} onReviewed={refresh} />
         </div>
       </section>
     </main>

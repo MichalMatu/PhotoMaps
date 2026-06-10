@@ -30,6 +30,19 @@ export type Place = {
   updated_at: string;
 };
 
+export type PhotoStatus = "pending" | "approved" | "rejected";
+
+export type Photo = {
+  id: string;
+  place_id: string;
+  public_path: string;
+  thumb_path: string;
+  status: PhotoStatus;
+  caption: string | null;
+  created_at: string;
+  approved_at: string | null;
+};
+
 export type PlacePayload = {
   slug: string;
   title: string;
@@ -44,12 +57,14 @@ export type PlacePayload = {
 };
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const headers = new Headers(options?.headers);
+  if (!(options?.body instanceof FormData) && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
     ...options,
+    headers,
   });
 
   if (!response.ok) {
@@ -77,4 +92,36 @@ export function createPlace(payload: PlacePayload): Promise<Place> {
     method: "POST",
     body: JSON.stringify(payload),
   });
+}
+
+export function uploadPlacePhoto(placeId: string, file: File, caption: string): Promise<Photo> {
+  const formData = new FormData();
+  formData.append("file", file);
+  if (caption.trim()) {
+    formData.append("caption", caption.trim());
+  }
+
+  return request<Photo>(`/api/places/${placeId}/photos`, {
+    method: "POST",
+    body: formData,
+  });
+}
+
+export function getAdminPhotos(status: PhotoStatus | "all" = "pending"): Promise<Photo[]> {
+  const query = status === "all" ? "" : `?status=${status}`;
+  return request<Photo[]>(`/api/admin/photos${query}`);
+}
+
+export function reviewPhoto(photoId: string, status: "approved" | "rejected"): Promise<Photo> {
+  return request<Photo>(`/api/admin/photos/${photoId}/review`, {
+    method: "POST",
+    body: JSON.stringify({ status }),
+  });
+}
+
+export function mediaUrl(path: string): string {
+  if (path.startsWith("http")) {
+    return path;
+  }
+  return `${API_BASE_URL}${path}`;
 }

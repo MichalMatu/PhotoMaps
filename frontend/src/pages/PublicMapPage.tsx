@@ -10,16 +10,22 @@ export function PublicMapPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([getCategories(), getPlaces()])
-      .then(([nextCategories, nextPlaces]) => {
-        setCategories(nextCategories);
-        setPlaces(nextPlaces);
-      })
-      .catch((reason: unknown) => {
-        setError(reason instanceof Error ? reason.message : "Nie udalo sie pobrac miejsc");
-      })
-      .finally(() => setIsLoading(false));
+    void loadMapData();
   }, []);
+
+  async function loadMapData() {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const [nextCategories, nextPlaces] = await Promise.all([getCategories(), getPlaces()]);
+      setCategories(nextCategories);
+      setPlaces(nextPlaces);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Nie udalo sie pobrac miejsc");
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <main className="page-shell map-page">
@@ -56,7 +62,7 @@ export function PublicMapPage() {
         </aside>
 
         <div className="map-frame">
-          <PlaceMap places={places} categories={categories} />
+          <PlaceMap places={places} categories={categories} onPhotoUploaded={loadMapData} />
         </div>
       </section>
     </main>

@@ -18,11 +18,12 @@ L.Icon.Default.mergeOptions({
 type Props = {
   places: Place[];
   categories: Category[];
+  onPhotoUploaded?: () => void;
 };
 
 const WROCLAW_CENTER: [number, number] = [51.1079, 17.0385];
 
-export function PlaceMap({ places, categories }: Props) {
+export function PlaceMap({ places, categories, onPhotoUploaded }: Props) {
   const categoryById = new Map(categories.map((category) => [category.id, category]));
 
   return (
@@ -36,6 +37,7 @@ export function PlaceMap({ places, categories }: Props) {
           key={place.id}
           place={place}
           category={place.category_id ? categoryById.get(place.category_id) : undefined}
+          onPhotoUploaded={onPhotoUploaded}
         />
       ))}
     </MapContainer>

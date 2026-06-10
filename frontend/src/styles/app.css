@@ -170,6 +170,7 @@ h2 {
 
 .place-popup {
   min-width: 220px;
+  max-width: 280px;
 }
 
 .place-popup strong,
@@ -197,6 +198,53 @@ h2 {
   gap: 8px;
   grid-template-columns: repeat(3, 1fr);
   margin: 10px 0 0;
+}
+
+.photo-upload {
+  border-top: 1px solid #d9ded9;
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+}
+
+.photo-upload label {
+  color: #37403c;
+  display: grid;
+  font-size: 0.78rem;
+  font-weight: 700;
+  gap: 4px;
+}
+
+.photo-upload input {
+  border: 1px solid #cfd4d0;
+  border-radius: 6px;
+  max-width: 100%;
+  min-height: 34px;
+  padding: 6px 8px;
+}
+
+.photo-upload input[type="file"] {
+  padding: 5px;
+}
+
+.photo-upload button {
+  min-height: 36px;
+}
+
+.consent-field {
+  align-items: flex-start;
+  color: #58615e !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  line-height: 1.35;
+}
+
+.inline-status {
+  color: #126a5a !important;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin: 0;
 }
 
 .place-popup dt {
@@ -283,6 +331,53 @@ h2 {
   border: 1px solid #dfded9;
   border-radius: 6px;
   overflow: hidden;
+}
+
+.photo-queue {
+  margin-top: 28px;
+}
+
+.photo-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.photo-review-item {
+  background: #ffffff;
+  border: 1px solid #dfded9;
+  border-radius: 6px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 116px minmax(0, 1fr);
+  padding: 12px;
+}
+
+.photo-review-item img {
+  aspect-ratio: 1;
+  background: #eef3f0;
+  border-radius: 6px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.photo-review-item strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.photo-review-item p {
+  color: #58615e;
+  margin-bottom: 12px;
+}
+
+.review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.secondary-button {
+  background: #6b3f35;
 }
 
 .table-row {

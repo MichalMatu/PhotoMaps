@@ -21,13 +21,19 @@ GET /health
 GET /api/categories
 GET /api/places
 GET /api/places/{id_or_slug}
+GET /api/places/{place_id}/photos
+POST /api/places/{place_id}/photos
 GET /api/admin/places
 POST /api/admin/places
 PATCH /api/admin/places/{place_id}
 DELETE /api/admin/places/{place_id}
+GET /api/admin/photos
+POST /api/admin/photos/{photo_id}/review
 ```
 
 `DELETE /api/admin/places/{place_id}` archiwizuje rekord przez `status=archived`.
+
+Zdjecia trafiaja najpierw do moderacji jako `pending`. Oryginal jest zapisywany w prywatnym storage, a publiczna kopia i miniatura sa generowane osobno bez EXIF.
 
 ## Frontend
 

@@ -4,6 +4,9 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 DATA_DIR = BASE_DIR / "data"
 DATABASE_PATH = DATA_DIR / "app.db"
 DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
+STORAGE_DIR = BASE_DIR / "storage"
+PRIVATE_STORAGE_DIR = STORAGE_DIR / "private"
+PUBLIC_STORAGE_DIR = STORAGE_DIR / "public"
 
 FRONTEND_ORIGINS = [
     "http://localhost:5173",

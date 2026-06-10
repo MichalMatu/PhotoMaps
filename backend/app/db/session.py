@@ -2,7 +2,7 @@ from collections.abc import Generator
 
 from sqlmodel import Session, SQLModel, create_engine
 
-from app.core.config import DATA_DIR, DATABASE_URL
+from app.core.config import DATA_DIR, DATABASE_URL, PRIVATE_STORAGE_DIR, PUBLIC_STORAGE_DIR
 
 connect_args = {"check_same_thread": False}
 engine = create_engine(DATABASE_URL, connect_args=connect_args)
@@ -10,6 +10,8 @@ engine = create_engine(DATABASE_URL, connect_args=connect_args)
 
 def create_db_and_tables() -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
+    PRIVATE_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+    PUBLIC_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
     SQLModel.metadata.create_all(engine)
 
 
