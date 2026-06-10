@@ -1,0 +1,289 @@
+.map-frame {
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.place-map {
+  height: 100%;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.map-page {
+  height: 100vh;
+  min-height: 100vh;
+  position: relative;
+}
+
+.map-status-panel {
+  background: #ffffff;
+  border: 1px solid #dbe5e1;
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 14%);
+  left: 18px;
+  max-width: min(320px, calc(100vw - 124px));
+  padding: 16px 18px;
+  position: absolute;
+  top: 18px;
+  z-index: 700;
+}
+
+.map-status-panel p {
+  color: #424a47;
+  margin: 0;
+}
+
+.map-status-panel .error-text {
+  color: #8e2e24;
+}
+
+.place-map .leaflet-control-zoom {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.place-map .leaflet-control-zoom a {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  box-shadow: none;
+  color: #111413;
+  display: flex;
+  height: 38px;
+  justify-content: center;
+  line-height: 1;
+  margin-top: 8px;
+  width: 38px;
+}
+
+.place-map .leaflet-control-zoom a:first-child,
+.place-map .leaflet-control-zoom a:last-child {
+  border-radius: 50%;
+}
+
+.place-map .leaflet-control-zoom a:first-child {
+  transform: translateY(5px);
+}
+
+.place-map .leaflet-control-zoom a:hover {
+  background: transparent;
+  color: #126a5a;
+}
+
+.place-marker-icon {
+  background: transparent;
+  border: 0;
+}
+
+.place-marker-icon span {
+  background: #126a5a;
+  border: 3px solid #ffffff;
+  border-radius: 50% 50% 50% 0;
+  box-shadow: 0 8px 16px rgb(0 0 0 / 24%);
+  display: block;
+  height: 28px;
+  transform: rotate(-45deg);
+  width: 28px;
+}
+
+.place-marker-icon span::after {
+  background: #ffffff;
+  border-radius: 50%;
+  content: "";
+  display: block;
+  height: 8px;
+  left: 7px;
+  position: relative;
+  top: 7px;
+  width: 8px;
+}
+
+.place-photo-marker {
+  background: transparent;
+  border: 0;
+}
+
+.place-photo-marker span {
+  background-color: #eef3f0;
+  background-position: center;
+  background-size: cover;
+  border-radius: 8px;
+  box-shadow: 0 10px 18px rgb(0 0 0 / 30%);
+  display: block;
+  height: 52px;
+  width: 64px;
+}
+
+.photo-fan-marker,
+.photo-fan-add-marker {
+  background: transparent;
+  border: 0;
+}
+
+.photo-fan-marker span,
+.photo-fan-add-marker span {
+  animation: photo-fan-in 260ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: var(--fan-delay, 0ms);
+  border-radius: 8px;
+  box-shadow: 0 14px 24px rgb(0 0 0 / 32%);
+  display: block;
+  opacity: 1;
+  transform: translate(0, 0) scale(1);
+  transform-origin: center;
+  transition:
+    box-shadow 140ms ease,
+    filter 140ms ease,
+    transform 140ms ease;
+  will-change: transform, opacity;
+}
+
+.photo-fan-marker:hover span,
+.photo-fan-add-marker:hover span {
+  box-shadow: 0 18px 30px rgb(0 0 0 / 38%);
+  filter: saturate(1.06);
+  transform: scale(1.07);
+}
+
+.photo-fan-marker span {
+  background-color: #eef3f0;
+  background-position: center;
+  background-size: cover;
+  height: 62px;
+  width: 62px;
+}
+
+.photo-fan-add-marker span {
+  align-items: center;
+  background: rgb(17 20 19 / 78%);
+  border: 1px solid rgb(255 255 255 / 22%);
+  border-radius: 50%;
+  backdrop-filter: blur(6px);
+  color: #ffffff;
+  display: flex;
+  font-size: 1.45rem;
+  font-weight: 800;
+  height: 42px;
+  justify-content: center;
+  line-height: 1;
+  width: 42px;
+}
+
+.photo-fan-add-marker:hover span {
+  background: rgb(17 20 19 / 88%);
+  border-color: rgb(255 255 255 / 34%);
+}
+
+@keyframes photo-fan-in {
+  0% {
+    opacity: 0;
+    transform: translate(var(--fan-from-x, 0), var(--fan-from-y, 0)) scale(0.5);
+  }
+
+  72% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1.06);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+.map-photo-viewer {
+  align-items: center;
+  animation: map-photo-viewer-backdrop-in 340ms ease-out both;
+  background: rgb(17 20 19 / 68%);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: clamp(18px, 4vw, 56px);
+  position: fixed;
+  z-index: 10000;
+}
+
+.map-photo-viewer-image-wrap {
+  position: relative;
+}
+
+.map-photo-viewer-image-wrap img {
+  animation: map-photo-viewer-image-in 420ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
+  border: 0;
+  border-radius: 6px;
+  box-shadow: 0 24px 70px rgb(0 0 0 / 45%);
+  display: block;
+  max-height: 86vh;
+  max-width: 88vw;
+  object-fit: contain;
+}
+
+.map-photo-viewer-close {
+  align-items: center;
+  background: rgb(17 20 19 / 62%);
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  font-size: 0.9rem;
+  height: 30px;
+  justify-content: center;
+  min-height: 0;
+  padding: 0;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 30px;
+}
+
+.map-photo-viewer-close:hover {
+  background: rgb(17 20 19 / 78%);
+}
+
+@keyframes map-photo-viewer-backdrop-in {
+  from {
+    background: rgb(17 20 19 / 34%);
+  }
+
+  to {
+    background: rgb(17 20 19 / 68%);
+  }
+}
+
+@keyframes map-photo-viewer-image-in {
+  from {
+    filter: blur(8px) brightness(0.78) saturate(0.88);
+    opacity: 0;
+    transform: translateY(10px) scale(0.975);
+  }
+
+  55% {
+    opacity: 1;
+  }
+
+  to {
+    filter: blur(0) brightness(1) saturate(1);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.map-photo-upload-popup .leaflet-popup-content-wrapper {
+  border-radius: 8px;
+}
+
+.map-photo-upload-popup .leaflet-popup-content {
+  margin: 0;
+  width: 320px !important;
+}
+
+.map-upload-popover {
+  padding: 18px;
+}
+
+.map-upload-popover strong {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}

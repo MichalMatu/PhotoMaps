@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { getPlacePhotos, getPlaces, type Photo, type Place } from "../api/client";
 import { AppShell } from "../components/layout/AppShell";
 import { PlaceMap } from "../components/map/PlaceMap";
-import { APP_NAME } from "../config/app";
 
 export function PublicMapPage() {
   const [photosByPlaceId, setPhotosByPlaceId] = useState<Record<string, Photo[]>>({});
@@ -35,12 +34,10 @@ export function PublicMapPage() {
   return (
     <AppShell activeSection="map">
       <main className="page-shell map-page">
-        {(isLoading || error || places.length === 0) ? (
+        {isLoading || error ? (
           <div className="map-status-panel">
-            <span className="eyebrow">{APP_NAME}</span>
             {isLoading ? <p>Ładowanie mapy...</p> : null}
             {error ? <p className="error-text">{error}</p> : null}
-            {!isLoading && !error && places.length === 0 ? <p>Brak opublikowanych miejsc.</p> : null}
           </div>
         ) : null}
         <div className="map-frame">

@@ -1,0 +1,53 @@
+.review-actions button,
+.table-actions button {
+  font-size: 0.82rem;
+  min-height: 34px;
+  padding: 0 10px;
+}
+
+.secondary-button {
+  background: #6b3f35;
+}
+
+.danger-button {
+  background: #8e2e24;
+}
+
+.status-badge {
+  border-radius: 999px;
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  padding: 5px 8px;
+}
+
+.status-badge--pending {
+  background: #fff1d8;
+  color: #8a5511;
+}
+
+.status-badge--approved {
+  background: #dcefe7;
+  color: #126a5a;
+}
+
+.status-badge--rejected {
+  background: #f2ded8;
+  color: #7a382d;
+}
+
+.status-badge--cover {
+  background: #e3ecf6;
+  color: #25507a;
+}
+
+.status-badge--active {
+  background: #dcefe7;
+  color: #126a5a;
+}
+
+.status-badge--archived {
+  background: #e6e1dc;
+  color: #5d5550;
+}

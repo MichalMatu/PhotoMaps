@@ -1,6 +1,6 @@
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, useMap, useMapEvents, ZoomControl } from "react-leaflet";
 
 import type { Photo, Place } from "../../api/client";
 import { PlaceMarker } from "./PlaceMarker";
@@ -51,9 +51,10 @@ export function PlaceMap({ places, photosByPlaceId, onPhotoUploaded }: Props) {
   }, [expandedPlaceId, places]);
 
   return (
-    <MapContainer center={WROCLAW_CENTER} zoom={13} className="place-map" scrollWheelZoom>
+    <MapContainer center={WROCLAW_CENTER} zoom={13} className="place-map" scrollWheelZoom zoomControl={false}>
       <MapSizeUpdater />
       <FanCloseEvents onClose={() => setExpandedPlaceId(null)} />
+      <ZoomControl position="bottomright" />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

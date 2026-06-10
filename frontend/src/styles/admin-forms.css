@@ -1,0 +1,113 @@
+.admin-form {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-editor h2 {
+  font-size: 1.65rem;
+  line-height: 1.12;
+  margin-bottom: 18px;
+}
+
+.admin-form label {
+  color: #37403c;
+  display: grid;
+  font-size: 0.92rem;
+  font-weight: 700;
+  gap: 6px;
+  min-width: 0;
+}
+
+.admin-form input,
+.admin-form select,
+.admin-form textarea {
+  border: 1px solid #cfd4d0;
+  border-radius: 6px;
+  min-height: 38px;
+  min-width: 0;
+  padding: 8px 10px;
+  width: 100%;
+}
+
+.admin-form textarea {
+  resize: vertical;
+}
+
+.ghost-button {
+  background: transparent;
+  border: 1px solid #cbd6d2;
+  color: #37403c;
+}
+
+.ghost-button:hover {
+  background: #edf4f1;
+  color: #126a5a;
+}
+
+.field-row {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.checkbox-field {
+  align-items: center;
+  display: flex !important;
+  flex-direction: row;
+}
+
+.checkbox-field input {
+  min-height: auto;
+}
+
+.location-field {
+  color: #37403c;
+  display: grid;
+  font-size: 0.92rem;
+  font-weight: 700;
+  gap: 6px;
+  min-width: 0;
+}
+
+.location-picker {
+  background: #ffffff;
+  border: 1px solid #cfd4d0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.location-picker-map {
+  height: 240px;
+  min-height: 240px;
+  width: 100%;
+}
+
+.location-map {
+  height: 100%;
+  width: 100%;
+}
+
+.location-readout {
+  background: #f4f7f5;
+  border-top: 1px solid #dfe5e1;
+  color: #56605c;
+  font-size: 0.8rem;
+  font-weight: 750;
+  margin: 0;
+  padding: 8px 10px;
+}
+
+.section-heading {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.section-heading span {
+  background: #e7eee9;
+  border-radius: 999px;
+  color: #126a5a;
+  font-weight: 800;
+  padding: 4px 10px;
+}

@@ -1,0 +1,80 @@
+@media (max-width: 1180px) {
+  .admin-editor .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .category-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .app-shell {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+
+  .side-rail {
+    gap: 20px;
+    padding: 16px 6px;
+  }
+
+  .rail-item {
+    font-size: 0.72rem;
+    min-height: 62px;
+  }
+
+  .admin-workspace {
+    padding: 18px;
+  }
+
+  .admin-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-metrics {
+    justify-content: flex-start;
+  }
+
+  .admin-section-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .map-frame,
+  .place-map {
+    min-height: 100vh;
+  }
+
+  .field-row,
+  .table-row,
+  .category-form,
+  .category-row {
+    grid-template-columns: 1fr;
+  }
+
+  .category-description-field {
+    grid-column: auto;
+  }
+
+  .category-actions {
+    justify-content: flex-start;
+  }
+
+  .photo-review-item {
+    grid-template-columns: 88px minmax(0, 1fr);
+  }
+
+  .drawer-item {
+    gap: 16px;
+    padding: 0 22px;
+  }
+
+  .map-status-panel {
+    left: 12px;
+    top: 12px;
+  }
+}
