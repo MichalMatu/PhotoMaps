@@ -98,6 +98,19 @@ export function createPlace(payload: PlacePayload): Promise<Place> {
   });
 }
 
+export function updatePlace(placeId: string, payload: PlacePayload): Promise<Place> {
+  return request<Place>(`/api/admin/places/${placeId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function archivePlace(placeId: string): Promise<Place> {
+  return request<Place>(`/api/admin/places/${placeId}`, {
+    method: "DELETE",
+  });
+}
+
 export function uploadPlacePhoto(placeId: string, file: File, caption: string): Promise<Photo> {
   const formData = new FormData();
   formData.append("file", file);
@@ -111,8 +124,18 @@ export function uploadPlacePhoto(placeId: string, file: File, caption: string): 
   });
 }
 
-export function getAdminPhotos(status: PhotoStatus | "all" = "pending"): Promise<Photo[]> {
-  const query = status === "all" ? "" : `?status=${status}`;
+export async function getAdminPhotos(status: PhotoStatus | "all" = "pending"): Promise<Photo[]> {
+  if (status === "all") {
+    const photoGroups = await Promise.all([
+      request<Photo[]>("/api/admin/photos?status=pending"),
+      request<Photo[]>("/api/admin/photos?status=approved"),
+      request<Photo[]>("/api/admin/photos?status=rejected"),
+    ]);
+
+    return photoGroups.flat();
+  }
+
+  const query = `?status=${status}`;
   return request<Photo[]>(`/api/admin/photos${query}`);
 }
 

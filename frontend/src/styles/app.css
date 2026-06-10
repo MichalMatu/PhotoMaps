@@ -614,6 +614,17 @@ h2 {
   resize: vertical;
 }
 
+.ghost-button {
+  background: transparent;
+  border: 1px solid #cbd6d2;
+  color: #37403c;
+}
+
+.ghost-button:hover {
+  background: #edf4f1;
+  color: #126a5a;
+}
+
 .field-row {
   display: grid;
   gap: 12px;
@@ -656,6 +667,28 @@ h2 {
   margin-top: 28px;
 }
 
+.status-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.status-tab {
+  background: #ffffff;
+  border: 1px solid #cfd8d4;
+  color: #4a5450;
+  min-height: 36px;
+  padding: 0 12px;
+}
+
+.status-tab:hover,
+.status-tab.is-active {
+  background: #126a5a;
+  border-color: #126a5a;
+  color: #ffffff;
+}
+
 .photo-grid {
   display: grid;
   gap: 14px;
@@ -681,12 +714,12 @@ h2 {
 
 .photo-review-item strong {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .photo-review-item p {
   color: #58615e;
-  margin-bottom: 12px;
+  margin: 10px 0 12px;
 }
 
 .review-actions {
@@ -695,14 +728,45 @@ h2 {
   gap: 8px;
 }
 
+.review-actions button,
+.table-actions button {
+  font-size: 0.82rem;
+  min-height: 34px;
+  padding: 0 10px;
+}
+
 .secondary-button {
   background: #6b3f35;
+}
+
+.status-badge {
+  border-radius: 999px;
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  padding: 5px 8px;
+}
+
+.status-badge--pending {
+  background: #fff1d8;
+  color: #8a5511;
+}
+
+.status-badge--approved {
+  background: #dcefe7;
+  color: #126a5a;
+}
+
+.status-badge--rejected {
+  background: #f2ded8;
+  color: #7a382d;
 }
 
 .table-row {
   display: grid;
   gap: 12px;
-  grid-template-columns: 2fr 1fr 1.4fr 0.8fr;
+  grid-template-columns: minmax(170px, 2fr) 0.8fr 1.25fr 0.65fr minmax(170px, 1fr);
   min-height: 48px;
   padding: 12px 14px;
 }
@@ -716,6 +780,19 @@ h2 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.table-row.is-selected {
+  background: #eef6f2;
+}
+
+.table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
 }
 
 .table-head {

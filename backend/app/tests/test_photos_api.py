@@ -126,3 +126,31 @@ def test_rejecting_approved_photo_decrements_place_count(monkeypatch: MonkeyPatc
         assert response.json()["status"] == "rejected"
         assert place.photo_count == 0
         assert place.cover_photo_id is None
+
+
+def test_admin_photo_list_can_return_all_or_filtered_statuses(monkeypatch: MonkeyPatch, tmp_path: Path) -> None:
+    for client, session in client_with_session(monkeypatch, tmp_path):
+        place = Place(slug="public-place", title="Public", lat=51.11, lon=17.03, status="published")
+        session.add(place)
+        session.commit()
+        session.refresh(place)
+
+        for status in ("pending", "approved", "rejected"):
+            session.add(
+                Photo(
+                    place_id=place.id,
+                    original_path=f"photos/{status}-original.jpg",
+                    public_path=f"/media/photos/{status}.jpg",
+                    thumb_path=f"/media/photos/{status}-thumb.jpg",
+                    status=status,
+                )
+            )
+        session.commit()
+
+        all_response = client.get("/api/admin/photos")
+        pending_response = client.get("/api/admin/photos?status=pending")
+
+        assert all_response.status_code == 200
+        assert {photo["status"] for photo in all_response.json()} == {"pending", "approved", "rejected"}
+        assert pending_response.status_code == 200
+        assert [photo["status"] for photo in pending_response.json()] == ["pending"]

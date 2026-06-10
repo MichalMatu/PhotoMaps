@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 
 import {
+  archivePlace,
   createPlace,
   getAdminPlaces,
   getAdminPhotos,
   getCategories,
+  updatePlace,
   type Category,
   type Photo,
+  type PhotoStatus,
   type Place,
   type PlacePayload,
 } from "../api/client";
@@ -16,15 +19,18 @@ import { PhotoQueue } from "../components/admin/PhotoQueue";
 
 export function AdminPlacesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [editingPlace, setEditingPlace] = useState<Place | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [photoStatusFilter, setPhotoStatusFilter] = useState<PhotoStatus | "all">("pending");
   const [places, setPlaces] = useState<Place[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const categoryById = new Map(categories.map((category) => [category.id, category]));
 
-  async function refresh() {
+  async function refresh(nextPhotoStatusFilter = photoStatusFilter) {
     const [nextCategories, nextPlaces, nextPhotos] = await Promise.all([
       getCategories(),
       getAdminPlaces(),
-      getAdminPhotos("pending"),
+      getAdminPhotos(nextPhotoStatusFilter),
     ]);
     setCategories(nextCategories);
     setPlaces(nextPlaces);
@@ -32,18 +38,41 @@ export function AdminPlacesPage() {
   }
 
   useEffect(() => {
-    refresh().catch((reason: unknown) => {
+    refresh(photoStatusFilter).catch((reason: unknown) => {
       setError(reason instanceof Error ? reason.message : "Nie udalo sie pobrac danych");
     });
-  }, []);
+  }, [photoStatusFilter]);
 
-  async function handleCreate(payload: PlacePayload) {
+  async function handleSubmitPlace(payload: PlacePayload) {
     setError(null);
     try {
-      await createPlace(payload);
+      if (editingPlace) {
+        await updatePlace(editingPlace.id, payload);
+        setEditingPlace(null);
+      } else {
+        await createPlace(payload);
+      }
       await refresh();
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Nie udalo sie zapisac miejsca");
+    }
+  }
+
+  async function handleArchivePlace(place: Place) {
+    const shouldArchive = window.confirm(`Zarchiwizować miejsce "${place.title}"?`);
+    if (!shouldArchive) {
+      return;
+    }
+
+    setError(null);
+    try {
+      await archivePlace(place.id);
+      if (editingPlace?.id === place.id) {
+        setEditingPlace(null);
+      }
+      await refresh();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Nie udalo sie zarchiwizowac miejsca");
     }
   }
 
@@ -53,9 +82,14 @@ export function AdminPlacesPage() {
         <section className="admin-layout">
           <div className="admin-editor">
             <span className="eyebrow">Panel redakcji</span>
-            <h1>Dodaj miejsce</h1>
+            <h1>{editingPlace ? "Edytuj miejsce" : "Dodaj miejsce"}</h1>
             {error ? <p className="notice error">{error}</p> : null}
-            <PlaceForm categories={categories} onSubmit={handleCreate} />
+            <PlaceForm
+              categories={categories}
+              place={editingPlace}
+              onCancel={() => setEditingPlace(null)}
+              onSubmit={handleSubmitPlace}
+            />
           </div>
 
           <div className="admin-list">
@@ -69,18 +103,38 @@ export function AdminPlacesPage() {
                 <span>Status</span>
                 <span>Kategoria</span>
                 <span>Priorytet</span>
+                <span>Akcje</span>
               </div>
               {places.map((place) => (
-                <div className="table-row" role="row" key={place.id}>
+                <div className={editingPlace?.id === place.id ? "table-row is-selected" : "table-row"} role="row" key={place.id}>
                   <span>{place.title}</span>
                   <span>{place.status}</span>
-                  <span>{place.category_id ?? "-"}</span>
+                  <span>{place.category_id ? categoryById.get(place.category_id)?.label ?? place.category_id : "-"}</span>
                   <span>{place.weight.toFixed(1)}</span>
+                  <span className="table-actions">
+                    <button type="button" onClick={() => setEditingPlace(place)}>
+                      Edytuj
+                    </button>
+                    <button
+                      className="secondary-button"
+                      type="button"
+                      disabled={place.status === "archived"}
+                      onClick={() => handleArchivePlace(place)}
+                    >
+                      Archiwizuj
+                    </button>
+                  </span>
                 </div>
               ))}
               {places.length === 0 ? <p className="notice">Brak miejsc w bazie.</p> : null}
             </div>
-            <PhotoQueue photos={photos} places={places} onReviewed={refresh} />
+            <PhotoQueue
+              photos={photos}
+              places={places}
+              statusFilter={photoStatusFilter}
+              onReviewed={refresh}
+              onStatusFilterChange={setPhotoStatusFilter}
+            />
           </div>
         </section>
       </main>

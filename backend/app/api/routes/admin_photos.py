@@ -24,7 +24,7 @@ def update_place_photo_count(place: Place, previous_status: str, next_status: st
 
 @router.get("", response_model=list[PhotoAdminRead])
 def list_admin_photos(
-    status: str | None = Query(default="pending"),
+    status: str | None = Query(default=None),
     session: Session = Depends(get_session),
 ) -> list[PhotoAdminRead]:
     if status is not None and status not in VISIBLE_REVIEW_STATUSES:

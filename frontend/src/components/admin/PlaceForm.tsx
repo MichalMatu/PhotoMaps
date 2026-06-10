@@ -1,9 +1,11 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
-import type { Category, PlacePayload, PlaceStatus } from "../../api/client";
+import type { Category, Place, PlacePayload, PlaceStatus } from "../../api/client";
 
 type Props = {
   categories: Category[];
+  place?: Place | null;
+  onCancel?: () => void;
   onSubmit: (payload: PlacePayload) => Promise<void>;
 };
 
@@ -20,7 +22,7 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-export function PlaceForm({ categories, onSubmit }: Props) {
+export function PlaceForm({ categories, onCancel, onSubmit, place }: Props) {
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [lat, setLat] = useState(INITIAL_LAT);
@@ -34,12 +36,37 @@ export function PlaceForm({ categories, onSubmit }: Props) {
 
   const generatedSlug = useMemo(() => slugify(title), [title]);
 
+  useEffect(() => {
+    if (!place) {
+      setTitle("");
+      setCategoryId("");
+      setLat(INITIAL_LAT);
+      setLon(INITIAL_LON);
+      setDescription("");
+      setLocalComment("");
+      setWeight("1");
+      setStatus("draft");
+      setIsChain(false);
+      return;
+    }
+
+    setTitle(place.title);
+    setCategoryId(place.category_id ?? "");
+    setLat(String(place.lat));
+    setLon(String(place.lon));
+    setDescription(place.description ?? "");
+    setLocalComment(place.local_comment ?? "");
+    setWeight(String(place.weight));
+    setStatus(place.status);
+    setIsChain(place.is_chain);
+  }, [place]);
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSaving(true);
     try {
       await onSubmit({
-        slug: generatedSlug,
+        slug: place?.slug ?? generatedSlug,
         title,
         category_id: categoryId || null,
         lat: Number(lat),
@@ -50,12 +77,17 @@ export function PlaceForm({ categories, onSubmit }: Props) {
         status,
         is_chain: isChain,
       });
-      setTitle("");
-      setDescription("");
-      setLocalComment("");
-      setWeight("1");
-      setStatus("draft");
-      setIsChain(false);
+      if (!place) {
+        setTitle("");
+        setCategoryId("");
+        setLat(INITIAL_LAT);
+        setLon(INITIAL_LON);
+        setDescription("");
+        setLocalComment("");
+        setWeight("1");
+        setStatus("draft");
+        setIsChain(false);
+      }
     } finally {
       setIsSaving(false);
     }
@@ -129,8 +161,13 @@ export function PlaceForm({ categories, onSubmit }: Props) {
       </label>
 
       <button type="submit" disabled={!generatedSlug || isSaving}>
-        {isSaving ? "Zapisywanie..." : "Dodaj miejsce"}
+        {isSaving ? "Zapisywanie..." : place ? "Zapisz zmiany" : "Dodaj miejsce"}
       </button>
+      {place ? (
+        <button className="ghost-button" type="button" onClick={onCancel}>
+          Anuluj edycję
+        </button>
+      ) : null}
     </form>
   );
 }
