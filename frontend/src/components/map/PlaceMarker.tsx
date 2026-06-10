@@ -25,19 +25,24 @@ function markerIcon(photos: Photo[]) {
   });
 }
 
-function fanPhotoIcon(photo: Photo) {
+type FanOffset = {
+  x: number;
+  y: number;
+};
+
+function fanPhotoIcon(photo: Photo, offset: FanOffset, index: number) {
   return L.divIcon({
     className: "photo-fan-marker",
-    html: `<span style="background-image: url('${escapeAttribute(mediaUrl(photo.thumb_path))}')"></span>`,
+    html: `<span style="background-image: url('${escapeAttribute(mediaUrl(photo.thumb_path))}'); ${fanAnimationStyle(offset, index)}"></span>`,
     iconAnchor: [31, 31],
     iconSize: [62, 62],
   });
 }
 
-function fanAddIcon() {
+function fanAddIcon(offset: FanOffset, index: number) {
   return L.divIcon({
     className: "photo-fan-add-marker",
-    html: "<span>+</span>",
+    html: `<span style="${fanAnimationStyle(offset, index)}">+</span>`,
     iconAnchor: [25, 25],
     iconSize: [50, 50],
     popupAnchor: [0, -22],
@@ -50,6 +55,12 @@ function escapeAttribute(value: string) {
 
 function stopMarkerClick(event: L.LeafletMouseEvent) {
   L.DomEvent.stop(event.originalEvent);
+}
+
+function fanAnimationStyle(offset: FanOffset, index: number) {
+  const delay = Math.min(index * 32, 180);
+
+  return `--fan-from-x: ${-offset.x}px; --fan-from-y: ${-offset.y}px; --fan-delay: ${delay}ms;`;
 }
 
 function fanOffsets(itemCount: number) {
@@ -95,10 +106,13 @@ export function PlaceMarker({ place, photos, isExpanded, onCloseFan, onPhotoUplo
     };
   }, [isExpanded, map]);
 
-  const fanPositions = useMemo(() => {
+  const fanLayout = useMemo(() => {
     const origin = map.project([place.lat, place.lon], map.getZoom());
 
-    return fanOffsets(fanItemCount).map((offset) => map.unproject(origin.add([offset.x, offset.y]), map.getZoom()));
+    return fanOffsets(fanItemCount).map((offset) => ({
+      offset,
+      position: map.unproject(origin.add([offset.x, offset.y]), map.getZoom()),
+    }));
   }, [fanItemCount, layoutVersion, map, place.lat, place.lon]);
 
   return (
@@ -120,9 +134,9 @@ export function PlaceMarker({ place, photos, isExpanded, onCloseFan, onPhotoUplo
       {isExpanded
         ? photos.map((photo, index) => (
             <Marker
-              icon={fanPhotoIcon(photo)}
+              icon={fanPhotoIcon(photo, fanLayout[index].offset, index)}
               key={photo.id}
-              position={fanPositions[index]}
+              position={fanLayout[index].position}
               riseOnHover
               title={photo.caption ?? place.title}
               zIndexOffset={1300 + index}
@@ -138,8 +152,8 @@ export function PlaceMarker({ place, photos, isExpanded, onCloseFan, onPhotoUplo
 
       {isExpanded ? (
         <Marker
-          icon={fanAddIcon()}
-          position={fanPositions[photos.length]}
+          icon={fanAddIcon(fanLayout[photos.length].offset, photos.length)}
+          position={fanLayout[photos.length].position}
           riseOnHover
           title={`Dodaj zdjęcie: ${place.title}`}
           zIndexOffset={1400 + photos.length}
