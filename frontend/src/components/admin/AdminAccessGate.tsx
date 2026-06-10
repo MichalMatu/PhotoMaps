@@ -4,10 +4,11 @@ import { LockKeyhole } from "lucide-react";
 import { saveAdminToken } from "../../api/client";
 
 type Props = {
+  message?: string | null;
   onUnlocked: (token: string) => void;
 };
 
-export function AdminAccessGate({ onUnlocked }: Props) {
+export function AdminAccessGate({ message, onUnlocked }: Props) {
   const [token, setToken] = useState("");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -29,6 +30,7 @@ export function AdminAccessGate({ onUnlocked }: Props) {
         </div>
         <span className="eyebrow">Panel redakcji</span>
         <h1>Dostęp admina</h1>
+        {message ? <p className="admin-access-message">{message}</p> : null}
         <form className="admin-access-form" onSubmit={handleSubmit}>
           <label>
             Token

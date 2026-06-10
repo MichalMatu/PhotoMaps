@@ -1,50 +1,31 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
-import { getPlacePhotos, getPlaces, type Photo, type Place } from "../api/client";
+import { getMapPlaces } from "../api/client";
 import { AppShell } from "../components/layout/AppShell";
 import { PlaceMap } from "../components/map/PlaceMap";
 
 export function PublicMapPage() {
-  const [photosByPlaceId, setPhotosByPlaceId] = useState<Record<string, Photo[]>>({});
-  const [places, setPlaces] = useState<Place[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    void loadMapData();
-  }, []);
-
-  async function loadMapData() {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const nextPlaces = await getPlaces();
-      const photoEntries = await Promise.all(
-        nextPlaces.map(async (place) => [place.id, await getPlacePhotos(place.id)] as const),
-      );
-      setPlaces(nextPlaces);
-      setPhotosByPlaceId(Object.fromEntries(photoEntries));
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Nie udalo sie pobrac miejsc");
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  const placesQuery = useQuery({
+    queryKey: ["places-map"],
+    queryFn: getMapPlaces,
+    staleTime: 60_000,
+  });
 
   return (
     <AppShell activeSection="map">
       <main className="page-shell map-page">
-        {isLoading || error ? (
-          <div className="map-status-panel">
-            {isLoading ? <p>Ładowanie mapy...</p> : null}
-            {error ? <p className="error-text">{error}</p> : null}
+        {placesQuery.isLoading || placesQuery.isError ? (
+          <div className={placesQuery.isError ? "map-status-panel map-status-panel--error" : "map-status-panel"} role="status">
+            {placesQuery.isLoading ? <p>Ładowanie mapy...</p> : null}
+            {placesQuery.isError ? <p className="error-text">Nie udało się pobrać miejsc</p> : null}
           </div>
         ) : null}
         <div className="map-frame">
           <PlaceMap
-            places={places}
-            photosByPlaceId={photosByPlaceId}
-            onPhotoUploaded={loadMapData}
+            places={placesQuery.data ?? []}
+            onPhotoUploaded={() => {
+              void placesQuery.refetch();
+            }}
           />
         </div>
       </main>

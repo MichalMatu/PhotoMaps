@@ -1,6 +1,7 @@
 import { ReactNode, useState } from "react";
 import {
   Bookmark,
+  BookOpen,
   Camera,
   Clock3,
   Languages,
@@ -15,7 +16,7 @@ import {
 
 import { APP_NAME } from "../../config/app";
 
-type AppSection = "map" | "admin";
+type AppSection = "map" | "admin" | "guides";
 
 type Props = {
   activeSection: AppSection;
@@ -24,6 +25,7 @@ type Props = {
 
 const primaryItems = [
   { href: "/", label: "Mapa", section: "map" as const, Icon: MapPinned },
+  { href: "/guides", label: "Przewodniki", section: "guides" as const, Icon: BookOpen },
 ];
 
 const drawerItems = [

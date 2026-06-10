@@ -3,8 +3,10 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { Marker, Popup, useMap } from "react-leaflet";
 
-import { mediaUrl, type Photo, type Place } from "../../api/client";
+import { mediaUrl, type Photo, type PlaceMapItem } from "../../api/client";
+import { MemoryPanel } from "../places/MemoryPanel";
 import { PhotoUploadForm } from "../places/PhotoUploadForm";
+import { ReportForm } from "../places/ReportForm";
 
 function markerIcon(photos: Photo[]) {
   const coverPhoto = photos[0];
@@ -79,7 +81,7 @@ function fanOffsets(itemCount: number) {
 }
 
 type Props = {
-  place: Place;
+  place: PlaceMapItem;
   photos: Photo[];
   isExpanded: boolean;
   onCloseFan: () => void;
@@ -90,7 +92,7 @@ type Props = {
 type PhotoViewerProps = {
   onClose: () => void;
   photo: Photo;
-  place: Place;
+  place: PlaceMapItem;
 };
 
 function MapPhotoViewer({ onClose, photo, place }: PhotoViewerProps) {
@@ -211,7 +213,7 @@ export function PlaceMarker({ place, photos, isExpanded, onCloseFan, onPhotoUplo
         >
           <Popup className="map-photo-upload-popup" closeButton>
             <div className="map-upload-popover">
-              <span className="eyebrow">Nowe zdjęcie</span>
+              <span className="eyebrow">Miejsce</span>
               <strong>{place.title}</strong>
               <PhotoUploadForm
                 placeId={place.id}
@@ -220,6 +222,8 @@ export function PlaceMarker({ place, photos, isExpanded, onCloseFan, onPhotoUplo
                   onCloseFan();
                 }}
               />
+              <MemoryPanel placeId={place.id} />
+              <ReportForm targetId={place.id} targetType="place" />
             </div>
           </Popup>
         </Marker>

@@ -16,5 +16,6 @@ class Photo(SQLModel, table=True):
     thumb_path: str
     status: str = Field(default="pending", index=True)
     caption: str | None = None
+    consent_confirmed: bool = False
     created_at: datetime = Field(default_factory=utc_now)
     approved_at: datetime | None = None

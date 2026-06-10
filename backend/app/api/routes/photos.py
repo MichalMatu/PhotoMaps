@@ -3,18 +3,11 @@ from sqlmodel import Session, select
 
 from app.db.session import get_session
 from app.models.photo import Photo
-from app.models.place import Place
-from app.schemas.photo import PhotoRead
+from app.schemas.photo import PhotoAdminRead, PhotoRead
 from app.services.media.images import store_uploaded_image
+from app.services.places import ensure_public_place
 
 router = APIRouter(prefix="/api/places/{place_id}/photos", tags=["photos"])
-
-
-def ensure_public_place(place_id: str, session: Session) -> Place:
-    place = session.get(Place, place_id)
-    if place is None or place.status != "published":
-        raise HTTPException(status_code=404, detail="Place not found")
-    return place
 
 
 def photo_to_read(photo: Photo) -> PhotoRead:
@@ -25,6 +18,20 @@ def photo_to_read(photo: Photo) -> PhotoRead:
         thumb_path=photo.thumb_path,
         status=photo.status,
         caption=photo.caption,
+        created_at=photo.created_at,
+        approved_at=photo.approved_at,
+    )
+
+
+def photo_to_admin_read(photo: Photo) -> PhotoAdminRead:
+    return PhotoAdminRead(
+        id=photo.id,
+        place_id=photo.place_id,
+        public_path=photo.public_path,
+        thumb_path=photo.thumb_path,
+        status=photo.status,
+        caption=photo.caption,
+        consent_confirmed=photo.consent_confirmed,
         created_at=photo.created_at,
         approved_at=photo.approved_at,
     )
@@ -50,10 +57,14 @@ async def upload_place_photo(
     place_id: str,
     file: UploadFile = File(...),
     caption: str | None = Form(default=None),
+    consent_confirmed: bool = Form(...),
     session: Session = Depends(get_session),
 ) -> PhotoRead:
     ensure_public_place(place_id, session)
-    stored_image = await store_uploaded_image(file, place_id)
+    if not consent_confirmed:
+        raise HTTPException(status_code=422, detail="Publication consent is required")
+
+    stored_image = await store_uploaded_image(file, place_id, "photos")
     photo = Photo(
         place_id=place_id,
         original_path=stored_image.original_path,
@@ -61,6 +72,7 @@ async def upload_place_photo(
         thumb_path=stored_image.thumb_path,
         status="pending",
         caption=caption,
+        consent_confirmed=True,
     )
     session.add(photo)
     session.commit()

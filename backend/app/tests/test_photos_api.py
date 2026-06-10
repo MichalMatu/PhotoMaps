@@ -63,7 +63,7 @@ def test_photo_upload_stays_pending_and_hidden_publicly(monkeypatch: MonkeyPatch
         response = client.post(
             f"/api/places/{place.id}/photos",
             files={"file": image_upload()},
-            data={"caption": "Front"},
+            data={"caption": "Front", "consent_confirmed": "true"},
         )
         public_response = client.get(f"/api/places/{place.id}/photos")
 
@@ -87,6 +87,7 @@ def test_photo_review_approves_and_updates_place_count(monkeypatch: MonkeyPatch,
         upload_response = client.post(
             f"/api/places/{place.id}/photos",
             files={"file": image_upload()},
+            data={"consent_confirmed": "true"},
         )
         photo_id = upload_response.json()["id"]
         review_response = client.post(
@@ -136,6 +137,66 @@ def test_rejecting_approved_photo_decrements_place_count(monkeypatch: MonkeyPatc
         assert response.json()["status"] == "rejected"
         assert place.photo_count == 0
         assert place.cover_photo_id is None
+
+
+def test_rejecting_cover_photo_selects_replacement(monkeypatch: MonkeyPatch, tmp_path: Path) -> None:
+    for client, session in client_with_session(monkeypatch, tmp_path):
+        place = Place(slug="public-place", title="Public", lat=51.11, lon=17.03, status="published")
+        session.add(place)
+        session.commit()
+        session.refresh(place)
+        cover_photo = Photo(
+            place_id=place.id,
+            original_path="photos/cover-original.jpg",
+            public_path="/media/photos/cover.jpg",
+            thumb_path="/media/photos/cover-thumb.jpg",
+            status="approved",
+            approved_at=datetime(2026, 1, 2, tzinfo=timezone.utc),
+        )
+        replacement_photo = Photo(
+            place_id=place.id,
+            original_path="photos/replacement-original.jpg",
+            public_path="/media/photos/replacement.jpg",
+            thumb_path="/media/photos/replacement-thumb.jpg",
+            status="approved",
+            approved_at=datetime(2026, 1, 1, tzinfo=timezone.utc),
+        )
+        session.add(cover_photo)
+        session.add(replacement_photo)
+        session.commit()
+        session.refresh(cover_photo)
+        session.refresh(replacement_photo)
+        place.photo_count = 2
+        place.cover_photo_id = cover_photo.id
+        session.add(place)
+        session.commit()
+
+        response = client.post(
+            f"/api/admin/photos/{cover_photo.id}/review",
+            headers=ADMIN_HEADERS,
+            json={"status": "rejected"},
+        )
+        session.refresh(place)
+
+        assert response.status_code == 200
+        assert place.photo_count == 1
+        assert place.cover_photo_id == replacement_photo.id
+
+
+def test_photo_upload_requires_publication_consent(monkeypatch: MonkeyPatch, tmp_path: Path) -> None:
+    for client, session in client_with_session(monkeypatch, tmp_path):
+        place = Place(slug="public-place", title="Public", lat=51.11, lon=17.03, status="published")
+        session.add(place)
+        session.commit()
+        session.refresh(place)
+
+        response = client.post(
+            f"/api/places/{place.id}/photos",
+            files={"file": image_upload()},
+            data={"caption": "Front", "consent_confirmed": "false"},
+        )
+
+        assert response.status_code == 422
 
 
 def test_admin_photo_list_can_return_all_or_filtered_statuses(monkeypatch: MonkeyPatch, tmp_path: Path) -> None:

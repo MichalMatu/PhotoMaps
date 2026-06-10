@@ -1,0 +1,75 @@
+import { useQuery } from "@tanstack/react-query";
+
+import { getGuide, getGuides } from "../api/client";
+import { AppShell } from "../components/layout/AppShell";
+
+function currentGuideSlug() {
+  const match = window.location.pathname.match(/^\/guides\/([^/]+)$/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+export function GuidesPage() {
+  const slug = currentGuideSlug();
+  const guidesQuery = useQuery({
+    queryKey: ["guides"],
+    queryFn: getGuides,
+    enabled: slug === null,
+  });
+  const guideQuery = useQuery({
+    queryKey: ["guide", slug],
+    queryFn: () => getGuide(slug ?? ""),
+    enabled: slug !== null,
+  });
+
+  return (
+    <AppShell activeSection="guides">
+      <main className="page-shell guide-page">
+        {slug === null ? (
+          <section className="content-panel">
+            <div className="section-heading">
+              <h1>Przewodniki</h1>
+              <span>{guidesQuery.data?.length ?? 0}</span>
+            </div>
+            {guidesQuery.isLoading ? <p className="notice">Ładowanie przewodników...</p> : null}
+            {guidesQuery.isError ? <p className="notice error">Nie udało się pobrać przewodników.</p> : null}
+            <div className="simple-card-grid">
+              {guidesQuery.data?.map((guide) => (
+                <a className="simple-card" href={`/guides/${guide.slug}`} key={guide.id}>
+                  <span className="eyebrow">Przewodnik</span>
+                  <strong>{guide.title}</strong>
+                  {guide.description ? <p>{guide.description}</p> : null}
+                </a>
+              ))}
+            </div>
+          </section>
+        ) : (
+          <section className="content-panel">
+            {guideQuery.isLoading ? <p className="notice">Ładowanie przewodnika...</p> : null}
+            {guideQuery.isError ? <p className="notice error">Nie udało się pobrać przewodnika.</p> : null}
+            {guideQuery.data ? (
+              <>
+                <a className="ghost-link" href="/guides">
+                  Wszystkie przewodniki
+                </a>
+                <div className="section-heading">
+                  <h1>{guideQuery.data.title}</h1>
+                  <span>{guideQuery.data.places.length} miejsc</span>
+                </div>
+                {guideQuery.data.description ? <p className="lead-text">{guideQuery.data.description}</p> : null}
+                <div className="simple-card-grid">
+                  {guideQuery.data.places.map((place) => (
+                    <article className="simple-card" key={place.id}>
+                      <span className="eyebrow">{place.photo_count + place.memory_count} wpisów</span>
+                      <strong>{place.title}</strong>
+                      {place.local_comment ?? place.description ? <p>{place.local_comment ?? place.description}</p> : null}
+                    </article>
+                  ))}
+                </div>
+              </>
+            ) : null}
+          </section>
+        )}
+      </main>
+    </AppShell>
+  );
+}

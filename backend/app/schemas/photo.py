@@ -15,7 +15,7 @@ class PhotoRead(SQLModel):
 
 
 class PhotoAdminRead(PhotoRead):
-    pass
+    consent_confirmed: bool
 
 
 class PhotoReview(SQLModel):

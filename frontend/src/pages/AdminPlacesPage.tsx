@@ -1,39 +1,56 @@
 import { useEffect, useMemo, useState } from "react";
-import { Images, MapPin, Tags } from "lucide-react";
+import { BookOpen, Flag, Images, MapPin, MessageSquare, Tags } from "lucide-react";
 
 import {
   archivePlace,
   clearAdminToken,
   createPlace,
   getAdminCategories,
+  getAdminGuides,
+  getAdminMemories,
   getAdminPlaces,
   getAdminPhotos,
+  getAdminReports,
   getStoredAdminToken,
   updatePlace,
+  ApiError,
   type Category,
+  type Guide,
+  type Memory,
   type Photo,
   type PhotoStatus,
   type Place,
   type PlacePayload,
+  type Report,
+  type ReportStatus,
 } from "../api/client";
 import { AppShell } from "../components/layout/AppShell";
 import { AdminAccessGate } from "../components/admin/AdminAccessGate";
 import { CategoryManager } from "../components/admin/CategoryManager";
+import { GuideManager } from "../components/admin/GuideManager";
+import { MemoryQueue } from "../components/admin/MemoryQueue";
 import { PlaceForm } from "../components/admin/PlaceForm";
 import { PhotoQueue } from "../components/admin/PhotoQueue";
+import { ReportQueue } from "../components/admin/ReportQueue";
 import { SystemModal } from "../components/admin/SystemModal";
 
-type AdminSection = "places" | "categories" | "photos";
+type AdminSection = "places" | "categories" | "photos" | "memories" | "guides" | "reports";
 
 export function AdminPlacesPage() {
   const [adminToken, setAdminToken] = useState(() => getStoredAdminToken());
   const [activeSection, setActiveSection] = useState<AdminSection>("places");
   const [categories, setCategories] = useState<Category[]>([]);
   const [editingPlace, setEditingPlace] = useState<Place | null>(null);
+  const [guides, setGuides] = useState<Guide[]>([]);
+  const [memories, setMemories] = useState<Memory[]>([]);
+  const [memoryStatusFilter, setMemoryStatusFilter] = useState<PhotoStatus | "all">("all");
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [photoStatusFilter, setPhotoStatusFilter] = useState<PhotoStatus | "all">("all");
   const [places, setPlaces] = useState<Place[]>([]);
   const [placeToArchive, setPlaceToArchive] = useState<Place | null>(null);
+  const [reports, setReports] = useState<Report[]>([]);
+  const [reportStatusFilter, setReportStatusFilter] = useState<ReportStatus | "all">("all");
+  const [accessMessage, setAccessMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isArchiving, setIsArchiving] = useState(false);
   const categoryById = new Map(categories.map((category) => [category.id, category]));
@@ -41,6 +58,14 @@ export function AdminPlacesPage() {
   const visiblePhotos = useMemo(
     () => (photoStatusFilter === "all" ? photos : photos.filter((photo) => photo.status === photoStatusFilter)),
     [photoStatusFilter, photos],
+  );
+  const visibleMemories = useMemo(
+    () => (memoryStatusFilter === "all" ? memories : memories.filter((memory) => memory.status === memoryStatusFilter)),
+    [memoryStatusFilter, memories],
+  );
+  const visibleReports = useMemo(
+    () => (reportStatusFilter === "all" ? reports : reports.filter((report) => report.status === reportStatusFilter)),
+    [reportStatusFilter, reports],
   );
   const photoStatusCounts = useMemo(
     () => ({
@@ -51,16 +76,41 @@ export function AdminPlacesPage() {
     }),
     [photos],
   );
+  const memoryStatusCounts = useMemo(
+    () => ({
+      all: memories.length,
+      pending: memories.filter((memory) => memory.status === "pending").length,
+      approved: memories.filter((memory) => memory.status === "approved").length,
+      rejected: memories.filter((memory) => memory.status === "rejected").length,
+    }),
+    [memories],
+  );
+  const reportStatusCounts = useMemo(
+    () => ({
+      all: reports.length,
+      open: reports.filter((report) => report.status === "open").length,
+      closed: reports.filter((report) => report.status === "closed").length,
+    }),
+    [reports],
+  );
 
   async function refresh() {
-    const [nextCategories, nextPlaces, nextPhotos] = await Promise.all([
+    const [nextCategories, nextGuides, nextMemories, nextPlaces, nextPhotos, nextReports] = await Promise.all([
       getAdminCategories(),
+      getAdminGuides(),
+      getAdminMemories(),
       getAdminPlaces(),
       getAdminPhotos(),
+      getAdminReports(),
     ]);
     setCategories(nextCategories);
+    setGuides(nextGuides);
+    setMemories(nextMemories);
     setPlaces(nextPlaces);
     setPhotos(nextPhotos);
+    setReports(nextReports);
+    setAccessMessage(null);
+    setError(null);
   }
 
   useEffect(() => {
@@ -69,6 +119,19 @@ export function AdminPlacesPage() {
     }
 
     refresh().catch((reason: unknown) => {
+      if (reason instanceof ApiError && (reason.status === 401 || reason.status === 503)) {
+        clearAdminToken();
+        setAdminToken("");
+        setAccessMessage(reason.message);
+        setCategories([]);
+        setEditingPlace(null);
+        setGuides([]);
+        setMemories([]);
+        setPhotos([]);
+        setPlaces([]);
+        setReports([]);
+        return;
+      }
       setError(reason instanceof Error ? reason.message : "Nie udalo sie pobrac danych");
     });
   }, [adminToken]);
@@ -76,18 +139,29 @@ export function AdminPlacesPage() {
   function handleClearAdminToken() {
     clearAdminToken();
     setAdminToken("");
+    setAccessMessage(null);
     setError(null);
     setCategories([]);
     setEditingPlace(null);
+    setGuides([]);
+    setMemories([]);
     setPhotos([]);
     setPlaces([]);
+    setReports([]);
   }
 
   if (!adminToken) {
     return (
       <AppShell activeSection="admin">
         <main className="page-shell admin-page">
-          <AdminAccessGate onUnlocked={setAdminToken} />
+          <AdminAccessGate
+            message={accessMessage}
+            onUnlocked={(token) => {
+              setAccessMessage(null);
+              setError(null);
+              setAdminToken(token);
+            }}
+          />
         </main>
       </AppShell>
     );
@@ -142,6 +216,8 @@ export function AdminPlacesPage() {
               <span>{places.length} miejsc</span>
               <span>{activeCategoryCount}/{categories.length} kategorii</span>
               <span>{photoStatusCounts.pending} zdjęć do sprawdzenia</span>
+              <span>{memoryStatusCounts.pending} pamiątek do sprawdzenia</span>
+              <span>{reportStatusCounts.open} otwartych zgłoszeń</span>
               <button className="ghost-button admin-token-button" type="button" onClick={handleClearAdminToken}>
                 Zmień token
               </button>
@@ -177,6 +253,33 @@ export function AdminPlacesPage() {
               <Images aria-hidden="true" size={20} />
               <span>Zdjęcia</span>
               <strong>{photoStatusCounts.pending}</strong>
+            </button>
+            <button
+              className={activeSection === "memories" ? "admin-section-tab is-active" : "admin-section-tab"}
+              type="button"
+              onClick={() => setActiveSection("memories")}
+            >
+              <MessageSquare aria-hidden="true" size={20} />
+              <span>Pamiątki</span>
+              <strong>{memoryStatusCounts.pending}</strong>
+            </button>
+            <button
+              className={activeSection === "guides" ? "admin-section-tab is-active" : "admin-section-tab"}
+              type="button"
+              onClick={() => setActiveSection("guides")}
+            >
+              <BookOpen aria-hidden="true" size={20} />
+              <span>Przewodniki</span>
+              <strong>{guides.length}</strong>
+            </button>
+            <button
+              className={activeSection === "reports" ? "admin-section-tab is-active" : "admin-section-tab"}
+              type="button"
+              onClick={() => setActiveSection("reports")}
+            >
+              <Flag aria-hidden="true" size={20} />
+              <span>Zgłoszenia</span>
+              <strong>{reportStatusCounts.open}</strong>
             </button>
           </nav>
 
@@ -248,6 +351,33 @@ export function AdminPlacesPage() {
                 statusFilter={photoStatusFilter}
                 onReviewed={refresh}
                 onStatusFilterChange={setPhotoStatusFilter}
+              />
+            </section>
+          ) : null}
+
+          {activeSection === "memories" ? (
+            <section className="admin-section admin-section-single">
+              <MemoryQueue
+                memories={visibleMemories}
+                places={places}
+                statusCounts={memoryStatusCounts}
+                statusFilter={memoryStatusFilter}
+                onReviewed={refresh}
+                onStatusFilterChange={setMemoryStatusFilter}
+              />
+            </section>
+          ) : null}
+
+          {activeSection === "guides" ? <GuideManager guides={guides} places={places} onChanged={refresh} /> : null}
+
+          {activeSection === "reports" ? (
+            <section className="admin-section admin-section-single">
+              <ReportQueue
+                reports={visibleReports}
+                statusCounts={reportStatusCounts}
+                statusFilter={reportStatusFilter}
+                onChanged={refresh}
+                onStatusFilterChange={setReportStatusFilter}
               />
             </section>
           ) : null}

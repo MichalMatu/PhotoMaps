@@ -1,6 +1,16 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000";
 const ADMIN_TOKEN_STORAGE_KEY = "photomaps_admin_token";
 
+export class ApiError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
 export type Category = {
   id: string;
   label: string;
@@ -53,8 +63,79 @@ export type Photo = {
   thumb_path: string;
   status: PhotoStatus;
   caption: string | null;
+  consent_confirmed?: boolean;
   created_at: string;
   approved_at: string | null;
+};
+
+export type Memory = {
+  id: string;
+  place_id: string;
+  author_name: string | null;
+  author_city: string | null;
+  caption: string;
+  public_path: string;
+  thumb_path: string;
+  status: PhotoStatus;
+  paid: boolean;
+  share_slug: string;
+  consent_confirmed?: boolean;
+  created_at: string;
+  approved_at: string | null;
+};
+
+export type PlaceMapItem = Place & {
+  category: Category | null;
+  cover_photo: Photo | null;
+  photos: Photo[];
+};
+
+export type GuideStatus = "draft" | "published" | "archived";
+
+export type Guide = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  status: GuideStatus;
+  created_at: string;
+  updated_at: string;
+};
+
+export type GuideDetail = Guide & {
+  places: Place[];
+};
+
+export type GuidePayload = {
+  slug: string;
+  title: string;
+  description: string | null;
+  status: GuideStatus;
+};
+
+export type GuidePlacePayload = {
+  place_id: string;
+  sort_order: number;
+};
+
+export type ReportStatus = "open" | "closed";
+export type ReportTargetType = "place" | "photo" | "memory" | "guide";
+
+export type Report = {
+  id: string;
+  target_type: ReportTargetType;
+  target_id: string;
+  reason: string;
+  message: string | null;
+  status: ReportStatus;
+  created_at: string;
+};
+
+export type ReportPayload = {
+  target_type: ReportTargetType;
+  target_id: string;
+  reason: string;
+  message: string | null;
 };
 
 export type PlacePayload = {
@@ -101,12 +182,12 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   if (!response.ok) {
     const message = await response.text();
     if (response.status === 401) {
-      throw new Error("Token admina jest nieprawidłowy.");
+      throw new ApiError("Token admina jest nieprawidłowy.", response.status);
     }
     if (response.status === 503) {
-      throw new Error("Token admina nie jest skonfigurowany w backendzie.");
+      throw new ApiError("Token admina nie jest skonfigurowany w backendzie.", response.status);
     }
-    throw new Error(message || `Request failed: ${response.status}`);
+    throw new ApiError(message || `Request failed: ${response.status}`, response.status);
   }
 
   if (response.status === 204) {
@@ -154,8 +235,16 @@ export function getPlaces(): Promise<Place[]> {
   return request<Place[]>("/api/places");
 }
 
+export function getMapPlaces(): Promise<PlaceMapItem[]> {
+  return request<PlaceMapItem[]>("/api/places/map");
+}
+
 export function getPlacePhotos(placeId: string): Promise<Photo[]> {
   return request<Photo[]>(`/api/places/${placeId}/photos`);
+}
+
+export function getPlaceMemories(placeId: string): Promise<Memory[]> {
+  return request<Memory[]>(`/api/places/${placeId}/memories`);
 }
 
 export function getAdminPlaces(): Promise<Place[]> {
@@ -182,9 +271,15 @@ export function archivePlace(placeId: string): Promise<Place> {
   });
 }
 
-export function uploadPlacePhoto(placeId: string, file: File, caption: string): Promise<Photo> {
+export function uploadPlacePhoto(
+  placeId: string,
+  file: File,
+  caption: string,
+  consentConfirmed: boolean,
+): Promise<Photo> {
   const formData = new FormData();
   formData.append("file", file);
+  formData.append("consent_confirmed", String(consentConfirmed));
   if (caption.trim()) {
     formData.append("caption", caption.trim());
   }
@@ -195,9 +290,41 @@ export function uploadPlacePhoto(placeId: string, file: File, caption: string): 
   });
 }
 
+export function uploadPlaceMemory(
+  placeId: string,
+  payload: {
+    authorCity: string;
+    authorName: string;
+    caption: string;
+    consentConfirmed: boolean;
+    file: File;
+  },
+): Promise<Memory> {
+  const formData = new FormData();
+  formData.append("file", payload.file);
+  formData.append("caption", payload.caption.trim());
+  formData.append("consent_confirmed", String(payload.consentConfirmed));
+  if (payload.authorName.trim()) {
+    formData.append("author_name", payload.authorName.trim());
+  }
+  if (payload.authorCity.trim()) {
+    formData.append("author_city", payload.authorCity.trim());
+  }
+
+  return request<Memory>(`/api/places/${placeId}/memories`, {
+    method: "POST",
+    body: formData,
+  });
+}
+
 export function getAdminPhotos(status?: PhotoStatus): Promise<Photo[]> {
   const query = status ? `?status=${status}` : "";
   return request<Photo[]>(`/api/admin/photos${query}`);
+}
+
+export function getAdminMemories(status?: PhotoStatus): Promise<Memory[]> {
+  const query = status ? `?status=${status}` : "";
+  return request<Memory[]>(`/api/admin/memories${query}`);
 }
 
 export function reviewPhoto(photoId: string, status: "approved" | "rejected"): Promise<Photo> {
@@ -207,9 +334,78 @@ export function reviewPhoto(photoId: string, status: "approved" | "rejected"): P
   });
 }
 
+export function reviewMemory(memoryId: string, status: "approved" | "rejected"): Promise<Memory> {
+  return request<Memory>(`/api/admin/memories/${memoryId}/review`, {
+    method: "POST",
+    body: JSON.stringify({ status }),
+  });
+}
+
 export function setCoverPhoto(photoId: string): Promise<Place> {
   return request<Place>(`/api/admin/photos/${photoId}/cover`, {
     method: "POST",
+  });
+}
+
+export function getGuides(): Promise<Guide[]> {
+  return request<Guide[]>("/api/guides");
+}
+
+export function getGuide(slug: string): Promise<GuideDetail> {
+  return request<GuideDetail>(`/api/guides/${slug}`);
+}
+
+export function getAdminGuides(): Promise<Guide[]> {
+  return request<Guide[]>("/api/admin/guides");
+}
+
+export function getAdminGuide(guideId: string): Promise<GuideDetail> {
+  return request<GuideDetail>(`/api/admin/guides/${guideId}`);
+}
+
+export function createGuide(payload: GuidePayload): Promise<Guide> {
+  return request<Guide>("/api/admin/guides", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateGuide(guideId: string, payload: GuidePayload): Promise<Guide> {
+  return request<Guide>(`/api/admin/guides/${guideId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function addPlaceToGuide(guideId: string, payload: GuidePlacePayload): Promise<GuideDetail> {
+  return request<GuideDetail>(`/api/admin/guides/${guideId}/places`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function removePlaceFromGuide(guideId: string, placeId: string): Promise<GuideDetail> {
+  return request<GuideDetail>(`/api/admin/guides/${guideId}/places/${placeId}`, {
+    method: "DELETE",
+  });
+}
+
+export function createReport(payload: ReportPayload): Promise<Report> {
+  return request<Report>("/api/reports", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function getAdminReports(status?: ReportStatus): Promise<Report[]> {
+  const query = status ? `?status=${status}` : "";
+  return request<Report[]>(`/api/admin/reports${query}`);
+}
+
+export function updateReport(reportId: string, payload: { message?: string | null; status?: ReportStatus }): Promise<Report> {
+  return request<Report>(`/api/admin/reports/${reportId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
   });
 }
 

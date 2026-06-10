@@ -5,32 +5,12 @@ from sqlmodel import Session, select
 
 from app.api.admin_auth import require_admin_token
 from app.db.session import get_session
-from app.models.category import Category
 from app.models.place import Place
 from app.schemas.place import PlaceCreate, PlaceRead, PlaceUpdate
 from app.api.routes.places import place_to_read
+from app.services.places import ensure_active_category, ensure_place_status, ensure_slug_available
 
 router = APIRouter(prefix="/api/admin/places", tags=["admin places"], dependencies=[Depends(require_admin_token)])
-
-ALLOWED_STATUSES = {"draft", "published", "archived"}
-
-
-def ensure_status(status: str) -> None:
-    if status not in ALLOWED_STATUSES:
-        raise HTTPException(status_code=422, detail="Unsupported place status")
-
-
-def ensure_slug_available(session: Session, slug: str, place_id: str | None = None) -> None:
-    statement = select(Place).where(Place.slug == slug)
-    existing = session.exec(statement).first()
-    if existing is not None and existing.id != place_id:
-        raise HTTPException(status_code=409, detail="Slug already exists")
-
-
-def ensure_active_category(session: Session, category_id: str) -> None:
-    category = session.get(Category, category_id)
-    if category is None or category.status != "active":
-        raise HTTPException(status_code=422, detail="Category must be active")
 
 
 @router.get("", response_model=list[PlaceRead])
@@ -41,7 +21,7 @@ def list_admin_places(session: Session = Depends(get_session)) -> list[PlaceRead
 
 @router.post("", response_model=PlaceRead, status_code=201)
 def create_place(payload: PlaceCreate, session: Session = Depends(get_session)) -> PlaceRead:
-    ensure_status(payload.status)
+    ensure_place_status(payload.status)
     ensure_slug_available(session, payload.slug)
     if payload.category_id is not None:
         ensure_active_category(session, payload.category_id)
@@ -64,7 +44,7 @@ def update_place(
 
     data = payload.model_dump(exclude_unset=True)
     if "status" in data and data["status"] is not None:
-        ensure_status(data["status"])
+        ensure_place_status(data["status"])
     if "slug" in data and data["slug"] is not None:
         ensure_slug_available(session, data["slug"], place.id)
     if "category_id" in data and data["category_id"] is not None and data["category_id"] != place.category_id:

@@ -60,6 +60,134 @@
   margin: 0;
 }
 
+.compact-heading {
+  margin-top: 12px;
+}
+
+.compact-heading h3 {
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.memory-panel,
+.report-form {
+  border-top: 1px solid var(--color-border);
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+}
+
+.memory-list {
+  display: grid;
+  gap: 8px;
+}
+
+.memory-card {
+  align-items: start;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 54px minmax(0, 1fr);
+}
+
+.memory-card img {
+  aspect-ratio: 1;
+  border-radius: 6px;
+  object-fit: cover;
+  width: 54px;
+}
+
+.memory-card strong,
+.memory-card span,
+.memory-card p {
+  display: block;
+  margin: 0;
+}
+
+.memory-card span,
+.muted-text {
+  color: var(--color-muted-strong);
+  font-size: 0.78rem;
+}
+
+.memory-card p {
+  color: var(--color-text);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.report-form label {
+  color: var(--color-muted-strong);
+  display: grid;
+  font-size: 0.78rem;
+  font-weight: 500;
+  gap: 4px;
+}
+
+.report-form select,
+.report-form textarea {
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  max-width: 100%;
+  min-height: 34px;
+  padding: 6px 8px;
+}
+
+.content-panel {
+  display: grid;
+  gap: 18px;
+  margin: 0 auto;
+  max-width: 1120px;
+  padding: 28px;
+}
+
+.guide-page {
+  min-height: 100vh;
+  overflow: auto;
+}
+
+.lead-text {
+  color: var(--color-muted-strong);
+  font-size: 1rem;
+  line-height: 1.55;
+  margin: 0;
+  max-width: 720px;
+}
+
+.simple-card-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.simple-card {
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text);
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  text-decoration: none;
+}
+
+.simple-card strong {
+  font-size: 1.05rem;
+}
+
+.simple-card p {
+  color: var(--color-muted-strong);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.ghost-link {
+  color: var(--color-accent);
+  font-weight: 650;
+  text-decoration: none;
+}
+
 .system-modal-backdrop {
   align-items: center;
   background: rgb(0 0 0 / 42%);

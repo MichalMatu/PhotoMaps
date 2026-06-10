@@ -26,7 +26,7 @@ export function PhotoUploadForm({ placeId, onUploaded }: Props) {
     setIsSaving(true);
     setMessage(null);
     try {
-      await uploadPlacePhoto(placeId, file, caption);
+      await uploadPlacePhoto(placeId, file, caption, hasConsent);
       setCaption("");
       setFile(null);
       setHasConsent(false);

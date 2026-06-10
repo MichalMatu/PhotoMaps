@@ -60,6 +60,16 @@
   color: var(--color-success);
 }
 
+.status-badge--open {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+}
+
+.status-badge--closed {
+  background: var(--color-surface-soft);
+  color: var(--color-muted);
+}
+
 .status-badge--archived {
   background: var(--color-surface-soft);
   color: var(--color-muted);

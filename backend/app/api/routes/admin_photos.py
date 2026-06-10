@@ -9,32 +9,17 @@ from app.models.photo import Photo
 from app.models.place import Place
 from app.schemas.place import PlaceRead
 from app.schemas.photo import PhotoAdminRead, PhotoReview
-from app.api.routes.photos import photo_to_read
+from app.api.routes.photos import photo_to_admin_read
 from app.api.routes.places import place_to_read
 from app.services.media.images import delete_stored_image
+from app.services.review import (
+    apply_photo_deleted,
+    ensure_final_review_status,
+    ensure_visible_review_status,
+    review_photo as review_photo_status,
+)
 
 router = APIRouter(prefix="/api/admin/photos", tags=["admin photos"], dependencies=[Depends(require_admin_token)])
-
-VISIBLE_REVIEW_STATUSES = {"pending", "approved", "rejected"}
-FINAL_REVIEW_STATUSES = {"approved", "rejected"}
-
-
-def update_place_photo_count(place: Place, previous_status: str, next_status: str) -> None:
-    if previous_status != "approved" and next_status == "approved":
-        place.photo_count += 1
-    elif previous_status == "approved" and next_status != "approved":
-        place.photo_count = max(0, place.photo_count - 1)
-
-
-def next_cover_photo(session: Session, place_id: str, current_photo_id: str) -> Photo | None:
-    statement = (
-        select(Photo)
-        .where(Photo.place_id == place_id)
-        .where(Photo.id != current_photo_id)
-        .where(Photo.status == "approved")
-        .order_by(Photo.approved_at.desc(), Photo.created_at.desc())
-    )
-    return session.exec(statement).first()
 
 
 @router.get("", response_model=list[PhotoAdminRead])
@@ -42,14 +27,14 @@ def list_admin_photos(
     status: str | None = Query(default=None),
     session: Session = Depends(get_session),
 ) -> list[PhotoAdminRead]:
-    if status is not None and status not in VISIBLE_REVIEW_STATUSES:
-        raise HTTPException(status_code=422, detail="Unsupported photo status")
+    if status is not None:
+        ensure_visible_review_status(status)
 
     statement = select(Photo).order_by(Photo.created_at.desc())
     if status is not None:
         statement = statement.where(Photo.status == status)
 
-    return [photo_to_read(photo) for photo in session.exec(statement).all()]
+    return [photo_to_admin_read(photo) for photo in session.exec(statement).all()]
 
 
 @router.post("/{photo_id}/review", response_model=PhotoAdminRead)
@@ -58,8 +43,7 @@ def review_photo(
     payload: PhotoReview,
     session: Session = Depends(get_session),
 ) -> PhotoAdminRead:
-    if payload.status not in FINAL_REVIEW_STATUSES:
-        raise HTTPException(status_code=422, detail="Unsupported review status")
+    ensure_final_review_status(payload.status)
 
     photo = session.get(Photo, photo_id)
     if photo is None:
@@ -69,22 +53,13 @@ def review_photo(
     if place is None:
         raise HTTPException(status_code=404, detail="Place not found")
 
-    previous_status = photo.status
-    photo.status = payload.status
-    photo.approved_at = datetime.now(timezone.utc) if payload.status == "approved" else None
-    update_place_photo_count(place, previous_status, payload.status)
+    review_photo_status(photo, place, payload.status, session)
 
-    if payload.status == "approved" and place.cover_photo_id is None:
-        place.cover_photo_id = photo.id
-    elif payload.status == "rejected" and place.cover_photo_id == photo.id:
-        place.cover_photo_id = None
-
-    place.updated_at = datetime.now(timezone.utc)
     session.add(photo)
     session.add(place)
     session.commit()
     session.refresh(photo)
-    return photo_to_read(photo)
+    return photo_to_admin_read(photo)
 
 
 @router.post("/{photo_id}/cover", response_model=PlaceRead)
@@ -117,13 +92,7 @@ def delete_photo(photo_id: str, session: Session = Depends(get_session)) -> None
     if place is None:
         raise HTTPException(status_code=404, detail="Place not found")
 
-    if photo.status == "approved":
-        place.photo_count = max(0, place.photo_count - 1)
-    if place.cover_photo_id == photo.id:
-        replacement = next_cover_photo(session, place.id, photo.id)
-        place.cover_photo_id = replacement.id if replacement else None
-
-    place.updated_at = datetime.now(timezone.utc)
+    apply_photo_deleted(photo, place, session)
     session.delete(photo)
     session.add(place)
     session.commit()

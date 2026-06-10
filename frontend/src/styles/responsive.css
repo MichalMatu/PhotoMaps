@@ -74,7 +74,9 @@
   }
 
   .map-status-panel {
-    left: 12px;
+    left: calc(64px + 12px);
+    max-width: calc(100vw - 88px);
+    right: 12px;
     top: 12px;
   }
 

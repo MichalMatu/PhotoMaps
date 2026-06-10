@@ -16,7 +16,19 @@ STORAGE_DIR = BASE_DIR / "storage"
 PRIVATE_STORAGE_DIR = STORAGE_DIR / "private"
 PUBLIC_STORAGE_DIR = STORAGE_DIR / "public"
 
-FRONTEND_ORIGINS = [
+DEFAULT_FRONTEND_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
 ]
+
+
+def configured_frontend_origins() -> list[str]:
+    origins = os.getenv("FRONTEND_ORIGINS")
+    if origins:
+        return [origin.strip() for origin in origins.split(",") if origin.strip()]
+    return DEFAULT_FRONTEND_ORIGINS
+
+
+FRONTEND_ORIGINS = configured_frontend_origins()

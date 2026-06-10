@@ -2,6 +2,9 @@ from datetime import datetime
 
 from sqlmodel import SQLModel
 
+from app.schemas.category import CategoryRead
+from app.schemas.photo import PhotoRead
+
 
 class PlaceBase(SQLModel):
     slug: str
@@ -49,3 +52,9 @@ class PlaceRead(SQLModel):
     score: float
     created_at: datetime
     updated_at: datetime
+
+
+class PlaceMapRead(PlaceRead):
+    category: CategoryRead | None
+    cover_photo: PhotoRead | None
+    photos: list[PhotoRead]
