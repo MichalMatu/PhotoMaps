@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, Response, UploadFile
+from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
 
 from app.db.session import get_session
@@ -103,22 +104,27 @@ async def upload_place_memory(
 
     token_hash = claim_token_hash(claim_token)
     stored_image = await store_uploaded_image(file, place_id, "memories")
-    memory = Memory(
-        place_id=place_id,
-        author_name=normalized_author_name,
-        author_city=normalized_author_city,
-        caption=normalized_caption,
-        memory_text=normalized_memory_text,
-        original_path=stored_image.original_path,
-        public_path=stored_image.public_path,
-        thumb_path=stored_image.thumb_path,
-        status="pending",
-        consent_confirmed=True,
-        claim_token_hash=token_hash,
-    )
-    session.add(memory)
-    session.commit()
-    session.refresh(memory)
+    try:
+        memory = Memory(
+            place_id=place_id,
+            author_name=normalized_author_name,
+            author_city=normalized_author_city,
+            caption=normalized_caption,
+            memory_text=normalized_memory_text,
+            original_path=stored_image.original_path,
+            public_path=stored_image.public_path,
+            thumb_path=stored_image.thumb_path,
+            status="pending",
+            consent_confirmed=True,
+            claim_token_hash=token_hash,
+        )
+        session.add(memory)
+        session.commit()
+        session.refresh(memory)
+    except SQLAlchemyError as exc:
+        session.rollback()
+        delete_stored_image(stored_image.original_path, stored_image.public_path, stored_image.thumb_path)
+        raise HTTPException(status_code=500, detail="Memory could not be saved") from exc
     return memory_to_read(memory)
 
 

@@ -7,6 +7,7 @@ from sqlmodel.pool import StaticPool
 
 from app.db.session import get_session
 from app.main import app
+from app.models.place import Place
 
 ADMIN_TOKEN = "test-admin-token"
 ADMIN_HEADERS = {"Authorization": f"Bearer {ADMIN_TOKEN}"}
@@ -31,12 +32,17 @@ def client_with_session(monkeypatch: MonkeyPatch) -> Generator[tuple[TestClient,
 
 
 def test_public_report_can_be_created_and_closed_by_admin(monkeypatch: MonkeyPatch) -> None:
-    for client, _session in client_with_session(monkeypatch):
+    for client, session in client_with_session(monkeypatch):
+        place = Place(slug="public-place", title="Public", lat=51.11, lon=17.03, status="published")
+        session.add(place)
+        session.commit()
+        session.refresh(place)
+
         create_response = client.post(
             "/api/reports",
             json={
                 "target_type": "place",
-                "target_id": "place-id",
+                "target_id": place.id,
                 "reason": "wrong_data",
                 "message": "Adres jest nieaktualny.",
             },
@@ -66,3 +72,13 @@ def test_report_rejects_unsupported_target_type(monkeypatch: MonkeyPatch) -> Non
         )
 
         assert response.status_code == 422
+
+
+def test_report_rejects_missing_target(monkeypatch: MonkeyPatch) -> None:
+    for client, _session in client_with_session(monkeypatch):
+        response = client.post(
+            "/api/reports",
+            json={"target_type": "place", "target_id": "missing-place", "reason": "wrong_data"},
+        )
+
+        assert response.status_code == 404

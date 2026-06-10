@@ -6,7 +6,8 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 from PIL import Image
 from pytest import MonkeyPatch
-from sqlmodel import Session, SQLModel, create_engine
+from sqlalchemy.exc import SQLAlchemyError
+from sqlmodel import Session, SQLModel, create_engine, select
 from sqlmodel.pool import StaticPool
 
 from app.db.session import get_session
@@ -75,6 +76,31 @@ def test_photo_upload_stays_pending_and_hidden_publicly(monkeypatch: MonkeyPatch
         assert body["public_path"].startswith("/media/photos/")
         assert public_response.status_code == 200
         assert public_response.json() == []
+
+
+def test_photo_upload_cleans_files_when_database_save_fails(monkeypatch: MonkeyPatch, tmp_path: Path) -> None:
+    for client, session in client_with_session(monkeypatch, tmp_path):
+        place = Place(slug="public-place", title="Public", lat=51.11, lon=17.03, status="published")
+        session.add(place)
+        session.commit()
+        session.refresh(place)
+
+        def fail_commit() -> None:
+            raise SQLAlchemyError("commit failed")
+
+        monkeypatch.setattr(session, "commit", fail_commit)
+
+        response = client.post(
+            f"/api/places/{place.id}/photos",
+            files={"file": image_upload()},
+            data={"caption": "Front", "consent_confirmed": "true"},
+        )
+        stored_files = [path for root in (tmp_path / "private", tmp_path / "public") for path in root.rglob("*") if path.is_file()]
+
+        assert response.status_code == 500
+        assert response.json()["detail"] == "Photo could not be saved"
+        assert stored_files == []
+        assert session.exec(select(Photo)).all() == []
 
 
 def test_photo_review_approves_and_updates_place_count(monkeypatch: MonkeyPatch, tmp_path: Path) -> None:

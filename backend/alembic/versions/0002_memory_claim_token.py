@@ -18,11 +18,7 @@ def upgrade() -> None:
     inspector = sa.inspect(op.get_bind())
     columns = {column["name"] for column in inspector.get_columns("memory")}
     if "claim_token_hash" not in columns:
-        op.execute(sa.text("DROP TABLE IF EXISTS _alembic_tmp_memory"))
-        op.execute(sa.text("DELETE FROM memory"))
-        op.execute(sa.text("UPDATE place SET memory_count = 0"))
-        with op.batch_alter_table("memory", recreate="always") as batch_op:
-            batch_op.add_column(sa.Column("claim_token_hash", sa.String(), nullable=False))
+        op.add_column("memory", sa.Column("claim_token_hash", sa.String(), nullable=False, server_default=""))
 
 
 def downgrade() -> None:

@@ -5,7 +5,8 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 from PIL import Image
 from pytest import MonkeyPatch
-from sqlmodel import Session, SQLModel, create_engine
+from sqlalchemy.exc import SQLAlchemyError
+from sqlmodel import Session, SQLModel, create_engine, select
 from sqlmodel.pool import StaticPool
 
 from app.api.routes.memories import MAX_MEMORY_AUTHOR_LENGTH, MAX_MEMORY_CAPTION_LENGTH, MAX_MEMORY_TEXT_LENGTH
@@ -85,6 +86,36 @@ def test_memory_upload_stays_pending_and_hidden_publicly(monkeypatch: MonkeyPatc
         assert "original_path" not in body
         assert public_response.status_code == 200
         assert public_response.json() == []
+
+
+def test_memory_upload_cleans_files_when_database_save_fails(monkeypatch: MonkeyPatch, tmp_path: Path) -> None:
+    for client, session in client_with_session(monkeypatch, tmp_path):
+        place = Place(slug="public-place", title="Public", lat=51.11, lon=17.03, status="published")
+        session.add(place)
+        session.commit()
+        session.refresh(place)
+
+        def fail_commit() -> None:
+            raise SQLAlchemyError("commit failed")
+
+        monkeypatch.setattr(session, "commit", fail_commit)
+
+        response = client.post(
+            f"/api/places/{place.id}/memories",
+            files={"file": image_upload()},
+            data={
+                "caption": "Byłem tutaj",
+                "memory_text": MEMORY_TEXT,
+                "claim_token": MEMORY_TOKEN,
+                "consent_confirmed": "true",
+            },
+        )
+        stored_files = [path for root in (tmp_path / "private", tmp_path / "public") for path in root.rglob("*") if path.is_file()]
+
+        assert response.status_code == 500
+        assert response.json()["detail"] == "Memory could not be saved"
+        assert stored_files == []
+        assert session.exec(select(Memory)).all() == []
 
 
 def test_memory_review_approves_and_updates_place_count(monkeypatch: MonkeyPatch, tmp_path: Path) -> None:

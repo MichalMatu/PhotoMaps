@@ -20,11 +20,10 @@ def memory_columns() -> set[str]:
 
 def upgrade() -> None:
     if "memory_text" not in memory_columns():
-        op.execute(sa.text("DROP TABLE IF EXISTS _alembic_tmp_memory"))
-        op.execute(sa.text("DELETE FROM memory"))
-        op.execute(sa.text("UPDATE place SET memory_count = 0"))
+        op.add_column("memory", sa.Column("memory_text", sa.String(length=240), nullable=True))
+        op.execute(sa.text("UPDATE memory SET memory_text = caption WHERE memory_text IS NULL"))
         with op.batch_alter_table("memory", recreate="always") as batch_op:
-            batch_op.add_column(sa.Column("memory_text", sa.String(length=240), nullable=False))
+            batch_op.alter_column("memory_text", existing_type=sa.String(length=240), nullable=False)
 
 
 def downgrade() -> None:

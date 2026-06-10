@@ -122,6 +122,34 @@ export function AdminPlacesPage() {
     setOperationError(null);
   }
 
+  async function refreshCategories() {
+    setCategories(await getAdminCategories());
+  }
+
+  async function refreshGuides() {
+    setGuides(await getAdminGuides());
+  }
+
+  async function refreshPlaces() {
+    setPlaces(await getAdminPlaces());
+  }
+
+  async function refreshPhotos() {
+    const [nextPhotos, nextPlaces] = await Promise.all([getAdminPhotos(), getAdminPlaces()]);
+    setPhotos(nextPhotos);
+    setPlaces(nextPlaces);
+  }
+
+  async function refreshMemories() {
+    const [nextMemories, nextPlaces] = await Promise.all([getAdminMemories(), getAdminPlaces()]);
+    setMemories(nextMemories);
+    setPlaces(nextPlaces);
+  }
+
+  async function refreshReports() {
+    setReports(await getAdminReports());
+  }
+
   useEffect(() => {
     if (!adminToken) {
       return;
@@ -190,7 +218,7 @@ export function AdminPlacesPage() {
       }
       setEditingPlace(null);
       setIsPlaceModalOpen(false);
-      await refresh();
+      await refreshPlaces();
     } catch (reason) {
       setOperationError({
         details: errorDetails(reason),
@@ -228,7 +256,7 @@ export function AdminPlacesPage() {
         setEditingPlace(null);
       }
       setPlaceToArchive(null);
-      await refresh();
+      await refreshPlaces();
     } catch (reason) {
       setPlaceToArchive(null);
       setOperationError({
@@ -357,7 +385,7 @@ export function AdminPlacesPage() {
 
           {activeSection === "categories" ? (
             <section className="admin-section admin-section-single">
-              <CategoryManager categories={categories} places={places} onChanged={refresh} />
+              <CategoryManager categories={categories} places={places} onChanged={refreshCategories} />
             </section>
           ) : null}
 
@@ -369,7 +397,7 @@ export function AdminPlacesPage() {
                 places={places}
                 statusCounts={photoStatusCounts}
                 statusFilter={photoStatusFilter}
-                onReviewed={refresh}
+                onReviewed={refreshPhotos}
                 onStatusFilterChange={setPhotoStatusFilter}
               />
             </section>
@@ -383,13 +411,13 @@ export function AdminPlacesPage() {
                 places={places}
                 statusCounts={memoryStatusCounts}
                 statusFilter={memoryStatusFilter}
-                onReviewed={refresh}
+                onReviewed={refreshMemories}
                 onStatusFilterChange={setMemoryStatusFilter}
               />
             </section>
           ) : null}
 
-          {activeSection === "guides" ? <GuideManager guides={guides} places={places} onChanged={refresh} /> : null}
+          {activeSection === "guides" ? <GuideManager guides={guides} places={places} onChanged={refreshGuides} /> : null}
 
           {activeSection === "reports" ? (
             <section className="admin-section admin-section-single">
@@ -397,7 +425,7 @@ export function AdminPlacesPage() {
                 reports={visibleReports}
                 statusCounts={reportStatusCounts}
                 statusFilter={reportStatusFilter}
-                onChanged={refresh}
+                onChanged={refreshReports}
                 onStatusFilterChange={setReportStatusFilter}
               />
             </section>
