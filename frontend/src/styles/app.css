@@ -1073,11 +1073,12 @@ h2 {
 }
 
 .table-row {
+  align-items: center;
   display: grid;
   gap: 12px;
   grid-template-columns: minmax(170px, 2fr) 0.8fr 1.25fr 0.65fr minmax(170px, 1fr);
-  min-height: 48px;
-  padding: 12px 14px;
+  min-height: 58px;
+  padding: 14px 18px;
 }
 
 .table-row + .table-row {
@@ -1085,10 +1086,17 @@ h2 {
 }
 
 .table-row span {
+  align-self: center;
+  line-height: 1.2;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.table-row span:nth-child(2),
+.table-row span:nth-child(4) {
+  justify-self: start;
 }
 
 .table-row.is-selected {
@@ -1096,9 +1104,11 @@ h2 {
 }
 
 .table-actions {
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  justify-content: flex-start;
   overflow: visible !important;
   text-overflow: clip !important;
   white-space: normal !important;
