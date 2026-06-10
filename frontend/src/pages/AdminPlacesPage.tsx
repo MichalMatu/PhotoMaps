@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Images, MapPin, Tags } from "lucide-react";
 
 import {
   archivePlace,
@@ -19,7 +20,10 @@ import { PlaceForm } from "../components/admin/PlaceForm";
 import { PhotoQueue } from "../components/admin/PhotoQueue";
 import { SystemModal } from "../components/admin/SystemModal";
 
+type AdminSection = "places" | "categories" | "photos";
+
 export function AdminPlacesPage() {
+  const [activeSection, setActiveSection] = useState<AdminSection>("places");
   const [categories, setCategories] = useState<Category[]>([]);
   const [editingPlace, setEditingPlace] = useState<Place | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -35,6 +39,7 @@ export function AdminPlacesPage() {
   const [error, setError] = useState<string | null>(null);
   const [isArchiving, setIsArchiving] = useState(false);
   const categoryById = new Map(categories.map((category) => [category.id, category]));
+  const activeCategoryCount = categories.filter((category) => category.status === "active").length;
 
   async function refresh(nextPhotoStatusFilter = photoStatusFilter) {
     const [nextCategories, nextPlaces, nextPhotos, pendingPhotos, approvedPhotos, rejectedPhotos] = await Promise.all([
@@ -101,65 +106,122 @@ export function AdminPlacesPage() {
   return (
     <AppShell activeSection="admin">
       <main className="page-shell admin-page">
-        <section className="admin-layout">
-          <div className="admin-editor">
-            <span className="eyebrow">Panel redakcji</span>
-            <h1>{editingPlace ? "Edytuj" : "Miejsce"}</h1>
-            {error ? <p className="notice error">{error}</p> : null}
-            <PlaceForm
-              categories={categories}
-              place={editingPlace}
-              onCancel={() => setEditingPlace(null)}
-              onSubmit={handleSubmitPlace}
-            />
-          </div>
+        <section className="admin-workspace">
+          <header className="admin-header">
+            <div>
+              <span className="eyebrow">Panel redakcji</span>
+              <h1>Admin</h1>
+            </div>
+            <div className="admin-metrics" aria-label="Podsumowanie panelu">
+              <span>{places.length} miejsc</span>
+              <span>{activeCategoryCount}/{categories.length} kategorii</span>
+              <span>{photoStatusCounts.pending} zdjęć do sprawdzenia</span>
+            </div>
+          </header>
 
-          <div className="admin-list">
-            <CategoryManager categories={categories} onChanged={refresh} />
-            <div className="section-heading">
-              <h2>Miejsca</h2>
-              <span>{places.length}</span>
-            </div>
-            <div className="place-table" role="table">
-              <div className="table-row table-head" role="row">
-                <span>Nazwa</span>
-                <span>Status</span>
-                <span>Kategoria</span>
-                <span>Priorytet</span>
-                <span>Akcje</span>
+          {error ? <p className="notice error">{error}</p> : null}
+
+          <nav className="admin-section-tabs" aria-label="Sekcje panelu admina">
+            <button
+              className={activeSection === "places" ? "admin-section-tab is-active" : "admin-section-tab"}
+              type="button"
+              onClick={() => setActiveSection("places")}
+            >
+              <MapPin aria-hidden="true" size={20} />
+              <span>Miejsca</span>
+              <strong>{places.length}</strong>
+            </button>
+            <button
+              className={activeSection === "categories" ? "admin-section-tab is-active" : "admin-section-tab"}
+              type="button"
+              onClick={() => setActiveSection("categories")}
+            >
+              <Tags aria-hidden="true" size={20} />
+              <span>Kategorie</span>
+              <strong>{categories.length}</strong>
+            </button>
+            <button
+              className={activeSection === "photos" ? "admin-section-tab is-active" : "admin-section-tab"}
+              type="button"
+              onClick={() => setActiveSection("photos")}
+            >
+              <Images aria-hidden="true" size={20} />
+              <span>Zdjęcia</span>
+              <strong>{photoStatusCounts.pending}</strong>
+            </button>
+          </nav>
+
+          {activeSection === "places" ? (
+            <section className="admin-layout admin-section">
+              <div className="admin-editor">
+                <span className="eyebrow">Miejsca</span>
+                <h2>{editingPlace ? "Edytuj miejsce" : "Dodaj miejsce"}</h2>
+                <PlaceForm
+                  categories={categories}
+                  place={editingPlace}
+                  onCancel={() => setEditingPlace(null)}
+                  onSubmit={handleSubmitPlace}
+                />
               </div>
-              {places.map((place) => (
-                <div className={editingPlace?.id === place.id ? "table-row is-selected" : "table-row"} role="row" key={place.id}>
-                  <span>{place.title}</span>
-                  <span>{place.status}</span>
-                  <span>{place.category_id ? categoryById.get(place.category_id)?.label ?? place.category_id : "-"}</span>
-                  <span>{place.weight.toFixed(1)}</span>
-                  <span className="table-actions">
-                    <button type="button" onClick={() => setEditingPlace(place)}>
-                      Edytuj
-                    </button>
-                    <button
-                      className="secondary-button"
-                      type="button"
-                      disabled={place.status === "archived"}
-                      onClick={() => setPlaceToArchive(place)}
-                    >
-                      Archiwizuj
-                    </button>
-                  </span>
+
+              <div className="admin-list">
+                <div className="section-heading">
+                  <h2>Miejsca</h2>
+                  <span>{places.length}</span>
                 </div>
-              ))}
-              {places.length === 0 ? <p className="notice">Brak miejsc w bazie.</p> : null}
-            </div>
-            <PhotoQueue
-              photos={photos}
-              places={places}
-              statusCounts={photoStatusCounts}
-              statusFilter={photoStatusFilter}
-              onReviewed={refresh}
-              onStatusFilterChange={setPhotoStatusFilter}
-            />
-          </div>
+                <div className="place-table" role="table">
+                  <div className="table-row table-head" role="row">
+                    <span>Nazwa</span>
+                    <span>Status</span>
+                    <span>Kategoria</span>
+                    <span>Priorytet</span>
+                    <span>Akcje</span>
+                  </div>
+                  {places.map((place) => (
+                    <div className={editingPlace?.id === place.id ? "table-row is-selected" : "table-row"} role="row" key={place.id}>
+                      <span>{place.title}</span>
+                      <span>{place.status}</span>
+                      <span>{place.category_id ? categoryById.get(place.category_id)?.label ?? place.category_id : "-"}</span>
+                      <span>{place.weight.toFixed(1)}</span>
+                      <span className="table-actions">
+                        <button type="button" onClick={() => setEditingPlace(place)}>
+                          Edytuj
+                        </button>
+                        <button
+                          className="secondary-button"
+                          type="button"
+                          disabled={place.status === "archived"}
+                          onClick={() => setPlaceToArchive(place)}
+                        >
+                          Archiwizuj
+                        </button>
+                      </span>
+                    </div>
+                  ))}
+                  {places.length === 0 ? <p className="notice">Brak miejsc w bazie.</p> : null}
+                </div>
+              </div>
+            </section>
+          ) : null}
+
+          {activeSection === "categories" ? (
+            <section className="admin-section admin-section-single">
+              <CategoryManager categories={categories} onChanged={refresh} />
+            </section>
+          ) : null}
+
+          {activeSection === "photos" ? (
+            <section className="admin-section admin-section-single">
+              <PhotoQueue
+                photos={photos}
+                places={places}
+                statusCounts={photoStatusCounts}
+                statusFilter={photoStatusFilter}
+                onReviewed={refresh}
+                onStatusFilterChange={setPhotoStatusFilter}
+              />
+            </section>
+          ) : null}
         </section>
         {placeToArchive ? (
           <SystemModal

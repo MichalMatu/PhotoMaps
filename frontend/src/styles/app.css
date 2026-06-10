@@ -641,11 +641,95 @@ h2 {
   }
 }
 
+.admin-workspace {
+  display: grid;
+  gap: 22px;
+  padding: 28px;
+}
+
+.admin-header {
+  align-items: end;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+}
+
+.admin-header h1 {
+  font-size: 2rem;
+  line-height: 1;
+  margin: 0;
+}
+
+.admin-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.admin-metrics span {
+  background: #ffffff;
+  border: 1px solid #dce3df;
+  border-radius: 999px;
+  color: #43504b;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 8px 12px;
+}
+
+.admin-section-tabs {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.admin-section-tab {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #d7dfdb;
+  color: #3e4945;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  justify-items: start;
+  min-height: 54px;
+  padding: 0 14px;
+  text-align: left;
+}
+
+.admin-section-tab:hover,
+.admin-section-tab.is-active {
+  background: #eaf3ef;
+  border-color: #9dbbb1;
+  color: #126a5a;
+}
+
+.admin-section-tab strong {
+  background: #e1eee8;
+  border-radius: 999px;
+  color: #126a5a;
+  min-width: 30px;
+  padding: 4px 8px;
+  text-align: center;
+}
+
+.admin-section {
+  min-width: 0;
+}
+
+.admin-section-single .category-manager,
+.admin-section-single .photo-queue {
+  margin-top: 0;
+}
+
+.admin-section-single .photo-grid {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
 .admin-layout {
   display: grid;
   gap: 28px;
   grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
-  padding: 28px;
 }
 
 .admin-editor,
@@ -662,7 +746,7 @@ h2 {
   gap: 12px;
 }
 
-.admin-editor h1 {
+.admin-editor h2 {
   font-size: 1.65rem;
   line-height: 1.12;
   margin-bottom: 18px;
@@ -1032,6 +1116,10 @@ h2 {
   .admin-editor .field-row {
     grid-template-columns: 1fr;
   }
+
+  .category-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 860px) {
@@ -1049,6 +1137,23 @@ h2 {
     min-height: 62px;
   }
 
+  .admin-workspace {
+    padding: 18px;
+  }
+
+  .admin-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-metrics {
+    justify-content: flex-start;
+  }
+
+  .admin-section-tabs {
+    grid-template-columns: 1fr;
+  }
+
   .admin-layout {
     grid-template-columns: 1fr;
   }
@@ -1056,10 +1161,6 @@ h2 {
   .map-frame,
   .place-map {
     min-height: 100vh;
-  }
-
-  .admin-layout {
-    padding: 20px;
   }
 
   .field-row,
