@@ -8,7 +8,8 @@ from app import models as _models  # noqa: F401
 from app.core.config import DATABASE_URL
 
 config = context.config
-config.set_main_option("sqlalchemy.url", DATABASE_URL)
+database_url = config.get_main_option("sqlalchemy.url") or DATABASE_URL
+config.set_main_option("sqlalchemy.url", database_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
@@ -18,7 +19,7 @@ target_metadata = SQLModel.metadata
 
 def run_migrations_offline() -> None:
     context.configure(
-        url=DATABASE_URL,
+        url=database_url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},

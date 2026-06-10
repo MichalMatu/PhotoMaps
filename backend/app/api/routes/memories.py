@@ -31,7 +31,7 @@ def get_place_memory(place_id: str, memory_id: str, session: Session) -> tuple[P
 
 
 def require_memory_claim(memory: Memory, claim_token: str) -> None:
-    if not verify_claim_token(claim_token, memory.claim_token_hash):
+    if not memory.claim_token_hash or not verify_claim_token(claim_token, memory.claim_token_hash):
         raise HTTPException(status_code=403, detail="Invalid memory token")
 
 

@@ -322,6 +322,35 @@ def test_memory_claim_update_and_delete_use_same_token(monkeypatch: MonkeyPatch,
         assert not thumb_file.exists()
 
 
+def test_memory_claim_rejects_missing_stored_hash(monkeypatch: MonkeyPatch, tmp_path: Path) -> None:
+    for client, session in client_with_session(monkeypatch, tmp_path):
+        place = Place(slug="public-place", title="Public", lat=51.11, lon=17.03, status="published")
+        memory = Memory(
+            place_id=place.id,
+            author_name="Marta",
+            author_city="Wrocław",
+            caption="Pamiątka",
+            memory_text=MEMORY_TEXT,
+            original_path="memories/original.jpg",
+            public_path="/media/memories/public.jpg",
+            thumb_path="/media/memories/thumb.jpg",
+            status="approved",
+            claim_token_hash="",
+        )
+        session.add(place)
+        session.add(memory)
+        session.commit()
+        session.refresh(memory)
+
+        response = client.post(
+            f"/api/places/{place.id}/memories/{memory.id}/claim",
+            json={"claim_token": MEMORY_TOKEN},
+        )
+
+        assert response.status_code == 403
+        assert response.json()["detail"] == "Invalid memory token"
+
+
 def test_memory_hash_is_not_plaintext(monkeypatch: MonkeyPatch, tmp_path: Path) -> None:
     for client, session in client_with_session(monkeypatch, tmp_path):
         place = Place(slug="public-place", title="Public", lat=51.11, lon=17.03, status="published")

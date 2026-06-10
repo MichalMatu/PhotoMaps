@@ -8,6 +8,11 @@ if [ -x "$ROOT_DIR/backend/.venv/bin/python" ]; then
   PYTHON_BIN="$ROOT_DIR/backend/.venv/bin/python"
 fi
 
+mkdir -p \
+  "$ROOT_DIR/backend/data" \
+  "$ROOT_DIR/backend/storage/private" \
+  "$ROOT_DIR/backend/storage/public"
+
 cd "$ROOT_DIR/backend"
 "$PYTHON_BIN" -m alembic -c alembic.ini upgrade head
 "$PYTHON_BIN" -m ruff check app

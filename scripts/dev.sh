@@ -13,6 +13,11 @@ export ADMIN_TOKEN="${ADMIN_TOKEN:-dev-admin-token}"
 export FRONTEND_ORIGINS="${FRONTEND_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174}"
 export VITE_API_BASE_URL="${VITE_API_BASE_URL:-http://127.0.0.1:$BACKEND_PORT}"
 
+mkdir -p \
+  "$ROOT_DIR/backend/data" \
+  "$ROOT_DIR/backend/storage/private" \
+  "$ROOT_DIR/backend/storage/public"
+
 cd "$ROOT_DIR/backend"
 "$PYTHON_BIN" -m alembic -c alembic.ini upgrade head
 "$PYTHON_BIN" -m uvicorn app.main:app --host 127.0.0.1 --port "$BACKEND_PORT" --lifespan off &
