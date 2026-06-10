@@ -281,6 +281,8 @@
 }
 
 .pm-sheet--report {
+  height: auto;
+  max-height: min(440px, calc(100vh - 48px));
   z-index: 12050;
 }
 
@@ -374,6 +376,10 @@
     right: 0;
     top: auto;
     width: auto;
+  }
+
+  .pm-sheet--report {
+    max-height: min(58vh, 440px);
   }
 
   .pm-sheet__handle {

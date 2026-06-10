@@ -25,7 +25,7 @@ function markerIcon(place: PlaceMapItem, isSelected: boolean) {
     ]
       .filter(Boolean)
       .join(" "),
-    html: `<span><img src="${imageUrl}" alt="" width="64" height="52" decoding="async" /></span>`,
+    html: `<span style="background-image: url('${imageUrl}')"></span>`,
     iconAnchor: [32, 26],
     iconSize: [64, 52],
   });

@@ -45,7 +45,7 @@ function MapSizeUpdater() {
   return null;
 }
 
-function FanCloseEvents({ onClose }: { onClose: () => void }) {
+function MapCloseEvents({ onClose }: { onClose: () => void }) {
   useMapEvents({
     click: onClose,
   });
@@ -135,7 +135,12 @@ function PlaceLayer({ places }: Props) {
 
   return (
     <>
-      <FanCloseEvents onClose={() => setExpandedPlaceId(null)} />
+      <MapCloseEvents
+        onClose={() => {
+          setExpandedPlaceId(null);
+          setMemoryPlace(null);
+        }}
+      />
       {clusters.map((cluster) => {
         if (cluster.places.length > 1 && zoom < 15) {
           return (
