@@ -423,7 +423,8 @@ h2 {
 
 .map-photo-viewer {
   align-items: center;
-  background: rgb(17 20 19 / 62%);
+  animation: map-photo-viewer-backdrop-in 340ms ease-out both;
+  background: rgb(17 20 19 / 68%);
   display: flex;
   inset: 0;
   justify-content: center;
@@ -437,7 +438,7 @@ h2 {
 }
 
 .map-photo-viewer-image-wrap img {
-  animation: map-photo-viewer-in 180ms ease-out both;
+  animation: map-photo-viewer-image-in 420ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
   border: 0;
   border-radius: 6px;
   box-shadow: 0 24px 70px rgb(0 0 0 / 45%);
@@ -468,15 +469,31 @@ h2 {
   background: rgb(17 20 19 / 78%);
 }
 
-@keyframes map-photo-viewer-in {
+@keyframes map-photo-viewer-backdrop-in {
   from {
-    opacity: 0;
-    transform: scale(0.96);
+    background: rgb(17 20 19 / 34%);
   }
 
   to {
+    background: rgb(17 20 19 / 68%);
+  }
+}
+
+@keyframes map-photo-viewer-image-in {
+  from {
+    filter: blur(8px) brightness(0.78) saturate(0.88);
+    opacity: 0;
+    transform: translateY(10px) scale(0.975);
+  }
+
+  55% {
     opacity: 1;
-    transform: scale(1);
+  }
+
+  to {
+    filter: blur(0) brightness(1) saturate(1);
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
