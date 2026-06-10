@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import {
   archiveCategory,
@@ -70,6 +70,7 @@ export function CategoryManager({ categories, onChanged, places }: Props) {
   const [sortOrder, setSortOrder] = useState("0");
   const [status, setStatus] = useState<CategoryStatus>(INITIAL_STATUS);
   const [categoryAction, setCategoryAction] = useState<CategoryAction | null>(null);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isProcessingAction, setIsProcessingAction] = useState(false);
   const [operationError, setOperationError] = useState<OperationError | null>(null);
@@ -82,19 +83,13 @@ export function CategoryManager({ categories, onChanged, places }: Props) {
   const categoryBlockerDetails = categoryBlockers.length
     ? categoryBlockers.map((place) => `- ${place.title} (${place.status})`).join("\n")
     : null;
-
-  useEffect(() => {
-    if (!editingCategory) {
-      return;
-    }
-
-    setId(editingCategory.id);
-    setLabel(editingCategory.label);
-    setDescription(editingCategory.description ?? "");
-    setIcon(editingCategory.icon ?? "");
-    setSortOrder(String(editingCategory.sort_order));
-    setStatus(editingCategory.status);
-  }, [editingCategory]);
+  const categoryStatusCounts = useMemo(
+    () => ({
+      active: categories.filter((category) => category.status === "active").length,
+      archived: categories.filter((category) => category.status === "archived").length,
+    }),
+    [categories],
+  );
 
   function resetForm() {
     setEditingCategory(null);
@@ -106,8 +101,35 @@ export function CategoryManager({ categories, onChanged, places }: Props) {
     setStatus(INITIAL_STATUS);
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function openCreateCategoryModal() {
+    resetForm();
+    setIsCategoryModalOpen(true);
+  }
+
+  function openEditCategoryModal(category: Category) {
+    setEditingCategory(category);
+    setId(category.id);
+    setLabel(category.label);
+    setDescription(category.description ?? "");
+    setIcon(category.icon ?? "");
+    setSortOrder(String(category.sort_order));
+    setStatus(category.status);
+    setIsCategoryModalOpen(true);
+  }
+
+  function handleCloseCategoryModal() {
+    if (isSaving) {
+      return;
+    }
+    setIsCategoryModalOpen(false);
+    resetForm();
+  }
+
+  async function handleSaveCategory() {
+    if (!categoryId || !label.trim()) {
+      return;
+    }
+
     setOperationError(null);
     setIsSaving(true);
     try {
@@ -132,6 +154,7 @@ export function CategoryManager({ categories, onChanged, places }: Props) {
         await createCategory(payload);
       }
 
+      setIsCategoryModalOpen(false);
       resetForm();
       await onChanged();
     } catch (reason) {
@@ -159,6 +182,7 @@ export function CategoryManager({ categories, onChanged, places }: Props) {
         await deleteCategoryPermanently(categoryAction.category.id);
       }
       if (editingCategory?.id === categoryAction.category.id) {
+        setIsCategoryModalOpen(false);
         resetForm();
       }
       setCategoryAction(null);
@@ -181,51 +205,16 @@ export function CategoryManager({ categories, onChanged, places }: Props) {
 
   return (
     <section className="admin-panel category-manager">
-      <form className="category-form" onSubmit={handleSubmit}>
-        <label>
-          ID
-          <input
-            value={categoryId}
-            disabled={Boolean(editingCategory)}
-            onChange={(event) => setId(slugify(event.target.value))}
-            placeholder="np. coffee"
-            required
-          />
-        </label>
-        <label>
-          Nazwa
-          <input value={label} onChange={(event) => setLabel(event.target.value)} required />
-        </label>
-        <label>
-          Ikona
-          <input value={icon} onChange={(event) => setIcon(event.target.value)} placeholder="np. coffee" />
-        </label>
-        <label>
-          Kolejność
-          <input type="number" value={sortOrder} onChange={(event) => setSortOrder(event.target.value)} />
-        </label>
-        <label className="category-description-field">
-          Opis
-          <input value={description} onChange={(event) => setDescription(event.target.value)} />
-        </label>
-        <label>
-          Status
-          <select value={status} onChange={(event) => setStatus(event.target.value as CategoryStatus)}>
-            <option value="active">active</option>
-            <option value="archived">archived</option>
-          </select>
-        </label>
-        <div className="category-form-actions">
-          <button type="submit" disabled={!categoryId || !label.trim() || isSaving}>
-            {isSaving ? "Zapisywanie..." : editingCategory ? "Zapisz kategorię" : "Dodaj kategorię"}
-          </button>
-          {editingCategory ? (
-            <button className="ghost-button" type="button" onClick={resetForm}>
-              Anuluj
-            </button>
-          ) : null}
+      <div className="category-toolbar">
+        <div className="admin-summary-pills" aria-label="Status kategorii">
+          <span>Wszystkie {categories.length}</span>
+          <span>Aktywne {categoryStatusCounts.active}</span>
+          <span>Archiwalne {categoryStatusCounts.archived}</span>
         </div>
-      </form>
+        <button type="button" onClick={openCreateCategoryModal}>
+          Dodaj kategorię
+        </button>
+      </div>
 
       <div className="category-list">
         {categories.map((category) => (
@@ -238,7 +227,7 @@ export function CategoryManager({ categories, onChanged, places }: Props) {
             <span>{category.sort_order}</span>
             <span>{category.icon ?? "-"}</span>
             <div className="category-actions">
-              <button type="button" onClick={() => setEditingCategory(category)}>
+              <button type="button" onClick={() => openEditCategoryModal(category)}>
                 Edytuj
               </button>
               <button
@@ -255,8 +244,57 @@ export function CategoryManager({ categories, onChanged, places }: Props) {
             </div>
           </div>
         ))}
-        {categories.length === 0 ? <p className="notice">Brak kategorii. Dodaj pierwszą kategorię w formularzu powyżej.</p> : null}
+        {categories.length === 0 ? <p className="notice">Brak kategorii. Dodaj pierwszą kategorię przyciskiem powyżej.</p> : null}
       </div>
+
+      {isCategoryModalOpen ? (
+        <SystemModal
+          cancelLabel="Zamknij"
+          confirmDisabled={!categoryId || !label.trim()}
+          confirmLabel={editingCategory ? "Zapisz kategorię" : "Dodaj kategorię"}
+          eyebrow="Kategorie"
+          isBusy={isSaving}
+          title={editingCategory ? "Edytuj kategorię" : "Dodaj kategorię"}
+          onClose={handleCloseCategoryModal}
+          onConfirm={handleSaveCategory}
+        >
+          <div className="category-form category-form--modal">
+            <label>
+              ID
+              <input
+                value={categoryId}
+                disabled={Boolean(editingCategory)}
+                onChange={(event) => setId(slugify(event.target.value))}
+                placeholder="np. coffee"
+                required
+              />
+            </label>
+            <label>
+              Nazwa
+              <input value={label} onChange={(event) => setLabel(event.target.value)} required />
+            </label>
+            <label>
+              Ikona
+              <input value={icon} onChange={(event) => setIcon(event.target.value)} placeholder="np. coffee" />
+            </label>
+            <label>
+              Kolejność
+              <input type="number" value={sortOrder} onChange={(event) => setSortOrder(event.target.value)} />
+            </label>
+            <label className="category-description-field">
+              Opis
+              <input value={description} onChange={(event) => setDescription(event.target.value)} />
+            </label>
+            <label>
+              Status
+              <select value={status} onChange={(event) => setStatus(event.target.value as CategoryStatus)}>
+                <option value="active">active</option>
+                <option value="archived">archived</option>
+              </select>
+            </label>
+          </div>
+        </SystemModal>
+      ) : null}
 
       {categoryAction ? (
         <SystemModal

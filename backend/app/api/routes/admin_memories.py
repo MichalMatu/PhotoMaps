@@ -2,11 +2,18 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
 
 from app.api.admin_auth import require_admin_token
-from app.api.routes.memories import memory_to_read
+from app.api.routes.memories import (
+    MAX_MEMORY_AUTHOR_LENGTH,
+    MAX_MEMORY_CAPTION_LENGTH,
+    MAX_MEMORY_TEXT_LENGTH,
+    memory_to_read,
+    normalize_optional_text,
+    normalize_required_text,
+)
 from app.db.session import get_session
 from app.models.memory import Memory
 from app.models.place import Place
-from app.schemas.memory import MemoryAdminRead, MemoryReview
+from app.schemas.memory import MemoryAdminRead, MemoryAdminUpdate, MemoryReview
 from app.services.media.images import delete_stored_image
 from app.services.review import apply_memory_deleted, ensure_final_review_status, ensure_visible_review_status, review_memory
 
@@ -52,6 +59,26 @@ def review_place_memory(
     review_memory(memory, place, payload.status)
     session.add(memory)
     session.add(place)
+    session.commit()
+    session.refresh(memory)
+    return memory_to_admin_read(memory)
+
+
+@router.patch("/{memory_id}", response_model=MemoryAdminRead)
+def update_memory(
+    memory_id: str,
+    payload: MemoryAdminUpdate,
+    session: Session = Depends(get_session),
+) -> MemoryAdminRead:
+    memory = session.get(Memory, memory_id)
+    if memory is None:
+        raise HTTPException(status_code=404, detail="Memory not found")
+
+    memory.caption = normalize_required_text(payload.caption, "Memory caption", MAX_MEMORY_CAPTION_LENGTH)
+    memory.memory_text = normalize_required_text(payload.memory_text, "Memory text", MAX_MEMORY_TEXT_LENGTH)
+    memory.author_name = normalize_optional_text(payload.author_name, "Author name", MAX_MEMORY_AUTHOR_LENGTH)
+    memory.author_city = normalize_optional_text(payload.author_city, "Author city", MAX_MEMORY_AUTHOR_LENGTH)
+    session.add(memory)
     session.commit()
     session.refresh(memory)
     return memory_to_admin_read(memory)

@@ -8,8 +8,8 @@ from app.db.session import get_session
 from app.models.photo import Photo
 from app.models.place import Place
 from app.schemas.place import PlaceRead
-from app.schemas.photo import PhotoAdminRead, PhotoReview
-from app.api.routes.photos import photo_to_admin_read
+from app.schemas.photo import PhotoAdminRead, PhotoReview, PhotoUpdate
+from app.api.routes.photos import normalize_photo_caption, photo_to_admin_read
 from app.api.routes.places import place_to_read
 from app.services.media.images import delete_stored_image
 from app.services.review import (
@@ -57,6 +57,23 @@ def review_photo(
 
     session.add(photo)
     session.add(place)
+    session.commit()
+    session.refresh(photo)
+    return photo_to_admin_read(photo)
+
+
+@router.patch("/{photo_id}", response_model=PhotoAdminRead)
+def update_photo(
+    photo_id: str,
+    payload: PhotoUpdate,
+    session: Session = Depends(get_session),
+) -> PhotoAdminRead:
+    photo = session.get(Photo, photo_id)
+    if photo is None:
+        raise HTTPException(status_code=404, detail="Photo not found")
+
+    photo.caption = normalize_photo_caption(payload.caption)
+    session.add(photo)
     session.commit()
     session.refresh(photo)
     return photo_to_admin_read(photo)

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlmodel import SQLModel
+from sqlmodel import Field, SQLModel
 
 
 class PhotoRead(SQLModel):
@@ -20,3 +20,7 @@ class PhotoAdminRead(PhotoRead):
 
 class PhotoReview(SQLModel):
     status: str
+
+
+class PhotoUpdate(SQLModel):
+    caption: str | None = Field(default=None, max_length=120)

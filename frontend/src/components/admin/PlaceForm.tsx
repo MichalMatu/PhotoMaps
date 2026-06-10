@@ -5,6 +5,7 @@ import { PlaceLocationPicker } from "./PlaceLocationPicker";
 
 type Props = {
   categories: Category[];
+  className?: string;
   place?: Place | null;
   onCancel?: () => void;
   onSubmit: (payload: PlacePayload) => Promise<void>;
@@ -25,7 +26,7 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-export function PlaceForm({ categories, onCancel, onSubmit, place }: Props) {
+export function PlaceForm({ categories, className = "admin-form", onCancel, onSubmit, place }: Props) {
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [location, setLocation] = useState(INITIAL_LOCATION);
@@ -92,7 +93,7 @@ export function PlaceForm({ categories, onCancel, onSubmit, place }: Props) {
   }
 
   return (
-    <form className="admin-form" onSubmit={handleSubmit}>
+    <form className={className} onSubmit={handleSubmit}>
       <label>
         Nazwa
         <input value={title} onChange={(event) => setTitle(event.target.value)} required />
@@ -150,9 +151,9 @@ export function PlaceForm({ categories, onCancel, onSubmit, place }: Props) {
       <button type="submit" disabled={!generatedSlug || isSaving}>
         {isSaving ? "Zapisywanie..." : place ? "Zapisz zmiany" : "Dodaj miejsce"}
       </button>
-      {place ? (
+      {onCancel ? (
         <button className="ghost-button" type="button" onClick={onCancel}>
-          Anuluj edycję
+          {place ? "Anuluj edycję" : "Anuluj"}
         </button>
       ) : null}
     </form>

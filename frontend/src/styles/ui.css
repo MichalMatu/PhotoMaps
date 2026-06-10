@@ -248,6 +248,11 @@
   width: min(460px, 100%);
 }
 
+.system-modal--wide {
+  max-width: 760px;
+  width: min(760px, 100%);
+}
+
 .system-modal.is-dragging,
 .pm-sheet.is-dragging {
   user-select: none;

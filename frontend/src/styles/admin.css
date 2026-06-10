@@ -159,12 +159,48 @@
 }
 
 .admin-section-single .category-manager,
+.admin-section-single .guide-manager,
 .admin-section-single .photo-queue {
   margin-top: 0;
 }
 
-.admin-section-single .photo-grid {
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+.place-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.place-toolbar button {
+  min-height: 36px;
+  padding-inline: 14px;
+  white-space: nowrap;
+}
+
+.admin-summary-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-summary-pills span {
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-muted-strong);
+  font-size: 0.86rem;
+  font-weight: 650;
+  min-height: 36px;
+  padding: 8px 12px;
+}
+
+.admin-section-single > .notice,
+.category-list > .notice,
+.guide-list > .notice,
+.photo-queue > .notice {
+  margin-top: 0;
 }
 
 .admin-layout {

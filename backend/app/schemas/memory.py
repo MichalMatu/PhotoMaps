@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlmodel import SQLModel
+from sqlmodel import Field, SQLModel
 
 
 class MemoryRead(SQLModel):
@@ -40,3 +40,10 @@ class MemoryUpdate(MemoryClaimToken):
     author_city: str | None = None
     caption: str
     memory_text: str
+
+
+class MemoryAdminUpdate(SQLModel):
+    author_name: str | None = Field(default=None, max_length=40)
+    author_city: str | None = Field(default=None, max_length=40)
+    caption: str = Field(max_length=80)
+    memory_text: str = Field(max_length=240)

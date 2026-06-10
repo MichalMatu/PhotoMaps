@@ -53,6 +53,7 @@ export function AdminPlacesPage() {
   const [reportStatusFilter, setReportStatusFilter] = useState<ReportStatus | "all">("all");
   const [accessMessage, setAccessMessage] = useState<string | null>(null);
   const [isArchiving, setIsArchiving] = useState(false);
+  const [isPlaceModalOpen, setIsPlaceModalOpen] = useState(false);
   const [operationError, setOperationError] = useState<OperationError | null>(null);
   const categoryById = new Map(categories.map((category) => [category.id, category]));
   const visiblePhotos = useMemo(
@@ -75,6 +76,14 @@ export function AdminPlacesPage() {
       rejected: photos.filter((photo) => photo.status === "rejected").length,
     }),
     [photos],
+  );
+  const placeStatusCounts = useMemo(
+    () => ({
+      archived: places.filter((place) => place.status === "archived").length,
+      draft: places.filter((place) => place.status === "draft").length,
+      published: places.filter((place) => place.status === "published").length,
+    }),
+    [places],
   );
   const memoryStatusCounts = useMemo(
     () => ({
@@ -176,10 +185,11 @@ export function AdminPlacesPage() {
     try {
       if (editingPlace) {
         await updatePlace(editingPlace.id, payload);
-        setEditingPlace(null);
       } else {
         await createPlace(payload);
       }
+      setEditingPlace(null);
+      setIsPlaceModalOpen(false);
       await refresh();
     } catch (reason) {
       setOperationError({
@@ -188,6 +198,21 @@ export function AdminPlacesPage() {
         title: "Nie udało się zapisać miejsca",
       });
     }
+  }
+
+  function openCreatePlaceModal() {
+    setEditingPlace(null);
+    setIsPlaceModalOpen(true);
+  }
+
+  function openEditPlaceModal(place: Place) {
+    setEditingPlace(place);
+    setIsPlaceModalOpen(true);
+  }
+
+  function handleClosePlaceModal() {
+    setEditingPlace(null);
+    setIsPlaceModalOpen(false);
   }
 
   async function handleConfirmArchivePlace() {
@@ -286,15 +311,17 @@ export function AdminPlacesPage() {
           </nav>
 
           {activeSection === "places" ? (
-            <section className="admin-layout admin-section">
-              <div className="admin-editor">
-                <h2>{editingPlace ? "Edytuj miejsce" : "Dodaj miejsce"}</h2>
-                <PlaceForm
-                  categories={categories}
-                  place={editingPlace}
-                  onCancel={() => setEditingPlace(null)}
-                  onSubmit={handleSubmitPlace}
-                />
+            <section className="admin-section admin-section-single places-manager">
+              <div className="place-toolbar">
+                <div className="admin-summary-pills" aria-label="Status miejsc">
+                  <span>Wszystkie {places.length}</span>
+                  <span>Opublikowane {placeStatusCounts.published}</span>
+                  <span>Szkice {placeStatusCounts.draft}</span>
+                  <span>Archiwalne {placeStatusCounts.archived}</span>
+                </div>
+                <button type="button" onClick={openCreatePlaceModal}>
+                  Dodaj miejsce
+                </button>
               </div>
 
               <div className="admin-list">
@@ -313,7 +340,7 @@ export function AdminPlacesPage() {
                       <span>{place.category_id ? categoryById.get(place.category_id)?.label ?? place.category_id : "-"}</span>
                       <span>{place.weight.toFixed(1)}</span>
                       <span className="table-actions">
-                        <button type="button" onClick={() => setEditingPlace(place)}>
+                        <button type="button" onClick={() => openEditPlaceModal(place)}>
                           Edytuj
                         </button>
                         <button
@@ -356,6 +383,7 @@ export function AdminPlacesPage() {
           {activeSection === "memories" ? (
             <section className="admin-section admin-section-single">
               <MemoryQueue
+                categories={categories}
                 memories={visibleMemories}
                 places={places}
                 statusCounts={memoryStatusCounts}
@@ -380,6 +408,23 @@ export function AdminPlacesPage() {
             </section>
           ) : null}
         </section>
+        {isPlaceModalOpen ? (
+          <SystemModal
+            eyebrow="Miejsca"
+            showActions={false}
+            size="wide"
+            title={editingPlace ? "Edytuj miejsce" : "Dodaj miejsce"}
+            onClose={handleClosePlaceModal}
+          >
+            <PlaceForm
+              categories={categories}
+              className="admin-form place-form place-form--modal"
+              place={editingPlace}
+              onCancel={handleClosePlaceModal}
+              onSubmit={handleSubmitPlace}
+            />
+          </SystemModal>
+        ) : null}
         {placeToArchive ? (
           <SystemModal
             confirmLabel="Archiwizuj"

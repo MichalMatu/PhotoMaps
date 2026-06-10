@@ -316,6 +316,46 @@ def test_memory_hash_is_not_plaintext(monkeypatch: MonkeyPatch, tmp_path: Path) 
         assert memory.claim_token_hash != MEMORY_TOKEN
 
 
+def test_admin_can_update_memory_text_fields(monkeypatch: MonkeyPatch, tmp_path: Path) -> None:
+    for client, session in client_with_session(monkeypatch, tmp_path):
+        place = Place(slug="public-place", title="Public", lat=51.11, lon=17.03, status="published")
+        memory = Memory(
+            place_id=place.id,
+            author_name="Marta",
+            author_city="Wrocław",
+            caption="Pamiątka",
+            memory_text=MEMORY_TEXT,
+            original_path="memories/original.jpg",
+            public_path="/media/memories/public.jpg",
+            thumb_path="/media/memories/thumb.jpg",
+            status="approved",
+            claim_token_hash=claim_token_hash(MEMORY_TOKEN),
+        )
+        session.add(place)
+        session.add(memory)
+        session.commit()
+        session.refresh(memory)
+
+        response = client.patch(
+            f"/api/admin/memories/{memory.id}",
+            headers=ADMIN_HEADERS,
+            json={
+                "author_city": "  Opole  ",
+                "author_name": "  Michał  ",
+                "caption": "  Nowy podpis  ",
+                "memory_text": "  Nowa myśl  ",
+            },
+        )
+        session.refresh(memory)
+
+        assert response.status_code == 200
+        assert response.json()["author_city"] == "Opole"
+        assert response.json()["author_name"] == "Michał"
+        assert response.json()["caption"] == "Nowy podpis"
+        assert response.json()["memory_text"] == "Nowa myśl"
+        assert memory.caption == "Nowy podpis"
+
+
 def test_admin_delete_memory_removes_record_files_and_updates_place(monkeypatch: MonkeyPatch, tmp_path: Path) -> None:
     for client, session in client_with_session(monkeypatch, tmp_path):
         place = Place(slug="public-place", title="Public", lat=51.11, lon=17.03, status="published")

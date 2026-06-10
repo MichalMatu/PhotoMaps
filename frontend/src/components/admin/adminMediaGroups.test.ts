@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { Category, Photo, Place } from "../../api/client";
-import { groupPhotosByPlace } from "./photoQueueGroups";
+import { groupAdminMediaByPlace, selectPhotoAlbumCover } from "./adminMediaGroups";
 
 const category: Category = {
   description: null,
@@ -14,7 +14,7 @@ const category: Category = {
 
 const place: Place = {
   category_id: "shops",
-  cover_photo_id: "photo-1",
+  cover_photo_id: "photo-2",
   created_at: "2026-06-10T00:00:00",
   description: null,
   id: "place-1",
@@ -44,12 +44,13 @@ function photo(id: string): Photo {
   };
 }
 
-describe("groupPhotosByPlace", () => {
-  it("groups photos by place and exposes the place category label", () => {
-    expect(groupPhotosByPlace([photo("photo-1"), photo("photo-2")], [place], [category])).toMatchObject([
+describe("groupAdminMediaByPlace", () => {
+  it("groups media by place and exposes the place category label", () => {
+    expect(groupAdminMediaByPlace([photo("photo-1"), photo("photo-2")], [place], [category], selectPhotoAlbumCover)).toMatchObject([
       {
         categoryLabel: "Sklepy",
-        photos: [{ id: "photo-1" }, { id: "photo-2" }],
+        coverItem: { id: "photo-2" },
+        items: [{ id: "photo-1" }, { id: "photo-2" }],
         title: "Sklep",
       },
     ]);

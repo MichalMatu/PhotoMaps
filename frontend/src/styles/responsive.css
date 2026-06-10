@@ -64,10 +64,6 @@
     justify-content: flex-start;
   }
 
-  .photo-review-item {
-    grid-template-columns: 88px minmax(0, 1fr);
-  }
-
   .drawer-item {
     gap: 16px;
     padding: 0 22px;

@@ -32,17 +32,19 @@ export function ReportQueue({ onChanged, onStatusFilterChange, reports, statusCo
   return (
     <>
       <div className="photo-queue">
-        <div className="status-tabs" role="tablist" aria-label="Status zgłoszeń">
-          {STATUS_FILTERS.map((filter) => (
-            <button
-              className={statusFilter === filter.value ? "status-tab is-active" : "status-tab"}
-              key={filter.value}
-              type="button"
-              onClick={() => onStatusFilterChange(filter.value)}
-            >
-              {filter.label} <span>{statusCounts[filter.value]}</span>
-            </button>
-          ))}
+        <div className="photo-queue-toolbar">
+          <div className="status-tabs" role="tablist" aria-label="Status zgłoszeń">
+            {STATUS_FILTERS.map((filter) => (
+              <button
+                className={statusFilter === filter.value ? "status-tab is-active" : "status-tab"}
+                key={filter.value}
+                type="button"
+                onClick={() => onStatusFilterChange(filter.value)}
+              >
+                {filter.label} <span>{statusCounts[filter.value]}</span>
+              </button>
+            ))}
+          </div>
         </div>
         <div className="report-list">
           {reports.map((report) => (

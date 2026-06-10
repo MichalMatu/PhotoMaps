@@ -134,6 +134,13 @@ export type MemoryUpdatePayload = MemoryClaimPayload & {
   memory_text: string;
 };
 
+export type AdminMemoryUpdatePayload = {
+  author_city: string | null;
+  author_name: string | null;
+  caption: string;
+  memory_text: string;
+};
+
 export type PlaceMapItem = Place & {
   category: Category | null;
   cover_photo: Photo | null;
@@ -425,6 +432,20 @@ export function reviewMemory(memoryId: string, status: "approved" | "rejected"):
 export function setCoverPhoto(photoId: string): Promise<Place> {
   return request<Place>(`/api/admin/photos/${photoId}/cover`, {
     method: "POST",
+  });
+}
+
+export function updateAdminPhoto(photoId: string, payload: { caption: string | null }): Promise<Photo> {
+  return request<Photo>(`/api/admin/photos/${photoId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateAdminMemory(memoryId: string, payload: AdminMemoryUpdatePayload): Promise<Memory> {
+  return request<Memory>(`/api/admin/memories/${memoryId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
   });
 }
 

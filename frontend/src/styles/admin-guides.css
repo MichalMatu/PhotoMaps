@@ -1,0 +1,186 @@
+.guide-manager {
+  min-width: 0;
+}
+
+.guide-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.guide-toolbar button {
+  min-height: 36px;
+  padding-inline: 14px;
+}
+
+.guide-list {
+  display: grid;
+  gap: 12px;
+}
+
+.guide-row {
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.guide-row-summary {
+  align-items: center;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  min-height: 62px;
+  padding: 12px 14px;
+}
+
+.guide-row-summary div {
+  min-width: 0;
+}
+
+.guide-row-summary strong,
+.guide-row-summary span {
+  display: block;
+  min-width: 0;
+}
+
+.guide-row-summary strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.guide-row-summary div > span {
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  margin-top: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.guide-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.guide-actions button {
+  font-size: 0.82rem;
+  min-height: 32px;
+  padding: 0 11px;
+}
+
+.guide-detail-panel {
+  border-top: 1px solid var(--color-border);
+  display: grid;
+  gap: 12px;
+  padding: 12px 14px 14px;
+}
+
+.guide-place-form {
+  align-items: end;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(220px, 1fr) 120px auto;
+}
+
+.guide-form,
+.guide-place-form {
+  min-width: 0;
+}
+
+.guide-form label,
+.guide-place-form label {
+  color: var(--color-muted-strong);
+  display: grid;
+  font-size: 0.82rem;
+  font-weight: 650;
+  gap: 6px;
+  min-width: 0;
+}
+
+.guide-form input,
+.guide-form select,
+.guide-form textarea,
+.guide-place-form input,
+.guide-place-form select {
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text);
+  min-height: 40px;
+  min-width: 0;
+  padding: 8px 10px;
+  width: 100%;
+}
+
+.guide-form textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.guide-place-form button {
+  min-height: 40px;
+  white-space: nowrap;
+}
+
+.guide-place-list {
+  display: grid;
+  gap: 8px;
+}
+
+.guide-place-row {
+  align-items: center;
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 10px 12px;
+}
+
+.guide-place-row strong,
+.guide-place-row span {
+  display: block;
+  min-width: 0;
+}
+
+.guide-place-row strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.guide-place-row span {
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  margin-top: 2px;
+}
+
+.guide-form--modal {
+  display: grid;
+  gap: 12px;
+}
+
+@media (max-width: 760px) {
+  .guide-row-summary,
+  .guide-place-form,
+  .guide-place-row {
+    grid-template-columns: 1fr;
+  }
+
+  .guide-toolbar button,
+  .guide-place-form button {
+    width: 100%;
+  }
+
+  .guide-actions {
+    justify-content: flex-start;
+  }
+}

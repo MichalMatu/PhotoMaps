@@ -227,6 +227,61 @@ def test_admin_photo_list_can_return_all_or_filtered_statuses(monkeypatch: Monke
         assert [photo["status"] for photo in pending_response.json()] == ["pending"]
 
 
+def test_admin_can_update_photo_caption(monkeypatch: MonkeyPatch, tmp_path: Path) -> None:
+    for client, session in client_with_session(monkeypatch, tmp_path):
+        place = Place(slug="public-place", title="Public", lat=51.11, lon=17.03, status="published")
+        session.add(place)
+        session.commit()
+        session.refresh(place)
+        photo = Photo(
+            place_id=place.id,
+            original_path="photos/original.jpg",
+            public_path="/media/photos/public.jpg",
+            thumb_path="/media/photos/thumb.jpg",
+            status="approved",
+            caption="Stary podpis",
+        )
+        session.add(photo)
+        session.commit()
+        session.refresh(photo)
+
+        response = client.patch(
+            f"/api/admin/photos/{photo.id}",
+            headers=ADMIN_HEADERS,
+            json={"caption": "  Nowy podpis  "},
+        )
+        session.refresh(photo)
+
+        assert response.status_code == 200
+        assert response.json()["caption"] == "Nowy podpis"
+        assert photo.caption == "Nowy podpis"
+
+
+def test_admin_photo_caption_has_length_limit(monkeypatch: MonkeyPatch, tmp_path: Path) -> None:
+    for client, session in client_with_session(monkeypatch, tmp_path):
+        place = Place(slug="public-place", title="Public", lat=51.11, lon=17.03, status="published")
+        photo = Photo(
+            place_id=place.id,
+            original_path="photos/original.jpg",
+            public_path="/media/photos/public.jpg",
+            thumb_path="/media/photos/thumb.jpg",
+            status="approved",
+            caption="Stary podpis",
+        )
+        session.add(place)
+        session.add(photo)
+        session.commit()
+        session.refresh(photo)
+
+        response = client.patch(
+            f"/api/admin/photos/{photo.id}",
+            headers=ADMIN_HEADERS,
+            json={"caption": "x" * 121},
+        )
+
+        assert response.status_code == 422
+
+
 def test_admin_can_set_approved_photo_as_cover(monkeypatch: MonkeyPatch, tmp_path: Path) -> None:
     for client, session in client_with_session(monkeypatch, tmp_path):
         place = Place(slug="public-place", title="Public", lat=51.11, lon=17.03, status="published")

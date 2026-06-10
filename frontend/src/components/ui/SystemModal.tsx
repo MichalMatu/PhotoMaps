@@ -1,30 +1,39 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
+import type { ReactNode } from "react";
 
 import { stopFloatingWindowEvent, useDraggableWindow } from "./useDraggableWindow";
 
 type Props = {
   cancelLabel?: string;
+  children?: ReactNode;
+  confirmDisabled?: boolean;
   confirmLabel?: string;
   details?: string | null;
   eyebrow?: string;
   isBusy?: boolean;
-  message: string;
+  message?: string;
   onClose: () => void;
   onConfirm?: () => void;
+  showActions?: boolean;
+  size?: "default" | "wide";
   title: string;
   tone?: "default" | "danger" | "error";
 };
 
 export function SystemModal({
   cancelLabel = "Anuluj",
+  children = null,
+  confirmDisabled = false,
   confirmLabel = "OK",
   details = null,
   eyebrow = "Komunikat systemowy",
   isBusy = false,
-  message,
+  message = "",
   onClose,
   onConfirm,
+  showActions = true,
+  size = "default",
   title,
   tone = "default",
 }: Props) {
@@ -47,7 +56,7 @@ export function SystemModal({
   return createPortal(
     <div className="system-modal-backdrop" role="presentation">
       <div
-        className={`system-modal system-modal--${tone}${draggableWindow.isDragging ? " is-dragging" : ""}`}
+        className={`system-modal system-modal--${tone} system-modal--${size}${draggableWindow.isDragging ? " is-dragging" : ""}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="system-modal-title"
@@ -65,23 +74,26 @@ export function SystemModal({
           <span className="eyebrow">{eyebrow}</span>
           <h2 id="system-modal-title">{title}</h2>
         </div>
-        <p>{message}</p>
+        {message ? <p>{message}</p> : null}
+        {children}
         {details ? <pre className="system-modal-details">{details}</pre> : null}
-        <div className="system-modal-actions">
-          {onConfirm ? (
-            <button className="ghost-button" type="button" disabled={isBusy} onClick={onClose}>
-              {cancelLabel}
+        {showActions ? (
+          <div className="system-modal-actions">
+            {onConfirm ? (
+              <button className="ghost-button" type="button" disabled={isBusy} onClick={onClose}>
+                {cancelLabel}
+              </button>
+            ) : null}
+            <button
+              className={tone === "danger" || tone === "error" ? "danger-button" : undefined}
+              type="button"
+              disabled={isBusy || confirmDisabled}
+              onClick={onConfirm ?? onClose}
+            >
+              {isBusy ? "Przetwarzanie..." : confirmLabel}
             </button>
-          ) : null}
-          <button
-            className={tone === "danger" || tone === "error" ? "danger-button" : undefined}
-            type="button"
-            disabled={isBusy}
-            onClick={onConfirm ?? onClose}
-          >
-            {isBusy ? "Przetwarzanie..." : confirmLabel}
-          </button>
-        </div>
+          </div>
+        ) : null}
       </div>
     </div>,
     document.body,
