@@ -242,17 +242,12 @@ export function AdminPlacesPage() {
   }
 
   return (
-    <AppShell activeSection="admin">
+    <AppShell
+      activeSection="admin"
+      adminAction={{ label: "Zmień token admina", onClick: handleClearAdminToken, shortLabel: "A" }}
+    >
       <main className="page-shell admin-page">
         <section className="admin-workspace">
-          <header className="admin-header">
-            <div>
-              <h1>Admin</h1>
-            </div>
-            <button className="ghost-button admin-token-button" type="button" onClick={handleClearAdminToken}>
-              Zmień token
-            </button>
-          </header>
           <nav className="admin-section-tabs" aria-label="Sekcje panelu admina">
             <button
               className={activeSection === "places" ? "admin-section-tab is-active" : "admin-section-tab"}

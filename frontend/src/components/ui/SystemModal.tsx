@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import type { ReactNode } from "react";
+import { X } from "lucide-react";
 
 import { stopFloatingWindowEvent, useDraggableWindow } from "./useDraggableWindow";
 
@@ -70,10 +71,21 @@ export function SystemModal({
         onTouchStart={stopFloatingWindowEvent}
         onWheel={stopFloatingWindowEvent}
       >
-        <div className="system-modal-drag-handle" {...draggableWindow.handleProps}>
-          <span className="eyebrow">{eyebrow}</span>
-          <h2 id="system-modal-title">{title}</h2>
-        </div>
+        <header className="system-modal-header">
+          <div className="system-modal-drag-handle" {...draggableWindow.handleProps}>
+            <span className="eyebrow">{eyebrow}</span>
+            <h2 id="system-modal-title">{title}</h2>
+          </div>
+          <button
+            className="system-modal-close"
+            type="button"
+            disabled={isBusy}
+            onClick={onClose}
+            aria-label="Zamknij modal"
+          >
+            <X aria-hidden="true" size={18} />
+          </button>
+        </header>
         {message ? <p>{message}</p> : null}
         {children}
         {details ? <pre className="system-modal-details">{details}</pre> : null}

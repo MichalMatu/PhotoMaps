@@ -27,15 +27,6 @@
     padding: 18px;
   }
 
-  .admin-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .admin-metrics {
-    justify-content: flex-start;
-  }
-
   .admin-section-tabs {
     grid-template-columns: 1fr;
   }

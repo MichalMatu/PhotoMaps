@@ -258,7 +258,16 @@
   user-select: none;
 }
 
+.system-modal-header {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+}
+
 .system-modal-drag-handle {
+  flex: 1 1 auto;
+  min-width: 0;
   cursor: grab;
   touch-action: none;
   user-select: none;
@@ -286,6 +295,31 @@
   line-height: 1.5;
   margin: 0;
   overflow-wrap: anywhere;
+}
+
+.system-modal-close {
+  align-items: center;
+  background: var(--surface-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  color: var(--content-secondary);
+  display: flex;
+  flex: 0 0 auto;
+  height: 36px;
+  justify-content: center;
+  min-height: 0;
+  padding: 0;
+  width: 36px;
+}
+
+.system-modal-close:hover:not(:disabled) {
+  background: var(--accent-soft);
+  color: var(--accent-primary);
+}
+
+.system-modal-close:disabled {
+  cursor: default;
+  opacity: 0.55;
 }
 
 .system-modal-details {

@@ -55,6 +55,8 @@ Nie ignorować czerwonych testów komendą typu `|| true`. Jeśli test nie może
 
 UI ma być kompaktowy, spójny i minimalistyczny. Nie duplikować tytułów, opisów, liczników ani etykiet, jeśli ta sama informacja jest już widoczna w aktywnej karcie, filtrze, nagłówku albo bezpośrednim kontekście.
 
+Każdy centymetr ekranu traktować jako ograniczony zasób. Oczekiwany standard to przemyślany, kompaktowy układ już w pierwszej implementacji, bez czekania na poprawki użytkownika po screenach. Przed oddaniem zmiany UI zrobić własny audyt: czy nie ma pustych pasów, powtórzonych nazw, nadmiarowych opisów, zbyt wysokich modali, za dużych odstępów albo kontrolek ustawionych w miejscu, które marnuje przestrzeń.
+
 - wykorzystywać miejsce layoutem, zamiast rozpychać stronę dodatkowymi nagłówkami i opisami,
 - usuwać lokalne nagłówki sekcji, jeśli tylko powtarzają nazwę wybranej zakładki albo karty,
 - liczniki pokazywać w jednym sensownym miejscu; nie powtarzać ich obok listy i w karcie wyboru jednocześnie,

@@ -7,6 +7,11 @@ type AppSection = "map" | "admin" | "guides";
 
 type Props = {
   activeSection: AppSection;
+  adminAction?: {
+    label: string;
+    onClick: () => void;
+    shortLabel: string;
+  };
   children: ReactNode;
 };
 
@@ -15,9 +20,13 @@ const primaryItems = [
   { href: "/guides", label: "Przewodniki", section: "guides" as const, Icon: BookOpen },
 ];
 
-export function AppShell({ activeSection, children }: Props) {
+export function AppShell({ activeSection, adminAction, children }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const railItems = primaryItems.filter((item) => item.section !== activeSection);
+  const handleAdminAction = () => {
+    setIsMenuOpen(false);
+    adminAction?.onClick();
+  };
 
   return (
     <div className="app-shell">
@@ -34,6 +43,12 @@ export function AppShell({ activeSection, children }: Props) {
             </a>
           ))}
         </nav>
+
+        {adminAction ? (
+          <button className="rail-admin-button" type="button" onClick={handleAdminAction} aria-label={adminAction.label}>
+            {adminAction.shortLabel}
+          </button>
+        ) : null}
       </aside>
 
       {isMenuOpen ? <button className="drawer-scrim" type="button" aria-label="Zamknij menu" onClick={() => setIsMenuOpen(false)} /> : null}
@@ -69,6 +84,17 @@ export function AppShell({ activeSection, children }: Props) {
             ),
           )}
         </nav>
+
+        {adminAction ? (
+          <nav className="drawer-section drawer-section--admin" aria-label="Administracja">
+            <button className="drawer-item drawer-action" type="button" onClick={handleAdminAction}>
+              <span className="drawer-admin-mark" aria-hidden="true">
+                {adminAction.shortLabel}
+              </span>
+              <span>{adminAction.label}</span>
+            </button>
+          </nav>
+        ) : null}
       </aside>
 
       <div className="app-content">{children}</div>
