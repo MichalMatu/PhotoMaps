@@ -183,6 +183,37 @@ h2 {
   width: 8px;
 }
 
+.place-photo-marker {
+  background: transparent;
+  border: 0;
+}
+
+.place-photo-marker span {
+  background-color: #eef3f0;
+  background-position: center;
+  background-size: cover;
+  border: 3px solid #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 18px rgb(0 0 0 / 30%);
+  display: block;
+  height: 48px;
+  position: relative;
+  width: 58px;
+}
+
+.place-photo-marker span::after {
+  background: #ffffff;
+  bottom: -8px;
+  box-shadow: 3px 3px 8px rgb(0 0 0 / 16%);
+  content: "";
+  height: 16px;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%) rotate(45deg);
+  width: 16px;
+  z-index: -1;
+}
+
 .notice {
   background: #ffffff;
   border: 1px solid #dfded9;
@@ -206,11 +237,22 @@ h2 {
   display: block;
 }
 
+.place-popup-photo-button {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  display: block;
+  margin: 0 0 10px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+  width: 100%;
+}
+
 .place-popup-photo {
   aspect-ratio: 16 / 10;
   border-radius: 6px;
   display: block;
-  margin-bottom: 10px;
   object-fit: cover;
   width: 100%;
 }
@@ -292,6 +334,156 @@ h2 {
 .place-popup dd {
   font-weight: 800;
   margin: 0;
+}
+
+.popup-photo-strip {
+  border-top: 1px solid #d9ded9;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin-top: 12px;
+  padding-top: 12px;
+}
+
+.popup-photo-strip button {
+  aspect-ratio: 1;
+  background: #eef3f0;
+  border: 1px solid #d6ddd8;
+  border-radius: 6px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.popup-photo-strip img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.popup-photo-strip .popup-add-photo {
+  align-items: center;
+  background: #126a5a;
+  color: #ffffff;
+  display: flex;
+  font-size: 1.45rem;
+  justify-content: center;
+}
+
+.modal-backdrop {
+  align-items: center;
+  background: rgb(17 20 19 / 68%);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  z-index: 10000;
+}
+
+.gallery-modal,
+.upload-modal {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgb(0 0 0 / 28%);
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  position: relative;
+}
+
+.gallery-modal {
+  display: grid;
+  grid-template-columns: minmax(320px, 760px) minmax(260px, 340px);
+  max-width: 1120px;
+  width: min(1120px, 100%);
+}
+
+.upload-modal {
+  padding: 28px;
+  width: min(460px, 100%);
+}
+
+.modal-close-button {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #d9ded9;
+  border-radius: 50%;
+  color: #28332f;
+  display: flex;
+  font-size: 1.2rem;
+  height: 36px;
+  justify-content: center;
+  min-height: 0;
+  padding: 0;
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 36px;
+  z-index: 2;
+}
+
+.gallery-main {
+  align-items: center;
+  background: #111413;
+  display: flex;
+  min-height: 520px;
+}
+
+.gallery-main img {
+  display: block;
+  max-height: calc(100vh - 80px);
+  object-fit: contain;
+  width: 100%;
+}
+
+.gallery-sidebar {
+  display: grid;
+  gap: 18px;
+  grid-template-rows: auto minmax(0, 1fr);
+  padding: 28px;
+}
+
+.gallery-sidebar h2,
+.upload-modal h2 {
+  margin-bottom: 0;
+}
+
+.gallery-thumbnails {
+  align-content: start;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.gallery-thumb {
+  aspect-ratio: 1;
+  background: #eef3f0;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.gallery-thumb.is-selected {
+  border-color: #126a5a;
+}
+
+.gallery-thumb img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.gallery-add-thumb {
+  align-items: center;
+  background: #126a5a;
+  color: #ffffff;
+  display: flex;
+  font-size: 2rem;
+  justify-content: center;
 }
 
 .admin-layout {
@@ -474,5 +666,26 @@ h2 {
   .field-row,
   .table-row {
     grid-template-columns: 1fr;
+  }
+
+  .gallery-modal {
+    grid-template-columns: 1fr;
+    width: min(680px, 100%);
+  }
+
+  .gallery-main {
+    min-height: 280px;
+  }
+
+  .gallery-sidebar {
+    padding: 20px;
+  }
+
+  .gallery-thumbnails {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .photo-review-item {
+    grid-template-columns: 88px minmax(0, 1fr);
   }
 }
