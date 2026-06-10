@@ -1,29 +1,19 @@
-import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer } from "react-leaflet";
 
-import type { Category, Place } from "../../api/client";
+import type { Category, Photo, Place } from "../../api/client";
 import { PlaceMarker } from "./PlaceMarker";
-
-import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
-
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: markerIcon2x,
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-});
 
 type Props = {
   places: Place[];
   categories: Category[];
+  photosByPlaceId: Record<string, Photo[]>;
   onPhotoUploaded?: () => void;
 };
 
 const WROCLAW_CENTER: [number, number] = [51.1079, 17.0385];
 
-export function PlaceMap({ places, categories, onPhotoUploaded }: Props) {
+export function PlaceMap({ places, categories, photosByPlaceId, onPhotoUploaded }: Props) {
   const categoryById = new Map(categories.map((category) => [category.id, category]));
 
   return (
@@ -36,6 +26,7 @@ export function PlaceMap({ places, categories, onPhotoUploaded }: Props) {
         <PlaceMarker
           key={place.id}
           place={place}
+          photos={photosByPlaceId[place.id] ?? []}
           category={place.category_id ? categoryById.get(place.category_id) : undefined}
           onPhotoUploaded={onPhotoUploaded}
         />

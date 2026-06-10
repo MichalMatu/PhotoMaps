@@ -155,6 +155,34 @@ h2 {
   width: 100%;
 }
 
+.place-marker-icon {
+  background: transparent;
+  border: 0;
+}
+
+.place-marker-icon span {
+  background: #126a5a;
+  border: 3px solid #ffffff;
+  border-radius: 50% 50% 50% 0;
+  box-shadow: 0 8px 16px rgb(0 0 0 / 24%);
+  display: block;
+  height: 28px;
+  transform: rotate(-45deg);
+  width: 28px;
+}
+
+.place-marker-icon span::after {
+  background: #ffffff;
+  border-radius: 50%;
+  content: "";
+  display: block;
+  height: 8px;
+  left: 7px;
+  position: relative;
+  top: 7px;
+  width: 8px;
+}
+
 .notice {
   background: #ffffff;
   border: 1px solid #dfded9;
@@ -176,6 +204,15 @@ h2 {
 .place-popup strong,
 .place-popup span {
   display: block;
+}
+
+.place-popup-photo {
+  aspect-ratio: 16 / 10;
+  border-radius: 6px;
+  display: block;
+  margin-bottom: 10px;
+  object-fit: cover;
+  width: 100%;
 }
 
 .place-popup strong {

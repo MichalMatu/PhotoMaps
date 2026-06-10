@@ -83,6 +83,10 @@ export function getPlaces(): Promise<Place[]> {
   return request<Place[]>("/api/places");
 }
 
+export function getPlacePhotos(placeId: string): Promise<Photo[]> {
+  return request<Photo[]>(`/api/places/${placeId}/photos`);
+}
+
 export function getAdminPlaces(): Promise<Place[]> {
   return request<Place[]>("/api/admin/places");
 }

@@ -1,15 +1,25 @@
-import type { Category, Place } from "../../api/client";
+import { mediaUrl, type Category, type Photo, type Place } from "../../api/client";
 import { PhotoUploadForm } from "./PhotoUploadForm";
 
 type Props = {
   place: Place;
+  photos: Photo[];
   category?: Category;
   onPhotoUploaded?: () => void;
 };
 
-export function PlacePopup({ place, category, onPhotoUploaded }: Props) {
+export function PlacePopup({ place, photos, category, onPhotoUploaded }: Props) {
+  const coverPhoto = photos[0];
+
   return (
     <div className="place-popup">
+      {coverPhoto ? (
+        <img
+          className="place-popup-photo"
+          src={mediaUrl(coverPhoto.thumb_path)}
+          alt={coverPhoto.caption ?? place.title}
+        />
+      ) : null}
       <strong>{place.title}</strong>
       <span>{category?.label ?? "Miejsce"}</span>
       {place.local_comment ? <p>{place.local_comment}</p> : null}
