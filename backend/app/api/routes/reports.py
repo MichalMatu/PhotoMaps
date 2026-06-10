@@ -4,21 +4,10 @@ from sqlmodel import Session
 from app.db.session import get_session
 from app.models.report import Report
 from app.schemas.report import ReportCreate, ReportRead
+from app.serializers.report import report_to_read
 from app.services.reports import ensure_report_target_exists, ensure_report_target_type
 
 router = APIRouter(prefix="/api/reports", tags=["reports"])
-
-
-def report_to_read(report: Report) -> ReportRead:
-    return ReportRead(
-        id=report.id,
-        target_type=report.target_type,
-        target_id=report.target_id,
-        reason=report.reason,
-        message=report.message,
-        status=report.status,
-        created_at=report.created_at,
-    )
 
 
 @router.post("", response_model=ReportRead, status_code=201)

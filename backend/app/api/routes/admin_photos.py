@@ -9,9 +9,10 @@ from app.models.photo import Photo
 from app.models.place import Place
 from app.schemas.place import PlaceRead
 from app.schemas.photo import PhotoAdminRead, PhotoReview, PhotoUpdate
-from app.api.routes.photos import normalize_photo_caption, photo_to_admin_read
-from app.api.routes.places import place_to_read
+from app.serializers.photo import photo_to_admin_read
+from app.serializers.place import place_to_read
 from app.services.media.images import delete_stored_image
+from app.services.photo_fields import normalize_photo_caption
 from app.services.review import (
     apply_photo_deleted,
     ensure_final_review_status,

@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
 
 from app.api.admin_auth import require_admin_token
-from app.api.routes.reports import report_to_read
 from app.db.session import get_session
 from app.models.report import Report
 from app.schemas.report import ReportRead, ReportUpdate
+from app.serializers.report import report_to_read
 from app.services.reports import ensure_report_status
 
 router = APIRouter(prefix="/api/admin/reports", tags=["admin reports"], dependencies=[Depends(require_admin_token)])

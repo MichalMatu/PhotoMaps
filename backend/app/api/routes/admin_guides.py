@@ -4,11 +4,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.api.admin_auth import require_admin_token
-from app.api.routes.guides import guide_to_detail, guide_to_read
 from app.db.session import get_session
 from app.models.guide import Guide, PlaceGuide
 from app.models.place import Place
 from app.schemas.guide import GuideCreate, GuideDetailRead, GuidePlaceCreate, GuideRead, GuideUpdate
+from app.serializers.guide import guide_to_detail, guide_to_read
 from app.services.guides import ensure_guide_slug_available, ensure_guide_status
 
 router = APIRouter(prefix="/api/admin/guides", tags=["admin guides"], dependencies=[Depends(require_admin_token)])

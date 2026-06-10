@@ -6,33 +6,20 @@ from app.db.session import get_session
 from app.models.memory import Memory
 from app.models.place import Place
 from app.schemas.memory import MemoryClaimRead, MemoryClaimToken, MemoryRead, MemoryUpdate
+from app.serializers.memory import memory_to_read
 from app.services.media.images import delete_stored_image, store_uploaded_image
+from app.services.memory_fields import (
+    MAX_MEMORY_AUTHOR_LENGTH,
+    MAX_MEMORY_CAPTION_LENGTH,
+    MAX_MEMORY_TEXT_LENGTH,
+    normalize_optional_text,
+    normalize_required_text,
+)
 from app.services.places import ensure_public_place
 from app.services.review import apply_memory_deleted
 from app.services.tokens import claim_token_hash, verify_claim_token
 
 router = APIRouter(prefix="/api/places/{place_id}/memories", tags=["memories"])
-MAX_MEMORY_AUTHOR_LENGTH = 40
-MAX_MEMORY_CAPTION_LENGTH = 80
-MAX_MEMORY_TEXT_LENGTH = 240
-
-
-def memory_to_read(memory: Memory) -> MemoryRead:
-    return MemoryRead(
-        id=memory.id,
-        place_id=memory.place_id,
-        author_name=memory.author_name,
-        author_city=memory.author_city,
-        caption=memory.caption,
-        memory_text=memory.memory_text,
-        public_path=memory.public_path,
-        thumb_path=memory.thumb_path,
-        status=memory.status,
-        paid=memory.paid,
-        share_slug=memory.share_slug,
-        created_at=memory.created_at,
-        approved_at=memory.approved_at,
-    )
 
 
 def get_place_memory(place_id: str, memory_id: str, session: Session) -> tuple[Place, Memory]:
@@ -46,27 +33,6 @@ def get_place_memory(place_id: str, memory_id: str, session: Session) -> tuple[P
 def require_memory_claim(memory: Memory, claim_token: str) -> None:
     if not verify_claim_token(claim_token, memory.claim_token_hash):
         raise HTTPException(status_code=403, detail="Invalid memory token")
-
-
-def normalize_required_text(value: str, field_label: str, max_length: int) -> str:
-    normalized_value = value.strip()
-    if not normalized_value:
-        raise HTTPException(status_code=422, detail=f"{field_label} is required")
-    if len(normalized_value) > max_length:
-        raise HTTPException(status_code=422, detail=f"{field_label} must have at most {max_length} characters")
-    return normalized_value
-
-
-def normalize_optional_text(value: str | None, field_label: str, max_length: int) -> str | None:
-    if value is None:
-        return None
-
-    normalized_value = value.strip()
-    if not normalized_value:
-        return None
-    if len(normalized_value) > max_length:
-        raise HTTPException(status_code=422, detail=f"{field_label} must have at most {max_length} characters")
-    return normalized_value
 
 
 @router.get("", response_model=list[MemoryRead])

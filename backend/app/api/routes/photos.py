@@ -4,51 +4,13 @@ from sqlmodel import Session, select
 
 from app.db.session import get_session
 from app.models.photo import Photo
-from app.schemas.photo import PhotoAdminRead, PhotoRead
+from app.schemas.photo import PhotoRead
+from app.serializers.photo import photo_to_read
 from app.services.media.images import delete_stored_image, store_uploaded_image
+from app.services.photo_fields import normalize_photo_caption
 from app.services.places import ensure_public_place
 
 router = APIRouter(prefix="/api/places/{place_id}/photos", tags=["photos"])
-MAX_PHOTO_CAPTION_LENGTH = 120
-
-
-def photo_to_read(photo: Photo) -> PhotoRead:
-    return PhotoRead(
-        id=photo.id,
-        place_id=photo.place_id,
-        public_path=photo.public_path,
-        thumb_path=photo.thumb_path,
-        status=photo.status,
-        caption=photo.caption,
-        created_at=photo.created_at,
-        approved_at=photo.approved_at,
-    )
-
-
-def photo_to_admin_read(photo: Photo) -> PhotoAdminRead:
-    return PhotoAdminRead(
-        id=photo.id,
-        place_id=photo.place_id,
-        public_path=photo.public_path,
-        thumb_path=photo.thumb_path,
-        status=photo.status,
-        caption=photo.caption,
-        consent_confirmed=photo.consent_confirmed,
-        created_at=photo.created_at,
-        approved_at=photo.approved_at,
-    )
-
-
-def normalize_photo_caption(caption: str | None) -> str | None:
-    if caption is None:
-        return None
-
-    normalized_caption = caption.strip()
-    if not normalized_caption:
-        return None
-    if len(normalized_caption) > MAX_PHOTO_CAPTION_LENGTH:
-        raise HTTPException(status_code=422, detail=f"Photo caption must have at most {MAX_PHOTO_CAPTION_LENGTH} characters")
-    return normalized_caption
 
 
 @router.get("", response_model=list[PhotoRead])

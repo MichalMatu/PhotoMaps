@@ -2,27 +2,22 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
 
 from app.api.admin_auth import require_admin_token
-from app.api.routes.memories import (
-    MAX_MEMORY_AUTHOR_LENGTH,
-    MAX_MEMORY_CAPTION_LENGTH,
-    MAX_MEMORY_TEXT_LENGTH,
-    memory_to_read,
-    normalize_optional_text,
-    normalize_required_text,
-)
 from app.db.session import get_session
 from app.models.memory import Memory
 from app.models.place import Place
 from app.schemas.memory import MemoryAdminRead, MemoryAdminUpdate, MemoryReview
+from app.serializers.memory import memory_to_admin_read
 from app.services.media.images import delete_stored_image
+from app.services.memory_fields import (
+    MAX_MEMORY_AUTHOR_LENGTH,
+    MAX_MEMORY_CAPTION_LENGTH,
+    MAX_MEMORY_TEXT_LENGTH,
+    normalize_optional_text,
+    normalize_required_text,
+)
 from app.services.review import apply_memory_deleted, ensure_final_review_status, ensure_visible_review_status, review_memory
 
 router = APIRouter(prefix="/api/admin/memories", tags=["admin memories"], dependencies=[Depends(require_admin_token)])
-
-
-def memory_to_admin_read(memory: Memory) -> MemoryAdminRead:
-    public_memory = memory_to_read(memory)
-    return MemoryAdminRead(**public_memory.model_dump(), consent_confirmed=memory.consent_confirmed)
 
 
 @router.get("", response_model=list[MemoryAdminRead])

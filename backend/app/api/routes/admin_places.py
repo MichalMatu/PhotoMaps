@@ -7,7 +7,7 @@ from app.api.admin_auth import require_admin_token
 from app.db.session import get_session
 from app.models.place import Place
 from app.schemas.place import PlaceCreate, PlaceRead, PlaceUpdate
-from app.api.routes.places import place_to_read
+from app.serializers.place import place_to_read
 from app.services.places import ensure_active_category, ensure_place_status, ensure_slug_available
 
 router = APIRouter(prefix="/api/admin/places", tags=["admin places"], dependencies=[Depends(require_admin_token)])

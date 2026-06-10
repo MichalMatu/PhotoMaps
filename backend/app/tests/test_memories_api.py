@@ -9,12 +9,12 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, SQLModel, create_engine, select
 from sqlmodel.pool import StaticPool
 
-from app.api.routes.memories import MAX_MEMORY_AUTHOR_LENGTH, MAX_MEMORY_CAPTION_LENGTH, MAX_MEMORY_TEXT_LENGTH
 from app.db.session import get_session
 from app.main import app
 from app.models.memory import Memory
 from app.models.place import Place
 from app.services.media import images
+from app.services.memory_fields import MAX_MEMORY_AUTHOR_LENGTH, MAX_MEMORY_CAPTION_LENGTH, MAX_MEMORY_TEXT_LENGTH
 from app.services.tokens import MAX_CLAIM_TOKEN_LENGTH, claim_token_hash
 
 ADMIN_TOKEN = "test-admin-token"

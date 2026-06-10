@@ -1,69 +1,20 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
-from app.db.session import get_session
 from app.models.category import Category
 from app.models.memory import Memory
 from app.models.photo import Photo
 from app.models.place import Place
-from app.api.routes.memories import memory_to_read
-from app.api.routes.photos import photo_to_read
-from app.schemas.category import CategoryRead
+from app.db.session import get_session
+from app.schemas.place import PlaceMapRead, PlaceRead
 from app.schemas.memory import MemoryRead
 from app.schemas.photo import PhotoRead
-from app.schemas.place import PlaceMapRead, PlaceRead
+from app.serializers.memory import memory_to_read
+from app.serializers.photo import photo_to_read
+from app.serializers.place import place_to_map_read, place_to_read
 from app.services.places import sort_places_for_public_map
-from app.services.ranking import place_score
 
 router = APIRouter(prefix="/api/places", tags=["places"])
-
-
-def place_to_read(place: Place) -> PlaceRead:
-    return PlaceRead(
-        id=place.id,
-        slug=place.slug,
-        title=place.title,
-        description=place.description,
-        local_comment=place.local_comment,
-        category_id=place.category_id,
-        lat=place.lat,
-        lon=place.lon,
-        weight=place.weight,
-        status=place.status,
-        photo_count=place.photo_count,
-        memory_count=place.memory_count,
-        cover_photo_id=place.cover_photo_id,
-        score=place_score(place),
-        created_at=place.created_at,
-        updated_at=place.updated_at,
-    )
-
-
-def category_to_read(category: Category) -> CategoryRead:
-    return CategoryRead(
-        id=category.id,
-        label=category.label,
-        description=category.description,
-        icon=category.icon,
-        sort_order=category.sort_order,
-        status=category.status,
-    )
-
-
-def place_to_map_read(
-    place: Place,
-    category: Category | None,
-    photos: list[PhotoRead],
-    memories: list[MemoryRead],
-) -> PlaceMapRead:
-    cover_photo = next((photo for photo in photos if photo.id == place.cover_photo_id), photos[0] if photos else None)
-    return PlaceMapRead(
-        **place_to_read(place).model_dump(),
-        category=category_to_read(category) if category else None,
-        cover_photo=cover_photo,
-        photos=photos,
-        memories=memories,
-    )
 
 
 @router.get("", response_model=list[PlaceRead])
