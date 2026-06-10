@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Images, MapPin, Tags } from "lucide-react";
 
 import {
@@ -31,12 +31,6 @@ export function AdminPlacesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [editingPlace, setEditingPlace] = useState<Place | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
-  const [photoStatusCounts, setPhotoStatusCounts] = useState<Record<PhotoStatus | "all", number>>({
-    pending: 0,
-    approved: 0,
-    rejected: 0,
-    all: 0,
-  });
   const [photoStatusFilter, setPhotoStatusFilter] = useState<PhotoStatus | "all">("all");
   const [places, setPlaces] = useState<Place[]>([]);
   const [placeToArchive, setPlaceToArchive] = useState<Place | null>(null);
@@ -44,25 +38,29 @@ export function AdminPlacesPage() {
   const [isArchiving, setIsArchiving] = useState(false);
   const categoryById = new Map(categories.map((category) => [category.id, category]));
   const activeCategoryCount = categories.filter((category) => category.status === "active").length;
+  const visiblePhotos = useMemo(
+    () => (photoStatusFilter === "all" ? photos : photos.filter((photo) => photo.status === photoStatusFilter)),
+    [photoStatusFilter, photos],
+  );
+  const photoStatusCounts = useMemo(
+    () => ({
+      all: photos.length,
+      pending: photos.filter((photo) => photo.status === "pending").length,
+      approved: photos.filter((photo) => photo.status === "approved").length,
+      rejected: photos.filter((photo) => photo.status === "rejected").length,
+    }),
+    [photos],
+  );
 
-  async function refresh(nextPhotoStatusFilter = photoStatusFilter) {
-    const [nextCategories, nextPlaces, nextPhotos, pendingPhotos, approvedPhotos, rejectedPhotos] = await Promise.all([
+  async function refresh() {
+    const [nextCategories, nextPlaces, nextPhotos] = await Promise.all([
       getAdminCategories(),
       getAdminPlaces(),
-      getAdminPhotos(nextPhotoStatusFilter),
-      getAdminPhotos("pending"),
-      getAdminPhotos("approved"),
-      getAdminPhotos("rejected"),
+      getAdminPhotos(),
     ]);
     setCategories(nextCategories);
     setPlaces(nextPlaces);
     setPhotos(nextPhotos);
-    setPhotoStatusCounts({
-      pending: pendingPhotos.length,
-      approved: approvedPhotos.length,
-      rejected: rejectedPhotos.length,
-      all: pendingPhotos.length + approvedPhotos.length + rejectedPhotos.length,
-    });
   }
 
   useEffect(() => {
@@ -70,10 +68,10 @@ export function AdminPlacesPage() {
       return;
     }
 
-    refresh(photoStatusFilter).catch((reason: unknown) => {
+    refresh().catch((reason: unknown) => {
       setError(reason instanceof Error ? reason.message : "Nie udalo sie pobrac danych");
     });
-  }, [adminToken, photoStatusFilter]);
+  }, [adminToken]);
 
   function handleClearAdminToken() {
     clearAdminToken();
@@ -244,7 +242,7 @@ export function AdminPlacesPage() {
           {activeSection === "photos" ? (
             <section className="admin-section admin-section-single">
               <PhotoQueue
-                photos={photos}
+                photos={visiblePhotos}
                 places={places}
                 statusCounts={photoStatusCounts}
                 statusFilter={photoStatusFilter}

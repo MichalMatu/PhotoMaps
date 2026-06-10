@@ -195,18 +195,8 @@ export function uploadPlacePhoto(placeId: string, file: File, caption: string): 
   });
 }
 
-export async function getAdminPhotos(status: PhotoStatus | "all" = "pending"): Promise<Photo[]> {
-  if (status === "all") {
-    const photoGroups = await Promise.all([
-      request<Photo[]>("/api/admin/photos?status=pending"),
-      request<Photo[]>("/api/admin/photos?status=approved"),
-      request<Photo[]>("/api/admin/photos?status=rejected"),
-    ]);
-
-    return photoGroups.flat();
-  }
-
-  const query = `?status=${status}`;
+export function getAdminPhotos(status?: PhotoStatus): Promise<Photo[]> {
+  const query = status ? `?status=${status}` : "";
   return request<Photo[]>(`/api/admin/photos${query}`);
 }
 

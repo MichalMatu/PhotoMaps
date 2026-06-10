@@ -28,6 +28,29 @@ place
 
 Nie tworzyć osobnych światów dla zdjęć, pamiątek, audio, historii i przewodników.
 
+## Zasady jakości kodu i architektury
+
+Domyślnie nie utrzymywać kompatybilności wstecznej dla wewnętrznych kontraktów. Jeśli zmienia się model, endpoint, pole requestu, konfiguracja, flaga albo komponent, w tej samej zmianie usunąć stare wejścia, fallbacki, adaptery, komentarze i martwe ścieżki kodu. Wyjątek tylko wtedy, gdy użytkownik wyraźnie poprosi o okres przejściowy albo migrację danych produkcyjnych.
+
+Kod ma być prosty, modułowy i separowany według odpowiedzialności:
+
+- nie tworzyć zbędnych warstw abstrakcji, wrapperów ani konfiguracji „na później”,
+- nie dopuszczać do `god objectów`; jeśli plik, komponent, route albo serwis zaczyna obsługiwać kilka niezależnych odpowiedzialności, rozbić go przed dokładaniem kolejnej funkcji,
+- logika domenowa nie powinna mieszkać w UI ani w route'ach, jeśli należy do serwisu, helpera albo modelu,
+- publiczny UI/API i admin UI/API trzymać jako osobne przepływy, nawet jeśli korzystają z tych samych modeli,
+- zależności dodawać tylko wtedy, gdy rozwiązują realny problem lepiej niż prosty kod lokalny,
+- nie trzymać martwych pól, stałych, typów, endpointów ani CSS po usuniętych funkcjach.
+
+Każda zmiana kontraktu albo zachowania powinna mieć adekwatne pokrycie testami. Minimum:
+
+- test publicznego kontraktu API, jeśli zmienia się publiczny endpoint,
+- test admin API, jeśli zmienia się akcja admina,
+- test schematu albo migracji, jeśli zmienia się model bazy,
+- build frontendu, jeśli zmienia się TypeScript albo komponenty,
+- diagnostyka/skrypt check, jeśli problem może wrócić przez lokalne dane lub środowisko.
+
+Nie ignorować czerwonych testów komendą typu `|| true`. Jeśli test nie może przejść z powodu znanego ograniczenia środowiska, opisać to jawnie w podsumowaniu.
+
 ## Zakazane słownictwo w nowym kodzie
 
 Nie używać w nowym kodzie, API, UI, modelach, komponentach ani nazwach plików:
@@ -171,7 +194,6 @@ Pola minimalne:
 - `lon`
 - `weight`
 - `status`: `draft | published | archived`
-- `is_chain`
 - `photo_count`
 - `memory_count`
 - `cover_photo_id`
@@ -360,11 +382,19 @@ Pracuj etapami. Nie przechodź dalej, jeśli aktualny etap nie działa.
 
 Po każdej większej zmianie uruchomić:
 
+Pełny check projektu:
+
+```bash
+./scripts/check.sh
+```
+
+Jeśli trzeba uruchomić elementy osobno:
+
 Backend:
 
 ```bash
 cd backend
-pytest || true
+pytest
 python -m compileall app
 ```
 
