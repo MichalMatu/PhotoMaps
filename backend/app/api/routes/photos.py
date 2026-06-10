@@ -32,14 +32,17 @@ def photo_to_read(photo: Photo) -> PhotoRead:
 
 @router.get("", response_model=list[PhotoRead])
 def list_place_photos(place_id: str, session: Session = Depends(get_session)) -> list[PhotoRead]:
-    ensure_public_place(place_id, session)
+    place = ensure_public_place(place_id, session)
     statement = (
         select(Photo)
         .where(Photo.place_id == place_id)
         .where(Photo.status == "approved")
         .order_by(Photo.approved_at.desc())
     )
-    return [photo_to_read(photo) for photo in session.exec(statement).all()]
+    photos = list(session.exec(statement).all())
+    if place.cover_photo_id is not None:
+        photos.sort(key=lambda photo: photo.id != place.cover_photo_id)
+    return [photo_to_read(photo) for photo in photos]
 
 
 @router.post("", response_model=PhotoRead, status_code=201)

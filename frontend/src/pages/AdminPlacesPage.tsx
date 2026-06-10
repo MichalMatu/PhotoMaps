@@ -21,20 +21,35 @@ export function AdminPlacesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [editingPlace, setEditingPlace] = useState<Place | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
-  const [photoStatusFilter, setPhotoStatusFilter] = useState<PhotoStatus | "all">("pending");
+  const [photoStatusCounts, setPhotoStatusCounts] = useState<Record<PhotoStatus | "all", number>>({
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+    all: 0,
+  });
+  const [photoStatusFilter, setPhotoStatusFilter] = useState<PhotoStatus | "all">("all");
   const [places, setPlaces] = useState<Place[]>([]);
   const [error, setError] = useState<string | null>(null);
   const categoryById = new Map(categories.map((category) => [category.id, category]));
 
   async function refresh(nextPhotoStatusFilter = photoStatusFilter) {
-    const [nextCategories, nextPlaces, nextPhotos] = await Promise.all([
+    const [nextCategories, nextPlaces, nextPhotos, pendingPhotos, approvedPhotos, rejectedPhotos] = await Promise.all([
       getCategories(),
       getAdminPlaces(),
       getAdminPhotos(nextPhotoStatusFilter),
+      getAdminPhotos("pending"),
+      getAdminPhotos("approved"),
+      getAdminPhotos("rejected"),
     ]);
     setCategories(nextCategories);
     setPlaces(nextPlaces);
     setPhotos(nextPhotos);
+    setPhotoStatusCounts({
+      pending: pendingPhotos.length,
+      approved: approvedPhotos.length,
+      rejected: rejectedPhotos.length,
+      all: pendingPhotos.length + approvedPhotos.length + rejectedPhotos.length,
+    });
   }
 
   useEffect(() => {
@@ -82,7 +97,7 @@ export function AdminPlacesPage() {
         <section className="admin-layout">
           <div className="admin-editor">
             <span className="eyebrow">Panel redakcji</span>
-            <h1>{editingPlace ? "Edytuj miejsce" : "Dodaj miejsce"}</h1>
+            <h1>{editingPlace ? "Edytuj" : "Miejsce"}</h1>
             {error ? <p className="notice error">{error}</p> : null}
             <PlaceForm
               categories={categories}
@@ -131,6 +146,7 @@ export function AdminPlacesPage() {
             <PhotoQueue
               photos={photos}
               places={places}
+              statusCounts={photoStatusCounts}
               statusFilter={photoStatusFilter}
               onReviewed={refresh}
               onStatusFilterChange={setPhotoStatusFilter}

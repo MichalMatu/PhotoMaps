@@ -30,6 +30,32 @@ def private_reference(path: Path) -> str:
     return path.relative_to(PRIVATE_STORAGE_DIR).as_posix()
 
 
+def storage_path(root: Path, relative_path: str) -> Path:
+    resolved_root = root.resolve()
+    resolved_path = (root / relative_path).resolve()
+    if not resolved_path.is_relative_to(resolved_root):
+        raise ValueError("Storage path escapes configured root")
+    return resolved_path
+
+
+def public_storage_path(public_url_path: str) -> Path:
+    media_prefix = "/media/"
+    if not public_url_path.startswith(media_prefix):
+        raise ValueError("Unsupported public media URL")
+    return storage_path(PUBLIC_STORAGE_DIR, public_url_path.removeprefix(media_prefix))
+
+
+def delete_stored_image(original_path: str, public_path: str, thumb_path: str) -> None:
+    paths = [
+        storage_path(PRIVATE_STORAGE_DIR, original_path),
+        public_storage_path(public_path),
+        public_storage_path(thumb_path),
+    ]
+
+    for path in paths:
+        path.unlink(missing_ok=True)
+
+
 def original_suffix(filename: str | None) -> str:
     if not filename:
         return ".bin"

@@ -1,18 +1,27 @@
-import { mediaUrl, reviewPhoto, type Photo, type PhotoStatus, type Place } from "../../api/client";
+import {
+  deleteAdminPhoto,
+  mediaUrl,
+  reviewPhoto,
+  setCoverPhoto,
+  type Photo,
+  type PhotoStatus,
+  type Place,
+} from "../../api/client";
 
 type Props = {
   photos: Photo[];
   places: Place[];
+  statusCounts: Record<PhotoStatus | "all", number>;
   statusFilter: PhotoStatus | "all";
   onReviewed: () => Promise<void>;
   onStatusFilterChange: (status: PhotoStatus | "all") => void;
 };
 
 const STATUS_FILTERS: Array<{ label: string; value: PhotoStatus | "all" }> = [
+  { label: "Wszystkie", value: "all" },
   { label: "Do sprawdzenia", value: "pending" },
   { label: "Zatwierdzone", value: "approved" },
   { label: "Odrzucone", value: "rejected" },
-  { label: "Wszystkie", value: "all" },
 ];
 
 const STATUS_LABELS: Record<PhotoStatus, string> = {
@@ -21,11 +30,29 @@ const STATUS_LABELS: Record<PhotoStatus, string> = {
   rejected: "odrzucone",
 };
 
-export function PhotoQueue({ photos, places, statusFilter, onReviewed, onStatusFilterChange }: Props) {
+export function PhotoQueue({ photos, places, statusCounts, statusFilter, onReviewed, onStatusFilterChange }: Props) {
   const placeById = new Map(places.map((place) => [place.id, place]));
 
   async function handleReview(photoId: string, status: "approved" | "rejected") {
     await reviewPhoto(photoId, status);
+    await onReviewed();
+  }
+
+  async function handleSetCover(photo: Photo) {
+    await setCoverPhoto(photo.id);
+    await onReviewed();
+  }
+
+  async function handleDelete(photo: Photo) {
+    const place = placeById.get(photo.place_id);
+    const shouldDelete = window.confirm(
+      `Trwale usunąć zdjęcie${place ? ` z miejsca "${place.title}"` : ""}? Tej operacji nie da się cofnąć.`,
+    );
+    if (!shouldDelete) {
+      return;
+    }
+
+    await deleteAdminPhoto(photo.id);
     await onReviewed();
   }
 
@@ -43,7 +70,7 @@ export function PhotoQueue({ photos, places, statusFilter, onReviewed, onStatusF
             type="button"
             onClick={() => onStatusFilterChange(filter.value)}
           >
-            {filter.label}
+            {filter.label} <span>{statusCounts[filter.value]}</span>
           </button>
         ))}
       </div>
@@ -51,12 +78,16 @@ export function PhotoQueue({ photos, places, statusFilter, onReviewed, onStatusF
       <div className="photo-grid">
         {photos.map((photo) => {
           const place = placeById.get(photo.place_id);
+          const isCover = place?.cover_photo_id === photo.id;
           return (
             <article className="photo-review-item" key={photo.id}>
               <img alt={photo.caption ?? place?.title ?? "Zdjęcie miejsca"} src={mediaUrl(photo.thumb_path)} />
               <div>
                 <strong>{place?.title ?? photo.place_id}</strong>
-                <span className={`status-badge status-badge--${photo.status}`}>{STATUS_LABELS[photo.status]}</span>
+                <div className="photo-meta-row">
+                  <span className={`status-badge status-badge--${photo.status}`}>{STATUS_LABELS[photo.status]}</span>
+                  {isCover ? <span className="status-badge status-badge--cover">główne</span> : null}
+                </div>
                 {photo.caption ? <p>{photo.caption}</p> : null}
                 <div className="review-actions">
                   {photo.status !== "approved" ? (
@@ -69,6 +100,14 @@ export function PhotoQueue({ photos, places, statusFilter, onReviewed, onStatusF
                       {photo.status === "approved" ? "Ukryj" : "Odrzuć"}
                     </button>
                   ) : null}
+                  {photo.status === "approved" && !isCover ? (
+                    <button className="ghost-button" type="button" onClick={() => handleSetCover(photo)}>
+                      Ustaw jako główne
+                    </button>
+                  ) : null}
+                  <button className="danger-button" type="button" onClick={() => handleDelete(photo)}>
+                    Usuń trwale
+                  </button>
                 </div>
               </div>
             </article>

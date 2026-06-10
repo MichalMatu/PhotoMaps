@@ -72,6 +72,10 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     throw new Error(message || `Request failed: ${response.status}`);
   }
 
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
   return response.json() as Promise<T>;
 }
 
@@ -143,6 +147,18 @@ export function reviewPhoto(photoId: string, status: "approved" | "rejected"): P
   return request<Photo>(`/api/admin/photos/${photoId}/review`, {
     method: "POST",
     body: JSON.stringify({ status }),
+  });
+}
+
+export function setCoverPhoto(photoId: string): Promise<Place> {
+  return request<Place>(`/api/admin/photos/${photoId}/cover`, {
+    method: "POST",
+  });
+}
+
+export function deleteAdminPhoto(photoId: string): Promise<void> {
+  return request<void>(`/api/admin/photos/${photoId}`, {
+    method: "DELETE",
   });
 }
 
