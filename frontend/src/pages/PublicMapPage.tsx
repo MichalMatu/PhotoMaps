@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { getCategories, getPlacePhotos, getPlaces, type Category, type Photo, type Place } from "../api/client";
+import { AppShell } from "../components/layout/AppShell";
 import { PlaceMap } from "../components/map/PlaceMap";
 
 export function PublicMapPage() {
@@ -33,39 +34,16 @@ export function PublicMapPage() {
   }
 
   return (
-    <main className="page-shell map-page">
-      <header className="top-bar">
-        <a className="brand" href="/">
-          Wroclaw Bez Sciemy
-        </a>
-        <nav>
-          <a href="/">Mapa</a>
-          <a href="/admin">Admin</a>
-        </nav>
-      </header>
-
-      <section className="map-layout">
-        <aside className="map-panel">
-          <span className="eyebrow">Lokalny przewodnik</span>
-          <h1>Miejsca z charakterem</h1>
-          <p>Wybrane adresy bez sieciowego szumu.</p>
-          <div className="stat-grid">
-            <div>
-              <strong>{places.length}</strong>
-              <span>opublikowane</span>
-            </div>
-            <div>
-              <strong>{categories.length}</strong>
-              <span>kategorii</span>
-            </div>
+    <AppShell activeSection="map">
+      <main className="page-shell map-page">
+        {(isLoading || error || places.length === 0) ? (
+          <div className="map-status-panel">
+            <span className="eyebrow">Wroclaw Bez Sciemy</span>
+            {isLoading ? <p>Ładowanie mapy...</p> : null}
+            {error ? <p className="error-text">{error}</p> : null}
+            {!isLoading && !error && places.length === 0 ? <p>Brak opublikowanych miejsc.</p> : null}
           </div>
-          {isLoading ? <p className="notice">Ladowanie mapy...</p> : null}
-          {error ? <p className="notice error">{error}</p> : null}
-          {!isLoading && !error && places.length === 0 ? (
-            <p className="notice">Brak opublikowanych miejsc. Dodaj pierwsze w panelu admina.</p>
-          ) : null}
-        </aside>
-
+        ) : null}
         <div className="map-frame">
           <PlaceMap
             places={places}
@@ -74,7 +52,7 @@ export function PublicMapPage() {
             onPhotoUploaded={loadMapData}
           />
         </div>
-      </section>
-    </main>
+      </main>
+    </AppShell>
   );
 }
