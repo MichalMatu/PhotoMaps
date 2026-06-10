@@ -1,13 +1,12 @@
 import "leaflet/dist/leaflet.css";
-import { useEffect } from "react";
-import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { useEffect, useState } from "react";
+import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 
-import type { Category, Photo, Place } from "../../api/client";
+import type { Photo, Place } from "../../api/client";
 import { PlaceMarker } from "./PlaceMarker";
 
 type Props = {
   places: Place[];
-  categories: Category[];
   photosByPlaceId: Record<string, Photo[]>;
   onPhotoUploaded?: () => void;
 };
@@ -34,12 +33,27 @@ function MapSizeUpdater() {
   return null;
 }
 
-export function PlaceMap({ places, categories, photosByPlaceId, onPhotoUploaded }: Props) {
-  const categoryById = new Map(categories.map((category) => [category.id, category]));
+function FanCloseEvents({ onClose }: { onClose: () => void }) {
+  useMapEvents({
+    click: onClose,
+  });
+
+  return null;
+}
+
+export function PlaceMap({ places, photosByPlaceId, onPhotoUploaded }: Props) {
+  const [expandedPlaceId, setExpandedPlaceId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (expandedPlaceId && !places.some((place) => place.id === expandedPlaceId)) {
+      setExpandedPlaceId(null);
+    }
+  }, [expandedPlaceId, places]);
 
   return (
     <MapContainer center={WROCLAW_CENTER} zoom={13} className="place-map" scrollWheelZoom>
       <MapSizeUpdater />
+      <FanCloseEvents onClose={() => setExpandedPlaceId(null)} />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -49,8 +63,10 @@ export function PlaceMap({ places, categories, photosByPlaceId, onPhotoUploaded 
           key={place.id}
           place={place}
           photos={photosByPlaceId[place.id] ?? []}
-          category={place.category_id ? categoryById.get(place.category_id) : undefined}
+          isExpanded={expandedPlaceId === place.id}
+          onCloseFan={() => setExpandedPlaceId(null)}
           onPhotoUploaded={onPhotoUploaded}
+          onToggleFan={() => setExpandedPlaceId((currentPlaceId) => (currentPlaceId === place.id ? null : place.id))}
         />
       ))}
     </MapContainer>

@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 
-import { getCategories, getPlacePhotos, getPlaces, type Category, type Photo, type Place } from "../api/client";
+import { getPlacePhotos, getPlaces, type Photo, type Place } from "../api/client";
 import { AppShell } from "../components/layout/AppShell";
 import { PlaceMap } from "../components/map/PlaceMap";
 
 export function PublicMapPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
   const [photosByPlaceId, setPhotosByPlaceId] = useState<Record<string, Photo[]>>({});
   const [places, setPlaces] = useState<Place[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -19,11 +18,10 @@ export function PublicMapPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const [nextCategories, nextPlaces] = await Promise.all([getCategories(), getPlaces()]);
+      const nextPlaces = await getPlaces();
       const photoEntries = await Promise.all(
         nextPlaces.map(async (place) => [place.id, await getPlacePhotos(place.id)] as const),
       );
-      setCategories(nextCategories);
       setPlaces(nextPlaces);
       setPhotosByPlaceId(Object.fromEntries(photoEntries));
     } catch (reason) {
@@ -47,7 +45,6 @@ export function PublicMapPage() {
         <div className="map-frame">
           <PlaceMap
             places={places}
-            categories={categories}
             photosByPlaceId={photosByPlaceId}
             onPhotoUploaded={loadMapData}
           />
