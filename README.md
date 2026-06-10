@@ -9,7 +9,8 @@ cd backend
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
-uvicorn app.main:app --reload
+cd ..
+./scripts/dev_backend.sh
 ```
 
 Backend startuje domyslnie pod `http://127.0.0.1:8000`.
@@ -61,6 +62,14 @@ npm run dev
 ```
 
 Frontend startuje domyslnie pod `http://127.0.0.1:5173`.
+
+Mozesz tez odpalic caly lokalny stack jedna komenda:
+
+```bash
+./scripts/dev.sh
+```
+
+Domyslny token panelu admina w skryptach dev to `dev-admin-token`. Zmienisz go przez `ADMIN_TOKEN=... ./scripts/dev.sh` albo `ADMIN_TOKEN=... ./scripts/dev_backend.sh`.
 
 Strony:
 

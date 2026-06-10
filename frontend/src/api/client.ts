@@ -174,10 +174,15 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     }
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      headers,
+    });
+  } catch {
+    throw new ApiError(`Backend API nie odpowiada pod ${API_BASE_URL}. Uruchom ./scripts/dev_backend.sh.`, 0);
+  }
 
   if (!response.ok) {
     const message = await response.text();
