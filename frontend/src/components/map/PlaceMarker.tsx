@@ -3,9 +3,10 @@ import { useEffect, useMemo, useState } from "react";
 import { Marker, useMap } from "react-leaflet";
 
 import { mediaUrl, type PlaceMapItem } from "../../api/client";
+import { getPlaceMarkerLayout, type PlaceMarkerLayout } from "./mapMarkerScale";
 import { getPlaceFanItems, getPlacePreviewVisual, type PlaceMapVisualItem } from "./placePreview";
 
-function markerIcon(place: PlaceMapItem, isSelected: boolean) {
+function markerIcon(place: PlaceMapItem, isSelected: boolean, layout: PlaceMarkerLayout) {
   const previewItem = getPlacePreviewVisual(place);
   if (!previewItem) {
     return L.divIcon({
@@ -25,9 +26,9 @@ function markerIcon(place: PlaceMapItem, isSelected: boolean) {
     ]
       .filter(Boolean)
       .join(" "),
-    html: `<span style="background-image: url('${imageUrl}')"></span>`,
-    iconAnchor: [32, 26],
-    iconSize: [64, 52],
+    html: `<span style="--place-marker-width: ${layout.width}px; --place-marker-height: ${layout.height}px; background-image: url('${imageUrl}')"></span>`,
+    iconAnchor: [Math.round(layout.width / 2), Math.round(layout.height / 2)],
+    iconSize: [layout.width, layout.height],
   });
 }
 
@@ -88,14 +89,16 @@ type Props = {
   onMemoryOpen: (place: PlaceMapItem) => void;
   onVisualPreview: (place: PlaceMapItem, item: PlaceMapVisualItem) => void;
   onToggleFan: () => void;
+  zoom: number;
 };
 
-export function PlaceMarker({ place, isExpanded, onMemoryOpen, onToggleFan, onVisualPreview }: Props) {
+export function PlaceMarker({ place, isExpanded, onMemoryOpen, onToggleFan, onVisualPreview, zoom }: Props) {
   const map = useMap();
   const [layoutVersion, setLayoutVersion] = useState(0);
   const fanItems = useMemo(() => getPlaceFanItems(place), [place]);
   const fanItemCount = fanItems.length + 1;
-  const placeIcon = useMemo(() => markerIcon(place, isExpanded), [isExpanded, place]);
+  const placeLayout = useMemo(() => getPlaceMarkerLayout({ editorialPriority: place.weight, zoom }), [place.weight, zoom]);
+  const placeIcon = useMemo(() => markerIcon(place, isExpanded, placeLayout), [isExpanded, place, placeLayout]);
 
   useEffect(() => {
     if (!isExpanded) {
@@ -136,7 +139,7 @@ export function PlaceMarker({ place, isExpanded, onMemoryOpen, onToggleFan, onVi
         position={[place.lat, place.lon]}
         riseOnHover
         title={place.title}
-        zIndexOffset={isExpanded ? 1200 : 500}
+        zIndexOffset={isExpanded ? 1200 : placeLayout.zIndexOffset}
         eventHandlers={{
           click: (event) => {
             stopMarkerClick(event);

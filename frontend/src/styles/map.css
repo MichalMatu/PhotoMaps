@@ -143,10 +143,10 @@
   border-radius: 8px;
   box-shadow: 0 8px 12px rgb(0 0 0 / 28%);
   display: block;
-  height: 52px;
+  height: var(--place-marker-height, 52px);
   overflow: hidden;
   position: relative;
-  width: 64px;
+  width: var(--place-marker-width, 64px);
 }
 
 .place-photo-marker:focus,

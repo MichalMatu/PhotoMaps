@@ -16,6 +16,15 @@ const INITIAL_LOCATION = {
   lon: 17.0385,
 };
 
+const PRIORITY_OPTIONS = [
+  { label: "0.5 - niski priorytet", value: "0.5" },
+  { label: "1.0 - normalny priorytet", value: "1" },
+  { label: "1.5 - podbity priorytet", value: "1.5" },
+  { label: "2.0 - wysoki priorytet", value: "2" },
+  { label: "2.5 - bardzo wysoki priorytet", value: "2.5" },
+  { label: "3.0 - najwyższy priorytet", value: "3" },
+];
+
 function slugify(value: string) {
   return value
     .trim()
@@ -129,14 +138,13 @@ export function PlaceForm({ categories, className = "admin-form", onCancel, onSu
       <div className="field-row">
         <label>
           Priorytet redakcji
-          <input
-            min="0.5"
-            max="3"
-            step="0.5"
-            type="number"
-            value={weight}
-            onChange={(event) => setWeight(event.target.value)}
-          />
+          <select value={weight} onChange={(event) => setWeight(event.target.value)}>
+            {PRIORITY_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         </label>
         <label>
           Status

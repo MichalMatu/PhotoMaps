@@ -167,6 +167,7 @@ function PlaceLayer({ places }: Props) {
               setVisualPreview({ id: nextItem.id, kind: nextItem.kind, placeId: nextPlace.id });
             }}
             onToggleFan={() => setExpandedPlaceId((currentPlaceId) => (currentPlaceId === place.id ? null : place.id))}
+            zoom={zoom}
           />
         );
       })}
