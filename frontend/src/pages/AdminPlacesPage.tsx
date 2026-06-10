@@ -16,6 +16,7 @@ import {
 import { AppShell } from "../components/layout/AppShell";
 import { PlaceForm } from "../components/admin/PlaceForm";
 import { PhotoQueue } from "../components/admin/PhotoQueue";
+import { SystemModal } from "../components/admin/SystemModal";
 
 export function AdminPlacesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -29,7 +30,9 @@ export function AdminPlacesPage() {
   });
   const [photoStatusFilter, setPhotoStatusFilter] = useState<PhotoStatus | "all">("all");
   const [places, setPlaces] = useState<Place[]>([]);
+  const [placeToArchive, setPlaceToArchive] = useState<Place | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isArchiving, setIsArchiving] = useState(false);
   const categoryById = new Map(categories.map((category) => [category.id, category]));
 
   async function refresh(nextPhotoStatusFilter = photoStatusFilter) {
@@ -73,21 +76,24 @@ export function AdminPlacesPage() {
     }
   }
 
-  async function handleArchivePlace(place: Place) {
-    const shouldArchive = window.confirm(`Zarchiwizować miejsce "${place.title}"?`);
-    if (!shouldArchive) {
+  async function handleConfirmArchivePlace() {
+    if (!placeToArchive) {
       return;
     }
 
     setError(null);
+    setIsArchiving(true);
     try {
-      await archivePlace(place.id);
-      if (editingPlace?.id === place.id) {
+      await archivePlace(placeToArchive.id);
+      if (editingPlace?.id === placeToArchive.id) {
         setEditingPlace(null);
       }
+      setPlaceToArchive(null);
       await refresh();
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Nie udalo sie zarchiwizowac miejsca");
+    } finally {
+      setIsArchiving(false);
     }
   }
 
@@ -134,7 +140,7 @@ export function AdminPlacesPage() {
                       className="secondary-button"
                       type="button"
                       disabled={place.status === "archived"}
-                      onClick={() => handleArchivePlace(place)}
+                      onClick={() => setPlaceToArchive(place)}
                     >
                       Archiwizuj
                     </button>
@@ -153,6 +159,17 @@ export function AdminPlacesPage() {
             />
           </div>
         </section>
+        {placeToArchive ? (
+          <SystemModal
+            confirmLabel="Archiwizuj"
+            isBusy={isArchiving}
+            message={`Miejsce "${placeToArchive.title}" zniknie z publicznej mapy, ale zostanie w bazie jako archiwalne.`}
+            title="Archiwizować miejsce?"
+            tone="danger"
+            onClose={() => setPlaceToArchive(null)}
+            onConfirm={handleConfirmArchivePlace}
+          />
+        ) : null}
       </main>
     </AppShell>
   );

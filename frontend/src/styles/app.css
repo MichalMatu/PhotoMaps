@@ -576,6 +576,71 @@ h2 {
   margin: 0;
 }
 
+.system-modal-backdrop {
+  align-items: center;
+  background: rgb(17 20 19 / 42%);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 24px;
+  position: fixed;
+  z-index: 11000;
+}
+
+.system-modal {
+  animation: system-modal-in 180ms ease-out both;
+  background: #ffffff;
+  border: 1px solid #d8dfdb;
+  border-radius: 8px;
+  box-shadow: 0 24px 70px rgb(0 0 0 / 22%);
+  display: grid;
+  gap: 14px;
+  max-width: 460px;
+  padding: 24px;
+  width: min(460px, 100%);
+}
+
+.system-modal--danger,
+.system-modal--error {
+  border-color: #e2c9c2;
+}
+
+.system-modal h2 {
+  font-size: 1.35rem;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.system-modal p {
+  color: #46504c;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.system-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.system-modal-actions button {
+  min-height: 38px;
+}
+
+@keyframes system-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .admin-layout {
   display: grid;
   gap: 28px;
