@@ -1,4 +1,6 @@
 {
+  "name": "photomaps-frontend",
+  "private": true,
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",

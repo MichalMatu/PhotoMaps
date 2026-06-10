@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlmodel import Session
 
 from app.api.routes import admin_photos, admin_places, categories, photos, places
-from app.core.config import FRONTEND_ORIGINS, PUBLIC_STORAGE_DIR
+from app.core.config import API_TITLE, FRONTEND_ORIGINS, PUBLIC_STORAGE_DIR
 from app.db.init_db import seed_categories
 from app.db.session import create_db_and_tables, engine
 
@@ -19,7 +19,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Wroclaw Bez Sciemy API", lifespan=lifespan)
+app = FastAPI(title=API_TITLE, lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

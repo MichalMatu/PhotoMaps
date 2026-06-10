@@ -1,4 +1,8 @@
+import os
 from pathlib import Path
+
+APP_NAME = os.getenv("APP_NAME", "Photomaps")
+API_TITLE = os.getenv("API_TITLE", f"{APP_NAME} API")
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 DATA_DIR = BASE_DIR / "data"

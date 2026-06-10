@@ -14,6 +14,8 @@ import {
   X,
 } from "lucide-react";
 
+import { APP_NAME } from "../../config/app";
+
 type AppSection = "map" | "admin";
 
 type Props = {
@@ -66,7 +68,7 @@ export function AppShell({ activeSection, children }: Props) {
       <aside className={isMenuOpen ? "side-drawer is-open" : "side-drawer"} aria-hidden={!isMenuOpen}>
         <div className="drawer-header">
           <a className="drawer-brand" href="/">
-            Wroclaw Bez Sciemy
+            {APP_NAME}
           </a>
           <button className="drawer-close-button" type="button" onClick={() => setIsMenuOpen(false)} aria-label="Zamknij menu">
             <X aria-hidden="true" size={28} />
