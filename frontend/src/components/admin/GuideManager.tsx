@@ -123,7 +123,6 @@ export function GuideManager({ guides, places, onChanged }: Props) {
   return (
     <section className="admin-layout admin-section">
       <div className="admin-editor">
-        <span className="eyebrow">Przewodniki</span>
         <h2>{selectedGuide ? "Edytuj przewodnik" : "Dodaj przewodnik"}</h2>
         {error ? <p className="notice error">{error}</p> : null}
         <form className="admin-form" onSubmit={handleSubmit}>
@@ -184,10 +183,6 @@ export function GuideManager({ guides, places, onChanged }: Props) {
       </div>
 
       <div className="admin-list">
-        <div className="section-heading">
-          <h2>Miejsca w przewodniku</h2>
-          <span>{guideDetail?.places.length ?? 0}</span>
-        </div>
         <div className="place-table" role="table">
           <div className="table-row table-head" role="row">
             <span>Nazwa</span>

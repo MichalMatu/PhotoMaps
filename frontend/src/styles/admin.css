@@ -19,16 +19,10 @@
   border-radius: 8px;
   box-shadow: var(--shadow-glass);
   display: grid;
-  gap: 16px;
-  max-width: 440px;
-  padding: 28px;
+  gap: 14px;
+  max-width: 360px;
+  padding: 22px;
   width: 100%;
-}
-
-.admin-access-card h1 {
-  font-size: 1.55rem;
-  font-weight: 650;
-  margin: 0;
 }
 
 .admin-access-message {
@@ -39,6 +33,7 @@
   font-weight: 650;
   line-height: 1.4;
   margin: 0;
+  overflow-wrap: anywhere;
   padding: 10px 12px;
 }
 
@@ -48,14 +43,21 @@
   border-radius: 8px;
   color: var(--color-accent);
   display: flex;
-  height: 50px;
+  height: 44px;
   justify-content: center;
-  width: 50px;
+  width: 44px;
 }
 
 .admin-access-form {
   display: grid;
   gap: 12px;
+}
+
+.admin-access-token-row {
+  align-items: end;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 44px minmax(0, 1fr);
 }
 
 .admin-access-form label {

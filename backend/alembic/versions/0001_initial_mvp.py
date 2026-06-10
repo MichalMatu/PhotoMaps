@@ -113,6 +113,7 @@ def create_memory_table() -> None:
         sa.Column("author_name", sa.String(), nullable=True),
         sa.Column("author_city", sa.String(), nullable=True),
         sa.Column("caption", sa.String(), nullable=False),
+        sa.Column("memory_text", sa.String(length=240), nullable=False),
         sa.Column("original_path", sa.String(), nullable=False),
         sa.Column("public_path", sa.String(), nullable=False),
         sa.Column("thumb_path", sa.String(), nullable=False),
@@ -120,6 +121,7 @@ def create_memory_table() -> None:
         sa.Column("paid", sa.Boolean(), nullable=False, server_default=sa.false()),
         sa.Column("share_slug", sa.String(), nullable=False),
         sa.Column("consent_confirmed", sa.Boolean(), nullable=False, server_default=sa.false()),
+        sa.Column("claim_token_hash", sa.String(), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("approved_at", sa.DateTime(timezone=True), nullable=True),
     )

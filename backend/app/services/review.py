@@ -74,3 +74,9 @@ def review_memory(memory: Memory, place: Place, status: str) -> None:
     memory.approved_at = datetime.now(timezone.utc) if status == "approved" else None
     place.memory_count = update_review_count(place.memory_count, previous_status, status)
     place.updated_at = datetime.now(timezone.utc)
+
+
+def apply_memory_deleted(memory: Memory, place: Place) -> None:
+    if memory.status == "approved":
+        place.memory_count = max(0, place.memory_count - 1)
+    place.updated_at = datetime.now(timezone.utc)

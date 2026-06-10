@@ -51,6 +51,17 @@ Każda zmiana kontraktu albo zachowania powinna mieć adekwatne pokrycie testami
 
 Nie ignorować czerwonych testów komendą typu `|| true`. Jeśli test nie może przejść z powodu znanego ograniczenia środowiska, opisać to jawnie w podsumowaniu.
 
+## Zasady UI i layoutu
+
+UI ma być kompaktowy, spójny i minimalistyczny. Nie duplikować tytułów, opisów, liczników ani etykiet, jeśli ta sama informacja jest już widoczna w aktywnej karcie, filtrze, nagłówku albo bezpośrednim kontekście.
+
+- wykorzystywać miejsce layoutem, zamiast rozpychać stronę dodatkowymi nagłówkami i opisami,
+- usuwać lokalne nagłówki sekcji, jeśli tylko powtarzają nazwę wybranej zakładki albo karty,
+- liczniki pokazywać w jednym sensownym miejscu; nie powtarzać ich obok listy i w karcie wyboru jednocześnie,
+- tekst pomocniczy trzymać krótko i blisko kontrolki, której dotyczy,
+- formularze i modale projektować możliwie nisko i wąsko, bez pustych obszarów i bez niepotrzebnych bloków tekstu,
+- każdy ekran powinien być czytelny przez układ, odstępy i kolejność pól, a nie przez nadmiar opisów.
+
 ## Zakazane słownictwo w nowym kodzie
 
 Nie używać w nowym kodzie, API, UI, modelach, komponentach ani nazwach plików:

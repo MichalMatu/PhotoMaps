@@ -9,6 +9,7 @@ class MemoryRead(SQLModel):
     author_name: str | None
     author_city: str | None
     caption: str
+    memory_text: str
     public_path: str
     thumb_path: str
     status: str
@@ -24,3 +25,18 @@ class MemoryAdminRead(MemoryRead):
 
 class MemoryReview(SQLModel):
     status: str
+
+
+class MemoryClaimToken(SQLModel):
+    claim_token: str
+
+
+class MemoryClaimRead(SQLModel):
+    can_edit: bool
+
+
+class MemoryUpdate(MemoryClaimToken):
+    author_name: str | None = None
+    author_city: str | None = None
+    caption: str
+    memory_text: str

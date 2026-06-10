@@ -54,7 +54,6 @@ export function AdminPlacesPage() {
   const [error, setError] = useState<string | null>(null);
   const [isArchiving, setIsArchiving] = useState(false);
   const categoryById = new Map(categories.map((category) => [category.id, category]));
-  const activeCategoryCount = categories.filter((category) => category.status === "active").length;
   const visiblePhotos = useMemo(
     () => (photoStatusFilter === "all" ? photos : photos.filter((photo) => photo.status === photoStatusFilter)),
     [photoStatusFilter, photos],
@@ -209,19 +208,11 @@ export function AdminPlacesPage() {
         <section className="admin-workspace">
           <header className="admin-header">
             <div>
-              <span className="eyebrow">Panel redakcji</span>
               <h1>Admin</h1>
             </div>
-            <div className="admin-metrics" aria-label="Podsumowanie panelu">
-              <span>{places.length} miejsc</span>
-              <span>{activeCategoryCount}/{categories.length} kategorii</span>
-              <span>{photoStatusCounts.pending} zdjęć do sprawdzenia</span>
-              <span>{memoryStatusCounts.pending} pamiątek do sprawdzenia</span>
-              <span>{reportStatusCounts.open} otwartych zgłoszeń</span>
-              <button className="ghost-button admin-token-button" type="button" onClick={handleClearAdminToken}>
-                Zmień token
-              </button>
-            </div>
+            <button className="ghost-button admin-token-button" type="button" onClick={handleClearAdminToken}>
+              Zmień token
+            </button>
           </header>
 
           {error ? <p className="notice error">{error}</p> : null}
@@ -252,7 +243,7 @@ export function AdminPlacesPage() {
             >
               <Images aria-hidden="true" size={20} />
               <span>Zdjęcia</span>
-              <strong>{photoStatusCounts.pending}</strong>
+              <strong>{photoStatusCounts.all}</strong>
             </button>
             <button
               className={activeSection === "memories" ? "admin-section-tab is-active" : "admin-section-tab"}
@@ -261,7 +252,7 @@ export function AdminPlacesPage() {
             >
               <MessageSquare aria-hidden="true" size={20} />
               <span>Pamiątki</span>
-              <strong>{memoryStatusCounts.pending}</strong>
+              <strong>{memoryStatusCounts.all}</strong>
             </button>
             <button
               className={activeSection === "guides" ? "admin-section-tab is-active" : "admin-section-tab"}
@@ -279,14 +270,13 @@ export function AdminPlacesPage() {
             >
               <Flag aria-hidden="true" size={20} />
               <span>Zgłoszenia</span>
-              <strong>{reportStatusCounts.open}</strong>
+              <strong>{reportStatusCounts.all}</strong>
             </button>
           </nav>
 
           {activeSection === "places" ? (
             <section className="admin-layout admin-section">
               <div className="admin-editor">
-                <span className="eyebrow">Miejsca</span>
                 <h2>{editingPlace ? "Edytuj miejsce" : "Dodaj miejsce"}</h2>
                 <PlaceForm
                   categories={categories}
@@ -297,10 +287,6 @@ export function AdminPlacesPage() {
               </div>
 
               <div className="admin-list">
-                <div className="section-heading">
-                  <h2>Miejsca</h2>
-                  <span>{places.length}</span>
-                </div>
                 <div className="place-table" role="table">
                   <div className="table-row table-head" role="row">
                     <span>Nazwa</span>

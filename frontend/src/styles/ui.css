@@ -10,6 +10,7 @@
 .notice.error {
   border-color: var(--color-danger);
   color: var(--color-danger);
+  overflow-wrap: anywhere;
 }
 
 .photo-upload {
@@ -28,7 +29,8 @@
   gap: 4px;
 }
 
-.photo-upload input {
+.photo-upload input,
+.photo-upload textarea {
   background: var(--color-surface-strong);
   border: 1px solid var(--color-border);
   border-radius: 6px;
@@ -37,12 +39,23 @@
   padding: 6px 8px;
 }
 
+.photo-upload textarea {
+  line-height: 1.35;
+  resize: vertical;
+}
+
 .photo-upload input[type="file"] {
   padding: 5px;
 }
 
 .photo-upload button {
   min-height: 36px;
+}
+
+.field-limit {
+  color: var(--color-muted);
+  font-size: 0.68rem;
+  justify-self: end;
 }
 
 .consent-field {
@@ -57,7 +70,11 @@
   color: var(--color-accent) !important;
   font-size: 0.78rem;
   font-weight: 600;
+  line-height: 1.35;
   margin: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .inline-status--error {
@@ -118,6 +135,11 @@
   color: var(--color-text);
   font-size: 0.82rem;
   line-height: 1.35;
+}
+
+.memory-card-note {
+  color: var(--color-muted-strong) !important;
+  margin-top: 3px !important;
 }
 
 .report-form label {
@@ -212,7 +234,9 @@
   box-shadow: var(--shadow-floating);
   display: grid;
   gap: 14px;
+  max-height: calc(100vh - 48px);
   max-width: 460px;
+  overflow: auto;
   padding: 24px;
   width: min(460px, 100%);
 }
@@ -249,6 +273,7 @@
   color: var(--color-muted-strong);
   line-height: 1.5;
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .system-modal-actions {
@@ -282,13 +307,13 @@
 
 .pm-sheet--report {
   height: auto;
-  max-height: min(440px, calc(100vh - 48px));
+  max-height: min(560px, calc(100vh - 32px));
   z-index: 12050;
 }
 
 .pm-sheet--memory {
   height: auto;
-  max-height: min(560px, calc(100vh - 48px));
+  max-height: min(760px, calc(100vh - 32px));
 }
 
 .pm-sheet__handle {
@@ -379,7 +404,11 @@
   }
 
   .pm-sheet--report {
-    max-height: min(58vh, 440px);
+    max-height: min(78vh, 560px);
+  }
+
+  .pm-sheet--memory {
+    max-height: min(88vh, 760px);
   }
 
   .pm-sheet__handle {

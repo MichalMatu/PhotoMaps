@@ -25,24 +25,24 @@ export function AdminAccessGate({ message, onUnlocked }: Props) {
   return (
     <section className="admin-access-panel">
       <div className="admin-access-card">
-        <div className="admin-access-icon" aria-hidden="true">
-          <LockKeyhole size={26} />
-        </div>
-        <span className="eyebrow">Panel redakcji</span>
-        <h1>Dostęp admina</h1>
         {message ? <p className="admin-access-message">{message}</p> : null}
         <form className="admin-access-form" onSubmit={handleSubmit}>
-          <label>
-            Token
-            <input
-              autoComplete="off"
-              autoFocus
-              type="password"
-              value={token}
-              onChange={(event) => setToken(event.target.value)}
-              required
-            />
-          </label>
+          <div className="admin-access-token-row">
+            <div className="admin-access-icon" aria-hidden="true">
+              <LockKeyhole size={26} />
+            </div>
+            <label>
+              Token
+              <input
+                autoComplete="off"
+                autoFocus
+                type="password"
+                value={token}
+                onChange={(event) => setToken(event.target.value)}
+                required
+              />
+            </label>
+          </div>
           <button type="submit">Wejdź do panelu</button>
         </form>
       </div>

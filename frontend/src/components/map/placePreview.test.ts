@@ -24,6 +24,7 @@ function memory(id: string): Memory {
     caption: "Byłem tutaj",
     created_at: "2026-06-10T00:00:00",
     id,
+    memory_text: "Krótka myśl z miejsca",
     paid: false,
     place_id: "place-1",
     public_path: `/media/memories/${id}.jpg`,

@@ -77,10 +77,6 @@ export function PhotoQueue({ photos, places, statusCounts, statusFilter, onRevie
   return (
     <>
       <div className="photo-queue">
-        <div className="section-heading">
-          <h2>Zdjęcia</h2>
-          <span>{photos.length}</span>
-        </div>
         <div className="status-tabs" role="tablist" aria-label="Status zdjęć">
           {STATUS_FILTERS.map((filter) => (
             <button

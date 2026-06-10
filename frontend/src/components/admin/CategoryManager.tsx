@@ -159,10 +159,6 @@ export function CategoryManager({ categories, onChanged }: Props) {
 
   return (
     <section className="admin-panel category-manager">
-      <div className="section-heading">
-        <h2>Kategorie</h2>
-        <span>{categories.length}</span>
-      </div>
       {error ? <p className="notice error">{error}</p> : null}
       <form className="category-form" onSubmit={handleSubmit}>
         <label>

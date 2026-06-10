@@ -8,6 +8,10 @@ API_TITLE = os.getenv("API_TITLE", f"{APP_NAME} API")
 def get_admin_token() -> str | None:
     return os.getenv("ADMIN_TOKEN")
 
+
+def get_claim_token_secret() -> str:
+    return os.getenv("CLAIM_TOKEN_SECRET", "dev-claim-token-secret")
+
 BASE_DIR = Path(__file__).resolve().parents[2]
 DATA_DIR = BASE_DIR / "data"
 DATABASE_PATH = DATA_DIR / "app.db"

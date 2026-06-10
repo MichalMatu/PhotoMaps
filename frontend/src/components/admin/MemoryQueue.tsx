@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { mediaUrl, reviewMemory, type Memory, type PhotoStatus, type Place } from "../../api/client";
+import { deleteAdminMemory, mediaUrl, reviewMemory, type Memory, type PhotoStatus, type Place } from "../../api/client";
 import { SystemModal } from "./SystemModal";
 
 type Props = {
@@ -34,6 +34,8 @@ export function MemoryQueue({
   onStatusFilterChange,
 }: Props) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [memoryToDelete, setMemoryToDelete] = useState<Memory | null>(null);
   const placeById = new Map(places.map((place) => [place.id, place]));
 
   async function handleReview(memoryId: string, status: "approved" | "rejected") {
@@ -45,13 +47,26 @@ export function MemoryQueue({
     }
   }
 
+  async function handleConfirmDelete() {
+    if (!memoryToDelete) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      await deleteAdminMemory(memoryToDelete.id);
+      setMemoryToDelete(null);
+      await onReviewed();
+    } catch (reason) {
+      setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się trwale usunąć pamiątki.");
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
   return (
     <>
       <div className="photo-queue">
-        <div className="section-heading">
-          <h2>Pamiątki</h2>
-          <span>{memories.length}</span>
-        </div>
         <div className="status-tabs" role="tablist" aria-label="Status pamiątek">
           {STATUS_FILTERS.map((filter) => (
             <button
@@ -77,6 +92,7 @@ export function MemoryQueue({
                     <span className={`status-badge status-badge--${memory.status}`}>{STATUS_LABELS[memory.status]}</span>
                   </div>
                   <p>{memory.caption}</p>
+                  <p className="muted-text">{memory.memory_text}</p>
                   <span className="muted-text">
                     {memory.author_name ?? "Gość"}
                     {memory.author_city ? `, ${memory.author_city}` : ""}
@@ -92,6 +108,9 @@ export function MemoryQueue({
                         {memory.status === "approved" ? "Ukryj" : "Odrzuć"}
                       </button>
                     ) : null}
+                    <button className="danger-button" type="button" onClick={() => setMemoryToDelete(memory)}>
+                      Usuń trwale
+                    </button>
                   </div>
                 </div>
               </article>
@@ -99,6 +118,17 @@ export function MemoryQueue({
           })}
         </div>
       </div>
+      {memoryToDelete ? (
+        <SystemModal
+          confirmLabel="Usuń trwale"
+          isBusy={isDeleting}
+          message="Pamiątka zostanie usunięta z bazy, publicznego pliku, miniatury i prywatnego oryginału. Tej operacji nie da się cofnąć."
+          title="Usunąć pamiątkę?"
+          tone="danger"
+          onClose={() => setMemoryToDelete(null)}
+          onConfirm={handleConfirmDelete}
+        />
+      ) : null}
       {errorMessage ? (
         <SystemModal
           confirmLabel="Rozumiem"

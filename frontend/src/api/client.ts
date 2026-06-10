@@ -74,6 +74,7 @@ export type Memory = {
   author_name: string | null;
   author_city: string | null;
   caption: string;
+  memory_text: string;
   public_path: string;
   thumb_path: string;
   status: PhotoStatus;
@@ -82,6 +83,17 @@ export type Memory = {
   consent_confirmed?: boolean;
   created_at: string;
   approved_at: string | null;
+};
+
+export type MemoryClaimPayload = {
+  claim_token: string;
+};
+
+export type MemoryUpdatePayload = MemoryClaimPayload & {
+  author_city: string | null;
+  author_name: string | null;
+  caption: string;
+  memory_text: string;
 };
 
 export type PlaceMapItem = Place & {
@@ -302,13 +314,17 @@ export function uploadPlaceMemory(
     authorCity: string;
     authorName: string;
     caption: string;
+    claimToken: string;
     consentConfirmed: boolean;
     file: File;
+    memoryText: string;
   },
 ): Promise<Memory> {
   const formData = new FormData();
   formData.append("file", payload.file);
   formData.append("caption", payload.caption.trim());
+  formData.append("memory_text", payload.memoryText.trim());
+  formData.append("claim_token", payload.claimToken.trim());
   formData.append("consent_confirmed", String(payload.consentConfirmed));
   if (payload.authorName.trim()) {
     formData.append("author_name", payload.authorName.trim());
@@ -320,6 +336,27 @@ export function uploadPlaceMemory(
   return request<Memory>(`/api/places/${placeId}/memories`, {
     method: "POST",
     body: formData,
+  });
+}
+
+export function verifyMemoryClaim(placeId: string, memoryId: string, claimToken: string): Promise<{ can_edit: boolean }> {
+  return request<{ can_edit: boolean }>(`/api/places/${placeId}/memories/${memoryId}/claim`, {
+    method: "POST",
+    body: JSON.stringify({ claim_token: claimToken }),
+  });
+}
+
+export function updateMemory(placeId: string, memoryId: string, payload: MemoryUpdatePayload): Promise<Memory> {
+  return request<Memory>(`/api/places/${placeId}/memories/${memoryId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteMemory(placeId: string, memoryId: string, claimToken: string): Promise<void> {
+  return request<void>(`/api/places/${placeId}/memories/${memoryId}`, {
+    method: "DELETE",
+    body: JSON.stringify({ claim_token: claimToken }),
   });
 }
 
@@ -417,6 +454,12 @@ export function updateReport(reportId: string, payload: { message?: string | nul
 
 export function deleteAdminPhoto(photoId: string): Promise<void> {
   return request<void>(`/api/admin/photos/${photoId}`, {
+    method: "DELETE",
+  });
+}
+
+export function deleteAdminMemory(memoryId: string): Promise<void> {
+  return request<void>(`/api/admin/memories/${memoryId}`, {
     method: "DELETE",
   });
 }

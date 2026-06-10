@@ -32,10 +32,6 @@ export function ReportQueue({ onChanged, onStatusFilterChange, reports, statusCo
   return (
     <>
       <div className="photo-queue">
-        <div className="section-heading">
-          <h2>Zgłoszenia</h2>
-          <span>{reports.length}</span>
-        </div>
         <div className="status-tabs" role="tablist" aria-label="Status zgłoszeń">
           {STATUS_FILTERS.map((filter) => (
             <button
