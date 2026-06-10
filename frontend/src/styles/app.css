@@ -421,6 +421,65 @@ h2 {
   }
 }
 
+.map-photo-viewer {
+  align-items: center;
+  background: rgb(17 20 19 / 62%);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: clamp(18px, 4vw, 56px);
+  position: fixed;
+  z-index: 10000;
+}
+
+.map-photo-viewer-image-wrap {
+  position: relative;
+}
+
+.map-photo-viewer-image-wrap img {
+  animation: map-photo-viewer-in 180ms ease-out both;
+  border: 0;
+  border-radius: 6px;
+  box-shadow: 0 24px 70px rgb(0 0 0 / 45%);
+  display: block;
+  max-height: 86vh;
+  max-width: 88vw;
+  object-fit: contain;
+}
+
+.map-photo-viewer-close {
+  align-items: center;
+  background: rgb(17 20 19 / 62%);
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  font-size: 0.9rem;
+  height: 30px;
+  justify-content: center;
+  min-height: 0;
+  padding: 0;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 30px;
+}
+
+.map-photo-viewer-close:hover {
+  background: rgb(17 20 19 / 78%);
+}
+
+@keyframes map-photo-viewer-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .map-photo-upload-popup .leaflet-popup-content-wrapper {
   border-radius: 8px;
 }

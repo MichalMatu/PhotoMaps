@@ -1,5 +1,6 @@
 import L from "leaflet";
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { Marker, Popup, useMap } from "react-leaflet";
 
 import { mediaUrl, type Photo, type Place } from "../../api/client";
@@ -86,10 +87,57 @@ type Props = {
   onToggleFan: () => void;
 };
 
+type PhotoViewerProps = {
+  onClose: () => void;
+  photo: Photo;
+  place: Place;
+};
+
+function MapPhotoViewer({ onClose, photo, place }: PhotoViewerProps) {
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <div
+      className="map-photo-viewer"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Zdjęcie: ${place.title}`}
+      onClick={onClose}
+    >
+      <div className="map-photo-viewer-image-wrap" onClick={(event) => event.stopPropagation()}>
+        <img src={mediaUrl(photo.public_path)} alt={photo.caption ?? place.title} />
+        <button className="map-photo-viewer-close" type="button" onClick={onClose} aria-label="Zamknij">
+          x
+        </button>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
 export function PlaceMarker({ place, photos, isExpanded, onCloseFan, onPhotoUploaded, onToggleFan }: Props) {
   const map = useMap();
   const [layoutVersion, setLayoutVersion] = useState(0);
+  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const fanItemCount = photos.length + 1;
+
+  useEffect(() => {
+    if (!isExpanded) {
+      setSelectedPhoto(null);
+    }
+  }, [isExpanded]);
 
   useEffect(() => {
     if (!isExpanded) {
@@ -143,7 +191,7 @@ export function PlaceMarker({ place, photos, isExpanded, onCloseFan, onPhotoUplo
               eventHandlers={{
                 click: (event) => {
                   stopMarkerClick(event);
-                  window.open(mediaUrl(photo.public_path), "_blank", "noopener,noreferrer");
+                  setSelectedPhoto(photo);
                 },
               }}
             />
@@ -176,6 +224,8 @@ export function PlaceMarker({ place, photos, isExpanded, onCloseFan, onPhotoUplo
           </Popup>
         </Marker>
       ) : null}
+
+      {selectedPhoto ? <MapPhotoViewer photo={selectedPhoto} place={place} onClose={() => setSelectedPhoto(null)} /> : null}
     </>
   );
 }
