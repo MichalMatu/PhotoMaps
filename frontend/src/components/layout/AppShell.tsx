@@ -1,18 +1,5 @@
 import { ReactNode, useState } from "react";
-import {
-  Bookmark,
-  BookOpen,
-  Camera,
-  Clock3,
-  Languages,
-  ListChecks,
-  MapPinned,
-  Menu,
-  Plus,
-  Settings,
-  Share2,
-  X,
-} from "lucide-react";
+import { BookOpen, MapPinned, Menu, X } from "lucide-react";
 
 import { APP_NAME } from "../../config/app";
 
@@ -26,20 +13,6 @@ type Props = {
 const primaryItems = [
   { href: "/", label: "Mapa", section: "map" as const, Icon: MapPinned },
   { href: "/guides", label: "Przewodniki", section: "guides" as const, Icon: BookOpen },
-];
-
-const drawerItems = [
-  { label: "Zapisane", Icon: Bookmark },
-  { label: "Najnowsze", Icon: Clock3 },
-  { label: "Zdjęcia w okolicy", Icon: Camera },
-  { label: "Miejsca do sprawdzenia", Icon: ListChecks },
-];
-
-const utilityItems = [
-  { label: "Udostępnij mapę", Icon: Share2 },
-  { label: "Dodaj brakujące miejsce", Icon: Plus },
-  { label: "Ustawienia mapy", Icon: Settings },
-  { label: "Język", Icon: Languages },
 ];
 
 export function AppShell({ activeSection, children }: Props) {
@@ -95,24 +68,6 @@ export function AppShell({ activeSection, children }: Props) {
               </a>
             ),
           )}
-        </nav>
-
-        <nav className="drawer-section">
-          {drawerItems.map(({ label, Icon }) => (
-            <button className="drawer-item" disabled type="button" key={label}>
-              <Icon aria-hidden="true" size={26} />
-              <span>{label}</span>
-            </button>
-          ))}
-        </nav>
-
-        <nav className="drawer-section">
-          {utilityItems.map(({ label, Icon }) => (
-            <button className="drawer-item" disabled type="button" key={label}>
-              <Icon aria-hidden="true" size={26} />
-              <span>{label}</span>
-            </button>
-          ))}
         </nav>
       </aside>
 

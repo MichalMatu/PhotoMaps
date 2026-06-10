@@ -1,10 +1,12 @@
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents, ZoomControl } from "react-leaflet";
 
-import type { PlaceMapItem } from "../../api/client";
+import type { Photo, PlaceMapItem } from "../../api/client";
 import { DistanceMeasureTool } from "./DistanceMeasureTool";
+import { MapPhotoViewer } from "./MapPhotoViewer";
+import { PlaceDetailSheet } from "./PlaceDetailSheet";
 import { PlaceMarker } from "./PlaceMarker";
 
 type Props = {
@@ -86,8 +88,14 @@ function clusterPlaces(places: PlaceMapItem[], zoom: number): PlaceCluster[] {
 function PlaceLayer({ onPhotoUploaded, places }: Props) {
   const map = useMap();
   const [expandedPlaceId, setExpandedPlaceId] = useState<string | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const [zoom, setZoom] = useState(map.getZoom());
   const clusters = clusterPlaces(places, zoom);
+  const selectedPlace = useMemo(
+    () => places.find((place) => place.id === selectedPlaceId) ?? null,
+    [places, selectedPlaceId],
+  );
 
   useMapEvents({
     zoomend: () => setZoom(map.getZoom()),
@@ -97,7 +105,10 @@ function PlaceLayer({ onPhotoUploaded, places }: Props) {
     if (expandedPlaceId && !places.some((place) => place.id === expandedPlaceId)) {
       setExpandedPlaceId(null);
     }
-  }, [expandedPlaceId, places]);
+    if (selectedPlaceId && !places.some((place) => place.id === selectedPlaceId)) {
+      setSelectedPlaceId(null);
+    }
+  }, [expandedPlaceId, places, selectedPlaceId]);
 
   return (
     <>
@@ -124,12 +135,25 @@ function PlaceLayer({ onPhotoUploaded, places }: Props) {
             place={place}
             photos={place.photos}
             isExpanded={expandedPlaceId === place.id}
-            onCloseFan={() => setExpandedPlaceId(null)}
-            onPhotoUploaded={onPhotoUploaded}
+            isSelected={selectedPlaceId === place.id}
+            onPhotoSelected={setSelectedPhoto}
+            onSelect={() => setSelectedPlaceId(place.id)}
             onToggleFan={() => setExpandedPlaceId((currentPlaceId) => (currentPlaceId === place.id ? null : place.id))}
           />
         );
       })}
+      <PlaceDetailSheet
+        place={selectedPlace}
+        onClose={() => {
+          setSelectedPlaceId(null);
+          setExpandedPlaceId(null);
+        }}
+        onPhotoSelected={setSelectedPhoto}
+        onPhotoUploaded={onPhotoUploaded}
+      />
+      {selectedPhoto && selectedPlace ? (
+        <MapPhotoViewer photo={selectedPhoto} place={selectedPlace} onClose={() => setSelectedPhoto(null)} />
+      ) : null}
     </>
   );
 }

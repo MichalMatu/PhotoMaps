@@ -1,33 +1,8 @@
 :root {
   color: var(--color-text);
   background: var(--color-page);
-  color-scheme: light;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 16px;
-  --color-page: #f5f5f7;
-  --color-text: #1d1d1f;
-  --color-text-strong: #050505;
-  --color-muted: #6e6e73;
-  --color-muted-strong: #515154;
-  --color-surface: rgb(255 255 255 / 72%);
-  --color-surface-strong: rgb(255 255 255 / 88%);
-  --color-surface-soft: rgb(242 242 247 / 76%);
-  --color-surface-dark: rgb(28 28 30 / 82%);
-  --color-border: rgb(60 60 67 / 18%);
-  --color-border-strong: rgb(60 60 67 / 28%);
-  --color-accent: #007aff;
-  --color-accent-hover: #0067d8;
-  --color-accent-soft: rgb(0 122 255 / 12%);
-  --color-danger: #ff3b30;
-  --color-danger-soft: rgb(255 59 48 / 14%);
-  --color-warning: #ff9f0a;
-  --color-warning-soft: rgb(255 159 10 / 16%);
-  --color-success: #34c759;
-  --color-success-soft: rgb(52 199 89 / 15%);
-  --shadow-glass: 0 18px 50px rgb(0 0 0 / 14%);
-  --shadow-floating: 0 24px 70px rgb(0 0 0 / 24%);
-  --blur-glass: blur(18px);
-  --radius-control: 8px;
 }
 
 * {
@@ -63,13 +38,13 @@ button {
   color: white;
   cursor: pointer;
   font-weight: 600;
-  min-height: 44px;
+  min-height: var(--control-height-comfortable);
   padding: 0 18px;
   transition:
-    background-color 140ms ease,
-    border-color 140ms ease,
-    color 140ms ease,
-    transform 140ms ease;
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
 }
 
 button:not([class]):hover {
@@ -85,30 +60,20 @@ button:disabled {
   opacity: 0.55;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-    --color-page: #0f1115;
-    --color-text: #f5f5f7;
-    --color-text-strong: #ffffff;
-    --color-muted: #a1a1aa;
-    --color-muted-strong: #c7c7cc;
-    --color-surface: rgb(28 28 30 / 70%);
-    --color-surface-strong: rgb(44 44 46 / 84%);
-    --color-surface-soft: rgb(58 58 60 / 56%);
-    --color-surface-dark: rgb(18 18 20 / 86%);
-    --color-border: rgb(235 235 245 / 16%);
-    --color-border-strong: rgb(235 235 245 / 28%);
-    --color-accent: #0a84ff;
-    --color-accent-hover: #409cff;
-    --color-accent-soft: rgb(10 132 255 / 18%);
-    --color-danger: #ff453a;
-    --color-danger-soft: rgb(255 69 58 / 18%);
-    --color-warning: #ffd60a;
-    --color-warning-soft: rgb(255 214 10 / 18%);
-    --color-success: #30d158;
-    --color-success-soft: rgb(48 209 88 / 18%);
-    --shadow-glass: 0 18px 50px rgb(0 0 0 / 30%);
-    --shadow-floating: 0 24px 70px rgb(0 0 0 / 48%);
+:where(a, button, input, textarea, select, [role="button"], [tabindex]):focus-visible {
+  outline: 0;
+  box-shadow:
+    0 0 0 2px var(--surface-canvas),
+    0 0 0 5px var(--focus-ring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
   }
 }

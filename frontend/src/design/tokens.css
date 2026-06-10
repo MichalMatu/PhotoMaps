@@ -1,0 +1,133 @@
+@layer tokens {
+  :root {
+    color-scheme: light;
+
+    --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+
+    --text-display: 1.9rem;
+    --text-title: 1.25rem;
+    --text-subtitle: 1rem;
+    --text-body: 0.9375rem;
+    --text-body-small: 0.875rem;
+    --text-label: 0.8125rem;
+
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-14: 56px;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --radius-full: 999px;
+
+    --surface-canvas: #f5f5f7;
+    --surface-elevated: rgb(255 255 255 / 88%);
+    --surface-glass: rgb(255 255 255 / 72%);
+    --surface-inset: rgb(242 242 247 / 76%);
+    --surface-contrast: rgb(28 28 30 / 82%);
+    --surface-overlay: rgb(16 18 22 / 72%);
+
+    --content-primary: #1d1d1f;
+    --content-strong: #050505;
+    --content-secondary: #6e6e73;
+    --content-tertiary: #515154;
+    --content-on-accent: #ffffff;
+
+    --border-subtle: rgb(60 60 67 / 18%);
+    --border-strong: rgb(60 60 67 / 28%);
+    --focus-ring: rgb(0 122 255 / 70%);
+
+    --accent-primary: #007aff;
+    --accent-primary-hover: #0067d8;
+    --accent-soft: rgb(0 122 255 / 12%);
+    --danger: #ff3b30;
+    --danger-soft: rgb(255 59 48 / 14%);
+    --warning: #ff9f0a;
+    --warning-soft: rgb(255 159 10 / 16%);
+    --success: #34c759;
+    --success-soft: rgb(52 199 89 / 15%);
+
+    --shadow-raised: 0 8px 24px rgb(0 0 0 / 10%);
+    --shadow-card: 0 18px 50px rgb(0 0 0 / 14%);
+    --shadow-sheet: 0 24px 70px rgb(0 0 0 / 24%);
+    --shadow-spotlight: 0 30px 100px rgb(0 0 0 / 28%);
+    --blur-glass: blur(18px);
+
+    --duration-fast: 120ms;
+    --duration-normal: 180ms;
+    --duration-slow: 280ms;
+    --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --ease-emphasised: cubic-bezier(0.16, 1, 0.3, 1);
+
+    --control-height-comfortable: 44px;
+    --control-hit-target: 44px;
+
+    --color-page: var(--surface-canvas);
+    --color-text: var(--content-primary);
+    --color-text-strong: var(--content-strong);
+    --color-muted: var(--content-secondary);
+    --color-muted-strong: var(--content-tertiary);
+    --color-surface: var(--surface-glass);
+    --color-surface-strong: var(--surface-elevated);
+    --color-surface-soft: var(--surface-inset);
+    --color-surface-dark: var(--surface-contrast);
+    --color-border: var(--border-subtle);
+    --color-border-strong: var(--border-strong);
+    --color-accent: var(--accent-primary);
+    --color-accent-hover: var(--accent-primary-hover);
+    --color-accent-soft: var(--accent-soft);
+    --color-danger: var(--danger);
+    --color-danger-soft: var(--danger-soft);
+    --color-warning: var(--warning);
+    --color-warning-soft: var(--warning-soft);
+    --color-success: var(--success);
+    --color-success-soft: var(--success-soft);
+    --shadow-glass: var(--shadow-card);
+    --shadow-floating: var(--shadow-sheet);
+    --radius-control: var(--radius-sm);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+
+      --surface-canvas: #0f1115;
+      --surface-elevated: rgb(44 44 46 / 84%);
+      --surface-glass: rgb(28 28 30 / 70%);
+      --surface-inset: rgb(58 58 60 / 56%);
+      --surface-contrast: rgb(18 18 20 / 86%);
+      --surface-overlay: rgb(0 0 0 / 74%);
+
+      --content-primary: #f5f5f7;
+      --content-strong: #ffffff;
+      --content-secondary: #a1a1aa;
+      --content-tertiary: #c7c7cc;
+
+      --border-subtle: rgb(235 235 245 / 16%);
+      --border-strong: rgb(235 235 245 / 28%);
+      --focus-ring: rgb(64 156 255 / 78%);
+
+      --accent-primary: #0a84ff;
+      --accent-primary-hover: #409cff;
+      --accent-soft: rgb(10 132 255 / 18%);
+      --danger: #ff453a;
+      --danger-soft: rgb(255 69 58 / 18%);
+      --warning: #ffd60a;
+      --warning-soft: rgb(255 214 10 / 18%);
+      --success: #30d158;
+      --success-soft: rgb(48 209 88 / 18%);
+
+      --shadow-raised: 0 8px 24px rgb(0 0 0 / 18%);
+      --shadow-card: 0 18px 50px rgb(0 0 0 / 30%);
+      --shadow-sheet: 0 24px 70px rgb(0 0 0 / 48%);
+      --shadow-spotlight: 0 30px 100px rgb(0 0 0 / 54%);
+    }
+  }
+}

@@ -1,28 +1,25 @@
 import L from "leaflet";
 import { useEffect, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
-import { Marker, Popup, useMap } from "react-leaflet";
+import { Marker, useMap } from "react-leaflet";
 
 import { mediaUrl, type Photo, type PlaceMapItem } from "../../api/client";
-import { MemoryPanel } from "../places/MemoryPanel";
-import { PhotoUploadForm } from "../places/PhotoUploadForm";
-import { ReportForm } from "../places/ReportForm";
+import { getPlacePreviewPhoto } from "./placePreview";
 
-function markerIcon(photos: Photo[]) {
-  const coverPhoto = photos[0];
+function markerIcon(place: PlaceMapItem, isSelected: boolean) {
+  const coverPhoto = getPlacePreviewPhoto(place);
   if (!coverPhoto) {
     return L.divIcon({
-      className: "place-marker-icon",
+      className: isSelected ? "place-marker-icon is-selected" : "place-marker-icon",
       html: "<span></span>",
       iconAnchor: [14, 34],
       iconSize: [28, 34],
-      popupAnchor: [0, -30],
     });
   }
 
+  const imageUrl = escapeAttribute(mediaUrl(coverPhoto.thumb_path));
   return L.divIcon({
-    className: "place-photo-marker",
-    html: `<span style="background-image: url('${escapeAttribute(mediaUrl(coverPhoto.thumb_path))}')"></span>`,
+    className: isSelected ? "place-photo-marker is-selected" : "place-photo-marker",
+    html: `<span><img src="${imageUrl}" alt="" width="64" height="52" decoding="async" /></span>`,
     iconAnchor: [32, 26],
     iconSize: [64, 52],
   });
@@ -48,7 +45,6 @@ function fanAddIcon(offset: FanOffset, index: number) {
     html: `<span style="${fanAnimationStyle(offset, index)}">+</span>`,
     iconAnchor: [21, 21],
     iconSize: [42, 42],
-    popupAnchor: [0, -18],
   });
 }
 
@@ -84,62 +80,16 @@ type Props = {
   place: PlaceMapItem;
   photos: Photo[];
   isExpanded: boolean;
-  onCloseFan: () => void;
-  onPhotoUploaded?: () => void;
+  isSelected: boolean;
+  onPhotoSelected: (photo: Photo) => void;
+  onSelect: () => void;
   onToggleFan: () => void;
 };
 
-type PhotoViewerProps = {
-  onClose: () => void;
-  photo: Photo;
-  place: PlaceMapItem;
-};
-
-function MapPhotoViewer({ onClose, photo, place }: PhotoViewerProps) {
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [onClose]);
-
-  return createPortal(
-    <div
-      className="map-photo-viewer"
-      role="dialog"
-      aria-modal="true"
-      aria-label={`Zdjęcie: ${place.title}`}
-      onClick={onClose}
-    >
-      <div className="map-photo-viewer-image-wrap" onClick={(event) => event.stopPropagation()}>
-        <img src={mediaUrl(photo.public_path)} alt={photo.caption ?? place.title} />
-        <button className="map-photo-viewer-close" type="button" onClick={onClose} aria-label="Zamknij">
-          x
-        </button>
-      </div>
-    </div>,
-    document.body,
-  );
-}
-
-export function PlaceMarker({ place, photos, isExpanded, onCloseFan, onPhotoUploaded, onToggleFan }: Props) {
+export function PlaceMarker({ place, photos, isExpanded, isSelected, onPhotoSelected, onSelect, onToggleFan }: Props) {
   const map = useMap();
   const [layoutVersion, setLayoutVersion] = useState(0);
-  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const fanItemCount = photos.length + 1;
-
-  useEffect(() => {
-    if (!isExpanded) {
-      setSelectedPhoto(null);
-    }
-  }, [isExpanded]);
 
   useEffect(() => {
     if (!isExpanded) {
@@ -168,7 +118,7 @@ export function PlaceMarker({ place, photos, isExpanded, onCloseFan, onPhotoUplo
   return (
     <>
       <Marker
-        icon={markerIcon(photos)}
+        icon={markerIcon(place, isSelected)}
         position={[place.lat, place.lon]}
         riseOnHover
         title={place.title}
@@ -176,6 +126,7 @@ export function PlaceMarker({ place, photos, isExpanded, onCloseFan, onPhotoUplo
         eventHandlers={{
           click: (event) => {
             stopMarkerClick(event);
+            onSelect();
             onToggleFan();
           },
         }}
@@ -193,7 +144,7 @@ export function PlaceMarker({ place, photos, isExpanded, onCloseFan, onPhotoUplo
               eventHandlers={{
                 click: (event) => {
                   stopMarkerClick(event);
-                  setSelectedPhoto(photo);
+                  onPhotoSelected(photo);
                 },
               }}
             />
@@ -208,28 +159,13 @@ export function PlaceMarker({ place, photos, isExpanded, onCloseFan, onPhotoUplo
           title={`Dodaj zdjęcie: ${place.title}`}
           zIndexOffset={1400 + photos.length}
           eventHandlers={{
-            click: stopMarkerClick,
+            click: (event) => {
+              stopMarkerClick(event);
+              onSelect();
+            },
           }}
-        >
-          <Popup className="map-photo-upload-popup" closeButton>
-            <div className="map-upload-popover">
-              <span className="eyebrow">Miejsce</span>
-              <strong>{place.title}</strong>
-              <PhotoUploadForm
-                placeId={place.id}
-                onUploaded={() => {
-                  onPhotoUploaded?.();
-                  onCloseFan();
-                }}
-              />
-              <MemoryPanel placeId={place.id} />
-              <ReportForm targetId={place.id} targetType="place" />
-            </div>
-          </Popup>
-        </Marker>
+        />
       ) : null}
-
-      {selectedPhoto ? <MapPhotoViewer photo={selectedPhoto} place={place} onClose={() => setSelectedPhoto(null)} /> : null}
     </>
   );
 }
