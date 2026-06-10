@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import type { PlaceMapItem } from "../../api/client";
 import { MemoryPanel } from "../places/MemoryPanel";
 import { ResponsiveSheet } from "../ui/ResponsiveSheet";
@@ -8,6 +10,13 @@ type Props = {
 };
 
 export function MemorySheet({ onClose, place }: Props) {
+  const [visitToken, setVisitToken] = useState("");
+  const isUnlocked = visitToken.trim().length > 0;
+
+  useEffect(() => {
+    setVisitToken("");
+  }, [place?.id]);
+
   return (
     <ResponsiveSheet
       open={Boolean(place)}
@@ -19,7 +28,16 @@ export function MemorySheet({ onClose, place }: Props) {
     >
       {place ? (
         <div className="memory-sheet-content">
-          <MemoryPanel placeId={place.id} showHeading={false} />
+          <label className="memory-token-field">
+            Token
+            <input
+              autoComplete="off"
+              placeholder="Wpisz token"
+              value={visitToken}
+              onChange={(event) => setVisitToken(event.target.value)}
+            />
+          </label>
+          {isUnlocked ? <MemoryPanel placeId={place.id} showHeading={false} /> : null}
         </div>
       ) : null}
     </ResponsiveSheet>
