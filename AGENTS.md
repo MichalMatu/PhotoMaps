@@ -62,6 +62,23 @@ UI ma być kompaktowy, spójny i minimalistyczny. Nie duplikować tytułów, opi
 - formularze i modale projektować możliwie nisko i wąsko, bez pustych obszarów i bez niepotrzebnych bloków tekstu,
 - każdy ekran powinien być czytelny przez układ, odstępy i kolejność pól, a nie przez nadmiar opisów.
 
+## Zasady przepływów UI
+
+Nie mieszać trybów użytkownika w jednym widoku bez wyraźnej potrzeby. Szczególnie:
+
+- modal albo sheet służący do wykonania akcji ma pokazywać tylko dane potrzebne do tej akcji,
+- formularz dodawania nie powinien automatycznie pokazywać listy istniejących rekordów,
+- podgląd szczegółów może pokazywać dane wybranego rekordu, ale nie powinien zawierać formularzy dodawania nowych rekordów,
+- lista, ranking, historia i moderacja mają być osobnymi trybami albo jawnie nazwanymi sekcjami,
+- jeśli jeden komponent jest używany w kilku trybach, nazwać tryb w API komponentu, np. `form-only`, `with-list`, `readonly`, zamiast dodawać kilka luźnych flag boolean,
+- nie dodawać fallbacków UX „na wszelki wypadek”; jeśli nie wiadomo, czy informacja ma być widoczna w danym flow, najpierw ograniczyć ją do najwęższego potrzebnego kontekstu albo zapytać użytkownika.
+
+Zmiany w modalach, sheetach, uploadzie, edycji i mapowych warstwach muszą mieć test regresyjny, jeśli problem może wrócić przez przypadkowe reużycie komponentu. Minimum:
+
+- test helpera albo trybu komponentu, jeśli UI ma różne warianty,
+- test payloadu API clienta, jeśli formularz wysyła dane,
+- test backendu, jeśli endpoint waliduje pola, statusy, liczniki albo prywatność ścieżek.
+
 ## Zakazane słownictwo w nowym kodzie
 
 Nie używać w nowym kodzie, API, UI, modelach, komponentach ani nazwach plików:
@@ -230,12 +247,14 @@ Pola minimalne:
 - `author_name`
 - `author_city`
 - `caption`
+- `memory_text`
 - `original_path`
 - `public_path`
 - `thumb_path`
 - `status`: `pending | approved | rejected`
 - `paid`
 - `share_slug`
+- `claim_token_hash`
 - `created_at`
 - `approved_at`
 
