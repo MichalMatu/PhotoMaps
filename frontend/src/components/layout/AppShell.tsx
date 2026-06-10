@@ -9,7 +9,6 @@ import {
   Menu,
   Plus,
   Settings,
-  Shield,
   Share2,
   X,
 } from "lucide-react";
@@ -25,7 +24,6 @@ type Props = {
 
 const primaryItems = [
   { href: "/", label: "Mapa", section: "map" as const, Icon: MapPinned },
-  { href: "/admin", label: "Admin", section: "admin" as const, Icon: Shield },
 ];
 
 const drawerItems = [
