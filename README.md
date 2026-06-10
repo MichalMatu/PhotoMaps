@@ -1,7 +1,3 @@
-# Wrocław Bez Ściemy
-
-Lokalny przewodnik po Wrocławiu oparty o mapę miejsc z charakterem. MVP ma publiczną mapę, admina miejsc, zdjęcia miejsc, pamiątki użytkowników, przewodniki i zgłoszenia problemów.
-
 ## Dev
 
 Backend FastAPI działa na `http://127.0.0.1:8000`, frontend Vite na `http://127.0.0.1:5174`.

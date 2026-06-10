@@ -55,7 +55,7 @@ export function SystemModal({
   }, [isBusy, onClose]);
 
   return createPortal(
-    <div className="system-modal-backdrop" role="presentation">
+    <div className="system-modal-backdrop" role="presentation" onClick={isBusy ? undefined : onClose}>
       <div
         className={`system-modal system-modal--${tone} system-modal--${size}${draggableWindow.isDragging ? " is-dragging" : ""}`}
         role="dialog"
