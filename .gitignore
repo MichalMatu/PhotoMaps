@@ -13,6 +13,8 @@ __pycache__/
 node_modules/
 dist/
 *.tsbuildinfo
+frontend/playwright-report/
+frontend/test-results/
 
 backend/data/
 backend/storage/private/

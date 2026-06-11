@@ -25,7 +25,7 @@ cd "$ROOT_DIR"
 "$PYTHON_BIN" scripts/check_schema.py
 
 if command -v shellcheck >/dev/null 2>&1; then
-  shellcheck scripts/*.sh scripts/dev/*.sh
+  shellcheck scripts/*.sh scripts/dev/*.sh scripts/quality/*.sh
 else
   echo "shellcheck not installed; skipping shell script diagnostics."
 fi

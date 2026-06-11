@@ -40,6 +40,24 @@ pre-commit run --all-files
 
 `make check` uruchamia backend Ruff format/lint, testy z coverage, diagnostykę schematu bazy, opcjonalny `shellcheck` dla skryptów oraz frontend format/lint/knip/test/build.
 
+## Testy jakości
+
+```bash
+make api-flow      # pełny flow MVP po backend API
+make api-contract  # kontrakt OpenAPI dla publicznych GET endpointów
+make smoke         # live smoke backendu i frontendu na izolowanych portach
+make e2e           # Playwright smoke w przeglądarce Chromium
+make perf-smoke    # podstawowy pomiar opóźnień live endpointów
+make quality       # wszystko powyżej plus make check
+```
+
+`make smoke`, `make e2e` i `make perf-smoke` same startują backend oraz frontend na izolowanych portach i sprzątają procesy po zakończeniu.
+Progi `perf-smoke` można dostroić przez env:
+
+```bash
+PERF_ITERATIONS=10 PERF_MAX_MS=2000 PERF_AVG_MS=800 make perf-smoke
+```
+
 ## Adresy
 
 ```bash
