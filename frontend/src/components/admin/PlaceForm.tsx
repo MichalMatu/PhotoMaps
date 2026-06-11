@@ -1,10 +1,11 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
-import type { Category, Place, PlacePayload, PlaceStatus } from "../../api/client";
+import type { Category, City, Place, PlacePayload, PlaceStatus } from "../../api/client";
 import { PlaceLocationPicker } from "./PlaceLocationPicker";
 
 type Props = {
   categories: Category[];
+  cities: City[];
   className?: string;
   place?: Place | null;
   onCancel?: () => void;
@@ -35,9 +36,10 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-export function PlaceForm({ categories, className = "admin-form", onCancel, onSubmit, place }: Props) {
+export function PlaceForm({ categories, cities, className = "admin-form", onCancel, onSubmit, place }: Props) {
   const [title, setTitle] = useState("");
-  const [categoryId, setCategoryId] = useState("");
+  const [cityId, setCityId] = useState("");
+  const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const [location, setLocation] = useState(INITIAL_LOCATION);
   const [description, setDescription] = useState("");
   const [localComment, setLocalComment] = useState("");
@@ -46,15 +48,21 @@ export function PlaceForm({ categories, className = "admin-form", onCancel, onSu
   const [isSaving, setIsSaving] = useState(false);
 
   const generatedSlug = useMemo(() => slugify(title), [title]);
-  const availableCategories = useMemo(
-    () => categories.filter((category) => category.status === "active" || category.id === place?.category_id),
-    [categories, place?.category_id],
+  const availableCities = useMemo(
+    () => cities.filter((city) => city.status === "active" || city.id === place?.city_id),
+    [cities, place?.city_id],
   );
+  const availableCategories = useMemo(
+    () => categories.filter((category) => category.status === "active" || place?.category_ids.includes(category.id)),
+    [categories, place?.category_ids],
+  );
+  const defaultCityId = availableCities[0]?.id ?? "";
 
   useEffect(() => {
     if (!place) {
       setTitle("");
-      setCategoryId("");
+      setCityId(defaultCityId);
+      setCategoryIds([]);
       setLocation(INITIAL_LOCATION);
       setDescription("");
       setLocalComment("");
@@ -64,22 +72,32 @@ export function PlaceForm({ categories, className = "admin-form", onCancel, onSu
     }
 
     setTitle(place.title);
-    setCategoryId(place.category_id ?? "");
+    setCityId(place.city_id);
+    setCategoryIds(place.category_ids);
     setLocation({ lat: place.lat, lon: place.lon });
     setDescription(place.description ?? "");
     setLocalComment(place.local_comment ?? "");
     setWeight(String(place.weight));
     setStatus(place.status);
-  }, [place]);
+  }, [defaultCityId, place]);
+
+  function toggleCategory(categoryId: string) {
+    setCategoryIds((currentIds) =>
+      currentIds.includes(categoryId)
+        ? currentIds.filter((currentId) => currentId !== categoryId)
+        : [...currentIds, categoryId],
+    );
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSaving(true);
     try {
       await onSubmit({
+        city_id: cityId,
         slug: place?.slug ?? generatedSlug,
         title,
-        category_id: categoryId || null,
+        category_ids: categoryIds,
         lat: location.lat,
         lon: location.lon,
         description: description.trim() || null,
@@ -89,7 +107,8 @@ export function PlaceForm({ categories, className = "admin-form", onCancel, onSu
       });
       if (!place) {
         setTitle("");
-        setCategoryId("");
+        setCityId(defaultCityId);
+        setCategoryIds([]);
         setLocation(INITIAL_LOCATION);
         setDescription("");
         setLocalComment("");
@@ -109,16 +128,31 @@ export function PlaceForm({ categories, className = "admin-form", onCancel, onSu
       </label>
 
       <label>
-        Kategoria
-        <select value={categoryId} onChange={(event) => setCategoryId(event.target.value)}>
-          <option value="">Bez kategorii</option>
-          {availableCategories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.label}
+        Miasto
+        <select value={cityId} onChange={(event) => setCityId(event.target.value)} required>
+          {availableCities.map((city) => (
+            <option key={city.id} value={city.id}>
+              {city.name}
             </option>
           ))}
         </select>
       </label>
+
+      <fieldset className="category-checkboxes">
+        <legend>Kategorie</legend>
+        <div className="category-checkbox-grid">
+          {availableCategories.map((category) => (
+            <label key={category.id}>
+              <input
+                type="checkbox"
+                checked={categoryIds.includes(category.id)}
+                onChange={() => toggleCategory(category.id)}
+              />
+              <span>{category.label}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       <div className="location-field">
         <span>Lokalizacja</span>
@@ -156,7 +190,7 @@ export function PlaceForm({ categories, className = "admin-form", onCancel, onSu
         </label>
       </div>
 
-      <button type="submit" disabled={!generatedSlug || isSaving}>
+      <button type="submit" disabled={!cityId || !generatedSlug || isSaving}>
         {isSaving ? "Zapisywanie..." : place ? "Zapisz zmiany" : "Dodaj miejsce"}
       </button>
       {onCancel ? (

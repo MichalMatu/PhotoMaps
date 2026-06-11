@@ -52,7 +52,7 @@ Publiczna mapa jest głównym produktem i ma działać jak żywa tablica miniatu
 - Warstwy mapy są sposobem oglądania danych, np. polecane, galerie, pamiątki, później audio i trasy.
 - Warstwa `Polecane` pokazuje miejsca przez główne miniatury/covery i ranking redakcyjny; `Galerie` oznaczają dodatkowe zatwierdzone zdjęcia miejsca poza coverem.
 - Kategorie są zarządzane w adminie i frontend mapy ma korzystać z nich dynamicznie; nie hardkodować kategorii w filtrach UI.
-- Kontrakt mapy powinien być `map preview`: dane miejsca, kategoria, score, liczniki, cover i kilka kuratorowanych podglądów. Nie zwracać pełnych galerii i pełnych pamiątek tylko po to, żeby wyrenderować pierwszy widok.
+- Kontrakt mapy powinien być `map preview`: dane miejsca, miasto, kategorie, score, liczniki, cover i kilka kuratorowanych podglądów. Nie zwracać pełnych galerii i pełnych pamiątek tylko po to, żeby wyrenderować pierwszy widok.
 - Nie zamieniać odchudzenia endpointu mapy w pustą mapę bez miniaturek. Optymalizacja kontraktu ma zachować efekt "wow" pierwszego widoku.
 
 Planowany kierunek audio: jeśli miniatura ma zatwierdzone audio miejsca, hover może płynnie i cicho uruchamiać krótki ambient z fade in/fade out. Implementując to później, uwzględnić ograniczenia autoplay w przeglądarkach i dodać jawne włączenie dźwięku mapy, jeśli będzie potrzebne.
@@ -224,6 +224,7 @@ Docelowy układ:
 Na start wdrożyć tylko:
 
 - `Category`,
+- `City`,
 - `Place`,
 - `Photo`,
 - `Memory`,
@@ -244,11 +245,11 @@ Pola minimalne:
 ### Place
 
 - `id`
+- `city_id`
 - `slug`
 - `title`
 - `description`
 - `local_comment`
-- `category_id`
 - `lat`
 - `lon`
 - `weight`
@@ -259,6 +260,18 @@ Pola minimalne:
 - `created_at`
 - `updated_at`
 
+Kategorie miejsc są relacją wiele-do-wielu przez `PlaceCategory`, nie pojedynczym polem w `Place`.
+
+### City
+
+- `id`
+- `name`
+- `lat`
+- `lon`
+- `default_zoom`
+- `sort_order`
+- `status`: `active | archived`
+
 ### Photo
 
 - `id`
@@ -266,6 +279,8 @@ Pola minimalne:
 - `original_path`
 - `public_path`
 - `thumb_path`
+- `role`: `gallery | map_icon`
+- `source`: `user_upload | editorial | generated`
 - `status`: `pending | approved | rejected`
 - `caption`
 - `created_at`
@@ -315,6 +330,7 @@ Publiczne:
 
 ```txt
 GET /health
+GET /api/cities
 GET /api/categories
 GET /api/places
 GET /api/places/map
@@ -331,6 +347,7 @@ POST /api/reports
 Admin:
 
 ```txt
+GET /api/admin/cities
 POST /api/admin/places
 PATCH /api/admin/places/{place_id}
 DELETE /api/admin/places/{place_id}
@@ -426,7 +443,7 @@ Pracuj etapami. Nie przechodź dalej, jeśli aktualny etap nie działa.
 ```txt
 0. Utworzenie struktury projektu
 1. Backend FastAPI + SQLite
-2. Modele Category i Place
+2. Modele City, Category i Place
 3. Seed kategorii
 4. API categories i places
 5. Frontend Vite + React + Leaflet
@@ -496,7 +513,7 @@ Dodatkowo sprawdzić ręcznie:
 MVP jest gotowe, gdy:
 
 - admin może dodać miejsce,
-- miejsce ma kategorię,
+- miejsce ma co najmniej jedną sensowną kategorię,
 - miejsce pojawia się na mapie,
 - publiczna mapa pokazuje tylko `published`,
 - miejsce ma opis i lokalny komentarz,

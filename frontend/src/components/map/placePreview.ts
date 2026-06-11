@@ -1,4 +1,4 @@
-import type { Memory, Photo, PlaceMapItem } from "../../api/client";
+import type { Photo, PlaceMapItem, PlaceMapPreviewItem } from "../../api/client";
 
 export type PlaceMapVisualItem =
   | {
@@ -18,7 +18,7 @@ export type PlaceMapVisualItem =
       id: string;
       kind: "memory";
       public_path: string;
-      source: Memory;
+      source: PlaceMapPreviewItem;
       thumb_path: string;
     };
 
@@ -35,10 +35,10 @@ function photoVisualItem(photo: Photo): PlaceMapVisualItem {
   };
 }
 
-function memoryVisualItem(memory: Memory): PlaceMapVisualItem {
+function previewMemoryVisualItem(memory: PlaceMapPreviewItem): PlaceMapVisualItem {
   return {
     approved_at: memory.approved_at,
-    caption: memory.caption,
+    caption: memory.caption ?? "",
     created_at: memory.created_at,
     id: memory.id,
     kind: "memory",
@@ -48,24 +48,41 @@ function memoryVisualItem(memory: Memory): PlaceMapVisualItem {
   };
 }
 
+function previewItemVisualItem(item: PlaceMapPreviewItem): PlaceMapVisualItem {
+  return item.kind === "photo"
+    ? photoVisualItem({
+        approved_at: item.approved_at,
+        caption: item.caption,
+        created_at: item.created_at,
+        id: item.id,
+        place_id: item.place_id,
+        public_path: item.public_path,
+        role: item.role ?? "gallery",
+        source: item.source ?? "editorial",
+        status: item.status,
+        thumb_path: item.thumb_path,
+      })
+    : previewMemoryVisualItem(item);
+}
+
 export function getPlacePreviewVisual(
-  place: Pick<PlaceMapItem, "cover_photo" | "photos" | "memories">,
+  place: Pick<PlaceMapItem, "cover_photo" | "preview_items">,
 ): PlaceMapVisualItem | null {
-  const previewPhoto = place.cover_photo ?? place.photos[0] ?? null;
+  const previewPhoto = place.cover_photo ?? null;
   if (previewPhoto) {
     return photoVisualItem(previewPhoto);
   }
 
-  const previewMemory = place.memories[0] ?? null;
-  return previewMemory ? memoryVisualItem(previewMemory) : null;
+  const previewItem = place.preview_items[0] ?? null;
+  return previewItem ? previewItemVisualItem(previewItem) : null;
 }
 
-export function getPlaceFanItems(place: Pick<PlaceMapItem, "photos" | "memories">): PlaceMapVisualItem[] {
-  return [...place.photos.map(photoVisualItem), ...place.memories.map(memoryVisualItem)];
+export function getPlaceFanItems(place: Pick<PlaceMapItem, "preview_items">): PlaceMapVisualItem[] {
+  return place.preview_items.map(previewItemVisualItem);
 }
 
 export function findPlaceFanItem(
-  place: Pick<PlaceMapItem, "photos" | "memories">,
+  place: Pick<PlaceMapItem, "preview_items">,
   target: { id: string; kind: PlaceMapVisualItem["kind"] },
 ): PlaceMapVisualItem | null {
   return getPlaceFanItems(place).find((item) => item.kind === target.kind && item.id === target.id) ?? null;

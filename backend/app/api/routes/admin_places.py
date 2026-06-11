@@ -1,6 +1,6 @@
 from datetime import UTC, datetime
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlmodel import Session, select
 
 from app.api.admin_auth import require_admin_token
@@ -8,7 +8,10 @@ from app.db.session import get_session
 from app.models.place import Place
 from app.schemas.place import PlaceCreate, PlaceRead, PlaceUpdate
 from app.serializers.place import place_to_read
-from app.services.places import ensure_active_category, ensure_place_status, ensure_slug_available
+from app.services.cities import ensure_active_city
+from app.services.place_deletion import delete_place_permanently
+from app.services.place_taxonomy import category_ids_by_place_id, replace_place_categories
+from app.services.places import ensure_place_status, ensure_slug_available
 
 router = APIRouter(prefix="/api/admin/places", tags=["admin places"], dependencies=[Depends(require_admin_token)])
 
@@ -16,20 +19,23 @@ router = APIRouter(prefix="/api/admin/places", tags=["admin places"], dependenci
 @router.get("", response_model=list[PlaceRead])
 def list_admin_places(session: Session = Depends(get_session)) -> list[PlaceRead]:
     statement = select(Place).order_by(Place.created_at.desc())
-    return [place_to_read(place) for place in session.exec(statement).all()]
+    places = list(session.exec(statement).all())
+    category_ids_by_place = category_ids_by_place_id(session, [place.id for place in places])
+    return [place_to_read(place, category_ids_by_place.get(place.id, [])) for place in places]
 
 
 @router.post("", response_model=PlaceRead, status_code=201)
 def create_place(payload: PlaceCreate, session: Session = Depends(get_session)) -> PlaceRead:
     ensure_place_status(payload.status)
     ensure_slug_available(session, payload.slug)
-    if payload.category_id is not None:
-        ensure_active_category(session, payload.category_id)
-    place = Place.model_validate(payload)
+    ensure_active_city(session, payload.city_id)
+    place = Place.model_validate(payload.model_dump(exclude={"category_ids"}))
     session.add(place)
+    session.flush()
+    replace_place_categories(session, place.id, payload.category_ids)
     session.commit()
     session.refresh(place)
-    return place_to_read(place)
+    return place_to_read(place, category_ids_by_place_id(session, [place.id]).get(place.id, []))
 
 
 @router.patch("/{place_id}", response_model=PlaceRead)
@@ -47,28 +53,40 @@ def update_place(
         ensure_place_status(data["status"])
     if "slug" in data and data["slug"] is not None:
         ensure_slug_available(session, data["slug"], place.id)
-    if "category_id" in data and data["category_id"] is not None and data["category_id"] != place.category_id:
-        ensure_active_category(session, data["category_id"])
+    if "city_id" in data and data["city_id"] is not None:
+        ensure_active_city(session, data["city_id"])
+
+    category_ids = data.pop("category_ids", None)
 
     for key, value in data.items():
         setattr(place, key, value)
+    if category_ids is not None:
+        replace_place_categories(session, place.id, category_ids)
     place.updated_at = datetime.now(UTC)
 
     session.add(place)
     session.commit()
     session.refresh(place)
-    return place_to_read(place)
+    return place_to_read(place, category_ids_by_place_id(session, [place.id]).get(place.id, []))
 
 
-@router.delete("/{place_id}", response_model=PlaceRead)
-def archive_place(place_id: str, session: Session = Depends(get_session)) -> PlaceRead:
+@router.delete(
+    "/{place_id}",
+    response_model=None,
+    responses={200: {"model": PlaceRead}, 204: {"description": "Deleted"}},
+)
+def delete_place(place_id: str, force: bool = False, session: Session = Depends(get_session)) -> PlaceRead | Response:
     place = session.get(Place, place_id)
     if place is None:
         raise HTTPException(status_code=404, detail="Place not found")
+
+    if force:
+        delete_place_permanently(place, session)
+        return Response(status_code=204)
 
     place.status = "archived"
     place.updated_at = datetime.now(UTC)
     session.add(place)
     session.commit()
     session.refresh(place)
-    return place_to_read(place)
+    return place_to_read(place, category_ids_by_place_id(session, [place.id]).get(place.id, []))

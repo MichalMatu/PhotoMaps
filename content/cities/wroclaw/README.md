@@ -2,6 +2,20 @@
 
 Manifest Wrocławia trzymamy w `manifest.json`.
 
+## Schemat miasta
+
+```json
+{
+  "id": "wroclaw",
+  "name": "Wrocław",
+  "lat": 51.1079,
+  "lon": 17.0385,
+  "default_zoom": 13,
+  "sort_order": 10,
+  "status": "active"
+}
+```
+
 ## Schemat miejsca
 
 ```json
@@ -10,7 +24,7 @@ Manifest Wrocławia trzymamy w `manifest.json`.
   "title": "Rynek",
   "description": "Krótki opis miejsca.",
   "local_comment": "Krótki lokalny komentarz.",
-  "category_id": "local_classic",
+  "category_ids": ["local_classic", "viewpoint"],
   "lat": 51.109,
   "lon": 17.032,
   "weight": 2.0,

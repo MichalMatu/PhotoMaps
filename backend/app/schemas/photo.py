@@ -8,6 +8,8 @@ class PhotoRead(SQLModel):
     place_id: str
     public_path: str
     thumb_path: str
+    role: str
+    source: str
     status: str
     caption: str | None
     created_at: datetime

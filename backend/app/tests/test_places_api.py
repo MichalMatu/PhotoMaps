@@ -1,11 +1,14 @@
 from datetime import UTC, datetime
 
 from conftest import ADMIN_HEADERS
+from sqlmodel import select
 
 from app.models.category import Category
+from app.models.guide import Guide, PlaceGuide
 from app.models.memory import Memory
 from app.models.photo import Photo
-from app.models.place import Place
+from app.models.place import Place, PlaceCategory
+from app.models.report import Report
 from app.services.tokens import claim_token_hash
 
 
@@ -21,8 +24,8 @@ def assert_no_private_original_path(payload) -> None:
 
 def test_public_places_only_show_published(client_session) -> None:
     client, session = client_session
-    session.add(Place(slug="public-place", title="Public", lat=51.11, lon=17.03, status="published"))
-    session.add(Place(slug="draft-place", title="Draft", lat=51.12, lon=17.04, status="draft"))
+    session.add(Place(city_id="wroclaw", slug="public-place", title="Public", lat=51.11, lon=17.03, status="published"))
+    session.add(Place(city_id="wroclaw", slug="draft-place", title="Draft", lat=51.12, lon=17.04, status="draft"))
     session.commit()
 
     response = client.get("/api/places")
@@ -33,8 +36,8 @@ def test_public_places_only_show_published(client_session) -> None:
 
 def test_public_place_detail_hides_draft_and_archived(client_session) -> None:
     client, session = client_session
-    session.add(Place(slug="draft-place", title="Draft", lat=51.12, lon=17.04, status="draft"))
-    session.add(Place(slug="old-place", title="Old", lat=51.13, lon=17.05, status="archived"))
+    session.add(Place(city_id="wroclaw", slug="draft-place", title="Draft", lat=51.12, lon=17.04, status="draft"))
+    session.add(Place(city_id="wroclaw", slug="old-place", title="Old", lat=51.13, lon=17.05, status="archived"))
     session.commit()
 
     assert client.get("/api/places/draft-place").status_code == 404
@@ -43,7 +46,7 @@ def test_public_place_detail_hides_draft_and_archived(client_session) -> None:
 
 def test_admin_can_list_and_archive_places(client_session) -> None:
     client, session = client_session
-    place = Place(slug="admin-place", title="Admin", lat=51.12, lon=17.04, status="draft")
+    place = Place(city_id="wroclaw", slug="admin-place", title="Admin", lat=51.12, lon=17.04, status="draft")
     session.add(place)
     session.commit()
     session.refresh(place)
@@ -58,13 +61,90 @@ def test_admin_can_list_and_archive_places(client_session) -> None:
     assert session.get(Place, place.id) is not None
 
 
+def test_admin_can_permanently_delete_place_with_related_content(client_session, tmp_path) -> None:
+    client, session = client_session
+    category = Category(id="coffee", label="Kawa", status="active")
+    place = Place(city_id="wroclaw", slug="delete-me", title="Delete me", lat=51.12, lon=17.04, status="draft")
+    guide = Guide(slug="delete-guide", title="Delete guide")
+    session.add(category)
+    session.add(place)
+    session.add(guide)
+    session.commit()
+    session.refresh(place)
+    session.refresh(guide)
+
+    photo_paths = (
+        f"photos/{place.id}/photo-original.jpg",
+        f"/media/photos/{place.id}/photo.jpg",
+        f"/media/photos/{place.id}/photo-thumb.jpg",
+    )
+    memory_paths = (
+        f"memories/{place.id}/memory-original.jpg",
+        f"/media/memories/{place.id}/memory.jpg",
+        f"/media/memories/{place.id}/memory-thumb.jpg",
+    )
+    for relative_path in (photo_paths[0], memory_paths[0]):
+        path = tmp_path / "private" / relative_path
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("private")
+    for media_path in (photo_paths[1], photo_paths[2], memory_paths[1], memory_paths[2]):
+        path = tmp_path / "public" / media_path.removeprefix("/media/")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("public")
+
+    photo = Photo(
+        place_id=place.id,
+        original_path=photo_paths[0],
+        public_path=photo_paths[1],
+        thumb_path=photo_paths[2],
+        status="approved",
+    )
+    memory = Memory(
+        place_id=place.id,
+        caption="Byłem tutaj",
+        memory_text="Do usunięcia",
+        original_path=memory_paths[0],
+        public_path=memory_paths[1],
+        thumb_path=memory_paths[2],
+        status="approved",
+        claim_token_hash=claim_token_hash("secret-token"),
+    )
+    session.add(photo)
+    session.add(memory)
+    session.commit()
+    session.refresh(photo)
+    session.refresh(memory)
+    session.add(PlaceCategory(place_id=place.id, category_id=category.id))
+    session.add(PlaceGuide(place_id=place.id, guide_id=guide.id))
+    session.add(Report(target_type="place", target_id=place.id, reason="wrong_data"))
+    session.add(Report(target_type="photo", target_id=photo.id, reason="wrong_data"))
+    session.add(Report(target_type="memory", target_id=memory.id, reason="wrong_data"))
+    session.add(Report(target_type="guide", target_id=guide.id, reason="wrong_data"))
+    session.commit()
+
+    response = client.delete(f"/api/admin/places/{place.id}?force=true", headers=ADMIN_HEADERS)
+
+    assert response.status_code == 204
+    assert session.get(Place, place.id) is None
+    assert session.get(Photo, photo.id) is None
+    assert session.get(Memory, memory.id) is None
+    assert session.get(PlaceCategory, (place.id, category.id)) is None
+    assert session.get(PlaceGuide, (guide.id, place.id)) is None
+    assert session.exec(select(Report).where(Report.target_id.in_([place.id, photo.id, memory.id]))).all() == []
+    assert session.exec(select(Report).where(Report.target_type == "guide")).one().target_id == guide.id
+    assert not (tmp_path / "private" / photo_paths[0]).exists()
+    assert not (tmp_path / "public" / photo_paths[1].removeprefix("/media/")).exists()
+    assert not (tmp_path / "private" / memory_paths[0]).exists()
+    assert not (tmp_path / "public" / memory_paths[1].removeprefix("/media/")).exists()
+
+
 def test_map_places_return_ranked_public_summary_without_private_paths(client_session) -> None:
     client, session = client_session
     category = Category(id="coffee", label="Kawa", sort_order=1)
     top_place = Place(
+        city_id="wroclaw",
         slug="top-place",
         title="Top",
-        category_id=category.id,
         lat=51.11,
         lon=17.03,
         status="published",
@@ -73,9 +153,9 @@ def test_map_places_return_ranked_public_summary_without_private_paths(client_se
         weight=2,
     )
     lower_place = Place(
+        city_id="wroclaw",
         slug="lower-place",
         title="Lower",
-        category_id=category.id,
         lat=51.12,
         lon=17.04,
         status="published",
@@ -83,13 +163,16 @@ def test_map_places_return_ranked_public_summary_without_private_paths(client_se
         memory_count=0,
         weight=1,
     )
-    draft_place = Place(slug="draft-place", title="Draft", lat=51.13, lon=17.05, status="draft")
+    draft_place = Place(city_id="wroclaw", slug="draft-place", title="Draft", lat=51.13, lon=17.05, status="draft")
     session.add(category)
     session.add(top_place)
     session.add(lower_place)
     session.add(draft_place)
     session.commit()
     session.refresh(top_place)
+    session.refresh(lower_place)
+    session.add(PlaceCategory(place_id=top_place.id, category_id=category.id, sort_order=0))
+    session.add(PlaceCategory(place_id=lower_place.id, category_id=category.id, sort_order=0))
     cover_photo = Photo(
         place_id=top_place.id,
         original_path="photos/private-original.jpg",
@@ -124,19 +207,23 @@ def test_map_places_return_ranked_public_summary_without_private_paths(client_se
     assert response.status_code == 200
     body = response.json()
     assert [place["slug"] for place in body] == ["top-place", "lower-place"]
-    assert body[0]["category"]["id"] == "coffee"
+    assert body[0]["city"]["id"] == "wroclaw"
+    assert body[0]["category_ids"] == ["coffee"]
+    assert body[0]["categories"][0]["id"] == "coffee"
     assert body[0]["cover_photo"]["thumb_path"] == "/media/photos/thumb.jpg"
     assert "original_path" not in body[0]["cover_photo"]
-    assert body[0]["photos"][0]["id"] == cover_photo.id
-    assert body[0]["memories"][0]["id"] == memory.id
-    assert body[0]["memories"][0]["memory_text"] == "Myśl z miejsca"
-    assert body[0]["memories"][0]["thumb_path"] == "/media/memories/thumb.jpg"
-    assert "original_path" not in body[0]["memories"][0]
+    assert [item["kind"] for item in body[0]["preview_items"]] == ["photo", "memory"]
+    assert body[0]["preview_items"][0]["id"] == cover_photo.id
+    assert body[0]["preview_items"][1]["id"] == memory.id
+    assert body[0]["preview_items"][1]["memory_text"] == "Myśl z miejsca"
+    assert body[0]["preview_items"][1]["thumb_path"] == "/media/memories/thumb.jpg"
+    assert "original_path" not in body[0]["preview_items"][1]
 
 
 def test_public_media_contracts_never_return_original_path(client_session) -> None:
     client, session = client_session
     place = Place(
+        city_id="wroclaw",
         slug="media-place",
         title="Media",
         lat=51.11,

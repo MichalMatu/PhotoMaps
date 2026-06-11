@@ -1,5 +1,6 @@
 export * from "./auth";
 export * from "./categories";
+export * from "./cities";
 export * from "./guides";
 export * from "./http";
 export * from "./media";

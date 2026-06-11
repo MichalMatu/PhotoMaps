@@ -16,5 +16,8 @@ def guide_to_read(guide: Guide) -> GuideRead:
     )
 
 
-def guide_to_detail(guide: Guide, places: list[Place]) -> GuideDetailRead:
-    return GuideDetailRead(**guide_to_read(guide).model_dump(), places=[place_to_read(place) for place in places])
+def guide_to_detail(guide: Guide, places: list[Place], category_ids_by_place: dict[str, list[str]]) -> GuideDetailRead:
+    return GuideDetailRead(
+        **guide_to_read(guide).model_dump(),
+        places=[place_to_read(place, category_ids_by_place.get(place.id, [])) for place in places],
+    )

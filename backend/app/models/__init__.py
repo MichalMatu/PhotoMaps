@@ -1,8 +1,9 @@
 from app.models.category import Category
+from app.models.city import City
 from app.models.guide import Guide, PlaceGuide
 from app.models.memory import Memory
 from app.models.photo import Photo
-from app.models.place import Place
+from app.models.place import Place, PlaceCategory
 from app.models.report import Report
 
-__all__ = ["Category", "Guide", "Memory", "Photo", "Place", "PlaceGuide", "Report"]
+__all__ = ["Category", "City", "Guide", "Memory", "Photo", "Place", "PlaceCategory", "PlaceGuide", "Report"]

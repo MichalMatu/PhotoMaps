@@ -28,3 +28,9 @@ export function archivePlace(placeId: string): Promise<Place> {
     method: "DELETE",
   });
 }
+
+export function deletePlacePermanently(placeId: string): Promise<void> {
+  return request<void>(`/api/admin/places/${placeId}?force=true`, {
+    method: "DELETE",
+  });
+}

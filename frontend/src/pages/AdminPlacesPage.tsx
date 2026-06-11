@@ -19,6 +19,7 @@ export function AdminPlacesPage() {
     accessMessage,
     adminToken,
     categories,
+    cities,
     clearLoadError,
     clearSession,
     guides,
@@ -57,17 +58,22 @@ export function AdminPlacesPage() {
   });
   const {
     clearArchiveRequest,
+    clearDeleteRequest,
     clearOperationError,
     closePlaceModal,
     confirmArchivePlace,
+    confirmDeletePlace,
     editingPlace,
     isArchiving,
+    isDeleting,
     isPlaceModalOpen,
     openCreatePlaceModal,
     openEditPlaceModal,
     operationError: placeOperationError,
     placeToArchive,
+    placeToDelete,
     requestArchivePlace,
+    requestDeletePlace,
     submitPlace,
   } = useAdminPlaceManagement({
     isSessionActive: Boolean(adminToken),
@@ -113,10 +119,12 @@ export function AdminPlacesPage() {
           {activeSection === "places" ? (
             <AdminPlacesSection
               categories={categories}
+              cities={cities}
               editingPlaceId={editingPlace?.id ?? null}
               places={places}
               onArchive={requestArchivePlace}
               onCreate={openCreatePlaceModal}
+              onDelete={requestDeletePlace}
               onEdit={openEditPlaceModal}
             />
           ) : null}
@@ -173,6 +181,7 @@ export function AdminPlacesPage() {
           >
             <PlaceForm
               categories={categories}
+              cities={cities}
               className="admin-form place-form place-form--modal"
               place={editingPlace}
               onCancel={closePlaceModal}
@@ -189,6 +198,17 @@ export function AdminPlacesPage() {
             tone="danger"
             onClose={clearArchiveRequest}
             onConfirm={confirmArchivePlace}
+          />
+        ) : null}
+        {placeToDelete ? (
+          <SystemModal
+            confirmLabel="Usuń trwale"
+            isBusy={isDeleting}
+            message={`Miejsce "${placeToDelete.title}" zostanie trwale usunięte razem ze zdjęciami, pamiątkami, przypisaniami do przewodników i zgłoszeniami. Tej operacji nie da się cofnąć.`}
+            title="Usunąć miejsce trwale?"
+            tone="danger"
+            onClose={clearDeleteRequest}
+            onConfirm={confirmDeletePlace}
           />
         ) : null}
         {loadError ? <ErrorModal {...loadError} onClose={clearLoadError} /> : null}

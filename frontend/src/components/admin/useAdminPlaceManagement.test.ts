@@ -8,7 +8,8 @@ import {
 } from "./useAdminPlaceManagement";
 
 const PLACE: Place = {
-  category_id: "coffee",
+  category_ids: ["coffee"],
+  city_id: "wroclaw",
   cover_photo_id: null,
   created_at: "",
   description: "Opis",
@@ -32,6 +33,7 @@ describe("useAdminPlaceManagement helpers", () => {
       editingPlace: null,
       isPlaceModalOpen: false,
       placeToArchive: null,
+      placeToDelete: null,
     });
   });
 

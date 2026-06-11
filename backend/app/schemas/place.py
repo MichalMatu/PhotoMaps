@@ -1,18 +1,19 @@
 from datetime import datetime
 
-from sqlmodel import SQLModel
+from sqlmodel import Field, SQLModel
 
 from app.schemas.category import CategoryRead
-from app.schemas.memory import MemoryRead
+from app.schemas.city import CityRead
 from app.schemas.photo import PhotoRead
 
 
 class PlaceBase(SQLModel):
+    city_id: str
     slug: str
     title: str
     description: str | None = None
     local_comment: str | None = None
-    category_id: str | None = None
+    category_ids: list[str] = Field(default_factory=list)
     lat: float
     lon: float
     weight: float = 1.0
@@ -24,11 +25,12 @@ class PlaceCreate(PlaceBase):
 
 
 class PlaceUpdate(SQLModel):
+    city_id: str | None = None
     slug: str | None = None
     title: str | None = None
     description: str | None = None
     local_comment: str | None = None
-    category_id: str | None = None
+    category_ids: list[str] | None = None
     lat: float | None = None
     lon: float | None = None
     weight: float | None = None
@@ -38,11 +40,12 @@ class PlaceUpdate(SQLModel):
 
 class PlaceRead(SQLModel):
     id: str
+    city_id: str
     slug: str
     title: str
     description: str | None
     local_comment: str | None
-    category_id: str | None
+    category_ids: list[str]
     lat: float
     lon: float
     weight: float
@@ -55,8 +58,28 @@ class PlaceRead(SQLModel):
     updated_at: datetime
 
 
+class PlaceMapPreviewItem(SQLModel):
+    id: str
+    kind: str
+    place_id: str
+    public_path: str
+    thumb_path: str
+    role: str | None = None
+    source: str | None = None
+    status: str
+    caption: str | None
+    author_name: str | None = None
+    author_city: str | None = None
+    memory_text: str | None = None
+    paid: bool | None = None
+    share_slug: str | None = None
+    consent_confirmed: bool | None = None
+    created_at: datetime
+    approved_at: datetime | None
+
+
 class PlaceMapRead(PlaceRead):
-    category: CategoryRead | None
+    city: CityRead
+    categories: list[CategoryRead]
     cover_photo: PhotoRead | None
-    photos: list[PhotoRead]
-    memories: list[MemoryRead]
+    preview_items: list[PlaceMapPreviewItem]

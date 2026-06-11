@@ -14,6 +14,8 @@ class Photo(SQLModel, table=True):
     original_path: str
     public_path: str
     thumb_path: str
+    role: str = Field(default="gallery", index=True)
+    source: str = Field(default="user_upload", index=True)
     status: str = Field(default="pending", index=True)
     caption: str | None = None
     consent_confirmed: bool = False

@@ -41,7 +41,7 @@ Planowane audio ma wzmacniać ten efekt: po najechaniu na miniaturę miejsca mo�
 Najpierw domykamy jeden dobry pokaz na Wrocławiu:
 
 - 30-50 sensownie wybranych miejsc,
-- każde miejsce ma kategorię, opis, lokalny komentarz i pozycję na mapie,
+- każde miejsce ma miasto, kategorie, opis, lokalny komentarz i pozycję na mapie,
 - publiczna mapa pokazuje tylko opublikowane miejsca,
 - zdjęcia i pamiątki trafiają do moderacji,
 - publicznie widoczne są tylko zatwierdzone materiały,
@@ -54,7 +54,7 @@ Najpierw domykamy jeden dobry pokaz na Wrocławiu:
 1. Dopracować "Map Experience v1": rozmiary miniaturek, gęstość, zachowanie zoomu, klastry i czytelny wachlarz po kliknięciu.
 2. Dodać proste warstwy mapy: domyślne polecane, galerie, pamiątki oraz filtrowanie po kategoriach z admina.
 3. Uporządkować kontrakt mapy jako `map preview`: dane pierwszego renderu plus cover i kilka podglądów, bez ładowania pełnych galerii każdego miejsca.
-4. Dopracować dane startowe dla Wrocławia: miejsca, zdjęcia okładkowe, kategorie i krótkie lokalne komentarze.
+4. Dopracować dane startowe dla Wrocławia: miejsca, ikony `map_icon`, zdjęcia okładkowe, kategorie i krótkie lokalne komentarze.
 5. Uporządkować publiczną kartę miejsca tak, żeby zdjęcie, komentarz i pamiątki były ważniejsze niż długi opis.
 6. Po domknięciu tego zakresu dodać `AudioClip`: krótkie audio z miejsca, upload, zgoda, moderacja i cichy audio-hover na mapie.
 7. Potem dodać trasy jako kolekcje punktów z lektorem: `Route` i `RoutePoint`.

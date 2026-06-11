@@ -11,6 +11,8 @@ function photo(id: string): Photo {
     id,
     place_id: "place-1",
     public_path: `/media/photos/${id}.jpg`,
+    role: "gallery",
+    source: "user_upload",
     status: "approved",
     thumb_path: `/media/photos/${id}-thumb.jpg`,
   };
@@ -39,25 +41,60 @@ describe("place preview helpers", () => {
     const cover = photo("cover");
     const first = photo("first");
 
-    expect(getPlacePreviewVisual({ cover_photo: cover, memories: [], photos: [first] })).toMatchObject({
+    expect(
+      getPlacePreviewVisual({
+        cover_photo: cover,
+        preview_items: [
+          {
+            ...first,
+            author_city: null,
+            author_name: null,
+            kind: "photo" as const,
+            memory_text: null,
+            paid: null,
+            share_slug: null,
+          },
+        ],
+      }),
+    ).toMatchObject({
       id: "cover",
       kind: "photo",
     });
   });
 
-  it("falls back to the first photo", () => {
+  it("falls back to the first preview item", () => {
     const first = photo("first");
 
-    expect(getPlacePreviewVisual({ cover_photo: null, memories: [], photos: [first] })).toMatchObject({
+    expect(
+      getPlacePreviewVisual({
+        cover_photo: null,
+        preview_items: [
+          {
+            ...first,
+            author_city: null,
+            author_name: null,
+            kind: "photo" as const,
+            memory_text: null,
+            paid: null,
+            share_slug: null,
+          },
+        ],
+      }),
+    ).toMatchObject({
       id: "first",
       kind: "photo",
     });
   });
 
-  it("falls back to the first memory when there are no photos", () => {
+  it("falls back to the first memory preview", () => {
     const firstMemory = memory("memory-1");
 
-    expect(getPlacePreviewVisual({ cover_photo: null, memories: [firstMemory], photos: [] })).toMatchObject({
+    expect(
+      getPlacePreviewVisual({
+        cover_photo: null,
+        preview_items: [{ ...firstMemory, kind: "memory" as const, role: null, source: null }],
+      }),
+    ).toMatchObject({
       id: "memory-1",
       kind: "memory",
     });
@@ -67,12 +104,23 @@ describe("place preview helpers", () => {
     const firstPhoto = photo("photo-1");
     const firstMemory = memory("memory-1");
 
-    expect(getPlaceFanItems({ memories: [firstMemory], photos: [firstPhoto] }).map((item) => item.kind)).toEqual([
-      "photo",
-      "memory",
-    ]);
-    expect(
-      findPlaceFanItem({ memories: [firstMemory], photos: [firstPhoto] }, { id: "memory-1", kind: "memory" }),
-    ).toMatchObject({ id: "memory-1", kind: "memory" });
+    const previewItems = [
+      {
+        ...firstPhoto,
+        author_city: null,
+        author_name: null,
+        kind: "photo" as const,
+        memory_text: null,
+        paid: null,
+        share_slug: null,
+      },
+      { ...firstMemory, kind: "memory" as const, role: null, source: null },
+    ];
+
+    expect(getPlaceFanItems({ preview_items: previewItems }).map((item) => item.kind)).toEqual(["photo", "memory"]);
+    expect(findPlaceFanItem({ preview_items: previewItems }, { id: "memory-1", kind: "memory" })).toMatchObject({
+      id: "memory-1",
+      kind: "memory",
+    });
   });
 });

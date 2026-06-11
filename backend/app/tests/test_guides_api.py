@@ -36,7 +36,7 @@ def test_public_guides_only_show_published_with_published_places(client_session)
 
 def test_admin_can_remove_place_from_guide(client_session) -> None:
     client, session = client_session
-    place = Place(slug="public-place", title="Public", lat=51.11, lon=17.03, status="published")
+    place = Place(city_id="wroclaw", slug="public-place", title="Public", lat=51.11, lon=17.03, status="published")
     session.add(place)
     session.commit()
     session.refresh(place)

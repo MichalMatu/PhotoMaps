@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
-import { mediaUrl, type PlaceMapItem } from "../../api/client";
+import { mediaUrl, type Memory, type PlaceMapItem } from "../../api/client";
 import { ErrorModal } from "../ui/ErrorModal";
 import { stopFloatingWindowEvent, useDraggableWindow } from "../ui/useDraggableWindow";
 import { MemoryOwnerTools } from "./MemoryOwnerTools";
@@ -16,9 +16,35 @@ type Props = {
   place: PlaceMapItem;
 };
 
+function previewMemoryToMemory(item: PlaceMapVisualItem): Memory | null {
+  if (item.kind !== "memory") {
+    return null;
+  }
+  const source = item.source;
+  if (!source.memory_text || !source.share_slug || source.paid === null) {
+    return null;
+  }
+
+  return {
+    approved_at: source.approved_at,
+    author_city: source.author_city,
+    author_name: source.author_name,
+    caption: source.caption ?? "",
+    created_at: source.created_at,
+    id: source.id,
+    memory_text: source.memory_text,
+    paid: source.paid,
+    place_id: source.place_id,
+    public_path: source.public_path,
+    share_slug: source.share_slug,
+    status: source.status,
+    thumb_path: source.thumb_path,
+  };
+}
+
 export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
   const draggableWindow = useDraggableWindow<HTMLDivElement>("photo-detail-modal");
-  const memorySource = item.kind === "memory" ? item.source : null;
+  const memorySource = previewMemoryToMemory(item);
   const memoryOwnerTools = useMemoryOwnerTools({
     itemKey: `${item.kind}:${item.id}`,
     memory: memorySource,
@@ -61,7 +87,9 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
           <div className="photo-detail-title-block">
             <div className="photo-detail-title-row">
               <h2 id="photo-detail-title">{place.title}</h2>
-              {place.category?.label ? <span className="photo-detail-category">{place.category.label}</span> : null}
+              {place.categories[0]?.label ? (
+                <span className="photo-detail-category">{place.categories[0].label}</span>
+              ) : null}
             </div>
           </div>
           <button

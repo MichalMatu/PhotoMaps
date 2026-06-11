@@ -1,7 +1,7 @@
 from conftest import ADMIN_HEADERS
 
 from app.models.category import Category
-from app.models.place import Place
+from app.models.place import Place, PlaceCategory
 
 
 def test_public_categories_only_show_active(client_session) -> None:
@@ -72,7 +72,11 @@ def test_admin_cannot_permanently_delete_used_category(client_session) -> None:
     client, session = client_session
     category = Category(id="used", label="Used")
     session.add(category)
-    session.add(Place(slug="place", title="Place", lat=51.1, lon=17.1, category_id=category.id))
+    place = Place(city_id="wroclaw", slug="place", title="Place", lat=51.1, lon=17.1)
+    session.add(place)
+    session.commit()
+    session.refresh(place)
+    session.add(PlaceCategory(place_id=place.id, category_id=category.id))
     session.commit()
 
     response = client.delete("/api/admin/categories/used?force=true", headers=ADMIN_HEADERS)
@@ -84,19 +88,35 @@ def test_admin_cannot_permanently_delete_used_category(client_session) -> None:
 def test_admin_place_requires_active_category_on_assignment(client_session) -> None:
     client, session = client_session
     session.add(Category(id="active", label="Active", status="active"))
+    session.add(Category(id="hidden", label="Hidden", status="active"))
     session.add(Category(id="archived", label="Archived", status="archived"))
     session.commit()
 
     active_response = client.post(
         "/api/admin/places",
         headers=ADMIN_HEADERS,
-        json={"slug": "active-place", "title": "Active", "lat": 51.1, "lon": 17.1, "category_id": "active"},
+        json={
+            "city_id": "wroclaw",
+            "slug": "active-place",
+            "title": "Active",
+            "lat": 51.1,
+            "lon": 17.1,
+            "category_ids": ["active", "hidden"],
+        },
     )
     archived_response = client.post(
         "/api/admin/places",
         headers=ADMIN_HEADERS,
-        json={"slug": "archived-place", "title": "Archived", "lat": 51.2, "lon": 17.2, "category_id": "archived"},
+        json={
+            "city_id": "wroclaw",
+            "slug": "archived-place",
+            "title": "Archived",
+            "lat": 51.2,
+            "lon": 17.2,
+            "category_ids": ["archived"],
+        },
     )
 
     assert active_response.status_code == 201
+    assert active_response.json()["category_ids"] == ["active", "hidden"]
     assert archived_response.status_code == 422

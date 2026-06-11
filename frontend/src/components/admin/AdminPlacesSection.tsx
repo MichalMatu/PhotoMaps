@@ -1,16 +1,28 @@
-import type { Category, Place } from "../../api/client";
+import type { Category, City, Place } from "../../api/client";
 
 type Props = {
   categories: Category[];
+  cities: City[];
   editingPlaceId: string | null;
   onArchive: (place: Place) => void;
   onCreate: () => void;
+  onDelete: (place: Place) => void;
   onEdit: (place: Place) => void;
   places: Place[];
 };
 
-export function AdminPlacesSection({ categories, editingPlaceId, onArchive, onCreate, onEdit, places }: Props) {
+export function AdminPlacesSection({
+  categories,
+  cities,
+  editingPlaceId,
+  onArchive,
+  onCreate,
+  onDelete,
+  onEdit,
+  places,
+}: Props) {
   const categoryById = new Map(categories.map((category) => [category.id, category]));
+  const cityById = new Map(cities.map((city) => [city.id, city]));
   const placeStatusCounts = {
     archived: places.filter((place) => place.status === "archived").length,
     draft: places.filter((place) => place.status === "draft").length,
@@ -36,6 +48,7 @@ export function AdminPlacesSection({ categories, editingPlaceId, onArchive, onCr
           <div className="table-row table-head" role="row">
             <span>Nazwa</span>
             <span>Status</span>
+            <span>Miasto</span>
             <span>Kategoria</span>
             <span>Priorytet</span>
             <span>Akcje</span>
@@ -48,7 +61,12 @@ export function AdminPlacesSection({ categories, editingPlaceId, onArchive, onCr
             >
               <span>{place.title}</span>
               <span>{place.status}</span>
-              <span>{place.category_id ? (categoryById.get(place.category_id)?.label ?? place.category_id) : "-"}</span>
+              <span>{cityById.get(place.city_id)?.name ?? place.city_id}</span>
+              <span>
+                {place.category_ids.length
+                  ? place.category_ids.map((categoryId) => categoryById.get(categoryId)?.label ?? categoryId).join(", ")
+                  : "-"}
+              </span>
               <span>{place.weight.toFixed(1)}</span>
               <span className="table-actions">
                 <button type="button" onClick={() => onEdit(place)}>
@@ -61,6 +79,9 @@ export function AdminPlacesSection({ categories, editingPlaceId, onArchive, onCr
                   onClick={() => onArchive(place)}
                 >
                   Archiwizuj
+                </button>
+                <button className="danger-button" type="button" onClick={() => onDelete(place)}>
+                  Usuń trwale
                 </button>
               </span>
             </div>

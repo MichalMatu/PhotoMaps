@@ -7,9 +7,10 @@ from PIL import Image
 from sqlmodel import select
 
 from app.models.category import Category
+from app.models.city import City
 from app.models.guide import Guide, PlaceGuide
 from app.models.photo import Photo
-from app.models.place import Place
+from app.models.place import Place, PlaceCategory
 
 ROOT_DIR = Path(__file__).resolve().parents[3]
 IMPORT_CITY_PATH = ROOT_DIR / "scripts" / "content" / "import_city.py"
@@ -46,14 +47,22 @@ def test_import_city_manifest_upserts_places_icons_and_guides(client_session, tm
     manifest_path.write_text(
         json.dumps(
             {
-                "city": "Wrocław",
+                "city": {
+                    "id": "wroclaw",
+                    "name": "Wrocław",
+                    "lat": 51.1079,
+                    "lon": 17.0385,
+                    "default_zoom": 13,
+                    "sort_order": 10,
+                    "status": "active",
+                },
                 "places": [
                     {
                         "slug": "rynek-wroclaw",
                         "title": "Rynek",
                         "description": "Serce miasta.",
                         "local_comment": "Najlepiej wcześnie rano albo wieczorem.",
-                        "category_id": "local_classic",
+                        "category_ids": ["local_classic"],
                         "lat": 51.109,
                         "lon": 17.032,
                         "weight": 2.0,
@@ -78,20 +87,29 @@ def test_import_city_manifest_upserts_places_icons_and_guides(client_session, tm
     summary = module.import_city_manifest(manifest_path, session=session)
 
     place = session.exec(select(Place).where(Place.slug == "rynek-wroclaw")).one()
+    city = session.get(City, "wroclaw")
     photo = session.exec(select(Photo)).one()
+    place_category = session.exec(select(PlaceCategory)).one()
     guide = session.exec(select(Guide).where(Guide.slug == "pierwszy-spacer")).one()
     place_guide = session.exec(select(PlaceGuide)).one()
     public_file = tmp_path / "public" / photo.public_path.removeprefix("/media/")
     thumb_file = tmp_path / "public" / photo.thumb_path.removeprefix("/media/")
 
+    assert summary.cities_updated == 1
     assert summary.places_created == 1
     assert summary.icons_imported == 1
     assert summary.guides_created == 1
+    assert city is not None
     assert place.title == "Rynek"
+    assert place.city_id == "wroclaw"
     assert place.status == "published"
+    assert place_category.place_id == place.id
+    assert place_category.category_id == "local_classic"
     assert place.photo_count == 1
     assert place.cover_photo_id == photo.id
     assert photo.status == "approved"
+    assert photo.role == "map_icon"
+    assert photo.source == "generated"
     assert photo.public_path.endswith(".png")
     assert photo.thumb_path.endswith(".png")
     assert public_file.exists()

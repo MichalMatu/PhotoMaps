@@ -1,20 +1,24 @@
 from app.models.category import Category
+from app.models.city import City
+from app.models.memory import Memory
+from app.models.photo import Photo
 from app.models.place import Place
-from app.schemas.memory import MemoryRead
 from app.schemas.photo import PhotoRead
-from app.schemas.place import PlaceMapRead, PlaceRead
+from app.schemas.place import PlaceMapPreviewItem, PlaceMapRead, PlaceRead
 from app.serializers.category import category_to_read
+from app.serializers.city import city_to_read
 from app.services.ranking import place_score
 
 
-def place_to_read(place: Place) -> PlaceRead:
+def place_to_read(place: Place, category_ids: list[str]) -> PlaceRead:
     return PlaceRead(
         id=place.id,
+        city_id=place.city_id,
         slug=place.slug,
         title=place.title,
         description=place.description,
         local_comment=place.local_comment,
-        category_id=place.category_id,
+        category_ids=category_ids,
         lat=place.lat,
         lon=place.lon,
         weight=place.weight,
@@ -28,17 +32,54 @@ def place_to_read(place: Place) -> PlaceRead:
     )
 
 
+def photo_to_map_preview(photo: Photo) -> PlaceMapPreviewItem:
+    return PlaceMapPreviewItem(
+        id=photo.id,
+        kind="photo",
+        place_id=photo.place_id,
+        public_path=photo.public_path,
+        thumb_path=photo.thumb_path,
+        role=photo.role,
+        source=photo.source,
+        status=photo.status,
+        caption=photo.caption,
+        created_at=photo.created_at,
+        approved_at=photo.approved_at,
+    )
+
+
+def memory_to_map_preview(memory: Memory) -> PlaceMapPreviewItem:
+    return PlaceMapPreviewItem(
+        id=memory.id,
+        kind="memory",
+        place_id=memory.place_id,
+        public_path=memory.public_path,
+        thumb_path=memory.thumb_path,
+        status=memory.status,
+        caption=memory.caption,
+        author_name=memory.author_name,
+        author_city=memory.author_city,
+        memory_text=memory.memory_text,
+        paid=memory.paid,
+        share_slug=memory.share_slug,
+        consent_confirmed=memory.consent_confirmed,
+        created_at=memory.created_at,
+        approved_at=memory.approved_at,
+    )
+
+
 def place_to_map_read(
     place: Place,
-    category: Category | None,
-    photos: list[PhotoRead],
-    memories: list[MemoryRead],
+    city: City,
+    categories: list[Category],
+    category_ids: list[str],
+    cover_photo: PhotoRead | None,
+    preview_items: list[PlaceMapPreviewItem],
 ) -> PlaceMapRead:
-    cover_photo = next((photo for photo in photos if photo.id == place.cover_photo_id), photos[0] if photos else None)
     return PlaceMapRead(
-        **place_to_read(place).model_dump(),
-        category=category_to_read(category) if category else None,
+        **place_to_read(place, category_ids).model_dump(),
+        city=city_to_read(city),
+        categories=[category_to_read(category) for category in categories],
         cover_photo=cover_photo,
-        photos=photos,
-        memories=memories,
+        preview_items=preview_items,
     )

@@ -11,7 +11,9 @@ Panel admina zostaje do ręcznych korekt, ale większe miasta powinny powstawać
 
 ## Zasada
 
-Manifesty są źródłem roboczym, które Codex może edytować i importować powtarzalnie. Importer działa po `slug`, więc może tworzyć nowe miejsca i aktualizować istniejące bez ręcznego klikania rekordów w UI.
+Manifesty są źródłem roboczym, które Codex może edytować i importować powtarzalnie. Importer działa po `city.id` oraz `slug`, więc może tworzyć miasta, nowe miejsca i aktualizować istniejące bez ręcznego klikania rekordów w UI.
+
+Każdy manifest zawiera obiekt `city`, a miejsca używają `category_ids`, żeby jedno miejsce mogło należeć do kilku kategorii.
 
 ## Przykład
 

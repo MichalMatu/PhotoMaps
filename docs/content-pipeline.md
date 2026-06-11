@@ -10,6 +10,8 @@ Docelowo nie chcemy ręcznie klikać tysięcy miejsc w panelu admina. Panel admi
 content/cities/{city}/manifest.json
 ```
 
+Manifest zawiera definicję miasta, listę miejsc i przewodniki. Miejsca używają `category_ids`, bo jedno miejsce może należeć do kilku kategorii.
+
 2. Wygeneruj albo wybierz ikony miejsc według promptu:
 
 ```txt
@@ -42,8 +44,9 @@ backend/.venv/bin/python scripts/content/import_city.py content/cities/wroclaw/m
 ## Co importer robi teraz
 
 - tworzy lub aktualizuje miejsca po `slug`,
-- waliduje aktywną kategorię,
-- importuje ikonę jako zatwierdzone zdjęcie główne, jeśli miejsce nie ma jeszcze covera,
+- tworzy lub aktualizuje miasto po `city.id`,
+- waliduje aktywne kategorie z `category_ids`,
+- importuje ikonę jako zatwierdzony `map_icon`, jeśli miejsce nie ma jeszcze covera,
 - zachowuje PNG i przezroczystość dzięki wspólnemu pipeline'owi obrazów,
 - tworzy lub aktualizuje przewodniki po `slug`,
 - odbudowuje przypisania miejsc do przewodników.

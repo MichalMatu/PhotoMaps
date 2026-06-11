@@ -76,7 +76,7 @@ export function useCategoryActions({ categories, onChanged, places }: UseCategor
   const generatedId = useMemo(() => slugify(label), [label]);
   const categoryId = editingCategory ? editingCategory.id : id || generatedId;
   const categoryBlockers = categoryAction
-    ? places.filter((place) => place.category_id === categoryAction.category.id)
+    ? places.filter((place) => place.category_ids.includes(categoryAction.category.id))
     : [];
   const categoryBlockerDetails = categoryBlockers.length
     ? categoryBlockers.map((place) => `- ${place.title} (${place.status})`).join("\n")

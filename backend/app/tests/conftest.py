@@ -10,6 +10,7 @@ from sqlmodel.pool import StaticPool
 
 from app.db.session import get_session
 from app.main import app
+from app.models.city import City
 from app.models.place import Place
 from app.services.media import images
 
@@ -32,6 +33,8 @@ def client_session(monkeypatch: MonkeyPatch, tmp_path) -> Generator[tuple[TestCl
     SQLModel.metadata.create_all(engine)
 
     with Session(engine) as session:
+        session.add(City(id="wroclaw", name="Wrocław", lat=51.1079, lon=17.0385, default_zoom=13, sort_order=10))
+        session.commit()
 
         def override_session() -> Generator[Session, None, None]:
             yield session
@@ -70,7 +73,7 @@ def create_place(
     title: str = "Public",
     **overrides,
 ) -> Place:
-    place = Place(slug=slug, title=title, lat=lat, lon=lon, status=status, **overrides)
+    place = Place(city_id="wroclaw", slug=slug, title=title, lat=lat, lon=lon, status=status, **overrides)
     session.add(place)
     session.commit()
     session.refresh(place)

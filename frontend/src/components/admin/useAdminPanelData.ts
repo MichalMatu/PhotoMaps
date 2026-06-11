@@ -4,6 +4,7 @@ import {
   ApiError,
   clearAdminToken,
   getAdminCategories,
+  getAdminCities,
   getAdminGuides,
   getAdminMemories,
   getAdminPlaces,
@@ -11,6 +12,7 @@ import {
   getAdminReports,
   getStoredAdminToken,
   type Category,
+  type City,
   type Guide,
   type Memory,
   type Photo,
@@ -23,6 +25,7 @@ type Result = {
   accessMessage: string | null;
   adminToken: string;
   categories: Category[];
+  cities: City[];
   clearLoadError: () => void;
   clearSession: () => void;
   guides: Guide[];
@@ -52,6 +55,7 @@ export function useAdminPanelData(): Result {
   const [adminToken, setAdminToken] = useState(() => getStoredAdminToken());
   const [accessMessage, setAccessMessage] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [cities, setCities] = useState<City[]>([]);
   const [guides, setGuides] = useState<Guide[]>([]);
   const [loadError, setLoadError] = useState<OperationError | null>(null);
   const [memories, setMemories] = useState<Memory[]>([]);
@@ -61,6 +65,7 @@ export function useAdminPanelData(): Result {
 
   function resetData() {
     setCategories([]);
+    setCities([]);
     setGuides([]);
     setMemories([]);
     setPhotos([]);
@@ -77,15 +82,18 @@ export function useAdminPanelData(): Result {
   }
 
   async function refreshAll() {
-    const [nextCategories, nextGuides, nextMemories, nextPlaces, nextPhotos, nextReports] = await Promise.all([
-      getAdminCategories(),
-      getAdminGuides(),
-      getAdminMemories(),
-      getAdminPlaces(),
-      getAdminPhotos(),
-      getAdminReports(),
-    ]);
+    const [nextCategories, nextCities, nextGuides, nextMemories, nextPlaces, nextPhotos, nextReports] =
+      await Promise.all([
+        getAdminCategories(),
+        getAdminCities(),
+        getAdminGuides(),
+        getAdminMemories(),
+        getAdminPlaces(),
+        getAdminPhotos(),
+        getAdminReports(),
+      ]);
     setCategories(nextCategories);
+    setCities(nextCities);
     setGuides(nextGuides);
     setMemories(nextMemories);
     setPlaces(nextPlaces);
@@ -145,6 +153,7 @@ export function useAdminPanelData(): Result {
     accessMessage,
     adminToken,
     categories,
+    cities,
     clearLoadError: () => setLoadError(null),
     clearSession,
     guides,

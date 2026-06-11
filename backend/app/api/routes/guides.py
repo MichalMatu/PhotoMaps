@@ -6,6 +6,7 @@ from app.models.guide import Guide, PlaceGuide
 from app.models.place import Place
 from app.schemas.guide import GuideDetailRead, GuideRead
 from app.serializers.guide import guide_to_detail, guide_to_read
+from app.services.place_taxonomy import category_ids_by_place_id
 
 router = APIRouter(prefix="/api/guides", tags=["guides"])
 
@@ -33,4 +34,5 @@ def get_guide(slug: str, session: Session = Depends(get_session)) -> GuideDetail
     guide = session.exec(statement).first()
     if guide is None:
         raise HTTPException(status_code=404, detail="Guide not found")
-    return guide_to_detail(guide, public_guide_places(session, guide.id))
+    places = public_guide_places(session, guide.id)
+    return guide_to_detail(guide, places, category_ids_by_place_id(session, [place.id for place in places]))

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { archivePlace, createPlace, updatePlace, type PlacePayload } from "../../api/client";
+import { archivePlace, createPlace, deletePlacePermanently, updatePlace, type PlacePayload } from "../../api/client";
 import type { Place } from "../../api/types";
 import { errorDetails, type OperationError } from "../ui/ErrorModal";
 
@@ -11,17 +11,22 @@ type Options = {
 
 type Result = {
   clearArchiveRequest: () => void;
+  clearDeleteRequest: () => void;
   clearOperationError: () => void;
   closePlaceModal: () => void;
   confirmArchivePlace: () => Promise<void>;
+  confirmDeletePlace: () => Promise<void>;
   editingPlace: Place | null;
   isArchiving: boolean;
+  isDeleting: boolean;
   isPlaceModalOpen: boolean;
   openCreatePlaceModal: () => void;
   openEditPlaceModal: (place: Place) => void;
   operationError: OperationError | null;
   placeToArchive: Place | null;
+  placeToDelete: Place | null;
   requestArchivePlace: (place: Place) => void;
+  requestDeletePlace: (place: Place) => void;
   submitPlace: (payload: PlacePayload) => Promise<void>;
 };
 
@@ -30,6 +35,7 @@ export function getClosedPlaceManagementState() {
     editingPlace: null,
     isPlaceModalOpen: false,
     placeToArchive: null,
+    placeToDelete: null,
   };
 }
 
@@ -50,7 +56,9 @@ export function getEditPlaceModalState(place: Place) {
 export function useAdminPlaceManagement({ isSessionActive, onPlacesChanged }: Options): Result {
   const [editingPlace, setEditingPlace] = useState<Place | null>(null);
   const [placeToArchive, setPlaceToArchive] = useState<Place | null>(null);
+  const [placeToDelete, setPlaceToDelete] = useState<Place | null>(null);
   const [isArchiving, setIsArchiving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isPlaceModalOpen, setIsPlaceModalOpen] = useState(false);
   const [operationError, setOperationError] = useState<OperationError | null>(null);
 
@@ -59,7 +67,9 @@ export function useAdminPlaceManagement({ isSessionActive, onPlacesChanged }: Op
       setEditingPlace(null);
       setIsPlaceModalOpen(false);
       setPlaceToArchive(null);
+      setPlaceToDelete(null);
       setIsArchiving(false);
+      setIsDeleting(false);
       setOperationError(null);
     }
   }, [isSessionActive]);
@@ -127,19 +137,51 @@ export function useAdminPlaceManagement({ isSessionActive, onPlacesChanged }: Op
     }
   }
 
+  async function confirmDeletePlace() {
+    if (!placeToDelete) {
+      return;
+    }
+
+    setOperationError(null);
+    setIsDeleting(true);
+    try {
+      await deletePlacePermanently(placeToDelete.id);
+      if (editingPlace?.id === placeToDelete.id) {
+        setEditingPlace(null);
+        setIsPlaceModalOpen(false);
+      }
+      setPlaceToDelete(null);
+      await onPlacesChanged();
+    } catch (reason) {
+      setPlaceToDelete(null);
+      setOperationError({
+        details: errorDetails(reason),
+        message: "Nie udało się trwale usunąć miejsca. Spróbuj ponownie.",
+        title: "Nie udało się usunąć miejsca",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
   return {
     clearArchiveRequest: () => setPlaceToArchive(null),
+    clearDeleteRequest: () => setPlaceToDelete(null),
     clearOperationError: () => setOperationError(null),
     closePlaceModal,
     confirmArchivePlace,
+    confirmDeletePlace,
     editingPlace,
     isArchiving,
+    isDeleting,
     isPlaceModalOpen,
     openCreatePlaceModal,
     openEditPlaceModal,
     operationError,
     placeToArchive,
+    placeToDelete,
     requestArchivePlace: setPlaceToArchive,
+    requestDeletePlace: setPlaceToDelete,
     submitPlace,
   };
 }

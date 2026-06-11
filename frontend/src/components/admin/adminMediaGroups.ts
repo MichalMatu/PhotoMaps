@@ -37,8 +37,8 @@ export function groupAdminMediaByPlace<TItem extends AdminMediaItem>(
   return Array.from(itemsByPlaceId.entries())
     .map(([placeId, groupItems]) => {
       const place = placeById.get(placeId) ?? null;
-      const categoryLabel = place?.category_id
-        ? (categoryById.get(place.category_id)?.label ?? place.category_id)
+      const categoryLabel = place?.category_ids.length
+        ? place.category_ids.map((categoryId) => categoryById.get(categoryId)?.label ?? categoryId).join(", ")
         : "Bez kategorii";
       return {
         categoryLabel,

@@ -13,6 +13,7 @@ from app.serializers.photo import photo_to_admin_read
 from app.serializers.place import place_to_read
 from app.services.media.images import delete_stored_image
 from app.services.photo_fields import normalize_photo_caption
+from app.services.place_taxonomy import category_ids_by_place_id
 from app.services.review import (
     apply_photo_deleted,
     ensure_final_review_status,
@@ -99,7 +100,7 @@ def set_cover_photo(photo_id: str, session: Session = Depends(get_session)) -> P
     session.add(place)
     session.commit()
     session.refresh(place)
-    return place_to_read(place)
+    return place_to_read(place, category_ids_by_place_id(session, [place.id]).get(place.id, []))
 
 
 @router.delete("/{photo_id}", status_code=204)

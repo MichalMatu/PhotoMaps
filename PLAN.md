@@ -7,7 +7,7 @@ Ten plan opisuje najbliższe iteracje. Aktualny priorytet to zbudować realną p
 Stworzyć podstawę do oceny doświadczenia mapy:
 
 - 10-15 sensownych miejsc we Wrocławiu,
-- każde miejsce ma kategorię, opis, lokalny komentarz i pozycję,
+- każde miejsce ma miasto, kategorie, opis, lokalny komentarz i pozycję,
 - każde opublikowane miejsce ma zatwierdzone zdjęcie główne,
 - kilka miejsc ma więcej zdjęć, żeby sprawdzić wachlarz miniatur,
 - kilka miejsc ma pamiątki testowe,
@@ -26,7 +26,7 @@ Do zrobienia:
 - zrobić backup przez `./scripts/backup_local_data.sh`,
 - zaimportować miejsca, ikony i przewodniki przez `scripts/content/import_city.py`,
 - użyć admina do korekt,
-- przypisać kategorie z panelu admina,
+- przypisać jedną lub kilka kategorii z panelu admina,
 - dodać i zatwierdzić zdjęcia,
 - ustawić dobre zdjęcia główne,
 - uzupełnić krótkie lokalne komentarze,
@@ -53,7 +53,7 @@ Do oceny i poprawy:
 - czy wachlarz po kliknięciu jest czytelny,
 - czy mapa po wejściu robi efekt "chcę to sprawdzić".
 
-Nie zmieniać jeszcze moderacji, jeśli obecny flow wystarcza do budowania bazy. Upload zachowuje PNG i przezroczystość, więc ikony można testowo dodawać jako zdjęcia miejsca. Docelowo warto rozważyć osobne pole/asset ikony miejsca, jeśli ikona ma być innym typem treści niż galeria zdjęć.
+Nie zmieniać jeszcze moderacji, jeśli obecny flow wystarcza do budowania bazy. Upload zachowuje PNG i przezroczystość, a wygenerowane ikony importujemy jako media `map_icon`, oddzielone od zwykłej galerii zdjęć.
 
 ## Iteracja 3: Warstwy i kategorie
 
@@ -94,7 +94,7 @@ Kiedy będzie jasne, co mapa faktycznie pokazuje, porządkujemy API.
 Docelowo `/api/places/map` powinno działać jako `map preview`:
 
 - dane miejsca,
-- kategoria,
+- miasto i kategorie,
 - score,
 - liczniki,
 - cover,

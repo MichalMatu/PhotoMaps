@@ -32,11 +32,12 @@ def test_mvp_content_moderation_map_guide_and_report_flow(client_session) -> Non
         "/api/admin/places",
         headers=ADMIN_HEADERS,
         json={
+            "city_id": "wroclaw",
             "slug": "mvp-cafe",
             "title": "MVP Cafe",
             "description": "Małe miejsce z charakterem",
             "local_comment": "Bez sieciówkowego klimatu",
-            "category_id": "coffee",
+            "category_ids": ["coffee"],
             "lat": 51.11,
             "lon": 17.03,
             "weight": 2,
@@ -98,7 +99,7 @@ def test_mvp_content_moderation_map_guide_and_report_flow(client_session) -> Non
     assert map_place["photo_count"] == 1
     assert map_place["memory_count"] == 1
     assert map_place["cover_photo"]["id"] == photo_id
-    assert map_place["memories"][0]["id"] == memory_id
+    assert map_place["preview_items"][1]["id"] == memory_id
 
     guide_response = client.post(
         "/api/admin/guides",

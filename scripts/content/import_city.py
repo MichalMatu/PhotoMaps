@@ -18,17 +18,21 @@ from sqlmodel import Session, select  # noqa: E402
 
 from app.db.session import create_db_and_tables, engine  # noqa: E402
 from app.models.category import Category  # noqa: E402
+from app.models.city import City  # noqa: E402
 from app.models.guide import Guide, PlaceGuide  # noqa: E402
 from app.models.photo import Photo  # noqa: E402
-from app.models.place import Place  # noqa: E402
+from app.models.place import Place, PlaceCategory  # noqa: E402
 from app.services.media.images import store_image_bytes  # noqa: E402
 
 PLACE_STATUSES = {"draft", "published", "archived"}
 GUIDE_STATUSES = {"draft", "published", "archived"}
+CITY_STATUSES = {"active", "archived"}
 
 
 @dataclass
 class ImportSummary:
+    cities_created: int = 0
+    cities_updated: int = 0
     places_created: int = 0
     places_updated: int = 0
     icons_imported: int = 0
@@ -86,7 +90,11 @@ def require_status(value: Any, allowed: set[str], context: str) -> str:
 
 def resolve_asset_path(manifest_path: Path, raw_path: str, repo_root: Path) -> Path:
     path = Path(raw_path).expanduser()
-    candidates = [path] if path.is_absolute() else [manifest_path.parent / path, repo_root / path]
+    candidates = (
+        [path]
+        if path.is_absolute()
+        else [manifest_path.parent / path, repo_root / path]
+    )
     for candidate in candidates:
         if candidate.exists():
             return candidate.resolve()
@@ -101,6 +109,29 @@ def ensure_active_category(session: Session, category_id: str | None) -> None:
         raise ValueError(f"Category must be active: {category_id}")
 
 
+def ensure_active_categories(
+    session: Session, category_ids: list[str], context: str
+) -> list[str]:
+    normalized_ids: list[str] = []
+    seen: set[str] = set()
+    for category_id in category_ids:
+        normalized = require_string(category_id, context)
+        if normalized not in seen:
+            normalized_ids.append(normalized)
+            seen.add(normalized)
+
+    for category_id in normalized_ids:
+        ensure_active_category(session, category_id)
+    return normalized_ids
+
+
+def require_string_list(value: Any, context: str) -> list[str]:
+    return [
+        require_string(item, f"{context}[{index}]")
+        for index, item in enumerate(require_list(value, context))
+    ]
+
+
 def place_by_slug(session: Session, slug: str) -> Place | None:
     return session.exec(select(Place).where(Place.slug == slug)).first()
 
@@ -109,21 +140,83 @@ def guide_by_slug(session: Session, slug: str) -> Guide | None:
     return session.exec(select(Guide).where(Guide.slug == slug)).first()
 
 
-def upsert_place(session: Session, raw_place: dict[str, Any], summary: ImportSummary) -> Place:
+def upsert_city(
+    session: Session, raw_city: dict[str, Any], summary: ImportSummary
+) -> City:
+    city_id = require_string(raw_city.get("id"), "city.id")
+    data = {
+        "id": city_id,
+        "name": require_string(raw_city.get("name"), f"city[{city_id}].name"),
+        "lat": require_float(raw_city.get("lat"), f"city[{city_id}].lat"),
+        "lon": require_float(raw_city.get("lon"), f"city[{city_id}].lon"),
+        "default_zoom": int(raw_city.get("default_zoom", 13)),
+        "sort_order": int(raw_city.get("sort_order", 0)),
+        "status": require_status(
+            raw_city.get("status", "active"), CITY_STATUSES, f"city[{city_id}].status"
+        ),
+    }
+
+    city = session.get(City, city_id)
+    if city is None:
+        city = City(**data)
+        session.add(city)
+        session.flush()
+        summary.cities_created += 1
+        return city
+
+    for key, value in data.items():
+        setattr(city, key, value)
+    session.add(city)
+    session.flush()
+    summary.cities_updated += 1
+    return city
+
+
+def replace_place_categories(
+    session: Session, place_id: str, category_ids: list[str]
+) -> None:
+    for existing in session.exec(
+        select(PlaceCategory).where(PlaceCategory.place_id == place_id)
+    ).all():
+        session.delete(existing)
+    session.flush()
+
+    for sort_order, category_id in enumerate(category_ids):
+        session.add(
+            PlaceCategory(
+                place_id=place_id, category_id=category_id, sort_order=sort_order
+            )
+        )
+
+
+def upsert_place(
+    session: Session, city: City, raw_place: dict[str, Any], summary: ImportSummary
+) -> Place:
     slug = require_string(raw_place.get("slug"), "place.slug")
-    category_id = optional_string(raw_place.get("category_id"), f"place[{slug}].category_id")
-    ensure_active_category(session, category_id)
+    category_ids = ensure_active_categories(
+        session,
+        require_string_list(
+            raw_place.get("category_ids", []), f"place[{slug}].category_ids"
+        ),
+        f"place[{slug}].category_ids",
+    )
 
     data = {
+        "city_id": city.id,
         "slug": slug,
         "title": require_string(raw_place.get("title"), f"place[{slug}].title"),
-        "description": optional_string(raw_place.get("description"), f"place[{slug}].description"),
-        "local_comment": optional_string(raw_place.get("local_comment"), f"place[{slug}].local_comment"),
-        "category_id": category_id,
+        "description": optional_string(
+            raw_place.get("description"), f"place[{slug}].description"
+        ),
+        "local_comment": optional_string(
+            raw_place.get("local_comment"), f"place[{slug}].local_comment"
+        ),
         "lat": require_float(raw_place.get("lat"), f"place[{slug}].lat"),
         "lon": require_float(raw_place.get("lon"), f"place[{slug}].lon"),
         "weight": require_float(raw_place.get("weight", 1.0), f"place[{slug}].weight"),
-        "status": require_status(raw_place.get("status", "draft"), PLACE_STATUSES, f"place[{slug}].status"),
+        "status": require_status(
+            raw_place.get("status", "draft"), PLACE_STATUSES, f"place[{slug}].status"
+        ),
     }
 
     place = place_by_slug(session, slug)
@@ -131,6 +224,7 @@ def upsert_place(session: Session, raw_place: dict[str, Any], summary: ImportSum
         place = Place(**data)
         session.add(place)
         session.flush()
+        replace_place_categories(session, place.id, category_ids)
         summary.places_created += 1
         return place
 
@@ -139,6 +233,7 @@ def upsert_place(session: Session, raw_place: dict[str, Any], summary: ImportSum
     place.updated_at = utc_now()
     session.add(place)
     session.flush()
+    replace_place_categories(session, place.id, category_ids)
     summary.places_updated += 1
     return place
 
@@ -153,21 +248,29 @@ def import_place_icon(
     *,
     replace_covers: bool,
 ) -> None:
-    icon_path = optional_string(raw_place.get("cover_icon_path"), f"place[{place.slug}].cover_icon_path")
+    icon_path = optional_string(
+        raw_place.get("cover_icon_path"), f"place[{place.slug}].cover_icon_path"
+    )
     if icon_path is None:
         return
     if place.cover_photo_id is not None and not replace_covers:
         return
 
     asset_path = resolve_asset_path(manifest_path, icon_path, repo_root)
-    stored_image = store_image_bytes(asset_path.read_bytes(), asset_path.name, place.id, "photos")
+    stored_image = store_image_bytes(
+        asset_path.read_bytes(), asset_path.name, place.id, "photos"
+    )
     photo = Photo(
         place_id=place.id,
         original_path=stored_image.original_path,
         public_path=stored_image.public_path,
         thumb_path=stored_image.thumb_path,
+        role="map_icon",
+        source="generated",
         status="approved",
-        caption=optional_string(raw_place.get("cover_caption"), f"place[{place.slug}].cover_caption"),
+        caption=optional_string(
+            raw_place.get("cover_caption"), f"place[{place.slug}].cover_caption"
+        ),
         consent_confirmed=True,
         approved_at=utc_now(),
     )
@@ -180,13 +283,19 @@ def import_place_icon(
     summary.icons_imported += 1
 
 
-def upsert_guide(session: Session, raw_guide: dict[str, Any], summary: ImportSummary) -> Guide:
+def upsert_guide(
+    session: Session, raw_guide: dict[str, Any], summary: ImportSummary
+) -> Guide:
     slug = require_string(raw_guide.get("slug"), "guide.slug")
     data = {
         "slug": slug,
         "title": require_string(raw_guide.get("title"), f"guide[{slug}].title"),
-        "description": optional_string(raw_guide.get("description"), f"guide[{slug}].description"),
-        "status": require_status(raw_guide.get("status", "draft"), GUIDE_STATUSES, f"guide[{slug}].status"),
+        "description": optional_string(
+            raw_guide.get("description"), f"guide[{slug}].description"
+        ),
+        "status": require_status(
+            raw_guide.get("status", "draft"), GUIDE_STATUSES, f"guide[{slug}].status"
+        ),
     }
 
     guide = guide_by_slug(session, slug)
@@ -206,17 +315,27 @@ def upsert_guide(session: Session, raw_guide: dict[str, Any], summary: ImportSum
     return guide
 
 
-def replace_guide_places(session: Session, guide: Guide, raw_places: Any, summary: ImportSummary) -> None:
-    for existing in session.exec(select(PlaceGuide).where(PlaceGuide.guide_id == guide.id)).all():
+def replace_guide_places(
+    session: Session, guide: Guide, raw_places: Any, summary: ImportSummary
+) -> None:
+    for existing in session.exec(
+        select(PlaceGuide).where(PlaceGuide.guide_id == guide.id)
+    ).all():
         session.delete(existing)
     session.flush()
 
-    for index, raw_place in enumerate(require_list(raw_places, f"guide[{guide.slug}].places")):
+    for index, raw_place in enumerate(
+        require_list(raw_places, f"guide[{guide.slug}].places")
+    ):
         place_ref = require_mapping(raw_place, f"guide[{guide.slug}].places[{index}]")
-        place_slug = require_string(place_ref.get("slug"), f"guide[{guide.slug}].places[{index}].slug")
+        place_slug = require_string(
+            place_ref.get("slug"), f"guide[{guide.slug}].places[{index}].slug"
+        )
         place = place_by_slug(session, place_slug)
         if place is None:
-            raise ValueError(f"Guide {guide.slug} references unknown place: {place_slug}")
+            raise ValueError(
+                f"Guide {guide.slug} references unknown place: {place_slug}"
+            )
         place_guide = PlaceGuide(
             guide_id=guide.id,
             place_id=place.id,
@@ -236,9 +355,19 @@ def import_city_manifest(
     manifest_path = manifest_path.resolve()
     manifest = require_mapping(json.loads(manifest_path.read_text()), "manifest")
     summary = ImportSummary()
+    city = upsert_city(
+        session, require_mapping(manifest.get("city"), "manifest.city"), summary
+    )
 
-    for index, raw_place in enumerate(require_list(manifest.get("places", []), "manifest.places")):
-        place = upsert_place(session, require_mapping(raw_place, f"manifest.places[{index}]"), summary)
+    for index, raw_place in enumerate(
+        require_list(manifest.get("places", []), "manifest.places")
+    ):
+        place = upsert_place(
+            session,
+            city,
+            require_mapping(raw_place, f"manifest.places[{index}]"),
+            summary,
+        )
         import_place_icon(
             session,
             manifest_path,
@@ -249,7 +378,9 @@ def import_city_manifest(
             replace_covers=replace_covers,
         )
 
-    for index, raw_guide in enumerate(require_list(manifest.get("guides", []), "manifest.guides")):
+    for index, raw_guide in enumerate(
+        require_list(manifest.get("guides", []), "manifest.guides")
+    ):
         guide_data = require_mapping(raw_guide, f"manifest.guides[{index}]")
         guide = upsert_guide(session, guide_data, summary)
         replace_guide_places(session, guide, guide_data.get("places", []), summary)
@@ -259,8 +390,12 @@ def import_city_manifest(
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Import city content into the local PhotoMap database.")
-    parser.add_argument("manifest", type=Path, help="Path to a city content JSON manifest.")
+    parser = argparse.ArgumentParser(
+        description="Import city content into the local PhotoMap database."
+    )
+    parser.add_argument(
+        "manifest", type=Path, help="Path to a city content JSON manifest."
+    )
     parser.add_argument(
         "--replace-covers",
         action="store_true",
@@ -273,10 +408,14 @@ def main() -> None:
     args = parse_args()
     create_db_and_tables()
     with Session(engine) as session:
-        summary = import_city_manifest(args.manifest, session=session, replace_covers=args.replace_covers)
+        summary = import_city_manifest(
+            args.manifest, session=session, replace_covers=args.replace_covers
+        )
 
     print(
         "Imported content: "
+        f"{summary.cities_created} cities created, "
+        f"{summary.cities_updated} cities updated, "
         f"{summary.places_created} places created, "
         f"{summary.places_updated} places updated, "
         f"{summary.icons_imported} icons imported, "

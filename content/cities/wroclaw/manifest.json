@@ -1,5 +1,13 @@
 {
-  "city": "Wrocław",
+  "city": {
+    "id": "wroclaw",
+    "name": "Wrocław",
+    "lat": 51.1079,
+    "lon": 17.0385,
+    "default_zoom": 13,
+    "sort_order": 10,
+    "status": "active"
+  },
   "places": [],
   "guides": []
 }

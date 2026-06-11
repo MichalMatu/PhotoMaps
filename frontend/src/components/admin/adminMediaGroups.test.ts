@@ -13,7 +13,8 @@ const category: Category = {
 };
 
 const place: Place = {
-  category_id: "shops",
+  category_ids: ["shops"],
+  city_id: "wroclaw",
   cover_photo_id: "photo-2",
   created_at: "2026-06-10T00:00:00",
   description: null,
@@ -39,6 +40,8 @@ function photo(id: string): Photo {
     id,
     place_id: "place-1",
     public_path: `/media/photos/${id}.jpg`,
+    role: "gallery",
+    source: "user_upload",
     status: "approved",
     thumb_path: `/media/photos/${id}-thumb.jpg`,
   };

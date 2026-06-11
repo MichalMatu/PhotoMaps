@@ -4,7 +4,7 @@ from sqlmodel import Session, select
 from app.api.admin_auth import require_admin_token
 from app.db.session import get_session
 from app.models.category import Category
-from app.models.place import Place
+from app.models.place import PlaceCategory
 from app.schemas.category import CategoryCreate, CategoryRead, CategoryUpdate
 
 router = APIRouter(
@@ -25,7 +25,7 @@ def ensure_category_id_available(session: Session, category_id: str) -> None:
 
 
 def category_is_used(session: Session, category_id: str) -> bool:
-    statement = select(Place).where(Place.category_id == category_id).limit(1)
+    statement = select(PlaceCategory).where(PlaceCategory.category_id == category_id).limit(1)
     return session.exec(statement).first() is not None
 
 

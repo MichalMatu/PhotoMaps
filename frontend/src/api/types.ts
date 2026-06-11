@@ -20,15 +20,28 @@ export type CategoryPayload = {
 
 export type CategoryUpdatePayload = Omit<CategoryPayload, "id">;
 
+type CityStatus = "active" | "archived";
+
+export type City = {
+  id: string;
+  name: string;
+  lat: number;
+  lon: number;
+  default_zoom: number;
+  sort_order: number;
+  status: CityStatus;
+};
+
 export type PlaceStatus = "draft" | "published" | "archived";
 
 export type Place = {
   id: string;
+  city_id: string;
   slug: string;
   title: string;
   description: string | null;
   local_comment: string | null;
-  category_id: string | null;
+  category_ids: string[];
   lat: number;
   lon: number;
   weight: number;
@@ -42,12 +55,16 @@ export type Place = {
 };
 
 export type PhotoStatus = "pending" | "approved" | "rejected";
+type PhotoRole = "gallery" | "map_icon";
+type PhotoSource = "user_upload" | "editorial" | "generated";
 
 export type Photo = {
   id: string;
   place_id: string;
   public_path: string;
   thumb_path: string;
+  role: PhotoRole;
+  source: PhotoSource;
   status: PhotoStatus;
   caption: string | null;
   consent_confirmed?: boolean;
@@ -88,10 +105,30 @@ export type AdminMemoryUpdatePayload = {
 };
 
 export type PlaceMapItem = Place & {
-  category: Category | null;
+  city: City;
+  categories: Category[];
   cover_photo: Photo | null;
-  photos: Photo[];
-  memories: Memory[];
+  preview_items: PlaceMapPreviewItem[];
+};
+
+export type PlaceMapPreviewItem = {
+  id: string;
+  kind: "photo" | "memory";
+  place_id: string;
+  public_path: string;
+  thumb_path: string;
+  role: PhotoRole | null;
+  source: PhotoSource | null;
+  status: PhotoStatus;
+  caption: string | null;
+  author_name: string | null;
+  author_city: string | null;
+  memory_text: string | null;
+  paid: boolean | null;
+  share_slug: string | null;
+  consent_confirmed?: boolean | null;
+  created_at: string;
+  approved_at: string | null;
 };
 
 export type GuideStatus = "draft" | "published" | "archived";
@@ -143,11 +180,12 @@ export type ReportPayload = {
 };
 
 export type PlacePayload = {
+  city_id: string;
   slug: string;
   title: string;
   description: string | null;
   local_comment: string | null;
-  category_id: string | null;
+  category_ids: string[];
   lat: number;
   lon: number;
   weight: number;

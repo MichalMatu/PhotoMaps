@@ -23,7 +23,7 @@ type VisualTarget = {
   placeId: string;
 };
 
-const WROCLAW_CENTER: [number, number] = [51.1079, 17.0385];
+const DEFAULT_CENTER: [number, number] = [51.1079, 17.0385];
 
 function MapSizeUpdater() {
   const map = useMap();
@@ -218,8 +218,18 @@ function PlaceLayer({ places }: Props) {
 }
 
 export function PlaceMap({ places }: Props) {
+  const mapCity = places[0]?.city ?? null;
+  const center: [number, number] = mapCity ? [mapCity.lat, mapCity.lon] : DEFAULT_CENTER;
+
   return (
-    <MapContainer center={WROCLAW_CENTER} zoom={13} className="place-map" scrollWheelZoom zoomControl={false}>
+    <MapContainer
+      center={center}
+      zoom={mapCity?.default_zoom ?? 13}
+      className="place-map"
+      key={mapCity?.id ?? "default"}
+      scrollWheelZoom
+      zoomControl={false}
+    >
       <MapSizeUpdater />
       <DistanceMeasureTool />
       <ZoomControl position="bottomright" />

@@ -10,6 +10,7 @@ from app.models.place import Place
 from app.schemas.guide import GuideCreate, GuideDetailRead, GuidePlaceCreate, GuideRead, GuideUpdate
 from app.serializers.guide import guide_to_detail, guide_to_read
 from app.services.guides import ensure_guide_slug_available, ensure_guide_status
+from app.services.place_taxonomy import category_ids_by_place_id
 
 router = APIRouter(prefix="/api/admin/guides", tags=["admin guides"], dependencies=[Depends(require_admin_token)])
 
@@ -35,7 +36,8 @@ def get_admin_guide(guide_id: str, session: Session = Depends(get_session)) -> G
     guide = session.get(Guide, guide_id)
     if guide is None:
         raise HTTPException(status_code=404, detail="Guide not found")
-    return guide_to_detail(guide, admin_guide_places(session, guide.id))
+    places = admin_guide_places(session, guide.id)
+    return guide_to_detail(guide, places, category_ids_by_place_id(session, [place.id for place in places]))
 
 
 @router.post("", response_model=GuideRead, status_code=201)
@@ -92,7 +94,8 @@ def add_place_to_guide(
     session.add(guide)
     session.commit()
     session.refresh(guide)
-    return guide_to_detail(guide, admin_guide_places(session, guide.id))
+    places = admin_guide_places(session, guide.id)
+    return guide_to_detail(guide, places, category_ids_by_place_id(session, [place.id for place in places]))
 
 
 @router.delete("/{guide_id}/places/{place_id}", response_model=GuideDetailRead)
@@ -113,4 +116,5 @@ def remove_place_from_guide(
     session.add(guide)
     session.commit()
     session.refresh(guide)
-    return guide_to_detail(guide, admin_guide_places(session, guide.id))
+    places = admin_guide_places(session, guide.id)
+    return guide_to_detail(guide, places, category_ids_by_place_id(session, [place.id for place in places]))

@@ -1,7 +1,6 @@
 from fastapi import HTTPException
 from sqlmodel import Session, select
 
-from app.models.category import Category
 from app.models.place import Place
 from app.services.ranking import place_score
 
@@ -18,12 +17,6 @@ def ensure_slug_available(session: Session, slug: str, place_id: str | None = No
     existing = session.exec(statement).first()
     if existing is not None and existing.id != place_id:
         raise HTTPException(status_code=409, detail="Slug already exists")
-
-
-def ensure_active_category(session: Session, category_id: str) -> None:
-    category = session.get(Category, category_id)
-    if category is None or category.status != "active":
-        raise HTTPException(status_code=422, detail="Category must be active")
 
 
 def ensure_public_place(place_id: str, session: Session) -> Place:
