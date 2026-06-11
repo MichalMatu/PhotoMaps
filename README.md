@@ -1,6 +1,6 @@
 # PhotoMap
 
-PhotoMap to lokalna mapa miejsc z klimatem. Wrocław jest pierwszym miastem startowym: budujemy mapę miejsc, zdjęcia, pamiątki użytkowników, przewodniki i prostą moderację, a później warstwy audio, tras i cyfrowych pieczątek.
+PhotoMap to wizualna mapa miejsc z klimatem. Wrocław jest pierwszym miastem startowym: budujemy mapę-miniaturową tablicę miejsc, zdjęcia, pamiątki użytkowników, przewodniki i prostą moderację, a później warstwy audio, tras i cyfrowych pieczątek.
 
 Głównym bytem systemu jest `place`. Wszystkie zdjęcia, pamiątki, przewodniki, zgłoszenia i przyszłe rozszerzenia są przypięte do miejsca albo kolekcji miejsc.
 

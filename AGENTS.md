@@ -2,7 +2,7 @@
 
 ## Cel projektu
 
-Budujemy nową aplikację: lokalny przewodnik po Wrocławiu bez sieciówek, oparty o miejsca z charakterem, mapę, zdjęcia, pamiątki użytkowników i architekturę gotową pod późniejsze przewodniki, audio, historię oraz płatności.
+Budujemy nową aplikację: wizualną mapę miejsc z charakterem we Wrocławiu, opartą o miniatury miejsc, zdjęcia, pamiątki użytkowników i architekturę gotową pod późniejsze przewodniki, audio, historię oraz płatności.
 
 To jest nowy produkt, nie dalszy rozwój WreckScanner.
 
@@ -27,6 +27,21 @@ place
 ```
 
 Nie tworzyć osobnych światów dla zdjęć, pamiątek, audio, historii i przewodników.
+
+## Zasada doświadczenia mapy
+
+Publiczna mapa jest głównym produktem i ma działać jak żywa tablica miniaturek miejsc, nie jak pusta mapa z pinezkami.
+
+- Po wejściu użytkownik ma od razu widzieć atrakcyjne miniatury miejsc albo klastry miniaturek.
+- Publiczne markery są wizualnymi miniaturami miejsc; typowa pinezka zostaje tylko w adminie do wyboru lokalizacji.
+- Kliknięcie miejsca ma pokazywać więcej, ale nie może być wymagane, żeby mapa robiła efekt wizualny.
+- Zoom steruje gęstością i rozmiarem miniaturek: daleko mniej elementów i klastry, średnio wybrane miejsca, blisko więcej miejsc i wachlarz podglądów.
+- Warstwy mapy są sposobem oglądania danych, np. polecane, zdjęcia, pamiątki, później audio i trasy.
+- Kategorie są zarządzane w adminie i frontend mapy ma korzystać z nich dynamicznie; nie hardkodować kategorii w filtrach UI.
+- Kontrakt mapy powinien być `map preview`: dane miejsca, kategoria, score, liczniki, cover i kilka kuratorowanych podglądów. Nie zwracać pełnych galerii i pełnych pamiątek tylko po to, żeby wyrenderować pierwszy widok.
+- Nie zamieniać odchudzenia endpointu mapy w pustą mapę bez miniaturek. Optymalizacja kontraktu ma zachować efekt "wow" pierwszego widoku.
+
+Planowany kierunek audio: jeśli miniatura ma zatwierdzone audio miejsca, hover może płynnie i cicho uruchamiać krótki ambient z fade in/fade out. Implementując to później, uwzględnić ograniczenia autoplay w przeglądarkach i dodać jawne włączenie dźwięku mapy, jeśli będzie potrzebne.
 
 ## Zasady jakości kodu i architektury
 
@@ -288,6 +303,7 @@ Publiczne:
 GET /health
 GET /api/categories
 GET /api/places
+GET /api/places/map
 GET /api/places/{id_or_slug}
 GET /api/places/{place_id}/photos
 POST /api/places/{place_id}/photos
@@ -377,6 +393,7 @@ Nie wdrażać przed ukończeniem szkieletu:
 
 - audio GPS,
 - audio-wspomnień,
+- pełnego systemu audio-hover,
 - płatności,
 - kont użytkowników,
 - paszportu/pieczątek,
@@ -408,6 +425,9 @@ Pracuj etapami. Nie przechodź dalej, jeśli aktualny etap nie działa.
 12. Ranking helper
 13. Guides jako kolekcje miejsc
 14. Reports jakości
+15. Map Experience v1: miniatury, gęstość, zoom, klastry i warstwy
+16. Lekki kontrakt `map preview` bez utraty wizualnego pierwszego widoku
+17. AudioClip i moderacja audio dopiero po ustabilizowaniu mapy
 ```
 
 ## Testy po każdym etapie
