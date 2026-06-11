@@ -16,6 +16,10 @@ type PlaceResponse = {
   title: string;
 };
 
+type PhotoResponse = {
+  id: string;
+};
+
 type MapPlaceResponse = {
   cover_photo: { caption: string | null } | null;
   id: string;
@@ -85,6 +89,31 @@ async function createPlace(
 
 async function getMapPlaces(request: APIRequestContext) {
   return expectJson<MapPlaceResponse[]>(request.get(`${API_URL}/api/places/map`), 200);
+}
+
+async function uploadApprovedPhoto(request: APIRequestContext, placeId: string, caption: string) {
+  const photo = await expectJson<PhotoResponse>(
+    request.post(`${API_URL}/api/places/${placeId}/photos`, {
+      multipart: {
+        caption,
+        consent_confirmed: "true",
+        file: {
+          buffer: PHOTO_BUFFER,
+          mimeType: "image/jpeg",
+          name: "e2e-photo.jpg",
+        },
+      },
+    }),
+    201,
+  );
+  await expectJson<PhotoResponse>(
+    request.post(`${API_URL}/api/admin/photos/${photo.id}/review`, {
+      data: { status: "approved" },
+      headers: adminHeaders(),
+    }),
+    200,
+  );
+  return photo;
 }
 
 test("public map loads without API error", async ({ page }) => {
@@ -245,4 +274,57 @@ test("visitor can add a memory and admin can approve it through UI", async ({ pa
   await expect(page.locator(".map-frame")).toBeVisible();
   await page.locator(`[title="${place.title}"]`).first().click();
   await expect(page.locator(`[title="${caption}"]`)).toBeVisible();
+});
+
+test("visitor can report a photo and admin can close the report through UI", async ({ page, request }) => {
+  const suffix = `${Date.now()}-${test.info().workerIndex}`;
+  const photoCaption = `Zdjęcie do zgłoszenia ${suffix}`;
+  const reportMessage = `Opis problemu e2e ${suffix}`;
+  const category = await createCategory(request, suffix);
+  const place = await createPlace(request, category.id, suffix, {
+    lat: 51.14,
+    lon: 17.02,
+    title: `E2E zgłoszenie ${suffix}`,
+  });
+  await uploadApprovedPhoto(request, place.id, photoCaption);
+
+  await page.goto("/");
+  await expect(page.locator(".map-frame")).toBeVisible();
+  await page.locator(`[title="${place.title}"]`).first().click();
+  await page.locator(`[title="${photoCaption}"]`).click();
+
+  const previewDialog = page.getByRole("dialog", { name: `Zdjęcie: ${place.title}` });
+  await expect(previewDialog).toBeVisible();
+  await previewDialog.getByRole("button").click();
+
+  const detailDialog = page.getByRole("dialog", { name: place.title });
+  await expect(detailDialog).toBeVisible();
+  await detailDialog.getByRole("button", { name: "Zgłoś problem" }).click();
+
+  const reportSheet = page.locator('aside[aria-label="Zgłoś problem"]');
+  await expect(reportSheet).toBeVisible();
+  await reportSheet.getByLabel("Powód").selectOption("bad_photo");
+  await reportSheet.getByLabel("Wiadomość").fill(reportMessage);
+  await reportSheet.getByRole("button", { name: "Wyślij zgłoszenie" }).click();
+  await expect(reportSheet.getByText("Zgłoszenie trafiło do redakcji.")).toBeVisible();
+
+  await page.goto("/admin");
+  await page.getByLabel("Token").fill(ADMIN_TOKEN);
+  await page.getByRole("button", { name: "Wejdź do panelu" }).click();
+
+  const adminTabs = page.getByRole("navigation", { name: "Sekcje panelu admina" });
+  await expect(adminTabs).toBeVisible();
+  await adminTabs.getByRole("button", { name: /Zgłoszenia/ }).click();
+  await page.getByRole("button", { name: /Otwarte/ }).click();
+
+  const openReport = page.locator(".report-item").filter({ hasText: reportMessage });
+  await expect(openReport).toContainText("open");
+  await expect(openReport).toContainText("bad_photo");
+  await openReport.getByRole("button", { name: "Zamknij" }).click();
+  await expect(openReport).toBeHidden();
+
+  await page.getByRole("button", { name: /Zamknięte/ }).click();
+  const closedReport = page.locator(".report-item").filter({ hasText: reportMessage });
+  await expect(closedReport).toContainText("closed");
+  await expect(closedReport).toContainText("bad_photo");
 });
