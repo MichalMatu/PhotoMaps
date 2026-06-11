@@ -52,6 +52,7 @@ make quality       # wszystko powyżej plus make check
 ```
 
 `make smoke`, `make e2e` i `make perf-smoke` same startują backend oraz frontend na izolowanych portach i sprzątają procesy po zakończeniu.
+`make e2e` dodatkowo używa osobnej bazy i storage w `.dev/e2e`, więc testy mogą tworzyć miejsca oraz zdjęcia bez dotykania lokalnych danych z `backend/data/app.db`.
 Progi `perf-smoke` można dostroić przez env:
 
 ```bash

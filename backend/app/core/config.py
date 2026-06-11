@@ -14,10 +14,10 @@ def get_claim_token_secret() -> str:
 
 
 BASE_DIR = Path(__file__).resolve().parents[2]
-DATA_DIR = BASE_DIR / "data"
+DATA_DIR = Path(os.getenv("PHOTOMAP_DATA_DIR", BASE_DIR / "data"))
 DATABASE_PATH = DATA_DIR / "app.db"
-DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
-STORAGE_DIR = BASE_DIR / "storage"
+DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DATABASE_PATH}")
+STORAGE_DIR = Path(os.getenv("PHOTOMAP_STORAGE_DIR", BASE_DIR / "storage"))
 PRIVATE_STORAGE_DIR = STORAGE_DIR / "private"
 PUBLIC_STORAGE_DIR = STORAGE_DIR / "public"
 
