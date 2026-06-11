@@ -1,8 +1,17 @@
-## PhotoMap
+# PhotoMap
 
-PhotoMap oparty o miejsca, mapę, zdjęcia, pamiątki użytkowników, przewodniki i prostą moderację.
+PhotoMap to lokalna mapa miejsc z klimatem. Wrocław jest pierwszym miastem startowym: budujemy mapę miejsc, zdjęcia, pamiątki użytkowników, przewodniki i prostą moderację, a później warstwy audio, tras i cyfrowych pieczątek.
 
-Dev-serwer:
+Głównym bytem systemu jest `place`. Wszystkie zdjęcia, pamiątki, przewodniki, zgłoszenia i przyszłe rozszerzenia są przypięte do miejsca albo kolekcji miejsc.
+
+## Dokumenty
+
+- [Kierunek produktu](docs/product-direction.md)
+- [Uruchamianie i testy](docs/dev.md)
+
+## Dev
+
+Podstawowe komendy:
 
 ```bash
 make start
@@ -12,5 +21,3 @@ make status
 make logs
 make check
 ```
-
-Szczegóły: [docs/dev.md](docs/dev.md)
