@@ -20,6 +20,7 @@ Najpierw budujemy materiał do testowania mapy.
 Do zrobienia:
 
 - wybrać pierwsze 10-15 miejsc,
+- przygotować spójne miniatury/ikony według [promptu generowania](docs/image_generation/place-thumbnails.md), jeśli nie mamy jeszcze dobrych zdjęć,
 - dodać je przez admina,
 - przypisać kategorie z panelu admina,
 - dodać i zatwierdzić zdjęcia,
