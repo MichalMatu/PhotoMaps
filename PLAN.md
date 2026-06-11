@@ -21,6 +21,7 @@ Do zrobienia:
 
 - wybrać pierwsze 10-15 miejsc,
 - przygotować spójne miniatury/ikony według [promptu generowania](docs/image_generation/place-thumbnails.md), jeśli nie mamy jeszcze dobrych zdjęć,
+- trzymać robocze i finalne ikony w [assets/place-icons](assets/place-icons/README.md),
 - dodać je przez admina,
 - przypisać kategorie z panelu admina,
 - dodać i zatwierdzić zdjęcia,
@@ -50,6 +51,8 @@ Do oceny i poprawy:
 - czy mapa po wejściu robi efekt "chcę to sprawdzić".
 
 Nie zmieniać jeszcze uploadu zdjęć ani moderacji, jeśli obecny flow wystarcza do budowania bazy.
+
+Uwaga: obecny upload zdjęć tworzy publiczne JPEG-i i nie zachowuje przezroczystości. Jeśli ikony miejsc mają działać jako przezroczyste obrysy na mapie, trzeba później dodać osobną obsługę ikon/assetów miejsca albo zmienić kontrakt mapy. Nie wrzucać bezrefleksyjnie przezroczystych ikon przez flow zwykłych zdjęć, jeśli zależy nam na alfie.
 
 ## Iteracja 3: Warstwy i kategorie
 
