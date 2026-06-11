@@ -15,7 +15,10 @@ export function PublicMapPage() {
     <AppShell activeSection="map">
       <main className="page-shell map-page">
         {placesQuery.isLoading || placesQuery.isError ? (
-          <div className={placesQuery.isError ? "map-status-panel map-status-panel--error" : "map-status-panel"} role="status">
+          <div
+            className={placesQuery.isError ? "map-status-panel map-status-panel--error" : "map-status-panel"}
+            role="status"
+          >
             {placesQuery.isLoading ? <p>Ładowanie mapy...</p> : null}
             {placesQuery.isError ? <p className="error-text">Nie udało się pobrać miejsc</p> : null}
           </div>

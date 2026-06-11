@@ -1,10 +1,6 @@
 import { request } from "./http";
 import type { Category, CategoryPayload, CategoryUpdatePayload } from "./types";
 
-export function getCategories(): Promise<Category[]> {
-  return request<Category[]>("/api/categories");
-}
-
 export function getAdminCategories(): Promise<Category[]> {
   return request<Category[]>("/api/admin/categories");
 }

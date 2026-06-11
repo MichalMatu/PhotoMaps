@@ -41,16 +41,25 @@ export function AdminPlacesSection({ categories, editingPlaceId, onArchive, onCr
             <span>Akcje</span>
           </div>
           {places.map((place) => (
-            <div className={editingPlaceId === place.id ? "table-row is-selected" : "table-row"} role="row" key={place.id}>
+            <div
+              className={editingPlaceId === place.id ? "table-row is-selected" : "table-row"}
+              role="row"
+              key={place.id}
+            >
               <span>{place.title}</span>
               <span>{place.status}</span>
-              <span>{place.category_id ? categoryById.get(place.category_id)?.label ?? place.category_id : "-"}</span>
+              <span>{place.category_id ? (categoryById.get(place.category_id)?.label ?? place.category_id) : "-"}</span>
               <span>{place.weight.toFixed(1)}</span>
               <span className="table-actions">
                 <button type="button" onClick={() => onEdit(place)}>
                   Edytuj
                 </button>
-                <button className="secondary-button" type="button" disabled={place.status === "archived"} onClick={() => onArchive(place)}>
+                <button
+                  className="secondary-button"
+                  type="button"
+                  disabled={place.status === "archived"}
+                  onClick={() => onArchive(place)}
+                >
                   Archiwizuj
                 </button>
               </span>

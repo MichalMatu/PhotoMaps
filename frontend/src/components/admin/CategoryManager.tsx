@@ -218,7 +218,10 @@ export function CategoryManager({ categories, onChanged, places }: Props) {
 
       <div className="category-list">
         {categories.map((category) => (
-          <div className={editingCategory?.id === category.id ? "category-row is-selected" : "category-row"} key={category.id}>
+          <div
+            className={editingCategory?.id === category.id ? "category-row is-selected" : "category-row"}
+            key={category.id}
+          >
             <div>
               <strong>{category.label}</strong>
               <span>{category.id}</span>
@@ -238,13 +241,19 @@ export function CategoryManager({ categories, onChanged, places }: Props) {
               >
                 Archiwizuj
               </button>
-              <button className="danger-button" type="button" onClick={() => setCategoryAction({ category, type: "delete" })}>
+              <button
+                className="danger-button"
+                type="button"
+                onClick={() => setCategoryAction({ category, type: "delete" })}
+              >
                 Usuń trwale
               </button>
             </div>
           </div>
         ))}
-        {categories.length === 0 ? <p className="notice">Brak kategorii. Dodaj pierwszą kategorię przyciskiem powyżej.</p> : null}
+        {categories.length === 0 ? (
+          <p className="notice">Brak kategorii. Dodaj pierwszą kategorię przyciskiem powyżej.</p>
+        ) : null}
       </div>
 
       {isCategoryModalOpen ? (

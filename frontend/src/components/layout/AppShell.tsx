@@ -45,13 +45,20 @@ export function AppShell({ activeSection, adminAction, children }: Props) {
         </nav>
 
         {adminAction ? (
-          <button className="rail-admin-button" type="button" onClick={handleAdminAction} aria-label={adminAction.label}>
+          <button
+            className="rail-admin-button"
+            type="button"
+            onClick={handleAdminAction}
+            aria-label={adminAction.label}
+          >
             {adminAction.shortLabel}
           </button>
         ) : null}
       </aside>
 
-      {isMenuOpen ? <button className="drawer-scrim" type="button" aria-label="Zamknij menu" onClick={() => setIsMenuOpen(false)} /> : null}
+      {isMenuOpen ? (
+        <button className="drawer-scrim" type="button" aria-label="Zamknij menu" onClick={() => setIsMenuOpen(false)} />
+      ) : null}
 
       <aside className={isMenuOpen ? "side-drawer is-open" : "side-drawer"} aria-hidden={!isMenuOpen}>
         <div className="drawer-header">
@@ -64,7 +71,12 @@ export function AppShell({ activeSection, adminAction, children }: Props) {
               {APP_NAME}
             </a>
           )}
-          <button className="drawer-close-button" type="button" onClick={() => setIsMenuOpen(false)} aria-label="Zamknij menu">
+          <button
+            className="drawer-close-button"
+            type="button"
+            onClick={() => setIsMenuOpen(false)}
+            aria-label="Zamknij menu"
+          >
             <X aria-hidden="true" size={28} />
           </button>
         </div>
@@ -72,7 +84,12 @@ export function AppShell({ activeSection, adminAction, children }: Props) {
         <nav className="drawer-section">
           {primaryItems.map(({ href, label, section, Icon }) =>
             section === activeSection ? (
-              <button className="drawer-item is-active" type="button" key={section} onClick={() => setIsMenuOpen(false)}>
+              <button
+                className="drawer-item is-active"
+                type="button"
+                key={section}
+                onClick={() => setIsMenuOpen(false)}
+              >
                 <Icon aria-hidden="true" size={26} />
                 <span>{label}</span>
               </button>

@@ -1,5 +1,5 @@
 import L from "leaflet";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Marker, useMap } from "react-leaflet";
 
 import { mediaUrl, type PlaceMapItem } from "../../api/client";
@@ -94,35 +94,22 @@ type Props = {
 
 export function PlaceMarker({ place, isExpanded, onMemoryOpen, onToggleFan, onVisualPreview, zoom }: Props) {
   const map = useMap();
-  const [layoutVersion, setLayoutVersion] = useState(0);
   const fanItems = useMemo(() => getPlaceFanItems(place), [place]);
   const fanItemCount = fanItems.length + 1;
-  const placeLayout = useMemo(() => getPlaceMarkerLayout({ editorialPriority: place.weight, zoom }), [place.weight, zoom]);
+  const placeLayout = useMemo(
+    () => getPlaceMarkerLayout({ editorialPriority: place.weight, zoom }),
+    [place.weight, zoom],
+  );
   const placeIcon = useMemo(() => markerIcon(place, isExpanded, placeLayout), [isExpanded, place, placeLayout]);
 
-  useEffect(() => {
-    if (!isExpanded) {
-      return;
-    }
-
-    const refreshLayout = () => setLayoutVersion((version) => version + 1);
-
-    refreshLayout();
-    map.on("zoomend moveend resize", refreshLayout);
-
-    return () => {
-      map.off("zoomend moveend resize", refreshLayout);
-    };
-  }, [isExpanded, map]);
-
   const fanLayout = useMemo(() => {
-    const origin = map.project([place.lat, place.lon], map.getZoom());
+    const origin = map.project([place.lat, place.lon], zoom);
 
     return fanOffsets(fanItemCount).map((offset) => ({
       offset,
-      position: map.unproject(origin.add([offset.x, offset.y]), map.getZoom()),
+      position: map.unproject(origin.add([offset.x, offset.y]), zoom),
     }));
-  }, [fanItemCount, layoutVersion, map, place.lat, place.lon]);
+  }, [fanItemCount, map, place.lat, place.lon, zoom]);
   const fanVisualIcons = useMemo(
     () => fanItems.map((item, index) => fanVisualIcon(item, fanLayout[index].offset, index)),
     [fanItems, fanLayout],

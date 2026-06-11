@@ -72,11 +72,8 @@ export type Memory = {
   approved_at: string | null;
 };
 
-export type MemoryClaimPayload = {
+export type MemoryUpdatePayload = {
   claim_token: string;
-};
-
-export type MemoryUpdatePayload = MemoryClaimPayload & {
   author_city: string | null;
   author_name: string | null;
   caption: string;

@@ -42,10 +42,7 @@ export function useAdminSectionState({
   const [photoStatusFilter, setPhotoStatusFilter] = useState<PhotoStatus | "all">("all");
   const [reportStatusFilter, setReportStatusFilter] = useState<ReportStatus | "all">("all");
 
-  const visiblePhotos = useMemo(
-    () => filterPhotosByStatus(photos, photoStatusFilter),
-    [photoStatusFilter, photos],
-  );
+  const visiblePhotos = useMemo(() => filterPhotosByStatus(photos, photoStatusFilter), [photoStatusFilter, photos]);
   const visibleMemories = useMemo(
     () => filterMemoriesByStatus(memories, memoryStatusFilter),
     [memories, memoryStatusFilter],

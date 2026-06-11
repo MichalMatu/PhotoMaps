@@ -261,7 +261,11 @@ export function GuideManager({ guides, places, onChanged }: Props) {
                               <strong>{place.title}</strong>
                               <span>{place.status}</span>
                             </div>
-                            <button className="secondary-button" type="button" onClick={() => handleRemovePlace(place.id)}>
+                            <button
+                              className="secondary-button"
+                              type="button"
+                              onClick={() => handleRemovePlace(place.id)}
+                            >
                               Usuń
                             </button>
                           </div>
@@ -273,7 +277,9 @@ export function GuideManager({ guides, places, onChanged }: Props) {
             </article>
           );
         })}
-        {guides.length === 0 ? <p className="notice">Brak przewodników. Dodaj pierwszy przewodnik przyciskiem powyżej.</p> : null}
+        {guides.length === 0 ? (
+          <p className="notice">Brak przewodników. Dodaj pierwszy przewodnik przyciskiem powyżej.</p>
+        ) : null}
       </div>
 
       {isGuideModalOpen ? (

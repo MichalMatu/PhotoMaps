@@ -17,6 +17,19 @@ repos:
         language: system
         pass_filenames: false
         files: ^frontend/src/.*\.(ts|tsx)$
+      - id: frontend-format
+        name: frontend prettier check
+        entry: bash -lc 'cd frontend && npm run format:check'
+        language: system
+        pass_filenames: false
+        files: ^frontend/.*\.(css|html|json|md|ts|tsx|js|mjs)$
+      - id: frontend-knip
+        name: frontend knip
+        entry: bash -lc 'cd frontend && npm run knip'
+        language: system
+        pass_filenames: false
+        stages:
+          - pre-push
       - id: backend-pytest
         name: backend pytest
         entry: bash -lc 'PYTHON_BIN="${PYTHON:-python3}"; if [ -x backend/.venv/bin/python ]; then PYTHON_BIN=backend/.venv/bin/python; fi; cd backend && "$PYTHON_BIN" -m pytest'

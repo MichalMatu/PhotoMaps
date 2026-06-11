@@ -46,7 +46,9 @@ function photo(id: string): Photo {
 
 describe("groupAdminMediaByPlace", () => {
   it("groups media by place and exposes the place category label", () => {
-    expect(groupAdminMediaByPlace([photo("photo-1"), photo("photo-2")], [place], [category], selectPhotoAlbumCover)).toMatchObject([
+    expect(
+      groupAdminMediaByPlace([photo("photo-1"), photo("photo-2")], [place], [category], selectPhotoAlbumCover),
+    ).toMatchObject([
       {
         categoryLabel: "Sklepy",
         coverItem: { id: "photo-2" },

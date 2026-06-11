@@ -37,7 +37,9 @@ export function groupAdminMediaByPlace<TItem extends AdminMediaItem>(
   return Array.from(itemsByPlaceId.entries())
     .map(([placeId, groupItems]) => {
       const place = placeById.get(placeId) ?? null;
-      const categoryLabel = place?.category_id ? categoryById.get(place.category_id)?.label ?? place.category_id : "Bez kategorii";
+      const categoryLabel = place?.category_id
+        ? (categoryById.get(place.category_id)?.label ?? place.category_id)
+        : "Bez kategorii";
       return {
         categoryLabel,
         coverItem: selectCoverItem(groupItems, place),
@@ -50,10 +52,7 @@ export function groupAdminMediaByPlace<TItem extends AdminMediaItem>(
     .sort((firstGroup, secondGroup) => firstGroup.title.localeCompare(secondGroup.title, "pl"));
 }
 
-export function selectPhotoAlbumCover<TItem extends AdminMediaItem>(
-  groupItems: TItem[],
-  place: Place | null,
-): TItem {
+export function selectPhotoAlbumCover<TItem extends AdminMediaItem>(groupItems: TItem[], place: Place | null): TItem {
   if (place?.cover_photo_id) {
     const coverItem = groupItems.find((item) => item.id === place.cover_photo_id);
     if (coverItem) {

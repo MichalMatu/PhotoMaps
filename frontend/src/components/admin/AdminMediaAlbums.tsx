@@ -43,7 +43,9 @@ export function AdminMediaAlbums<TItem extends AdminMediaItem>({
               </div>
               <span className="admin-media-count">{countLabel(group.items.length)}</span>
             </button>
-            {isExpanded ? <div className="admin-media-gallery">{group.items.map((item) => renderItem(item, group))}</div> : null}
+            {isExpanded ? (
+              <div className="admin-media-gallery">{group.items.map((item) => renderItem(item, group))}</div>
+            ) : null}
           </section>
         );
       })}

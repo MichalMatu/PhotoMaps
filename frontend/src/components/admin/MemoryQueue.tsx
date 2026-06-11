@@ -10,7 +10,11 @@ import {
   type Place,
   updateAdminMemory,
 } from "../../api/client";
-import { MEMORY_AUTHOR_MAX_LENGTH, MEMORY_CAPTION_MAX_LENGTH, MEMORY_TEXT_MAX_LENGTH } from "../places/memoryValidation";
+import {
+  MEMORY_AUTHOR_MAX_LENGTH,
+  MEMORY_CAPTION_MAX_LENGTH,
+  MEMORY_TEXT_MAX_LENGTH,
+} from "../places/memoryValidation";
 import { AdminMediaAlbums } from "./AdminMediaAlbums";
 import { SystemModal } from "./SystemModal";
 import { groupAdminMediaByPlace } from "./adminMediaGroups";
@@ -71,7 +75,10 @@ export function MemoryQueue({
   const [isSavingMemory, setIsSavingMemory] = useState(false);
   const [memoryTextDraft, setMemoryTextDraft] = useState("");
   const [memoryToDelete, setMemoryToDelete] = useState<Memory | null>(null);
-  const memoryGroups = useMemo(() => groupAdminMediaByPlace(memories, places, categories), [categories, memories, places]);
+  const memoryGroups = useMemo(
+    () => groupAdminMediaByPlace(memories, places, categories),
+    [categories, memories, places],
+  );
 
   useEffect(() => {
     setExpandedPlaceId((currentPlaceId) => {
@@ -241,7 +248,11 @@ export function MemoryQueue({
                       {memory.author_name ?? "Gość"}
                       {memory.author_city ? `, ${memory.author_city}` : ""}
                     </span>
-                    <button className="ghost-button admin-media-link-button" type="button" onClick={() => handleStartMemoryEdit(memory)}>
+                    <button
+                      className="ghost-button admin-media-link-button"
+                      type="button"
+                      onClick={() => handleStartMemoryEdit(memory)}
+                    >
                       Edytuj pamiątkę
                     </button>
                   </>
@@ -253,7 +264,11 @@ export function MemoryQueue({
                     </button>
                   ) : null}
                   {memory.status !== "rejected" ? (
-                    <button className="secondary-button" type="button" onClick={() => handleReview(memory.id, "rejected")}>
+                    <button
+                      className="secondary-button"
+                      type="button"
+                      onClick={() => handleReview(memory.id, "rejected")}
+                    >
                       {memory.status === "approved" ? "Ukryj" : "Odrzuć"}
                     </button>
                   ) : null}

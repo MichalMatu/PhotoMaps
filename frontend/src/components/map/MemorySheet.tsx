@@ -21,7 +21,7 @@ function generateClaimToken() {
 
 export function MemorySheet({ onClose, onUploaded, place }: Props) {
   const [visitToken, setVisitToken] = useState("");
-  const tokenError = visitToken.trim() ? validateClaimToken(visitToken).claimToken ?? null : null;
+  const tokenError = visitToken.trim() ? (validateClaimToken(visitToken).claimToken ?? null) : null;
   const isUnlocked = visitToken.trim().length >= CLAIM_TOKEN_MIN_LENGTH && !tokenError;
 
   useEffect(() => {
@@ -42,7 +42,11 @@ export function MemorySheet({ onClose, onUploaded, place }: Props) {
           <label className="memory-token-field">
             <span className="memory-token-label-row">
               <span>Token</span>
-              <button className="memory-token-generate" type="button" onClick={() => setVisitToken(generateClaimToken())}>
+              <button
+                className="memory-token-generate"
+                type="button"
+                onClick={() => setVisitToken(generateClaimToken())}
+              >
                 generuj token
               </button>
             </span>
@@ -64,12 +68,7 @@ export function MemorySheet({ onClose, onUploaded, place }: Props) {
             ) : null}
           </label>
           {isUnlocked ? (
-            <MemoryPanel
-              claimToken={visitToken}
-              mode="form-only"
-              placeId={place.id}
-              onUploaded={onUploaded}
-            />
+            <MemoryPanel claimToken={visitToken} mode="form-only" placeId={place.id} onUploaded={onUploaded} />
           ) : null}
         </div>
       ) : null}

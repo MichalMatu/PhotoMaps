@@ -71,7 +71,8 @@ describe("place preview helpers", () => {
       "photo",
       "memory",
     ]);
-    expect(findPlaceFanItem({ memories: [firstMemory], photos: [firstPhoto] }, { id: "memory-1", kind: "memory" }))
-      .toMatchObject({ id: "memory-1", kind: "memory" });
+    expect(
+      findPlaceFanItem({ memories: [firstMemory], photos: [firstPhoto] }, { id: "memory-1", kind: "memory" }),
+    ).toMatchObject({ id: "memory-1", kind: "memory" });
   });
 });

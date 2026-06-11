@@ -157,7 +157,11 @@ export function useDraggableWindow<TElement extends HTMLElement>(storageId: stri
         return;
       }
 
-      const nextPosition = clampWindowPosition(element, element.getBoundingClientRect().left, element.getBoundingClientRect().top);
+      const nextPosition = clampWindowPosition(
+        element,
+        element.getBoundingClientRect().left,
+        element.getBoundingClientRect().top,
+      );
       setPosition(nextPosition);
       storePosition(storageKey, nextPosition);
       dragStateRef.current = null;

@@ -23,6 +23,8 @@ cd "$ROOT_DIR"
 "$PYTHON_BIN" scripts/check_schema.py
 
 cd "$ROOT_DIR/frontend"
+npm run format:check
 npm run lint
+npm run knip
 npm run test
 npm run build

@@ -77,7 +77,9 @@ export function GuidesPage() {
                     <article className="simple-card" key={place.id}>
                       <span className="eyebrow">{place.photo_count + place.memory_count} wpisów</span>
                       <strong>{place.title}</strong>
-                      {place.local_comment ?? place.description ? <p>{place.local_comment ?? place.description}</p> : null}
+                      {(place.local_comment ?? place.description) ? (
+                        <p>{place.local_comment ?? place.description}</p>
+                      ) : null}
                     </article>
                   ))}
                 </div>

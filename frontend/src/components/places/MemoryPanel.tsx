@@ -171,7 +171,9 @@ export function MemoryPanel({ claimToken, mode = "with-list", onUploaded, placeI
             onChange={(event) => setMemoryText(event.target.value)}
             required
           />
-          <span className="field-limit">{memoryText.trim().length}/{MEMORY_TEXT_MAX_LENGTH}</span>
+          <span className="field-limit">
+            {memoryText.trim().length}/{MEMORY_TEXT_MAX_LENGTH}
+          </span>
           {fieldErrors.memoryText ? (
             <span className="field-error" id="memory-text-error">
               {fieldErrors.memoryText}

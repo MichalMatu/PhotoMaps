@@ -43,7 +43,15 @@ const STATUS_LABELS: Record<PhotoStatus, string> = {
 const PHOTO_CONSENT_CONFIRMED = true;
 const PHOTO_CAPTION_MAX_LENGTH = 120;
 
-export function PhotoQueue({ categories, photos, places, statusCounts, statusFilter, onReviewed, onStatusFilterChange }: Props) {
+export function PhotoQueue({
+  categories,
+  photos,
+  places,
+  statusCounts,
+  statusFilter,
+  onReviewed,
+  onStatusFilterChange,
+}: Props) {
   const [caption, setCaption] = useState("");
   const [captionDraft, setCaptionDraft] = useState("");
   const [editingPhotoId, setEditingPhotoId] = useState<string | null>(null);
@@ -202,7 +210,12 @@ export function PhotoQueue({ categories, photos, places, statusCounts, statusFil
             const isCover = group.place?.cover_photo_id === photo.id;
             return (
               <article className="admin-media-item" key={photo.id}>
-                <img alt={photo.caption ?? group.title} decoding="async" loading="lazy" src={mediaUrl(photo.thumb_path)} />
+                <img
+                  alt={photo.caption ?? group.title}
+                  decoding="async"
+                  loading="lazy"
+                  src={mediaUrl(photo.thumb_path)}
+                />
                 <div className="admin-media-item-body">
                   <div className="photo-meta-row">
                     <span className={`status-badge status-badge--${photo.status}`}>{STATUS_LABELS[photo.status]}</span>
@@ -237,7 +250,11 @@ export function PhotoQueue({ categories, photos, places, statusCounts, statusFil
                   ) : (
                     <>
                       <p className="admin-media-caption">{photo.caption ?? "Brak podpisu"}</p>
-                      <button className="ghost-button admin-media-link-button" type="button" onClick={() => handleStartCaptionEdit(photo)}>
+                      <button
+                        className="ghost-button admin-media-link-button"
+                        type="button"
+                        onClick={() => handleStartCaptionEdit(photo)}
+                      >
                         Edytuj podpis
                       </button>
                     </>
@@ -249,7 +266,11 @@ export function PhotoQueue({ categories, photos, places, statusCounts, statusFil
                       </button>
                     ) : null}
                     {photo.status !== "rejected" ? (
-                      <button className="secondary-button" type="button" onClick={() => handleReview(photo.id, "rejected")}>
+                      <button
+                        className="secondary-button"
+                        type="button"
+                        onClick={() => handleReview(photo.id, "rejected")}
+                      >
                         {photo.status === "approved" ? "Ukryj" : "Odrzuć"}
                       </button>
                     ) : null}
@@ -313,7 +334,11 @@ export function PhotoQueue({ categories, photos, places, statusCounts, statusFil
             </label>
             <label>
               Podpis
-              <input maxLength={PHOTO_CAPTION_MAX_LENGTH} value={caption} onChange={(event) => setCaption(event.target.value)} />
+              <input
+                maxLength={PHOTO_CAPTION_MAX_LENGTH}
+                value={caption}
+                onChange={(event) => setCaption(event.target.value)}
+              />
             </label>
           </div>
         </SystemModal>

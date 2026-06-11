@@ -13,7 +13,10 @@ export function getAdminReports(status?: ReportStatus): Promise<Report[]> {
   return request<Report[]>(`/api/admin/reports${query}`);
 }
 
-export function updateReport(reportId: string, payload: { message?: string | null; status?: ReportStatus }): Promise<Report> {
+export function updateReport(
+  reportId: string,
+  payload: { message?: string | null; status?: ReportStatus },
+): Promise<Report> {
   return request<Report>(`/api/admin/reports/${reportId}`, {
     method: "PATCH",
     body: JSON.stringify(payload),

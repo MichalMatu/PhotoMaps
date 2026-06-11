@@ -68,7 +68,14 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
     setIsOwnerToolsOpen(false);
     setOperationError(null);
     setOwnerSuccessMessage(null);
-  }, [item.id, item.kind, memorySource?.author_city, memorySource?.author_name, memorySource?.caption, memorySource?.memory_text]);
+  }, [
+    item.id,
+    item.kind,
+    memorySource?.author_city,
+    memorySource?.author_name,
+    memorySource?.caption,
+    memorySource?.memory_text,
+  ]);
 
   async function handleVerifyClaim(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -326,7 +333,12 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
                         <button type="submit" disabled={isOwnerSaving}>
                           {isOwnerSaving ? "Zapisywanie..." : "Zapisz zmiany"}
                         </button>
-                        <button className="danger-button" type="button" disabled={isOwnerSaving} onClick={handleDeleteMemory}>
+                        <button
+                          className="danger-button"
+                          type="button"
+                          disabled={isOwnerSaving}
+                          onClick={handleDeleteMemory}
+                        >
                           Usuń trwale
                         </button>
                       </div>

@@ -11,9 +11,36 @@ import {
 } from "./adminSectionState";
 
 const PHOTOS: Photo[] = [
-  { approved_at: null, caption: "a", created_at: "", id: "1", place_id: "p1", public_path: "", status: "pending", thumb_path: "" },
-  { approved_at: "", caption: "b", created_at: "", id: "2", place_id: "p1", public_path: "", status: "approved", thumb_path: "" },
-  { approved_at: null, caption: "c", created_at: "", id: "3", place_id: "p2", public_path: "", status: "rejected", thumb_path: "" },
+  {
+    approved_at: null,
+    caption: "a",
+    created_at: "",
+    id: "1",
+    place_id: "p1",
+    public_path: "",
+    status: "pending",
+    thumb_path: "",
+  },
+  {
+    approved_at: "",
+    caption: "b",
+    created_at: "",
+    id: "2",
+    place_id: "p1",
+    public_path: "",
+    status: "approved",
+    thumb_path: "",
+  },
+  {
+    approved_at: null,
+    caption: "c",
+    created_at: "",
+    id: "3",
+    place_id: "p2",
+    public_path: "",
+    status: "rejected",
+    thumb_path: "",
+  },
 ];
 
 const MEMORIES: Memory[] = [

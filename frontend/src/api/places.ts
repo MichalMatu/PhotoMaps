@@ -1,10 +1,6 @@
 import { request } from "./http";
 import type { Place, PlaceMapItem, PlacePayload } from "./types";
 
-export function getPlaces(): Promise<Place[]> {
-  return request<Place[]>("/api/places");
-}
-
 export function getMapPlaces(): Promise<PlaceMapItem[]> {
   return request<PlaceMapItem[]>("/api/places/map");
 }

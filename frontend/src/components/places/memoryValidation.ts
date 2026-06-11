@@ -54,7 +54,10 @@ function validateMemoryText(memoryText: string): Pick<MemoryFieldErrors, "memory
   return {};
 }
 
-function validateAuthorFields(authorName: string, authorCity: string): Pick<MemoryFieldErrors, "authorName" | "authorCity"> {
+function validateAuthorFields(
+  authorName: string,
+  authorCity: string,
+): Pick<MemoryFieldErrors, "authorName" | "authorCity"> {
   const errors: Pick<MemoryFieldErrors, "authorName" | "authorCity"> = {};
   if (authorName.trim().length > MEMORY_AUTHOR_MAX_LENGTH) {
     errors.authorName = `Imię może mieć maksymalnie ${MEMORY_AUTHOR_MAX_LENGTH} znaków.`;

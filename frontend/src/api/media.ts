@@ -1,10 +1,6 @@
 import { request } from "./http";
 import type { AdminMemoryUpdatePayload, Memory, MemoryUpdatePayload, Photo, PhotoStatus, Place } from "./types";
 
-export function getPlacePhotos(placeId: string): Promise<Photo[]> {
-  return request<Photo[]>(`/api/places/${placeId}/photos`);
-}
-
 export function getPlaceMemories(placeId: string): Promise<Memory[]> {
   return request<Memory[]>(`/api/places/${placeId}/memories`);
 }
@@ -59,7 +55,11 @@ export function uploadPlaceMemory(
   });
 }
 
-export function verifyMemoryClaim(placeId: string, memoryId: string, claimToken: string): Promise<{ can_edit: boolean }> {
+export function verifyMemoryClaim(
+  placeId: string,
+  memoryId: string,
+  claimToken: string,
+): Promise<{ can_edit: boolean }> {
   return request<{ can_edit: boolean }>(`/api/places/${placeId}/memories/${memoryId}/claim`, {
     method: "POST",
     body: JSON.stringify({ claim_token: claimToken }),

@@ -165,10 +165,7 @@ export function DistanceMeasureTool() {
   return (
     <>
       {points.length > 1 ? (
-        <Polyline
-          pathOptions={{ color: "#111413", opacity: 0.86, weight: 3 }}
-          positions={points}
-        />
+        <Polyline pathOptions={{ color: "#111413", opacity: 0.86, weight: 3 }} positions={points} />
       ) : null}
       {points.map((point, index) => (
         <CircleMarker

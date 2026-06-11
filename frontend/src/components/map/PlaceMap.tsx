@@ -104,11 +104,11 @@ function PlaceLayer({ places }: Props) {
   const [isThanksOpen, setIsThanksOpen] = useState(false);
   const [zoom, setZoom] = useState(map.getZoom());
   const clusters = clusterPlaces(places, zoom);
-  const previewPlace = visualPreview ? places.find((place) => place.id === visualPreview.placeId) ?? null : null;
+  const previewPlace = visualPreview ? (places.find((place) => place.id === visualPreview.placeId) ?? null) : null;
   const previewItem = previewPlace && visualPreview ? findPlaceFanItem(previewPlace, visualPreview) : null;
-  const detailPlace = visualDetail ? places.find((place) => place.id === visualDetail.placeId) ?? null : null;
+  const detailPlace = visualDetail ? (places.find((place) => place.id === visualDetail.placeId) ?? null) : null;
   const detailItem = detailPlace && visualDetail ? findPlaceFanItem(detailPlace, visualDetail) : null;
-  const reportPlace = reportTarget ? places.find((place) => place.id === reportTarget.placeId) ?? null : null;
+  const reportPlace = reportTarget ? (places.find((place) => place.id === reportTarget.placeId) ?? null) : null;
   const reportItem = reportPlace && reportTarget ? findPlaceFanItem(reportPlace, reportTarget) : null;
 
   useMapEvents({
