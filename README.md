@@ -1,43 +1,16 @@
-## Dev
+## Wrocław Bez Ściemy
 
-Backend FastAPI działa na `http://127.0.0.1:8000`, frontend Vite na `http://127.0.0.1:5174`.
+Lokalny przewodnik po Wrocławiu oparty o miejsca, mapę, zdjęcia, pamiątki użytkowników, przewodniki i prostą moderację.
 
-Uruchom backend:
-
-```bash
-cd /Users/michal/Desktop/PhotoMap
-./scripts/dev_backend.sh
-```
-
-Uruchom frontend:
+Dev-serwer:
 
 ```bash
-cd /Users/michal/Desktop/PhotoMap/frontend
-npm run dev -- --port 5174
+make start
+make restart
+make stop
+make status
+make logs
+make check
 ```
 
-Sprawdź backend:
-
-```bash
-curl http://127.0.0.1:8000/health
-curl http://127.0.0.1:8000/api/places/map
-```
-
-Sprawdź, co trzyma port:
-
-```bash
-lsof -nP -iTCP:8000 -sTCP:LISTEN
-lsof -nP -iTCP:5174 -sTCP:LISTEN
-```
-
-Zabij proces po PID z `lsof`:
-
-```bash
-kill PID
-```
-
-Pełny check:
-
-```bash
-./scripts/check.sh
-```
+Szczegóły: [docs/dev.md](docs/dev.md)
