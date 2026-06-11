@@ -1,6 +1,5 @@
 from alembic import command
 from alembic.config import Config
-
 from app.core.config import BASE_DIR, DATABASE_URL
 
 

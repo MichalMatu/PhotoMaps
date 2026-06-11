@@ -21,6 +21,25 @@ make check    # pełny check projektu
 
 `make start` zapisuje PID-y i logi w `.dev/`. Ten katalog jest lokalny i nie jest commitowany.
 
+## Hooki jakości
+
+Hooki są skonfigurowane w `.pre-commit-config.yaml`. Narzędzia instalujemy lokalnie przez Homebrew:
+
+```bash
+brew install pre-commit shellcheck
+pre-commit install --hook-type pre-commit --hook-type pre-push
+```
+
+Jeśli pracujesz tylko przez backendowy virtualenv, `pre-commit` może też działać jako `./backend/.venv/bin/pre-commit`.
+
+Przed większym commitem możesz odpalić je ręcznie:
+
+```bash
+pre-commit run --all-files
+```
+
+`make check` uruchamia backend Ruff format/lint, testy z coverage, diagnostykę schematu bazy, opcjonalny `shellcheck` dla skryptów oraz frontend format/lint/knip/test/build.
+
 ## Adresy
 
 ```bash

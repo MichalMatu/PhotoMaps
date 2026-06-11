@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
+from app.db.session import get_session
 from app.models.category import Category
 from app.models.memory import Memory
 from app.models.photo import Photo
 from app.models.place import Place
-from app.db.session import get_session
-from app.schemas.place import PlaceMapRead, PlaceRead
 from app.schemas.memory import MemoryRead
 from app.schemas.photo import PhotoRead
+from app.schemas.place import PlaceMapRead, PlaceRead
 from app.serializers.memory import memory_to_read
 from app.serializers.photo import photo_to_read
 from app.serializers.place import place_to_map_read, place_to_read
@@ -76,9 +76,7 @@ def list_map_places(session: Session = Depends(get_session)) -> list[PlaceMapRea
 @router.get("/{id_or_slug}", response_model=PlaceRead)
 def get_place(id_or_slug: str, session: Session = Depends(get_session)) -> PlaceRead:
     statement = (
-        select(Place)
-        .where((Place.id == id_or_slug) | (Place.slug == id_or_slug))
-        .where(Place.status == "published")
+        select(Place).where((Place.id == id_or_slug) | (Place.slug == id_or_slug)).where(Place.status == "published")
     )
     place = session.exec(statement).first()
     if place is None:

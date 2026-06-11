@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
@@ -63,7 +63,7 @@ def update_guide(guide_id: str, payload: GuideUpdate, session: Session = Depends
 
     for key, value in data.items():
         setattr(guide, key, value)
-    guide.updated_at = datetime.now(timezone.utc)
+    guide.updated_at = datetime.now(UTC)
     session.add(guide)
     session.commit()
     session.refresh(guide)
@@ -87,7 +87,7 @@ def add_place_to_guide(
     if existing is None:
         existing = PlaceGuide(guide_id=guide_id, place_id=payload.place_id)
     existing.sort_order = payload.sort_order
-    guide.updated_at = datetime.now(timezone.utc)
+    guide.updated_at = datetime.now(UTC)
     session.add(existing)
     session.add(guide)
     session.commit()
@@ -109,7 +109,7 @@ def remove_place_from_guide(
         raise HTTPException(status_code=404, detail="Guide place not found")
 
     session.delete(existing)
-    guide.updated_at = datetime.now(timezone.utc)
+    guide.updated_at = datetime.now(UTC)
     session.add(guide)
     session.commit()
     session.refresh(guide)

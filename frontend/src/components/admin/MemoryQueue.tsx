@@ -1,23 +1,21 @@
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 
 import {
   type Category,
   deleteAdminMemory,
-  mediaUrl,
   reviewMemory,
   type Memory,
   type PhotoStatus,
   type Place,
   updateAdminMemory,
 } from "../../api/client";
-import {
-  MEMORY_AUTHOR_MAX_LENGTH,
-  MEMORY_CAPTION_MAX_LENGTH,
-  MEMORY_TEXT_MAX_LENGTH,
-} from "../places/memoryValidation";
 import { AdminMediaAlbums } from "./AdminMediaAlbums";
+import { AdminMediaStatusTabs } from "./AdminMediaStatusTabs";
+import { MemoryQueueItem } from "./MemoryQueueItem";
 import { SystemModal } from "./SystemModal";
 import { groupAdminMediaByPlace } from "./adminMediaGroups";
+import { memoryCountLabel } from "./adminMediaUi";
+import { useAdminMediaExpansion } from "./useAdminMediaExpansion";
 
 type Props = {
   categories: Category[];
@@ -28,33 +26,6 @@ type Props = {
   onReviewed: () => Promise<void>;
   onStatusFilterChange: (status: PhotoStatus | "all") => void;
 };
-
-const STATUS_FILTERS: Array<{ label: string; value: PhotoStatus | "all" }> = [
-  { label: "Wszystkie", value: "all" },
-  { label: "Do sprawdzenia", value: "pending" },
-  { label: "Zatwierdzone", value: "approved" },
-  { label: "Odrzucone", value: "rejected" },
-];
-
-const STATUS_LABELS: Record<PhotoStatus, string> = {
-  pending: "do sprawdzenia",
-  approved: "zatwierdzone",
-  rejected: "odrzucone",
-};
-
-function memoryCountLabel(count: number) {
-  if (count === 1) {
-    return "1 pamiątka";
-  }
-  const lastTwoDigits = count % 100;
-  const lastDigit = count % 10;
-  if (lastTwoDigits < 12 || lastTwoDigits > 14) {
-    if (lastDigit >= 2 && lastDigit <= 4) {
-      return `${count} pamiątki`;
-    }
-  }
-  return `${count} pamiątek`;
-}
 
 export function MemoryQueue({
   categories,
@@ -70,7 +41,6 @@ export function MemoryQueue({
   const [captionDraft, setCaptionDraft] = useState("");
   const [editingMemoryId, setEditingMemoryId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [expandedPlaceId, setExpandedPlaceId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSavingMemory, setIsSavingMemory] = useState(false);
   const [memoryTextDraft, setMemoryTextDraft] = useState("");
@@ -79,15 +49,7 @@ export function MemoryQueue({
     () => groupAdminMediaByPlace(memories, places, categories),
     [categories, memories, places],
   );
-
-  useEffect(() => {
-    setExpandedPlaceId((currentPlaceId) => {
-      if (currentPlaceId && memoryGroups.some((group) => group.placeId === currentPlaceId)) {
-        return currentPlaceId;
-      }
-      return null;
-    });
-  }, [memoryGroups]);
+  const { expandedPlaceId, togglePlace } = useAdminMediaExpansion(memoryGroups);
 
   async function handleReview(memoryId: string, status: "approved" | "rejected") {
     try {
@@ -118,7 +80,15 @@ export function MemoryQueue({
 
   function handleTogglePlace(placeId: string) {
     setEditingMemoryId(null);
-    setExpandedPlaceId((currentPlaceId) => (currentPlaceId === placeId ? null : placeId));
+    togglePlace(placeId);
+  }
+
+  function resetMemoryEdit() {
+    setEditingMemoryId(null);
+    setAuthorCityDraft("");
+    setAuthorNameDraft("");
+    setCaptionDraft("");
+    setMemoryTextDraft("");
   }
 
   function handleStartMemoryEdit(memory: Memory) {
@@ -157,18 +127,12 @@ export function MemoryQueue({
     <>
       <div className="photo-queue">
         <div className="photo-queue-toolbar">
-          <div className="status-tabs" role="tablist" aria-label="Status pamiątek">
-            {STATUS_FILTERS.map((filter) => (
-              <button
-                className={statusFilter === filter.value ? "status-tab is-active" : "status-tab"}
-                key={filter.value}
-                type="button"
-                onClick={() => onStatusFilterChange(filter.value)}
-              >
-                {filter.label} <span>{statusCounts[filter.value]}</span>
-              </button>
-            ))}
-          </div>
+          <AdminMediaStatusTabs
+            ariaLabel="Status pamiątek"
+            counts={statusCounts}
+            value={statusFilter}
+            onChange={onStatusFilterChange}
+          />
         </div>
         <AdminMediaAlbums
           countLabel={memoryCountLabel}
@@ -177,107 +141,25 @@ export function MemoryQueue({
           groups={memoryGroups}
           onTogglePlace={handleTogglePlace}
           renderItem={(memory) => (
-            <article className="admin-media-item" key={memory.id}>
-              <img alt={memory.caption} decoding="async" loading="lazy" src={mediaUrl(memory.thumb_path)} />
-              <div className="admin-media-item-body">
-                <div className="photo-meta-row">
-                  <span className={`status-badge status-badge--${memory.status}`}>{STATUS_LABELS[memory.status]}</span>
-                </div>
-                {editingMemoryId === memory.id ? (
-                  <form className="admin-media-edit-form" onSubmit={(event) => handleSaveMemory(event, memory.id)}>
-                    <label>
-                      Podpis
-                      <input
-                        maxLength={MEMORY_CAPTION_MAX_LENGTH}
-                        required
-                        value={captionDraft}
-                        onChange={(event) => setCaptionDraft(event.target.value)}
-                      />
-                    </label>
-                    <label>
-                      Myśl / wspomnienie
-                      <textarea
-                        maxLength={MEMORY_TEXT_MAX_LENGTH}
-                        required
-                        value={memoryTextDraft}
-                        onChange={(event) => setMemoryTextDraft(event.target.value)}
-                      />
-                    </label>
-                    <div className="admin-media-edit-row">
-                      <label>
-                        Imię
-                        <input
-                          maxLength={MEMORY_AUTHOR_MAX_LENGTH}
-                          value={authorNameDraft}
-                          onChange={(event) => setAuthorNameDraft(event.target.value)}
-                        />
-                      </label>
-                      <label>
-                        Miasto
-                        <input
-                          maxLength={MEMORY_AUTHOR_MAX_LENGTH}
-                          value={authorCityDraft}
-                          onChange={(event) => setAuthorCityDraft(event.target.value)}
-                        />
-                      </label>
-                    </div>
-                    <div className="review-actions">
-                      <button type="submit" disabled={isSavingMemory}>
-                        {isSavingMemory ? "Zapisywanie..." : "Zapisz"}
-                      </button>
-                      <button
-                        className="ghost-button"
-                        type="button"
-                        onClick={() => {
-                          setEditingMemoryId(null);
-                          setAuthorCityDraft("");
-                          setAuthorNameDraft("");
-                          setCaptionDraft("");
-                          setMemoryTextDraft("");
-                        }}
-                      >
-                        Anuluj
-                      </button>
-                    </div>
-                  </form>
-                ) : (
-                  <>
-                    <p className="admin-media-caption">{memory.caption}</p>
-                    <p className="muted-text">{memory.memory_text}</p>
-                    <span className="muted-text">
-                      {memory.author_name ?? "Gość"}
-                      {memory.author_city ? `, ${memory.author_city}` : ""}
-                    </span>
-                    <button
-                      className="ghost-button admin-media-link-button"
-                      type="button"
-                      onClick={() => handleStartMemoryEdit(memory)}
-                    >
-                      Edytuj pamiątkę
-                    </button>
-                  </>
-                )}
-                <div className="review-actions">
-                  {memory.status !== "approved" ? (
-                    <button type="button" onClick={() => handleReview(memory.id, "approved")}>
-                      {memory.status === "rejected" ? "Przywróć" : "Zatwierdź"}
-                    </button>
-                  ) : null}
-                  {memory.status !== "rejected" ? (
-                    <button
-                      className="secondary-button"
-                      type="button"
-                      onClick={() => handleReview(memory.id, "rejected")}
-                    >
-                      {memory.status === "approved" ? "Ukryj" : "Odrzuć"}
-                    </button>
-                  ) : null}
-                  <button className="danger-button" type="button" onClick={() => setMemoryToDelete(memory)}>
-                    Usuń trwale
-                  </button>
-                </div>
-              </div>
-            </article>
+            <MemoryQueueItem
+              authorCityDraft={authorCityDraft}
+              authorNameDraft={authorNameDraft}
+              captionDraft={captionDraft}
+              isEditing={editingMemoryId === memory.id}
+              isSavingMemory={isSavingMemory}
+              key={memory.id}
+              memory={memory}
+              memoryTextDraft={memoryTextDraft}
+              onAuthorCityDraftChange={setAuthorCityDraft}
+              onAuthorNameDraftChange={setAuthorNameDraft}
+              onCancelMemoryEdit={resetMemoryEdit}
+              onCaptionDraftChange={setCaptionDraft}
+              onDelete={setMemoryToDelete}
+              onMemoryTextDraftChange={setMemoryTextDraft}
+              onReview={handleReview}
+              onSaveMemory={handleSaveMemory}
+              onStartMemoryEdit={handleStartMemoryEdit}
+            />
           )}
         />
       </div>

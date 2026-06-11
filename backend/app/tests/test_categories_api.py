@@ -1,128 +1,102 @@
-from collections.abc import Generator
+from conftest import ADMIN_HEADERS
 
-from fastapi.testclient import TestClient
-from pytest import MonkeyPatch
-from sqlmodel import Session, SQLModel, create_engine
-from sqlmodel.pool import StaticPool
-
-from app.db.session import get_session
-from app.main import app
 from app.models.category import Category
 from app.models.place import Place
 
-ADMIN_TOKEN = "test-admin-token"
-ADMIN_HEADERS = {"Authorization": f"Bearer {ADMIN_TOKEN}"}
+
+def test_public_categories_only_show_active(client_session) -> None:
+    client, session = client_session
+    session.add(Category(id="active", label="Active", sort_order=1, status="active"))
+    session.add(Category(id="archived", label="Archived", sort_order=0, status="archived"))
+    session.commit()
+
+    response = client.get("/api/categories")
+
+    assert response.status_code == 200
+    assert [category["id"] for category in response.json()] == ["active"]
 
 
-def client_with_session(monkeypatch: MonkeyPatch) -> Generator[tuple[TestClient, Session], None, None]:
-    monkeypatch.setenv("ADMIN_TOKEN", ADMIN_TOKEN)
-    engine = create_engine(
-        "sqlite://",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
+def test_admin_requires_token(client_session) -> None:
+    client, _session = client_session
+
+    response = client.get("/api/admin/categories")
+
+    assert response.status_code == 401
+
+
+def test_admin_can_create_update_and_archive_category(client_session) -> None:
+    client, session = client_session
+
+    create_response = client.post(
+        "/api/admin/categories",
+        headers=ADMIN_HEADERS,
+        json={
+            "id": "coffee",
+            "label": "Coffee",
+            "description": "Good stops",
+            "icon": "coffee",
+            "sort_order": 3,
+        },
     )
-    SQLModel.metadata.create_all(engine)
+    update_response = client.patch(
+        "/api/admin/categories/coffee",
+        headers=ADMIN_HEADERS,
+        json={"label": "Kawa", "sort_order": 1},
+    )
+    archive_response = client.delete("/api/admin/categories/coffee", headers=ADMIN_HEADERS)
+    list_response = client.get("/api/admin/categories", headers=ADMIN_HEADERS)
 
-    with Session(engine) as session:
-        def override_session() -> Generator[Session, None, None]:
-            yield session
-
-        app.dependency_overrides[get_session] = override_session
-        yield TestClient(app), session
-        app.dependency_overrides.clear()
-
-
-def test_public_categories_only_show_active(monkeypatch: MonkeyPatch) -> None:
-    for client, session in client_with_session(monkeypatch):
-        session.add(Category(id="active", label="Active", sort_order=1, status="active"))
-        session.add(Category(id="archived", label="Archived", sort_order=0, status="archived"))
-        session.commit()
-
-        response = client.get("/api/categories")
-
-        assert response.status_code == 200
-        assert [category["id"] for category in response.json()] == ["active"]
+    assert create_response.status_code == 201
+    assert create_response.json()["status"] == "active"
+    assert update_response.status_code == 200
+    assert update_response.json()["label"] == "Kawa"
+    assert archive_response.status_code == 200
+    assert archive_response.json()["status"] == "archived"
+    assert list_response.status_code == 200
+    assert list_response.json()[0]["id"] == "coffee"
+    assert session.get(Category, "coffee") is not None
 
 
-def test_admin_requires_token(monkeypatch: MonkeyPatch) -> None:
-    for client, _session in client_with_session(monkeypatch):
-        response = client.get("/api/admin/categories")
+def test_admin_can_permanently_delete_unused_category(client_session) -> None:
+    client, session = client_session
+    session.add(Category(id="unused", label="Unused"))
+    session.commit()
 
-        assert response.status_code == 401
+    response = client.delete("/api/admin/categories/unused?force=true", headers=ADMIN_HEADERS)
 
-
-def test_admin_can_create_update_and_archive_category(monkeypatch: MonkeyPatch) -> None:
-    for client, session in client_with_session(monkeypatch):
-        create_response = client.post(
-            "/api/admin/categories",
-            headers=ADMIN_HEADERS,
-            json={
-                "id": "coffee",
-                "label": "Coffee",
-                "description": "Good stops",
-                "icon": "coffee",
-                "sort_order": 3,
-            },
-        )
-        update_response = client.patch(
-            "/api/admin/categories/coffee",
-            headers=ADMIN_HEADERS,
-            json={"label": "Kawa", "sort_order": 1},
-        )
-        archive_response = client.delete("/api/admin/categories/coffee", headers=ADMIN_HEADERS)
-        list_response = client.get("/api/admin/categories", headers=ADMIN_HEADERS)
-
-        assert create_response.status_code == 201
-        assert create_response.json()["status"] == "active"
-        assert update_response.status_code == 200
-        assert update_response.json()["label"] == "Kawa"
-        assert archive_response.status_code == 200
-        assert archive_response.json()["status"] == "archived"
-        assert list_response.status_code == 200
-        assert list_response.json()[0]["id"] == "coffee"
-        assert session.get(Category, "coffee") is not None
+    assert response.status_code == 204
+    assert session.get(Category, "unused") is None
 
 
-def test_admin_can_permanently_delete_unused_category(monkeypatch: MonkeyPatch) -> None:
-    for client, session in client_with_session(monkeypatch):
-        session.add(Category(id="unused", label="Unused"))
-        session.commit()
+def test_admin_cannot_permanently_delete_used_category(client_session) -> None:
+    client, session = client_session
+    category = Category(id="used", label="Used")
+    session.add(category)
+    session.add(Place(slug="place", title="Place", lat=51.1, lon=17.1, category_id=category.id))
+    session.commit()
 
-        response = client.delete("/api/admin/categories/unused?force=true", headers=ADMIN_HEADERS)
+    response = client.delete("/api/admin/categories/used?force=true", headers=ADMIN_HEADERS)
 
-        assert response.status_code == 204
-        assert session.get(Category, "unused") is None
-
-
-def test_admin_cannot_permanently_delete_used_category(monkeypatch: MonkeyPatch) -> None:
-    for client, session in client_with_session(monkeypatch):
-        category = Category(id="used", label="Used")
-        session.add(category)
-        session.add(Place(slug="place", title="Place", lat=51.1, lon=17.1, category_id=category.id))
-        session.commit()
-
-        response = client.delete("/api/admin/categories/used?force=true", headers=ADMIN_HEADERS)
-
-        assert response.status_code == 409
-        assert session.get(Category, "used") is not None
+    assert response.status_code == 409
+    assert session.get(Category, "used") is not None
 
 
-def test_admin_place_requires_active_category_on_assignment(monkeypatch: MonkeyPatch) -> None:
-    for client, session in client_with_session(monkeypatch):
-        session.add(Category(id="active", label="Active", status="active"))
-        session.add(Category(id="archived", label="Archived", status="archived"))
-        session.commit()
+def test_admin_place_requires_active_category_on_assignment(client_session) -> None:
+    client, session = client_session
+    session.add(Category(id="active", label="Active", status="active"))
+    session.add(Category(id="archived", label="Archived", status="archived"))
+    session.commit()
 
-        active_response = client.post(
-            "/api/admin/places",
-            headers=ADMIN_HEADERS,
-            json={"slug": "active-place", "title": "Active", "lat": 51.1, "lon": 17.1, "category_id": "active"},
-        )
-        archived_response = client.post(
-            "/api/admin/places",
-            headers=ADMIN_HEADERS,
-            json={"slug": "archived-place", "title": "Archived", "lat": 51.2, "lon": 17.2, "category_id": "archived"},
-        )
+    active_response = client.post(
+        "/api/admin/places",
+        headers=ADMIN_HEADERS,
+        json={"slug": "active-place", "title": "Active", "lat": 51.1, "lon": 17.1, "category_id": "active"},
+    )
+    archived_response = client.post(
+        "/api/admin/places",
+        headers=ADMIN_HEADERS,
+        json={"slug": "archived-place", "title": "Archived", "lat": 51.2, "lon": 17.2, "category_id": "archived"},
+    )
 
-        assert active_response.status_code == 201
-        assert archived_response.status_code == 422
+    assert active_response.status_code == 201
+    assert archived_response.status_code == 422

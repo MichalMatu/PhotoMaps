@@ -7,7 +7,9 @@ from app.models.category import Category
 from app.models.place import Place
 from app.schemas.category import CategoryCreate, CategoryRead, CategoryUpdate
 
-router = APIRouter(prefix="/api/admin/categories", tags=["admin categories"], dependencies=[Depends(require_admin_token)])
+router = APIRouter(
+    prefix="/api/admin/categories", tags=["admin categories"], dependencies=[Depends(require_admin_token)]
+)
 
 ALLOWED_CATEGORY_STATUSES = {"active", "archived"}
 
@@ -73,7 +75,9 @@ def update_category(
     response_model=None,
     responses={200: {"model": CategoryRead}, 204: {"description": "Deleted"}},
 )
-def delete_category(category_id: str, force: bool = False, session: Session = Depends(get_session)) -> Category | Response:
+def delete_category(
+    category_id: str, force: bool = False, session: Session = Depends(get_session)
+) -> Category | Response:
     category = session.get(Category, category_id)
     if category is None:
         raise HTTPException(status_code=404, detail="Category not found")

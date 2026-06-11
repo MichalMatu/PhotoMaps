@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import HTTPException
 from sqlmodel import Session, select
@@ -45,7 +45,7 @@ def review_photo(photo: Photo, place: Place, status: str, session: Session) -> N
 
     previous_status = photo.status
     photo.status = status
-    photo.approved_at = datetime.now(timezone.utc) if status == "approved" else None
+    photo.approved_at = datetime.now(UTC) if status == "approved" else None
     place.photo_count = update_review_count(place.photo_count, previous_status, status)
 
     if status == "approved" and place.cover_photo_id is None:
@@ -54,7 +54,7 @@ def review_photo(photo: Photo, place: Place, status: str, session: Session) -> N
         replacement = next_cover_photo(session, place.id, photo.id)
         place.cover_photo_id = replacement.id if replacement else None
 
-    place.updated_at = datetime.now(timezone.utc)
+    place.updated_at = datetime.now(UTC)
 
 
 def apply_photo_deleted(photo: Photo, place: Place, session: Session) -> None:
@@ -63,7 +63,7 @@ def apply_photo_deleted(photo: Photo, place: Place, session: Session) -> None:
     if place.cover_photo_id == photo.id:
         replacement = next_cover_photo(session, place.id, photo.id)
         place.cover_photo_id = replacement.id if replacement else None
-    place.updated_at = datetime.now(timezone.utc)
+    place.updated_at = datetime.now(UTC)
 
 
 def review_memory(memory: Memory, place: Place, status: str) -> None:
@@ -71,12 +71,12 @@ def review_memory(memory: Memory, place: Place, status: str) -> None:
 
     previous_status = memory.status
     memory.status = status
-    memory.approved_at = datetime.now(timezone.utc) if status == "approved" else None
+    memory.approved_at = datetime.now(UTC) if status == "approved" else None
     place.memory_count = update_review_count(place.memory_count, previous_status, status)
-    place.updated_at = datetime.now(timezone.utc)
+    place.updated_at = datetime.now(UTC)
 
 
 def apply_memory_deleted(memory: Memory, place: Place) -> None:
     if memory.status == "approved":
         place.memory_count = max(0, place.memory_count - 1)
-    place.updated_at = datetime.now(timezone.utc)
+    place.updated_at = datetime.now(UTC)

@@ -15,12 +15,20 @@ mkdir -p \
 
 cd "$ROOT_DIR/backend"
 "$PYTHON_BIN" -m alembic -c alembic.ini upgrade head
-"$PYTHON_BIN" -m ruff check app
-"$PYTHON_BIN" -m pytest
+"$PYTHON_BIN" -m ruff format --check app ../scripts/check_schema.py
+"$PYTHON_BIN" -m ruff check app ../scripts/check_schema.py
+"$PYTHON_BIN" -m coverage run -m pytest
+"$PYTHON_BIN" -m coverage report
 "$PYTHON_BIN" -m compileall app
 
 cd "$ROOT_DIR"
 "$PYTHON_BIN" scripts/check_schema.py
+
+if command -v shellcheck >/dev/null 2>&1; then
+  shellcheck scripts/*.sh scripts/dev/*.sh
+else
+  echo "shellcheck not installed; skipping shell script diagnostics."
+fi
 
 cd "$ROOT_DIR/frontend"
 npm run format:check

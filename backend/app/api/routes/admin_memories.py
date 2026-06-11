@@ -15,7 +15,12 @@ from app.services.memory_fields import (
     normalize_optional_text,
     normalize_required_text,
 )
-from app.services.review import apply_memory_deleted, ensure_final_review_status, ensure_visible_review_status, review_memory
+from app.services.review import (
+    apply_memory_deleted,
+    ensure_final_review_status,
+    ensure_visible_review_status,
+    review_memory,
+)
 
 router = APIRouter(prefix="/api/admin/memories", tags=["admin memories"], dependencies=[Depends(require_admin_token)])
 

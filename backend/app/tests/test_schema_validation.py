@@ -1,12 +1,12 @@
 from pathlib import Path
 
-from alembic import command
-from alembic.config import Config
 from pytest import raises
 from sqlalchemy import inspect, text
 from sqlmodel import SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
+from alembic import command
+from alembic.config import Config
 from app.db.session import validate_database_schema
 
 BACKEND_DIR = Path(__file__).resolve().parents[2]
@@ -31,6 +31,20 @@ def test_schema_validation_rejects_extra_model_columns() -> None:
         connection.execute(text("ALTER TABLE place ADD COLUMN obsolete_flag BOOLEAN NOT NULL DEFAULT 0"))
 
     with raises(RuntimeError, match="extra columns obsolete_flag"):
+        validate_database_schema(engine)
+
+
+def test_schema_validation_rejects_missing_model_columns() -> None:
+    engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+
+    with engine.begin() as connection:
+        connection.execute(text("CREATE TABLE place (id VARCHAR NOT NULL PRIMARY KEY)"))
+
+    with raises(RuntimeError, match="place: missing columns"):
         validate_database_schema(engine)
 
 
@@ -104,12 +118,14 @@ def test_memory_migrations_preserve_existing_records_and_backfill_new_fields(tmp
     command.upgrade(alembic_config(database_url), "head")
 
     with engine.connect() as connection:
-        migrated_memory = connection.execute(
-            text("SELECT caption, memory_text, claim_token_hash FROM memory WHERE id = 'memory-1'")
-        ).mappings().one()
-        migrated_place = connection.execute(
-            text("SELECT memory_count FROM place WHERE id = 'place-1'")
-        ).mappings().one()
+        migrated_memory = (
+            connection.execute(text("SELECT caption, memory_text, claim_token_hash FROM memory WHERE id = 'memory-1'"))
+            .mappings()
+            .one()
+        )
+        migrated_place = (
+            connection.execute(text("SELECT memory_count FROM place WHERE id = 'place-1'")).mappings().one()
+        )
         memory_columns = {column["name"]: column for column in inspect(connection).get_columns("memory")}
 
     assert migrated_memory["caption"] == "Stary podpis"

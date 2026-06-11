@@ -1,6 +1,6 @@
-## Wrocław Bez Ściemy
+## PhotoMap
 
-Lokalny przewodnik po Wrocławiu oparty o miejsca, mapę, zdjęcia, pamiątki użytkowników, przewodniki i prostą moderację.
+PhotoMap oparty o miejsca, mapę, zdjęcia, pamiątki użytkowników, przewodniki i prostą moderację.
 
 Dev-serwer:
 

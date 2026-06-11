@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
@@ -52,7 +52,7 @@ def update_place(
 
     for key, value in data.items():
         setattr(place, key, value)
-    place.updated_at = datetime.now(timezone.utc)
+    place.updated_at = datetime.now(UTC)
 
     session.add(place)
     session.commit()
@@ -67,7 +67,7 @@ def archive_place(place_id: str, session: Session = Depends(get_session)) -> Pla
         raise HTTPException(status_code=404, detail="Place not found")
 
     place.status = "archived"
-    place.updated_at = datetime.now(timezone.utc)
+    place.updated_at = datetime.now(UTC)
     session.add(place)
     session.commit()
     session.refresh(place)
