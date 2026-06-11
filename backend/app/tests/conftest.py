@@ -49,6 +49,17 @@ def image_upload(filename: str = "upload.jpg") -> tuple[str, BytesIO, str]:
     return filename, buffer, "image/jpeg"
 
 
+def png_upload(filename: str = "upload.png") -> tuple[str, BytesIO, str]:
+    buffer = BytesIO()
+    image = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for x in range(4, 12):
+        for y in range(4, 12):
+            image.putpixel((x, y), (180, 64, 32, 180))
+    image.save(buffer, format="PNG")
+    buffer.seek(0)
+    return filename, buffer, "image/png"
+
+
 def create_place(
     session: Session,
     *,

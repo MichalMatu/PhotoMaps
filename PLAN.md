@@ -50,9 +50,7 @@ Do oceny i poprawy:
 - czy wachlarz po kliknięciu jest czytelny,
 - czy mapa po wejściu robi efekt "chcę to sprawdzić".
 
-Nie zmieniać jeszcze uploadu zdjęć ani moderacji, jeśli obecny flow wystarcza do budowania bazy.
-
-Uwaga: obecny upload zdjęć tworzy publiczne JPEG-i i nie zachowuje przezroczystości. Jeśli ikony miejsc mają działać jako przezroczyste obrysy na mapie, trzeba później dodać osobną obsługę ikon/assetów miejsca albo zmienić kontrakt mapy. Nie wrzucać bezrefleksyjnie przezroczystych ikon przez flow zwykłych zdjęć, jeśli zależy nam na alfie.
+Nie zmieniać jeszcze moderacji, jeśli obecny flow wystarcza do budowania bazy. Upload zachowuje PNG i przezroczystość, więc ikony można testowo dodawać jako zdjęcia miejsca. Docelowo warto rozważyć osobne pole/asset ikony miejsca, jeśli ikona ma być innym typem treści niż galeria zdjęć.
 
 ## Iteracja 3: Warstwy i kategorie
 

@@ -1,7 +1,8 @@
 from datetime import UTC, datetime
 from pathlib import Path
 
-from conftest import ADMIN_HEADERS, create_place, image_upload
+from conftest import ADMIN_HEADERS, create_place, image_upload, png_upload
+from PIL import Image
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
 
@@ -27,6 +28,31 @@ def test_photo_upload_stays_pending_and_hidden_publicly(client_session) -> None:
     assert body["public_path"].startswith("/media/photos/")
     assert public_response.status_code == 200
     assert public_response.json() == []
+
+
+def test_png_photo_upload_preserves_public_png_alpha(client_session, tmp_path: Path) -> None:
+    client, session = client_session
+    place = create_place(session)
+
+    response = client.post(
+        f"/api/places/{place.id}/photos",
+        files={"file": png_upload("place-icon.png")},
+        data={"caption": "Ikona", "consent_confirmed": "true"},
+    )
+
+    assert response.status_code == 201
+    body = response.json()
+    assert body["public_path"].endswith(".png")
+    assert body["thumb_path"].endswith(".png")
+
+    public_file = tmp_path / "public" / body["public_path"].removeprefix("/media/")
+    thumb_file = tmp_path / "public" / body["thumb_path"].removeprefix("/media/")
+    with Image.open(public_file) as public_image:
+        assert public_image.mode == "RGBA"
+        assert public_image.getchannel("A").getextrema()[0] < 255
+    with Image.open(thumb_file) as thumb_image:
+        assert thumb_image.mode == "RGBA"
+        assert thumb_image.getchannel("A").getextrema()[0] < 255
 
 
 def test_photo_upload_cleans_files_when_database_save_fails(client_session, tmp_path: Path, monkeypatch) -> None:

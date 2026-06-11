@@ -31,7 +31,9 @@ Finalne pliki w `20_approved` też układać per miejsce:
 
 ## Ważne technicznie
 
-Obecny upload zdjęć w aplikacji tworzy publiczne kopie JPEG i spłaszcza przezroczystość. Dlatego przezroczyste ikony z tego katalogu są na razie źródłami redakcyjnymi. Jeśli mają być wyświetlane jako przezroczyste obrysy na mapie, potrzebny będzie osobny kontrakt albo obsługa assetu ikony miejsca, zamiast traktowania ich jak zwykłe zdjęcia miejsca.
+Upload zdjęć zachowuje PNG i przezroczystość w publicznej kopii oraz miniaturze. Ikony można więc testowo dodawać przez obecny flow zdjęć miejsca.
+
+Docelowo warto rozważyć osobne pole albo osobny asset ikony miejsca, jeśli ikona ma być traktowana inaczej niż zwykła galeria zdjęć.
 
 ## Statusy w manifest.csv
 

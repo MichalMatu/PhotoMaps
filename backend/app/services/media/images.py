@@ -14,6 +14,7 @@ PUBLIC_IMAGE_QUALITY = 88
 PUBLIC_MAX_SIZE = (1800, 1800)
 THUMB_SIZE = (520, 520)
 MEDIA_KINDS = {"photos", "memories"}
+PUBLIC_IMAGE_FORMATS = {"JPEG", "PNG"}
 
 Image.MAX_IMAGE_PIXELS = MAX_IMAGE_PIXELS
 
@@ -67,13 +68,34 @@ def original_suffix(filename: str | None) -> str:
     return suffix if suffix in {".jpg", ".jpeg", ".png", ".webp"} else ".bin"
 
 
-def normalized_rgb(image: Image.Image) -> Image.Image:
+def public_image_format(image: Image.Image) -> str:
+    return image.format if image.format in PUBLIC_IMAGE_FORMATS else "JPEG"
+
+
+def has_transparency(image: Image.Image) -> bool:
+    return image.mode in {"RGBA", "LA"} or (image.mode == "P" and "transparency" in image.info)
+
+
+def normalized_public_image(image: Image.Image, output_format: str) -> Image.Image:
     image = ImageOps.exif_transpose(image)
+    if output_format == "PNG":
+        return image.convert("RGBA" if has_transparency(image) else "RGB")
     if image.mode in {"RGBA", "LA"}:
         background = Image.new("RGB", image.size, (255, 255, 255))
         background.paste(image, mask=image.getchannel("A"))
         return background
     return image.convert("RGB")
+
+
+def public_image_suffix(output_format: str) -> str:
+    return ".png" if output_format == "PNG" else ".jpg"
+
+
+def save_public_image(image: Image.Image, path: Path, output_format: str) -> None:
+    if output_format == "PNG":
+        image.save(path, "PNG", optimize=True)
+        return
+    image.save(path, "JPEG", quality=PUBLIC_IMAGE_QUALITY, optimize=True)
 
 
 def cleanup_paths(*paths: Path) -> None:
@@ -109,24 +131,31 @@ async def store_uploaded_image(upload: UploadFile, place_id: str, media_kind: st
     public_dir.mkdir(parents=True, exist_ok=True)
 
     original_path = private_dir / f"{image_id}-original{original_suffix(upload.filename)}"
-    public_path = public_dir / f"{image_id}.jpg"
-    thumb_path = public_dir / f"{image_id}-thumb.jpg"
+    public_path: Path | None = None
+    thumb_path: Path | None = None
 
     original_path.write_bytes(content)
 
     try:
         with Image.open(BytesIO(content)) as image:
             ensure_image_size(image)
-            public_image = normalized_rgb(image)
+            output_format = public_image_format(image)
+            output_suffix = public_image_suffix(output_format)
+            public_path = public_dir / f"{image_id}{output_suffix}"
+            thumb_path = public_dir / f"{image_id}-thumb{output_suffix}"
+            public_image = normalized_public_image(image, output_format)
     except (HTTPException, UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
-        cleanup_paths(original_path, public_path, thumb_path)
+        cleanup_paths(*[path for path in (original_path, public_path, thumb_path) if path is not None])
         if isinstance(exc, HTTPException):
             raise
         raise HTTPException(status_code=422, detail="Unsupported image file") from exc
 
     try:
+        if public_path is None or thumb_path is None:
+            raise HTTPException(status_code=422, detail="Unsupported image file")
+
         public_image.thumbnail(PUBLIC_MAX_SIZE)
-        public_image.save(public_path, "JPEG", quality=PUBLIC_IMAGE_QUALITY, optimize=True)
+        save_public_image(public_image, public_path, output_format)
 
         thumb_image = ImageOps.fit(
             public_image,
@@ -134,9 +163,11 @@ async def store_uploaded_image(upload: UploadFile, place_id: str, media_kind: st
             method=Image.Resampling.LANCZOS,
             centering=(0.5, 0.5),
         )
-        thumb_image.save(thumb_path, "JPEG", quality=PUBLIC_IMAGE_QUALITY, optimize=True)
-    except OSError as exc:
-        cleanup_paths(original_path, public_path, thumb_path)
+        save_public_image(thumb_image, thumb_path, output_format)
+    except (HTTPException, OSError) as exc:
+        cleanup_paths(*[path for path in (original_path, public_path, thumb_path) if path is not None])
+        if isinstance(exc, HTTPException):
+            raise
         raise HTTPException(status_code=422, detail="Image file could not be processed") from exc
 
     return StoredImage(
