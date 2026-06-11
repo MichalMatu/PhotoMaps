@@ -36,7 +36,8 @@ Publiczna mapa jest głównym produktem i ma działać jak żywa tablica miniatu
 - Publiczne markery są wizualnymi miniaturami miejsc; typowa pinezka zostaje tylko w adminie do wyboru lokalizacji.
 - Kliknięcie miejsca ma pokazywać więcej, ale nie może być wymagane, żeby mapa robiła efekt wizualny.
 - Zoom steruje gęstością i rozmiarem miniaturek: daleko mniej elementów i klastry, średnio wybrane miejsca, blisko więcej miejsc i wachlarz podglądów.
-- Warstwy mapy są sposobem oglądania danych, np. polecane, zdjęcia, pamiątki, później audio i trasy.
+- Warstwy mapy są sposobem oglądania danych, np. polecane, galerie, pamiątki, później audio i trasy.
+- Warstwa `Polecane` pokazuje miejsca przez główne miniatury/covery i ranking redakcyjny; `Galerie` oznaczają dodatkowe zatwierdzone zdjęcia miejsca poza coverem.
 - Kategorie są zarządzane w adminie i frontend mapy ma korzystać z nich dynamicznie; nie hardkodować kategorii w filtrach UI.
 - Kontrakt mapy powinien być `map preview`: dane miejsca, kategoria, score, liczniki, cover i kilka kuratorowanych podglądów. Nie zwracać pełnych galerii i pełnych pamiątek tylko po to, żeby wyrenderować pierwszy widok.
 - Nie zamieniać odchudzenia endpointu mapy w pustą mapę bez miniaturek. Optymalizacja kontraktu ma zachować efekt "wow" pierwszego widoku.

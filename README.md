@@ -6,6 +6,7 @@ Głównym bytem systemu jest `place`. Wszystkie zdjęcia, pamiątki, przewodniki
 
 ## Dokumenty
 
+- [Plan działania](PLAN.md)
 - [Kierunek produktu](docs/product-direction.md)
 - [Uruchamianie i testy](docs/dev.md)
 

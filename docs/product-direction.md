@@ -52,7 +52,7 @@ Najpierw domykamy jeden dobry pokaz na Wrocławiu:
 ## Najbliższe kroki
 
 1. Dopracować "Map Experience v1": rozmiary miniaturek, gęstość, zachowanie zoomu, klastry i czytelny wachlarz po kliknięciu.
-2. Dodać proste warstwy mapy: domyślne polecane, zdjęcia, pamiątki oraz filtrowanie po kategoriach z admina.
+2. Dodać proste warstwy mapy: domyślne polecane, galerie, pamiątki oraz filtrowanie po kategoriach z admina.
 3. Uporządkować kontrakt mapy jako `map preview`: dane pierwszego renderu plus cover i kilka podglądów, bez ładowania pełnych galerii każdego miejsca.
 4. Dopracować dane startowe dla Wrocławia: miejsca, zdjęcia okładkowe, kategorie i krótkie lokalne komentarze.
 5. Uporządkować publiczną kartę miejsca tak, żeby zdjęcie, komentarz i pamiątki były ważniejsze niż długi opis.
