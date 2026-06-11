@@ -1,4 +1,4 @@
-import { expect, type APIRequestContext, test } from "@playwright/test";
+import { expect, type APIRequestContext, type Page, test } from "@playwright/test";
 
 const API_URL = process.env.E2E_API_URL ?? "http://127.0.0.1:8000";
 const ADMIN_TOKEN = process.env.E2E_ADMIN_TOKEN ?? "dev-admin-token";
@@ -91,6 +91,16 @@ async function getMapPlaces(request: APIRequestContext) {
   return expectJson<MapPlaceResponse[]>(request.get(`${API_URL}/api/places/map`), 200);
 }
 
+async function unlockAdmin(page: Page) {
+  await page.goto("/admin");
+  await page.getByLabel("Token").fill(ADMIN_TOKEN);
+  await page.getByRole("button", { name: "Wejdź do panelu" }).click();
+
+  const adminTabs = page.getByRole("navigation", { name: "Sekcje panelu admina" });
+  await expect(adminTabs).toBeVisible();
+  return adminTabs;
+}
+
 async function uploadApprovedPhoto(request: APIRequestContext, placeId: string, caption: string) {
   const photo = await expectJson<PhotoResponse>(
     request.post(`${API_URL}/api/places/${placeId}/photos`, {
@@ -136,12 +146,7 @@ test("admin can upload and approve a place photo through UI", async ({ page, req
   const category = await createCategory(request, suffix);
   const place = await createPlace(request, category.id, suffix);
 
-  await page.goto("/admin");
-  await page.getByLabel("Token").fill(ADMIN_TOKEN);
-  await page.getByRole("button", { name: "Wejdź do panelu" }).click();
-
-  const adminTabs = page.getByRole("navigation", { name: "Sekcje panelu admina" });
-  await expect(adminTabs).toBeVisible();
+  const adminTabs = await unlockAdmin(page);
   await adminTabs.getByRole("button", { name: /Zdjęcia/ }).click();
 
   await page.getByRole("button", { name: "Dodaj zdjęcie" }).click();
@@ -191,6 +196,98 @@ test("admin can upload and approve a place photo through UI", async ({ page, req
   await expect(page.getByText("Nie udało się pobrać miejsc")).toHaveCount(0);
 });
 
+test("admin can create category, place and guide through UI", async ({ page, request }) => {
+  const suffix = `${Date.now()}-${test.info().workerIndex}`;
+  const safeSuffix = suffix.replace(/[^a-zA-Z0-9]+/g, "_");
+  const categoryId = `e2e_ui_category_${safeSuffix}`;
+  const categoryLabel = `E2E UI kategoria ${suffix}`;
+  const placeTitle = `E2E UI miejsce ${suffix}`;
+  const editedPlaceTitle = `${placeTitle} edycja`;
+  const guideTitle = `E2E UI przewodnik ${suffix}`;
+  const guideSlug = `e2e-ui-przewodnik-${suffix}`;
+
+  const adminTabs = await unlockAdmin(page);
+  await adminTabs.getByRole("button", { name: /Kategorie/ }).click();
+
+  await page.locator(".category-toolbar").getByRole("button", { name: "Dodaj kategorię" }).click();
+  const categoryDialog = page.getByRole("dialog", { name: "Dodaj kategorię" });
+  await expect(categoryDialog).toBeVisible();
+  await categoryDialog.getByLabel("ID").fill(categoryId);
+  await categoryDialog.getByLabel("Nazwa").fill(categoryLabel);
+  await categoryDialog.getByLabel("Ikona").fill("map-pin");
+  await categoryDialog.getByLabel("Kolejność").fill("107");
+  await categoryDialog.getByLabel("Opis").fill("Kategoria dodana przez e2e");
+  await categoryDialog.getByLabel("Status").selectOption("active");
+  await categoryDialog.getByRole("button", { name: "Dodaj kategorię" }).click();
+  await expect(categoryDialog).toBeHidden();
+
+  const categoryRow = page.locator(".category-row").filter({ hasText: categoryLabel });
+  await expect(categoryRow).toContainText(categoryId);
+  await expect(categoryRow).toContainText("active");
+
+  await adminTabs.getByRole("button", { name: /Miejsca/ }).click();
+  await page.locator(".places-manager").getByRole("button", { name: "Dodaj miejsce" }).click();
+  const placeDialog = page.getByRole("dialog", { name: "Dodaj miejsce" });
+  await expect(placeDialog).toBeVisible();
+  await placeDialog.getByLabel("Nazwa").fill(placeTitle);
+  await placeDialog.getByLabel("Kategoria").selectOption({ label: categoryLabel });
+  await placeDialog.getByLabel("Opis").fill("Opis miejsca dodanego przez e2e");
+  await placeDialog.getByLabel("Lokalny komentarz").fill("Komentarz lokalny e2e");
+  await placeDialog.getByLabel("Priorytet redakcji").selectOption("2.5");
+  await placeDialog.getByLabel("Status").selectOption("published");
+  await placeDialog.getByRole("button", { name: "Dodaj miejsce" }).click();
+  await expect(placeDialog).toBeHidden();
+
+  const placeRow = page.locator(".place-table .table-row").filter({ hasText: placeTitle });
+  await expect(placeRow).toContainText(categoryLabel);
+  await expect(placeRow).toContainText("published");
+  await expect(placeRow).toContainText("2.5");
+
+  await placeRow.getByRole("button", { name: "Edytuj" }).click();
+  const editPlaceDialog = page.getByRole("dialog", { name: "Edytuj miejsce" });
+  await expect(editPlaceDialog).toBeVisible();
+  await editPlaceDialog.getByLabel("Nazwa").fill(editedPlaceTitle);
+  await editPlaceDialog.getByRole("button", { name: "Zapisz zmiany" }).click();
+  await expect(editPlaceDialog).toBeHidden();
+
+  const editedPlaceRow = page.locator(".place-table .table-row").filter({ hasText: editedPlaceTitle });
+  await expect(editedPlaceRow).toContainText(categoryLabel);
+
+  await adminTabs.getByRole("button", { name: /Przewodniki/ }).click();
+  await page.locator(".guide-toolbar").getByRole("button", { name: "Dodaj przewodnik" }).click();
+  const guideDialog = page.getByRole("dialog", { name: "Dodaj przewodnik" });
+  await expect(guideDialog).toBeVisible();
+  await guideDialog.getByLabel("Tytuł").fill(guideTitle);
+  await guideDialog.getByLabel("Opis").fill("Przewodnik dodany przez e2e");
+  await guideDialog.getByLabel("Status").selectOption("published");
+  await guideDialog.getByRole("button", { name: "Dodaj przewodnik" }).click();
+  await expect(guideDialog).toBeHidden();
+
+  const guideRow = page.locator(".guide-row").filter({ hasText: guideTitle });
+  await expect(guideRow).toContainText("published");
+  const guidePanel = guideRow.locator(".guide-detail-panel");
+  if ((await guidePanel.count()) === 0) {
+    await guideRow.getByRole("button", { exact: true, name: "Miejsca" }).click();
+  }
+  await expect(guidePanel).toBeVisible();
+  await guideRow.getByLabel("Dodaj miejsce").selectOption({ label: editedPlaceTitle });
+  await guideRow.getByRole("button", { name: "Dodaj do przewodnika" }).click();
+  await expect(guideRow.locator(".guide-place-row").filter({ hasText: editedPlaceTitle })).toBeVisible();
+
+  await expect
+    .poll(async () => {
+      const guide = await expectJson<{ places: Array<{ title: string }>; slug: string; status: string }>(
+        request.get(`${API_URL}/api/guides/${guideSlug}`),
+        200,
+      );
+      return {
+        placeTitles: guide.places.map((place) => place.title),
+        status: guide.status,
+      };
+    })
+    .toEqual({ placeTitles: [editedPlaceTitle], status: "published" });
+});
+
 test("visitor can add a memory and admin can approve it through UI", async ({ page, request }) => {
   const suffix = `${Date.now()}-${test.info().workerIndex}`;
   const caption = `Pamiątka e2e ${suffix}`;
@@ -230,12 +327,7 @@ test("visitor can add a memory and admin can approve it through UI", async ({ pa
   await expect(thanksDialog).toBeVisible();
   await thanksDialog.getByRole("button", { name: "OK" }).click();
 
-  await page.goto("/admin");
-  await page.getByLabel("Token").fill(ADMIN_TOKEN);
-  await page.getByRole("button", { name: "Wejdź do panelu" }).click();
-
-  const adminTabs = page.getByRole("navigation", { name: "Sekcje panelu admina" });
-  await expect(adminTabs).toBeVisible();
+  const adminTabs = await unlockAdmin(page);
   await adminTabs.getByRole("button", { name: /Pamiątki/ }).click();
 
   await page.getByRole("button", { name: /Do sprawdzenia/ }).click();
@@ -308,12 +400,7 @@ test("visitor can report a photo and admin can close the report through UI", asy
   await reportSheet.getByRole("button", { name: "Wyślij zgłoszenie" }).click();
   await expect(reportSheet.getByText("Zgłoszenie trafiło do redakcji.")).toBeVisible();
 
-  await page.goto("/admin");
-  await page.getByLabel("Token").fill(ADMIN_TOKEN);
-  await page.getByRole("button", { name: "Wejdź do panelu" }).click();
-
-  const adminTabs = page.getByRole("navigation", { name: "Sekcje panelu admina" });
-  await expect(adminTabs).toBeVisible();
+  const adminTabs = await unlockAdmin(page);
   await adminTabs.getByRole("button", { name: /Zgłoszenia/ }).click();
   await page.getByRole("button", { name: /Otwarte/ }).click();
 
