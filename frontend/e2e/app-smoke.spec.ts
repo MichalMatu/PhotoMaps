@@ -19,6 +19,8 @@ type PlaceResponse = {
 type MapPlaceResponse = {
   cover_photo: { caption: string | null } | null;
   id: string;
+  memories: Array<{ caption: string; memory_text: string }>;
+  memory_count: number;
   photo_count: number;
   title: string;
 };
@@ -56,18 +58,23 @@ async function createCategory(request: APIRequestContext, suffix: string) {
   );
 }
 
-async function createPlace(request: APIRequestContext, categoryId: string, suffix: string) {
+async function createPlace(
+  request: APIRequestContext,
+  categoryId: string,
+  suffix: string,
+  overrides: Partial<{ lat: number; lon: number; title: string }> = {},
+) {
   return expectJson<PlaceResponse>(
     request.post(`${API_URL}/api/admin/places`, {
       data: {
         category_id: categoryId,
         description: "Miejsce przygotowane przez test e2e",
-        lat: 51.1079,
+        lat: overrides.lat ?? 51.1079,
         local_comment: "Lokalny komentarz e2e",
-        lon: 17.0385,
+        lon: overrides.lon ?? 17.0385,
         slug: `e2e-place-${suffix}`,
         status: "published",
-        title: `E2E miejsce ${suffix}`,
+        title: overrides.title ?? `E2E miejsce ${suffix}`,
         weight: 1,
       },
       headers: adminHeaders(),
@@ -153,4 +160,89 @@ test("admin can upload and approve a place photo through UI", async ({ page, req
   await page.goto("/");
   await expect(page.locator(".map-frame")).toBeVisible();
   await expect(page.getByText("Nie udało się pobrać miejsc")).toHaveCount(0);
+});
+
+test("visitor can add a memory and admin can approve it through UI", async ({ page, request }) => {
+  const suffix = `${Date.now()}-${test.info().workerIndex}`;
+  const caption = `Pamiątka e2e ${suffix}`;
+  const memoryText = `Wspomnienie e2e ${suffix}`;
+  const claimToken = `token-${suffix}`;
+  const authorName = "Marta";
+  const authorCity = "Wrocław";
+  const category = await createCategory(request, suffix);
+  const place = await createPlace(request, category.id, suffix, {
+    lat: 51.12,
+    lon: 17.08,
+    title: `E2E pamiątka ${suffix}`,
+  });
+
+  await page.goto("/");
+  await expect(page.locator(".map-frame")).toBeVisible();
+  await page.locator(`[title="${place.title}"]`).first().click();
+  await page.locator(`[title="Byłem tutaj: ${place.title}"]`).click();
+
+  const memorySheet = page.locator('aside[aria-label="Byłem tutaj"]');
+  await expect(memorySheet).toBeVisible();
+  await memorySheet.getByPlaceholder("Wpisz token").fill(claimToken);
+  await memorySheet.getByLabel("Zdjęcie pamiątki").setInputFiles({
+    buffer: PHOTO_BUFFER,
+    mimeType: "image/jpeg",
+    name: "e2e-memory.jpg",
+  });
+  await memorySheet.getByLabel("Podpis").fill(caption);
+  await memorySheet.getByLabel("Myśl / wspomnienie").fill(memoryText);
+  await memorySheet.getByLabel("Imię").fill(authorName);
+  await memorySheet.getByLabel("Miasto").fill(authorCity);
+  await memorySheet.locator('input[type="checkbox"]').check();
+  await memorySheet.getByRole("button", { name: "Dodaj pamiątkę" }).click();
+
+  await expect(memorySheet).toBeHidden();
+  const thanksDialog = page.getByRole("dialog", { name: "Pamiątka trafiła do moderacji" });
+  await expect(thanksDialog).toBeVisible();
+  await thanksDialog.getByRole("button", { name: "OK" }).click();
+
+  await page.goto("/admin");
+  await page.getByLabel("Token").fill(ADMIN_TOKEN);
+  await page.getByRole("button", { name: "Wejdź do panelu" }).click();
+
+  const adminTabs = page.getByRole("navigation", { name: "Sekcje panelu admina" });
+  await expect(adminTabs).toBeVisible();
+  await adminTabs.getByRole("button", { name: /Pamiątki/ }).click();
+
+  await page.getByRole("button", { name: /Do sprawdzenia/ }).click();
+  const pendingAlbum = page.locator(".admin-media-album-summary").filter({ hasText: place.title });
+  await expect(pendingAlbum).toContainText("1 pamiątka");
+  await pendingAlbum.click();
+
+  const pendingItem = page.locator(".admin-media-item").filter({ hasText: caption });
+  await expect(pendingItem).toContainText("do sprawdzenia");
+  await expect(pendingItem).toContainText(memoryText);
+  await expect(pendingItem).toContainText(authorName);
+  await pendingItem.getByRole("button", { name: "Zatwierdź" }).click();
+  await expect(pendingItem).toBeHidden();
+
+  await page.getByRole("button", { name: /Zatwierdzone/ }).click();
+  const approvedAlbum = page.locator(".admin-media-album-summary").filter({ hasText: place.title });
+  await expect(approvedAlbum).toContainText("1 pamiątka");
+  await approvedAlbum.click();
+
+  const approvedItem = page.locator(".admin-media-item").filter({ hasText: caption });
+  await expect(approvedItem).toContainText("zatwierdzone");
+  await expect(approvedItem).toContainText(memoryText);
+
+  await expect
+    .poll(async () => {
+      const mapPlaces = await getMapPlaces(request);
+      const mapPlace = mapPlaces.find((item) => item.id === place.id);
+      return {
+        memoryCount: mapPlace?.memory_count ?? 0,
+        memoryText: mapPlace?.memories[0]?.memory_text ?? null,
+      };
+    })
+    .toEqual({ memoryCount: 1, memoryText });
+
+  await page.goto("/");
+  await expect(page.locator(".map-frame")).toBeVisible();
+  await page.locator(`[title="${place.title}"]`).first().click();
+  await expect(page.locator(`[title="${caption}"]`)).toBeVisible();
 });
