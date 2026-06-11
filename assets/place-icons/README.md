@@ -9,17 +9,17 @@ Prompt i zasady jakości: [docs/image_generation/place-thumbnails.md](../../docs
 ```txt
 assets/place-icons/
 ├── 00_inbox/        surowe wyniki z generatora, lokalne i ignorowane przez git
-├── 10_candidates/   wybrane warianty do porównania, lokalne i ignorowane przez git
+├── 10_review/       wybrane warianty do porównania, lokalne i ignorowane przez git
 ├── 20_approved/     finalne ikony gotowe do użycia lub uploadu
 ├── 90_archive/      odrzucone/stare warianty, lokalne i ignorowane przez git
 └── manifest.csv     indeks miejsc i statusów ikon
 ```
 
-W katalogach `00_inbox`, `10_candidates` i `90_archive` trzymać pliki per miejsce:
+W katalogach `00_inbox`, `10_review` i `90_archive` trzymać pliki per miejsce:
 
 ```txt
 00_inbox/{place_slug}/place-{place_slug}-icon-v01.png
-10_candidates/{place_slug}/place-{place_slug}-icon-v02.png
+10_review/{place_slug}/place-{place_slug}-icon-v02.png
 90_archive/{place_slug}/place-{place_slug}-icon-v00.png
 ```
 
@@ -40,7 +40,7 @@ Docelowo warto rozważyć osobne pole albo osobny asset ikony miejsca, jeśli ik
 ```txt
 planned       miejsce wybrane, ikony jeszcze nie ma
 generated     są surowe warianty w 00_inbox
-candidate     jest wariant w 10_candidates
+review        jest wariant w 10_review
 approved      finalna ikona jest w 20_approved
 uploaded      ikona została dodana do aplikacji
 rejected      odrzucone, nie używać

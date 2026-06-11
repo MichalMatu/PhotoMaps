@@ -9,6 +9,7 @@ from pathlib import Path
 PLACE_COUNT = int(os.getenv("PERF_SEED_PLACES", "120"))
 GUIDE_COUNT = int(os.getenv("PERF_SEED_GUIDES", "6"))
 PLACES_PER_GUIDE = int(os.getenv("PERF_SEED_PLACES_PER_GUIDE", "20"))
+CITY_ID = os.getenv("PERF_SEED_CITY_ID", "wroclaw")
 START_LAT = 51.09
 START_LON = 17.0
 
@@ -27,7 +28,19 @@ def reset_perf_data(connection: sqlite3.Connection) -> None:
         "DELETE FROM place_guide WHERE guide_id LIKE 'perf-guide-%' OR place_id LIKE 'perf-place-%'"
     )
     connection.execute("DELETE FROM guide WHERE id LIKE 'perf-guide-%'")
+    connection.execute("DELETE FROM place_category WHERE place_id LIKE 'perf-place-%'")
     connection.execute("DELETE FROM place WHERE id LIKE 'perf-place-%'")
+
+
+def ensure_perf_city(connection: sqlite3.Connection) -> None:
+    connection.execute(
+        """
+        INSERT INTO city (id, name, lat, lon, default_zoom, sort_order, status)
+        SELECT ?, 'Wrocław', 51.1079, 17.0385, 13, 10, 'active'
+        WHERE NOT EXISTS (SELECT 1 FROM city WHERE id = ?)
+        """,
+        (CITY_ID, CITY_ID),
+    )
 
 
 def seed_places(connection: sqlite3.Connection, now: str) -> list[str]:
@@ -53,18 +66,18 @@ def seed_places(connection: sqlite3.Connection, now: str) -> list[str]:
         connection.execute(
             """
             INSERT INTO place (
-                id, slug, title, description, local_comment, category_id, lat, lon, weight,
+                id, city_id, slug, title, description, local_comment, lat, lon, weight,
                 status, photo_count, memory_count, cover_photo_id, created_at, updated_at
             )
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'published', ?, ?, NULL, ?, ?)
             """,
             (
                 place_id,
+                CITY_ID,
                 f"perf-place-{number:03d}",
                 f"Perf miejsce {number:03d}",
                 "Miejsce testowe do pomiaru publicznych endpointow.",
                 "Lokalny komentarz do pomiaru wydajnosci.",
-                category_id,
                 lat,
                 lon,
                 weight,
@@ -73,6 +86,13 @@ def seed_places(connection: sqlite3.Connection, now: str) -> list[str]:
                 now,
                 now,
             ),
+        )
+        connection.execute(
+            """
+            INSERT INTO place_category (place_id, category_id, sort_order)
+            VALUES (?, ?, 0)
+            """,
+            (place_id, category_id),
         )
         place_ids.append(place_id)
 
@@ -114,6 +134,7 @@ def main() -> None:
 
     now = datetime.now(UTC).isoformat()
     with sqlite3.connect(path) as connection:
+        ensure_perf_city(connection)
         reset_perf_data(connection)
         place_ids = seed_places(connection, now)
         seed_guides(connection, place_ids, now)

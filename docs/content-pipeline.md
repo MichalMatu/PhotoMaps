@@ -22,7 +22,7 @@ docs/image_generation/place-thumbnails.md
 
 ```txt
 assets/place-icons/00_inbox
-assets/place-icons/10_candidates
+assets/place-icons/10_review
 assets/place-icons/20_approved
 assets/place-icons/90_archive
 ```

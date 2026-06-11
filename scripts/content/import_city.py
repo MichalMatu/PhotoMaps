@@ -90,14 +90,14 @@ def require_status(value: Any, allowed: set[str], context: str) -> str:
 
 def resolve_asset_path(manifest_path: Path, raw_path: str, repo_root: Path) -> Path:
     path = Path(raw_path).expanduser()
-    candidates = (
+    path_options = (
         [path]
         if path.is_absolute()
         else [manifest_path.parent / path, repo_root / path]
     )
-    for candidate in candidates:
-        if candidate.exists():
-            return candidate.resolve()
+    for path_option in path_options:
+        if path_option.exists():
+            return path_option.resolve()
     raise FileNotFoundError(f"Asset not found: {raw_path}")
 
 

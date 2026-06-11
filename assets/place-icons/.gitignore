@@ -1,7 +1,7 @@
 00_inbox/**
-10_candidates/**
+10_review/**
 90_archive/**
 
 !00_inbox/.gitkeep
-!10_candidates/.gitkeep
+!10_review/.gitkeep
 !90_archive/.gitkeep
