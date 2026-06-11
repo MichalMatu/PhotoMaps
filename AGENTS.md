@@ -28,6 +28,19 @@ place
 
 Nie tworzyć osobnych światów dla zdjęć, pamiątek, audio, historii i przewodników.
 
+## Zasada pracy z treścią
+
+Nie dodawać dużych partii miejsc ręcznie przez admin UI. Panel admina służy do korekt, moderacji i pojedynczych zmian.
+
+Masowe dodawanie miast prowadzić przez:
+
+- manifesty w `content/cities/{city}/manifest.json`,
+- redakcyjne assety w `assets/place-icons`,
+- backup przez `scripts/backup_local_data.sh`,
+- import przez `scripts/content/import_city.py`.
+
+Importer ma być idempotentny po `slug`: może tworzyć nowe miejsca i aktualizować istniejące. Przed większym importem zawsze zrobić backup lokalnej bazy i storage.
+
 ## Zasada doświadczenia mapy
 
 Publiczna mapa jest głównym produktem i ma działać jak żywa tablica miniaturek miejsc, nie jak pusta mapa z pinezkami.

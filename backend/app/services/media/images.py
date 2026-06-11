@@ -116,9 +116,8 @@ def ensure_image_size(image: Image.Image) -> None:
         raise HTTPException(status_code=413, detail="Image dimensions are too large")
 
 
-async def store_uploaded_image(upload: UploadFile, place_id: str, media_kind: str) -> StoredImage:
+def store_image_bytes(content: bytes, original_filename: str | None, place_id: str, media_kind: str) -> StoredImage:
     ensure_media_kind(media_kind)
-    content = await upload.read()
     if not content:
         raise HTTPException(status_code=422, detail="Image file is empty")
     if len(content) > MAX_IMAGE_BYTES:
@@ -130,7 +129,7 @@ async def store_uploaded_image(upload: UploadFile, place_id: str, media_kind: st
     private_dir.mkdir(parents=True, exist_ok=True)
     public_dir.mkdir(parents=True, exist_ok=True)
 
-    original_path = private_dir / f"{image_id}-original{original_suffix(upload.filename)}"
+    original_path = private_dir / f"{image_id}-original{original_suffix(original_filename)}"
     public_path: Path | None = None
     thumb_path: Path | None = None
 
@@ -175,3 +174,8 @@ async def store_uploaded_image(upload: UploadFile, place_id: str, media_kind: st
         public_path=public_url(public_path),
         thumb_path=public_url(thumb_path),
     )
+
+
+async def store_uploaded_image(upload: UploadFile, place_id: str, media_kind: str) -> StoredImage:
+    content = await upload.read()
+    return store_image_bytes(content, upload.filename, place_id, media_kind)

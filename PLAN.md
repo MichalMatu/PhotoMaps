@@ -15,14 +15,17 @@ Stworzyć podstawę do oceny doświadczenia mapy:
 
 ## Iteracja 1: Dane startowe
 
-Najpierw budujemy materiał do testowania mapy.
+Najpierw budujemy materiał do testowania mapy. Nie klikamy masowo miejsc ręcznie w adminie; panel admina zostaje do korekt i moderacji. Większe partie danych dodajemy przez [content pipeline](docs/content-pipeline.md).
 
 Do zrobienia:
 
 - wybrać pierwsze 10-15 miejsc,
+- uzupełnić manifest miasta w [content/cities/wroclaw/manifest.json](content/cities/wroclaw/manifest.json),
 - przygotować spójne miniatury/ikony według [promptu generowania](docs/image_generation/place-thumbnails.md), jeśli nie mamy jeszcze dobrych zdjęć,
 - trzymać robocze i finalne ikony w [assets/place-icons](assets/place-icons/README.md),
-- dodać je przez admina,
+- zrobić backup przez `./scripts/backup_local_data.sh`,
+- zaimportować miejsca, ikony i przewodniki przez `scripts/content/import_city.py`,
+- użyć admina do korekt,
 - przypisać kategorie z panelu admina,
 - dodać i zatwierdzić zdjęcia,
 - ustawić dobre zdjęcia główne,

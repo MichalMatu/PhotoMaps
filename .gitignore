@@ -19,6 +19,7 @@ frontend/test-results/
 backend/data/
 backend/storage/private/
 backend/storage/public/
+backups/
 
 _legacy/
 

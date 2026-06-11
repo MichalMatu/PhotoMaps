@@ -8,6 +8,7 @@ Głównym bytem systemu jest `place`. Wszystkie zdjęcia, pamiątki, przewodniki
 
 - [Plan działania](PLAN.md)
 - [Kierunek produktu](docs/product-direction.md)
+- [Content pipeline](docs/content-pipeline.md)
 - [Prompt miniatur miejsc](docs/image_generation/place-thumbnails.md)
 - [Assety redakcyjne](assets/README.md)
 - [Uruchamianie i testy](docs/dev.md)
