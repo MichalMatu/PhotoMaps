@@ -18,6 +18,8 @@ ITERATIONS = int(os.getenv("PERF_ITERATIONS", "5"))
 TIMEOUT_SECONDS = float(os.getenv("PERF_TIMEOUT_SECONDS", "5"))
 MAX_MS = float(os.getenv("PERF_MAX_MS", "2500"))
 AVG_MS = float(os.getenv("PERF_AVG_MS", "1000"))
+MIN_PLACES = int(os.getenv("PERF_EXPECT_MIN_PLACES", "0"))
+MIN_GUIDES = int(os.getenv("PERF_EXPECT_MIN_GUIDES", "0"))
 
 
 @dataclass(frozen=True)
@@ -36,6 +38,17 @@ PROBES = [
     Probe("frontend", f"{WEB_URL}/", "text/html", "html"),
 ]
 
+if MIN_GUIDES > 0:
+    PROBES.insert(
+        -1,
+        Probe(
+            "guide-detail",
+            f"{API_URL}/api/guides/perf-guide-01",
+            "application/json",
+            "object",
+        ),
+    )
+
 
 def fail(message: str) -> None:
     print(f"perf smoke failed: {message}", file=sys.stderr)
@@ -49,7 +62,12 @@ def read_url(probe: Probe) -> tuple[int, str, str, float]:
         with urlopen(request, timeout=TIMEOUT_SECONDS) as response:
             body = response.read().decode("utf-8", errors="replace")
             elapsed_ms = (time.perf_counter() - started) * 1000
-            return response.status, response.headers.get("content-type", ""), body, elapsed_ms
+            return (
+                response.status,
+                response.headers.get("content-type", ""),
+                body,
+                elapsed_ms,
+            )
     except URLError as exc:
         fail(f"{probe.label} did not respond: {exc}")
 
@@ -79,6 +97,18 @@ def validate_response(probe: Probe, status: int, content_type: str, body: str) -
         fail(f"unexpected health response: {payload!r}")
     if probe.response_kind == "list" and not isinstance(payload, list):
         fail(f"{probe.label} did not return a list")
+    if probe.response_kind == "object" and not isinstance(payload, dict):
+        fail(f"{probe.label} did not return an object")
+    if probe.label == "places-map" and len(payload) < MIN_PLACES:
+        fail(
+            f"{probe.label} returned {len(payload)} places, expected at least {MIN_PLACES}"
+        )
+    if probe.label == "guides" and len(payload) < MIN_GUIDES:
+        fail(
+            f"{probe.label} returned {len(payload)} guides, expected at least {MIN_GUIDES}"
+        )
+    if probe.label == "guide-detail" and len(payload.get("places", [])) < 1:
+        fail("guide-detail did not include places")
 
 
 def main() -> None:
@@ -86,7 +116,9 @@ def main() -> None:
         fail("PERF_ITERATIONS must be at least 1")
 
     failed_budget = False
-    print(f"perf smoke: {ITERATIONS} iterations, max <= {MAX_MS:.0f} ms, avg <= {AVG_MS:.0f} ms")
+    print(
+        f"perf smoke: {ITERATIONS} iterations, max <= {MAX_MS:.0f} ms, avg <= {AVG_MS:.0f} ms"
+    )
 
     for probe in PROBES:
         samples: list[float] = []
