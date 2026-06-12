@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from sqlmodel import Session, select
 
+from app.models.city import City
 from app.models.place import Place
 from app.services.ranking import place_score
 
@@ -20,10 +21,16 @@ def ensure_slug_available(session: Session, slug: str, place_id: str | None = No
 
 
 def ensure_public_place(place_id: str, session: Session) -> Place:
-    place = session.get(Place, place_id)
-    if place is None or place.status != "published":
+    place = session.exec(public_places_statement().where(Place.id == place_id)).first()
+    if place is None:
         raise HTTPException(status_code=404, detail="Place not found")
     return place
+
+
+def public_places_statement():
+    return (
+        select(Place).join(City, Place.city_id == City.id).where(Place.status == "published", City.status == "active")
+    )
 
 
 def sort_places_for_public_map(places: list[Place]) -> list[Place]:

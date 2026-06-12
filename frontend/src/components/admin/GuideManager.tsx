@@ -3,7 +3,7 @@ import { ErrorModal } from "../ui/ErrorModal";
 import { GuideFormModal } from "./GuideFormModal";
 import { GuidePlacePanel } from "./GuidePlacePanel";
 import { SystemModal } from "./SystemModal";
-import { filterGuidePlaceCandidates } from "./guidePlaceSelection";
+import { filterSelectableGuidePlaces } from "./guidePlaceSelection";
 import { useGuideActions } from "./useGuideActions";
 
 type Props = {
@@ -14,8 +14,8 @@ type Props = {
 
 export function GuideManager({ guides, places, onChanged }: Props) {
   const guideActions = useGuideActions({ guides, onChanged });
-  const availablePlaces = places.filter((place) => place.status !== "archived");
-  const candidatePlaces = filterGuidePlaceCandidates(
+  const availablePlaces = places.filter((place) => place.status === "published");
+  const selectablePlaces = filterSelectableGuidePlaces(
     availablePlaces,
     guideActions.guideDetail?.places ?? [],
     guideActions.placeQuery,
@@ -65,10 +65,10 @@ export function GuideManager({ guides, places, onChanged }: Props) {
               {isExpanded ? (
                 <GuidePlacePanel
                   availablePlaces={availablePlaces}
-                  candidatePlaces={candidatePlaces}
                   guideDetail={guideActions.guideDetail}
                   isLoading={guideActions.isGuideDetailLoading}
                   placeQuery={guideActions.placeQuery}
+                  selectablePlaces={selectablePlaces}
                   selectedPlaceIds={guideActions.selectedPlaceIds}
                   selectedGuide={guideActions.selectedGuide}
                   onAddPlaces={guideActions.addPlaces}

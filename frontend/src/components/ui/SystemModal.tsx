@@ -1,9 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import type { ReactNode } from "react";
 import { GripHorizontal, X } from "lucide-react";
 
 import { stopFloatingWindowEvent, useDraggableWindow } from "./useDraggableWindow";
+import { useDialogFocus } from "./useDialogFocus";
 
 type Props = {
   cancelLabel?: string;
@@ -43,6 +44,8 @@ export function SystemModal({
 }: Props) {
   const draggableWindow = useDraggableWindow<HTMLDivElement>("system-modal");
   const modalStackId = useRef(nextModalStackId++).current;
+  const titleId = useId();
+  const isTopModal = useCallback(() => modalStack[modalStack.length - 1] === modalStackId, [modalStackId]);
 
   useEffect(() => {
     modalStack.push(modalStackId);
@@ -57,8 +60,7 @@ export function SystemModal({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      const isTopModal = modalStack[modalStack.length - 1] === modalStackId;
-      if (event.key === "Escape" && !isBusy && isTopModal) {
+      if (event.key === "Escape" && !isBusy && isTopModal()) {
         onClose();
       }
     };
@@ -68,7 +70,9 @@ export function SystemModal({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isBusy, modalStackId, onClose]);
+  }, [isBusy, isTopModal, onClose]);
+
+  useDialogFocus(draggableWindow.windowRef, true, isTopModal);
 
   return createPortal(
     <div className="system-modal-backdrop" role="presentation" onClick={isBusy ? undefined : onClose}>
@@ -76,7 +80,8 @@ export function SystemModal({
         className={`system-modal system-modal--${tone} system-modal--${size}${draggableWindow.isDragging ? " is-dragging" : ""}`}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="system-modal-title"
+        aria-labelledby={titleId}
+        tabIndex={-1}
         ref={draggableWindow.windowRef}
         style={draggableWindow.style}
         onClick={stopFloatingWindowEvent}
@@ -90,7 +95,7 @@ export function SystemModal({
         <header className="system-modal-header">
           <div className="system-modal-title-block">
             <span className="eyebrow">{eyebrow}</span>
-            <h2 id="system-modal-title">{title}</h2>
+            <h2 id={titleId}>{title}</h2>
           </div>
           <div className="system-modal-header-actions">
             <div

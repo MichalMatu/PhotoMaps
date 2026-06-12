@@ -1,12 +1,12 @@
 import type { Place } from "../../api/client";
 
-type GuidePlaceCandidate = Pick<Place, "id" | "slug" | "status" | "title">;
+type SelectableGuidePlace = Pick<Place, "id" | "slug" | "status" | "title">;
 
 export type GuidePlaceMoveDirection = "down" | "up";
 
-export function filterGuidePlaceCandidates<TPlace extends GuidePlaceCandidate>(
+export function filterSelectableGuidePlaces<TPlace extends SelectableGuidePlace>(
   places: TPlace[],
-  guidePlaces: GuidePlaceCandidate[],
+  guidePlaces: SelectableGuidePlace[],
   query: string,
 ) {
   const guidePlaceIds = new Set(guidePlaces.map((place) => place.id));

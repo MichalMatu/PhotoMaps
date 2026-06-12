@@ -10,7 +10,7 @@ from app.schemas.place import PlaceMapPreviewItem, PlaceMapRead, PlaceRead
 from app.serializers.photo import photo_to_read
 from app.serializers.place import memory_to_map_preview, photo_to_map_preview, place_to_map_read, place_to_read
 from app.services.place_taxonomy import categories_by_place_id, category_ids_by_place_id
-from app.services.places import sort_places_for_public_map
+from app.services.places import public_places_statement, sort_places_for_public_map
 
 router = APIRouter(prefix="/api/places", tags=["places"])
 
@@ -19,16 +19,14 @@ MAP_PREVIEW_ITEMS_PER_PLACE = 6
 
 @router.get("", response_model=list[PlaceRead])
 def list_places(session: Session = Depends(get_session)) -> list[PlaceRead]:
-    statement = select(Place).where(Place.status == "published")
-    places = sort_places_for_public_map(list(session.exec(statement).all()))
+    places = sort_places_for_public_map(list(session.exec(public_places_statement()).all()))
     category_ids_by_place = category_ids_by_place_id(session, [place.id for place in places])
     return [place_to_read(place, category_ids_by_place.get(place.id, [])) for place in places]
 
 
 @router.get("/map", response_model=list[PlaceMapRead])
 def list_map_places(session: Session = Depends(get_session)) -> list[PlaceMapRead]:
-    statement = select(Place).where(Place.status == "published")
-    places = sort_places_for_public_map(list(session.exec(statement).all()))
+    places = sort_places_for_public_map(list(session.exec(public_places_statement()).all()))
     if not places:
         return []
 
@@ -69,7 +67,12 @@ def list_map_places(session: Session = Depends(get_session)) -> list[PlaceMapRea
     def preview_items_for_place(place: Place) -> list[PlaceMapPreviewItem]:
         photo_items = [photo_to_map_preview(photo) for photo in photos_by_place_id[place.id]]
         memory_items = [memory_to_map_preview(memory) for memory in memories_by_place_id[place.id]]
-        return [*photo_items, *memory_items][:MAP_PREVIEW_ITEMS_PER_PLACE]
+        selected_items = [*photo_items[:3], *memory_items[:3]]
+        selected_keys = {(item.kind, item.id) for item in selected_items}
+        remaining_items = [
+            item for item in [*photo_items[3:], *memory_items[3:]] if (item.kind, item.id) not in selected_keys
+        ]
+        return [*selected_items, *remaining_items][:MAP_PREVIEW_ITEMS_PER_PLACE]
 
     return [
         place_to_map_read(
@@ -86,9 +89,7 @@ def list_map_places(session: Session = Depends(get_session)) -> list[PlaceMapRea
 
 @router.get("/{id_or_slug}", response_model=PlaceRead)
 def get_place(id_or_slug: str, session: Session = Depends(get_session)) -> PlaceRead:
-    statement = (
-        select(Place).where((Place.id == id_or_slug) | (Place.slug == id_or_slug)).where(Place.status == "published")
-    )
+    statement = public_places_statement().where((Place.id == id_or_slug) | (Place.slug == id_or_slug))
     place = session.exec(statement).first()
     if place is None:
         raise HTTPException(status_code=404, detail="Place not found")

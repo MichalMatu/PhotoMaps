@@ -1,9 +1,10 @@
-import { type ReactNode, type SyntheticEvent, useEffect } from "react";
+import { type ReactNode, type SyntheticEvent, useCallback, useEffect, useId } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 import { motionClassName, useDeferredClose } from "./motionPresence";
 import { stopFloatingWindowEvent, useDraggableWindow } from "./useDraggableWindow";
+import { useDialogFocus } from "./useDialogFocus";
 
 type Props = {
   children: ReactNode;
@@ -28,6 +29,8 @@ export function ResponsiveSheet({
 }: Props) {
   const draggableWindow = useDraggableWindow<HTMLElement>(storageId, open);
   const { isExiting, requestClose } = useDeferredClose(onClose);
+  const titleId = useId();
+  const isActiveSheet = useCallback(() => open && document.querySelector(".system-modal") === null, [open]);
 
   useEffect(() => {
     if (!open) {
@@ -35,7 +38,7 @@ export function ResponsiveSheet({
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
+      if (event.key === "Escape" && isActiveSheet()) {
         requestClose();
       }
     };
@@ -45,7 +48,9 @@ export function ResponsiveSheet({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [open, requestClose]);
+  }, [isActiveSheet, open, requestClose]);
+
+  useDialogFocus(draggableWindow.windowRef, open, isActiveSheet);
 
   if (!open) {
     return null;
@@ -56,7 +61,10 @@ export function ResponsiveSheet({
   return createPortal(
     <aside
       className={motionClassName(["pm-sheet", className, draggableWindow.isDragging ? "is-dragging" : null], isExiting)}
-      aria-label={title}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      tabIndex={-1}
       ref={draggableWindow.windowRef}
       style={draggableWindow.style}
       onClick={stopEvent}
@@ -71,7 +79,7 @@ export function ResponsiveSheet({
       <header className="pm-sheet__header" {...draggableWindow.handleProps}>
         <div>
           {subtitle ? <div className="pm-sheet__subtitle">{subtitle}</div> : null}
-          <h2>{title}</h2>
+          <h2 id={titleId}>{title}</h2>
         </div>
         <button className="pm-sheet__close" type="button" onClick={requestClose} aria-label="Zamknij panel">
           <X aria-hidden="true" size={18} />

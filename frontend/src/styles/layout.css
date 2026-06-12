@@ -94,6 +94,61 @@
   width: 100%;
 }
 
+.rail-layer-nav {
+  border-top: 1px solid var(--color-border);
+  display: grid;
+  gap: 8px;
+  padding-top: 14px;
+  width: 100%;
+}
+
+.rail-layer-button {
+  align-items: center;
+  background: transparent;
+  border-radius: var(--radius-control);
+  color: var(--color-muted);
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  min-height: 58px;
+  min-width: 0;
+  padding: 6px 3px;
+  text-align: center;
+  width: 100%;
+}
+
+.rail-layer-button:hover,
+.rail-layer-button.is-active {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.rail-layer-button span {
+  display: block;
+  font-size: 0.52rem;
+  font-weight: 650;
+  line-height: 1;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rail-layer-button strong {
+  background: var(--color-surface-strong);
+  border-radius: var(--radius-full);
+  color: inherit;
+  font-size: 0.58rem;
+  font-weight: 750;
+  min-width: 22px;
+  padding: 2px 6px;
+}
+
+.rail-layer-button.is-active strong {
+  background: var(--color-accent);
+  color: var(--content-on-accent);
+}
+
 .rail-admin-button {
   align-items: center;
   background: transparent;
@@ -211,6 +266,10 @@
   margin-top: auto;
 }
 
+.drawer-section--layers {
+  padding: 10px 0;
+}
+
 .drawer-item {
   background: transparent;
   border: 0;
@@ -233,6 +292,17 @@
 
 .drawer-action {
   grid-template-columns: 34px minmax(0, 1fr);
+}
+
+.drawer-layer-count {
+  background: var(--color-accent-soft);
+  border-radius: var(--radius-full);
+  color: var(--color-accent);
+  font-size: 0.78rem;
+  font-weight: 750;
+  min-width: 30px;
+  padding: 4px 8px;
+  text-align: center;
 }
 
 .drawer-admin-mark {

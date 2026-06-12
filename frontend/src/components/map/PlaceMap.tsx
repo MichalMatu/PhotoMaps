@@ -2,7 +2,7 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, useMap, useMapEvents, ZoomControl } from "react-leaflet";
 
-import type { PlaceMapItem } from "../../api/client";
+import type { City, PlaceMapItem } from "../../api/client";
 import { DistanceMeasureTool } from "./DistanceMeasureTool";
 import { MapPhotoViewer } from "./MapPhotoViewer";
 import { MemorySheet } from "./MemorySheet";
@@ -13,6 +13,7 @@ import { ReportSheet } from "./ReportSheet";
 import { SystemModal } from "../admin/SystemModal";
 
 type Props = {
+  mapCity?: City | null;
   places: PlaceMapItem[];
 };
 
@@ -173,8 +174,7 @@ function PlaceLayer({ places }: Props) {
   );
 }
 
-export function PlaceMap({ places }: Props) {
-  const mapCity = places[0]?.city ?? null;
+export function PlaceMap({ mapCity = null, places }: Props) {
   const center: [number, number] = mapCity ? [mapCity.lat, mapCity.lon] : DEFAULT_CENTER;
 
   return (

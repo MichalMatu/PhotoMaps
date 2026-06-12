@@ -5,7 +5,6 @@ import type { GuidePlaceMoveDirection } from "./guidePlaceSelection";
 
 type Props = {
   availablePlaces: Place[];
-  candidatePlaces: Place[];
   guideDetail: GuideDetail | null;
   isLoading: boolean;
   onAddPlaces: (event: FormEvent<HTMLFormElement>) => void;
@@ -14,13 +13,13 @@ type Props = {
   onRemovePlace: (placeId: string) => void;
   onTogglePlaceSelection: (placeId: string) => void;
   placeQuery: string;
+  selectablePlaces: Place[];
   selectedPlaceIds: string[];
   selectedGuide: Guide | null;
 };
 
 export function GuidePlacePanel({
   availablePlaces,
-  candidatePlaces,
   guideDetail,
   isLoading,
   onAddPlaces,
@@ -29,6 +28,7 @@ export function GuidePlacePanel({
   onRemovePlace,
   onTogglePlaceSelection,
   placeQuery,
+  selectablePlaces,
   selectedPlaceIds,
   selectedGuide,
 }: Props) {
@@ -46,7 +46,7 @@ export function GuidePlacePanel({
         </button>
       </form>
       <div className="guide-place-picker">
-        {candidatePlaces.map((place) => (
+        {selectablePlaces.map((place) => (
           <label className="guide-place-choice" key={place.id}>
             <input
               type="checkbox"
@@ -57,8 +57,8 @@ export function GuidePlacePanel({
             <small className="guide-place-choice-status">{place.status}</small>
           </label>
         ))}
-        {availablePlaces.length === 0 ? <p className="notice">Brak aktywnych miejsc do dodania.</p> : null}
-        {availablePlaces.length > 0 && candidatePlaces.length === 0 ? (
+        {availablePlaces.length === 0 ? <p className="notice">Brak opublikowanych miejsc do dodania.</p> : null}
+        {availablePlaces.length > 0 && selectablePlaces.length === 0 ? (
           <p className="notice">Brak pasujących miejsc do dodania.</p>
         ) : null}
       </div>

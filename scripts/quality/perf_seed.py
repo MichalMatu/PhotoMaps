@@ -12,21 +12,33 @@ PLACES_PER_GUIDE = int(os.getenv("PERF_SEED_PLACES_PER_GUIDE", "20"))
 CITY_ID = os.getenv("PERF_SEED_CITY_ID", "wroclaw")
 START_LAT = 51.09
 START_LON = 17.0
+ROOT_DIR = Path(__file__).resolve().parents[2]
+PERF_DATA_ROOT = ROOT_DIR / ".dev/perf"
+PERF_DATA_DIR = PERF_DATA_ROOT / "backend-data"
+
+
+def repo_path(path: Path) -> Path:
+    return path if path.is_absolute() else ROOT_DIR / path
 
 
 def database_path() -> Path:
     database_url = os.getenv("DATABASE_URL", "")
     if database_url.startswith("sqlite:///"):
-        return Path(database_url.removeprefix("sqlite:///"))
+        return repo_path(Path(database_url.removeprefix("sqlite:///")))
 
-    data_dir = Path(os.getenv("PHOTOMAP_DATA_DIR", Path("backend/data")))
+    data_dir = repo_path(Path(os.getenv("PHOTOMAP_DATA_DIR", PERF_DATA_DIR)))
     return data_dir / "app.db"
 
 
+def ensure_perf_database_path(path: Path) -> None:
+    resolved_path = path.resolve()
+    resolved_perf_root = PERF_DATA_ROOT.resolve()
+    if not resolved_path.is_relative_to(resolved_perf_root):
+        raise RuntimeError(f"perf seed refuses to write outside {resolved_perf_root}: {resolved_path}")
+
+
 def reset_perf_data(connection: sqlite3.Connection) -> None:
-    connection.execute(
-        "DELETE FROM place_guide WHERE guide_id LIKE 'perf-guide-%' OR place_id LIKE 'perf-place-%'"
-    )
+    connection.execute("DELETE FROM place_guide WHERE guide_id LIKE 'perf-guide-%' OR place_id LIKE 'perf-place-%'")
     connection.execute("DELETE FROM guide WHERE id LIKE 'perf-guide-%'")
     connection.execute("DELETE FROM place_category WHERE place_id LIKE 'perf-place-%'")
     connection.execute("DELETE FROM place WHERE id LIKE 'perf-place-%'")
@@ -45,10 +57,7 @@ def ensure_perf_city(connection: sqlite3.Connection) -> None:
 
 def seed_places(connection: sqlite3.Connection, now: str) -> list[str]:
     category_ids = [
-        row[0]
-        for row in connection.execute(
-            "SELECT id FROM category WHERE status = 'active' ORDER BY sort_order"
-        )
+        row[0] for row in connection.execute("SELECT id FROM category WHERE status = 'active' ORDER BY sort_order")
     ]
     if not category_ids:
         raise RuntimeError("perf seed requires active categories from migrations")
@@ -129,6 +138,7 @@ def seed_guides(connection: sqlite3.Connection, place_ids: list[str], now: str) 
 
 def main() -> None:
     path = database_path()
+    ensure_perf_database_path(path)
     if not path.exists():
         raise RuntimeError(f"database does not exist: {path}")
 

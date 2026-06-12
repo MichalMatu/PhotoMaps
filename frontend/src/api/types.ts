@@ -131,14 +131,7 @@ export type PlaceMapPreviewItem = {
   thumb_path: string;
   role: PhotoRole | null;
   source: PhotoSource | null;
-  status: PhotoStatus;
   caption: string | null;
-  author_name: string | null;
-  author_city: string | null;
-  memory_text: string | null;
-  paid: boolean | null;
-  share_slug: string | null;
-  consent_confirmed?: boolean | null;
   created_at: string;
   approved_at: string | null;
 };

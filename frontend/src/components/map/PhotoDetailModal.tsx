@@ -1,11 +1,13 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useId } from "react";
 import { createPortal } from "react-dom";
+import { useQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
 
-import { mediaUrl, type Memory, type PlaceMapItem } from "../../api/client";
+import { getPlaceMemory, mediaUrl, type PlaceMapItem } from "../../api/client";
 import { ErrorModal } from "../ui/ErrorModal";
 import { MediaImage } from "../ui/MediaImage";
 import { motionClassName, useDeferredClose } from "../ui/motionPresence";
+import { useDialogFocus } from "../ui/useDialogFocus";
 import { stopFloatingWindowEvent, useDraggableWindow } from "../ui/useDraggableWindow";
 import { MemoryOwnerTools } from "./MemoryOwnerTools";
 import type { PlaceMapVisualItem } from "./placePreview";
@@ -18,36 +20,16 @@ type Props = {
   place: PlaceMapItem;
 };
 
-function previewMemoryToMemory(item: PlaceMapVisualItem): Memory | null {
-  if (item.kind !== "memory") {
-    return null;
-  }
-  const source = item.source;
-  if (!source.memory_text || !source.share_slug || source.paid === null) {
-    return null;
-  }
-
-  return {
-    approved_at: source.approved_at,
-    author_city: source.author_city,
-    author_name: source.author_name,
-    caption: source.caption ?? "",
-    created_at: source.created_at,
-    id: source.id,
-    memory_text: source.memory_text,
-    paid: source.paid,
-    place_id: source.place_id,
-    public_path: source.public_path,
-    share_slug: source.share_slug,
-    status: source.status,
-    thumb_path: source.thumb_path,
-  };
-}
-
 export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
   const draggableWindow = useDraggableWindow<HTMLDivElement>("photo-detail-modal");
   const { isExiting, requestClose } = useDeferredClose(onClose);
-  const memorySource = previewMemoryToMemory(item);
+  const titleId = useId();
+  const isActiveModal = useCallback(() => document.querySelector(".system-modal") === null, []);
+  const { data: memorySource = null } = useQuery({
+    enabled: item.kind === "memory",
+    queryFn: () => getPlaceMemory(place.id, item.id),
+    queryKey: ["place-memory", place.id, item.id],
+  });
   const memoryOwnerTools = useMemoryOwnerTools({
     itemKey: `${item.kind}:${item.id}`,
     memory: memorySource,
@@ -57,7 +39,7 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
+      if (event.key === "Escape" && isActiveModal()) {
         requestClose();
       }
     };
@@ -67,7 +49,9 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [requestClose]);
+  }, [isActiveModal, requestClose]);
+
+  useDialogFocus(draggableWindow.windowRef, true, isActiveModal);
 
   return createPortal(
     <div className={motionClassName(["photo-detail-backdrop"], isExiting)} role="presentation" onClick={requestClose}>
@@ -78,7 +62,8 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
         )}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="photo-detail-title"
+        aria-labelledby={titleId}
+        tabIndex={-1}
         ref={draggableWindow.windowRef}
         style={draggableWindow.style}
         onClick={stopFloatingWindowEvent}
@@ -92,7 +77,7 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
         <header className="photo-detail-header" {...draggableWindow.handleProps}>
           <div className="photo-detail-title-block">
             <div className="photo-detail-title-row">
-              <h2 id="photo-detail-title">{place.title}</h2>
+              <h2 id={titleId}>{place.title}</h2>
               {place.categories[0]?.label ? (
                 <span className="photo-detail-category">{place.categories[0].label}</span>
               ) : null}

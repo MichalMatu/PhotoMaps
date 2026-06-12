@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { Place } from "../../api/client";
-import { filterGuidePlaceCandidates, moveGuidePlace, toggleGuidePlaceSelection } from "./guidePlaceSelection";
+import { filterSelectableGuidePlaces, moveGuidePlace, toggleGuidePlaceSelection } from "./guidePlaceSelection";
 
 function place(id: string, title: string): Place {
   return {
@@ -25,15 +25,15 @@ function place(id: string, title: string): Place {
   };
 }
 
-describe("filterGuidePlaceCandidates", () => {
+describe("filterSelectableGuidePlaces", () => {
   it("excludes places already in the guide and searches by title or slug", () => {
-    const candidates = filterGuidePlaceCandidates(
+    const selectablePlaces = filterSelectableGuidePlaces(
       [place("rynek", "Rynek"), place("nadodrze", "Nadodrze"), place("zoo", "Zoo")],
       [place("rynek", "Rynek")],
       "nad",
     );
 
-    expect(candidates.map((candidate) => candidate.id)).toEqual(["nadodrze"]);
+    expect(selectablePlaces.map((place) => place.id)).toEqual(["nadodrze"]);
   });
 });
 

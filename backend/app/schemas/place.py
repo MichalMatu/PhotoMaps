@@ -66,14 +66,7 @@ class PlaceMapPreviewItem(SQLModel):
     thumb_path: str
     role: str | None = None
     source: str | None = None
-    status: str
     caption: str | None
-    author_name: str | None = None
-    author_city: str | None = None
-    memory_text: str | None = None
-    paid: bool | None = None
-    share_slug: str | None = None
-    consent_confirmed: bool | None = None
     created_at: datetime
     approved_at: datetime | None
 

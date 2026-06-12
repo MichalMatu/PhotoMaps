@@ -102,6 +102,59 @@ def test_memory_review_approves_and_updates_place_count(client_session) -> None:
     assert place.memory_count == 1
 
 
+def test_public_memory_detail_requires_approved_memory_on_public_place(client_session) -> None:
+    client, session = client_session
+    public_place = create_place(session)
+    draft_place = create_place(session, slug="draft-place", status="draft", title="Draft")
+    approved_memory = Memory(
+        place_id=public_place.id,
+        caption="Publiczna",
+        memory_text=MEMORY_TEXT,
+        original_path="memories/public-private.jpg",
+        public_path="/media/memories/public.jpg",
+        thumb_path="/media/memories/public-thumb.jpg",
+        status="approved",
+        claim_token_hash=claim_token_hash("public-token"),
+    )
+    pending_memory = Memory(
+        place_id=public_place.id,
+        caption="Pending",
+        memory_text=MEMORY_TEXT,
+        original_path="memories/pending-private.jpg",
+        public_path="/media/memories/pending.jpg",
+        thumb_path="/media/memories/pending-thumb.jpg",
+        status="pending",
+        claim_token_hash=claim_token_hash("pending-token"),
+    )
+    hidden_memory = Memory(
+        place_id=draft_place.id,
+        caption="Hidden",
+        memory_text=MEMORY_TEXT,
+        original_path="memories/hidden-private.jpg",
+        public_path="/media/memories/hidden.jpg",
+        thumb_path="/media/memories/hidden-thumb.jpg",
+        status="approved",
+        claim_token_hash=claim_token_hash("hidden-token"),
+    )
+    session.add(approved_memory)
+    session.add(pending_memory)
+    session.add(hidden_memory)
+    session.commit()
+    session.refresh(approved_memory)
+    session.refresh(pending_memory)
+    session.refresh(hidden_memory)
+
+    approved_response = client.get(f"/api/places/{public_place.id}/memories/{approved_memory.id}")
+    pending_response = client.get(f"/api/places/{public_place.id}/memories/{pending_memory.id}")
+    hidden_response = client.get(f"/api/places/{draft_place.id}/memories/{hidden_memory.id}")
+
+    assert approved_response.status_code == 200
+    assert approved_response.json()["memory_text"] == MEMORY_TEXT
+    assert "original_path" not in approved_response.json()
+    assert pending_response.status_code == 404
+    assert hidden_response.status_code == 404
+
+
 def test_memory_upload_requires_publication_consent(client_session) -> None:
     client, session = client_session
     place = create_place(session)

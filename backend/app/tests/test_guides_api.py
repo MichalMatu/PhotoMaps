@@ -42,12 +42,12 @@ def test_public_guides_only_show_published_with_published_places(client_session)
         json={"slug": "weekend", "title": "Weekend", "description": "Plan", "status": "published"},
     )
     guide_id = create_response.json()["id"]
-    client.post(
+    add_public_response = client.post(
         f"/api/admin/guides/{guide_id}/places",
         headers=ADMIN_HEADERS,
         json={"place_id": public_place.id, "sort_order": 2},
     )
-    client.post(
+    add_draft_response = client.post(
         f"/api/admin/guides/{guide_id}/places",
         headers=ADMIN_HEADERS,
         json={"place_id": draft_place.id, "sort_order": 1},
@@ -56,6 +56,8 @@ def test_public_guides_only_show_published_with_published_places(client_session)
     list_response = client.get("/api/guides")
     detail_response = client.get("/api/guides/weekend")
 
+    assert add_public_response.status_code == 200
+    assert add_draft_response.status_code == 409
     assert list_response.status_code == 200
     assert [guide["slug"] for guide in list_response.json()] == ["weekend"]
     listed_guide = list_response.json()[0]
@@ -93,6 +95,25 @@ def test_admin_can_remove_place_from_guide(client_session) -> None:
 
     assert response.status_code == 200
     assert response.json()["places"] == []
+
+
+def test_admin_cannot_publish_guide_with_draft_place_assignment(client_session) -> None:
+    client, session = client_session
+    draft_place = create_place(session, slug="draft-place", status="draft", title="Draft")
+    guide = Guide(slug="draft-route", title="Draft route", status="draft")
+    session.add(guide)
+    session.commit()
+    session.refresh(guide)
+    session.add(PlaceGuide(guide_id=guide.id, place_id=draft_place.id))
+    session.commit()
+
+    response = client.patch(
+        f"/api/admin/guides/{guide.id}",
+        headers=ADMIN_HEADERS,
+        json={"status": "published"},
+    )
+
+    assert response.status_code == 409
 
 
 def test_admin_can_delete_guide_with_assignments_and_reports(client_session) -> None:

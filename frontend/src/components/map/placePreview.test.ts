@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { Memory, Photo } from "../../api/client";
+import type { Photo, PlaceMapPreviewItem } from "../../api/client";
 import { findPlaceFanItem, getPlaceFanItems, getPlacePreviewVisual, isMapIconVisualItem } from "./placePreview";
 
 function photo(id: string, role: Photo["role"] = "gallery"): Photo {
@@ -18,20 +18,17 @@ function photo(id: string, role: Photo["role"] = "gallery"): Photo {
   };
 }
 
-function memory(id: string): Memory {
+function memory(id: string): PlaceMapPreviewItem {
   return {
     approved_at: null,
-    author_city: null,
-    author_name: null,
     caption: "Byłem tutaj",
     created_at: "2026-06-10T00:00:00",
     id,
-    memory_text: "Krótka myśl z miejsca",
-    paid: false,
     place_id: "place-1",
     public_path: `/media/memories/${id}.jpg`,
-    share_slug: `${id}-share`,
-    status: "approved",
+    kind: "memory",
+    role: null,
+    source: null,
     thumb_path: `/media/memories/${id}-thumb.jpg`,
   };
 }
@@ -47,12 +44,7 @@ describe("place preview helpers", () => {
         preview_items: [
           {
             ...first,
-            author_city: null,
-            author_name: null,
             kind: "photo" as const,
-            memory_text: null,
-            paid: null,
-            share_slug: null,
           },
         ],
       }),
@@ -71,12 +63,7 @@ describe("place preview helpers", () => {
         preview_items: [
           {
             ...first,
-            author_city: null,
-            author_name: null,
             kind: "photo" as const,
-            memory_text: null,
-            paid: null,
-            share_slug: null,
           },
         ],
       }),
@@ -92,7 +79,7 @@ describe("place preview helpers", () => {
     expect(
       getPlacePreviewVisual({
         cover_photo: null,
-        preview_items: [{ ...firstMemory, kind: "memory" as const, role: null, source: null }],
+        preview_items: [firstMemory],
       }),
     ).toMatchObject({
       id: "memory-1",
@@ -107,14 +94,9 @@ describe("place preview helpers", () => {
     const previewItems = [
       {
         ...firstPhoto,
-        author_city: null,
-        author_name: null,
         kind: "photo" as const,
-        memory_text: null,
-        paid: null,
-        share_slug: null,
       },
-      { ...firstMemory, kind: "memory" as const, role: null, source: null },
+      firstMemory,
     ];
 
     expect(getPlaceFanItems({ cover_photo: null, preview_items: previewItems }).map((item) => item.kind)).toEqual([
@@ -137,23 +119,13 @@ describe("place preview helpers", () => {
     const previewItems = [
       {
         ...cover,
-        author_city: null,
-        author_name: null,
         kind: "photo" as const,
-        memory_text: null,
-        paid: null,
-        share_slug: null,
       },
       {
         ...secondPhoto,
-        author_city: null,
-        author_name: null,
         kind: "photo" as const,
-        memory_text: null,
-        paid: null,
-        share_slug: null,
       },
-      { ...firstMemory, kind: "memory" as const, role: null, source: null },
+      firstMemory,
     ];
 
     expect(getPlaceFanItems({ cover_photo: cover, preview_items: previewItems }).map((item) => item.id)).toEqual([

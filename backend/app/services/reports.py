@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.models.guide import Guide
 from app.models.memory import Memory
@@ -20,13 +20,38 @@ def ensure_report_status(status: str) -> None:
         raise HTTPException(status_code=422, detail="Unsupported report status")
 
 
-def ensure_report_target_exists(session: Session, target_type: str, target_id: str) -> None:
-    model_by_target = {
-        "guide": Guide,
-        "memory": Memory,
-        "photo": Photo,
-        "place": Place,
-    }
-    model = model_by_target[target_type]
-    if session.get(model, target_id) is None:
-        raise HTTPException(status_code=404, detail=f"{target_type.capitalize()} not found")
+def ensure_public_report_target(session: Session, target_type: str, target_id: str) -> None:
+    if target_type == "place":
+        place = session.get(Place, target_id)
+        if place is None or place.status != "published":
+            raise HTTPException(status_code=404, detail="Place not found")
+        return
+
+    if target_type == "guide":
+        guide = session.get(Guide, target_id)
+        if guide is None or guide.status != "published":
+            raise HTTPException(status_code=404, detail="Guide not found")
+        return
+
+    if target_type == "photo":
+        statement = (
+            select(Photo)
+            .join(Place, Place.id == Photo.place_id)
+            .where(Photo.id == target_id)
+            .where(Photo.status == "approved")
+            .where(Place.status == "published")
+        )
+        if session.exec(statement).first() is None:
+            raise HTTPException(status_code=404, detail="Photo not found")
+        return
+
+    if target_type == "memory":
+        statement = (
+            select(Memory)
+            .join(Place, Place.id == Memory.place_id)
+            .where(Memory.id == target_id)
+            .where(Memory.status == "approved")
+            .where(Place.status == "published")
+        )
+        if session.exec(statement).first() is None:
+            raise HTTPException(status_code=404, detail="Memory not found")

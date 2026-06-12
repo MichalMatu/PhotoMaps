@@ -59,7 +59,7 @@ function previewItemVisualItem(item: PlaceMapPreviewItem): PlaceMapVisualItem {
         public_path: item.public_path,
         role: item.role ?? "gallery",
         source: item.source ?? "editorial",
-        status: item.status,
+        status: "approved",
         thumb_path: item.thumb_path,
       })
     : previewMemoryVisualItem(item);

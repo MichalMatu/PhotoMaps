@@ -5,6 +5,10 @@ export function getPlaceMemories(placeId: string): Promise<Memory[]> {
   return request<Memory[]>(`/api/places/${placeId}/memories`);
 }
 
+export function getPlaceMemory(placeId: string, memoryId: string): Promise<Memory> {
+  return request<Memory>(`/api/places/${placeId}/memories/${memoryId}`);
+}
+
 export function uploadAdminPlacePhoto(placeId: string, file: File, caption: string): Promise<Photo> {
   const formData = new FormData();
   formData.append("file", file);

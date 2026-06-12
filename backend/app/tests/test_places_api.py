@@ -4,6 +4,7 @@ from conftest import ADMIN_HEADERS
 from sqlmodel import select
 
 from app.models.category import Category
+from app.models.city import City
 from app.models.guide import Guide, PlaceGuide
 from app.models.memory import Memory
 from app.models.photo import Photo
@@ -42,6 +43,36 @@ def test_public_place_detail_hides_draft_and_archived(client_session) -> None:
 
     assert client.get("/api/places/draft-place").status_code == 404
     assert client.get("/api/places/old-place").status_code == 404
+
+
+def test_public_places_hide_places_from_archived_cities(client_session) -> None:
+    client, session = client_session
+    session.add(City(id="archived-city", name="Archived", lat=52.0, lon=18.0, status="archived"))
+    session.add(
+        Place(city_id="wroclaw", slug="active-city-place", title="Active", lat=51.11, lon=17.03, status="published")
+    )
+    hidden_place = Place(
+        city_id="archived-city",
+        slug="hidden-city-place",
+        title="Hidden",
+        lat=52.0,
+        lon=18.0,
+        status="published",
+    )
+    session.add(hidden_place)
+    session.commit()
+    session.refresh(hidden_place)
+
+    places_response = client.get("/api/places")
+    map_response = client.get("/api/places/map")
+
+    assert places_response.status_code == 200
+    assert map_response.status_code == 200
+    assert [place["slug"] for place in places_response.json()] == ["active-city-place"]
+    assert [place["slug"] for place in map_response.json()] == ["active-city-place"]
+    assert client.get("/api/places/hidden-city-place").status_code == 404
+    assert client.get(f"/api/places/{hidden_place.id}/photos").status_code == 404
+    assert client.get(f"/api/places/{hidden_place.id}/memories").status_code == 404
 
 
 def test_admin_can_list_and_archive_places(client_session) -> None:
@@ -215,9 +246,53 @@ def test_map_places_return_ranked_public_summary_without_private_paths(client_se
     assert [item["kind"] for item in body[0]["preview_items"]] == ["photo", "memory"]
     assert body[0]["preview_items"][0]["id"] == cover_photo.id
     assert body[0]["preview_items"][1]["id"] == memory.id
-    assert body[0]["preview_items"][1]["memory_text"] == "Myśl z miejsca"
+    assert "memory_text" not in body[0]["preview_items"][1]
+    assert "share_slug" not in body[0]["preview_items"][1]
+    assert "status" not in body[0]["preview_items"][1]
     assert body[0]["preview_items"][1]["thumb_path"] == "/media/memories/thumb.jpg"
     assert "original_path" not in body[0]["preview_items"][1]
+
+
+def test_map_preview_keeps_memories_when_place_has_many_photos(client_session) -> None:
+    client, session = client_session
+    place = Place(city_id="wroclaw", slug="busy-place", title="Busy", lat=51.11, lon=17.03, status="published")
+    session.add(place)
+    session.commit()
+    session.refresh(place)
+
+    for index in range(5):
+        session.add(
+            Photo(
+                place_id=place.id,
+                original_path=f"photos/private-{index}.jpg",
+                public_path=f"/media/photos/public-{index}.jpg",
+                thumb_path=f"/media/photos/thumb-{index}.jpg",
+                status="approved",
+                approved_at=datetime(2026, 1, index + 1, tzinfo=UTC),
+            )
+        )
+    for index in range(3):
+        session.add(
+            Memory(
+                place_id=place.id,
+                caption=f"Byłem tutaj {index}",
+                memory_text="Wspomnienie",
+                original_path=f"memories/private-{index}.jpg",
+                public_path=f"/media/memories/public-{index}.jpg",
+                thumb_path=f"/media/memories/thumb-{index}.jpg",
+                status="approved",
+                claim_token_hash=claim_token_hash(f"secret-token-{index}"),
+                approved_at=datetime(2026, 2, index + 1, tzinfo=UTC),
+            )
+        )
+    session.commit()
+
+    response = client.get("/api/places/map")
+
+    assert response.status_code == 200
+    preview_items = response.json()[0]["preview_items"]
+    assert len(preview_items) == 6
+    assert [item["kind"] for item in preview_items] == ["photo", "photo", "photo", "memory", "memory", "memory"]
 
 
 def test_public_media_contracts_never_return_original_path(client_session) -> None:

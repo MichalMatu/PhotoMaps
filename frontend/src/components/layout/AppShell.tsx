@@ -1,5 +1,5 @@
-import { ReactNode, useState } from "react";
-import { BookOpen, MapPinned, Menu, X } from "lucide-react";
+import { type ReactNode, useState } from "react";
+import { BookOpen, Layers, MapPinned, Menu, MessageSquare, Sparkles, X, type LucideIcon } from "lucide-react";
 
 import { APP_NAME } from "../../config/app";
 
@@ -13,6 +13,15 @@ type Props = {
     shortLabel: string;
   };
   children: ReactNode;
+  mapLayerControls?: {
+    items: Array<{
+      active: boolean;
+      count: number;
+      id: string;
+      label: string;
+    }>;
+    onToggle: (layerId: string) => void;
+  };
 };
 
 const primaryItems = [
@@ -20,7 +29,14 @@ const primaryItems = [
   { href: "/guides", label: "Trasy", railLabel: "Trasa", section: "guides" as const, Icon: BookOpen },
 ];
 
-export function AppShell({ activeSection, adminAction, children }: Props) {
+const mapLayerIcons: Record<string, LucideIcon> = {
+  all: Layers,
+  featured: Sparkles,
+  places: MapPinned,
+  memories: MessageSquare,
+};
+
+export function AppShell({ activeSection, adminAction, children, mapLayerControls }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const railItems = primaryItems.filter((item) => item.section !== activeSection);
   const handleAdminAction = () => {
@@ -43,6 +59,28 @@ export function AppShell({ activeSection, adminAction, children }: Props) {
             </a>
           ))}
         </nav>
+
+        {activeSection === "map" && mapLayerControls ? (
+          <nav className="rail-layer-nav" aria-label="Warstwy mapy">
+            {mapLayerControls.items.map((item) => {
+              const LayerIcon = mapLayerIcons[item.id] ?? Sparkles;
+              return (
+                <button
+                  className={item.active ? "rail-layer-button is-active" : "rail-layer-button"}
+                  type="button"
+                  key={item.id}
+                  aria-pressed={item.active}
+                  title={item.label}
+                  onClick={() => mapLayerControls.onToggle(item.id)}
+                >
+                  <LayerIcon aria-hidden="true" size={22} />
+                  <span>{item.label}</span>
+                  <strong>{item.count}</strong>
+                </button>
+              );
+            })}
+          </nav>
+        ) : null}
 
         {adminAction ? (
           <button
@@ -101,6 +139,30 @@ export function AppShell({ activeSection, adminAction, children }: Props) {
             ),
           )}
         </nav>
+
+        {activeSection === "map" && mapLayerControls ? (
+          <nav className="drawer-section drawer-section--layers" aria-label="Warstwy mapy">
+            {mapLayerControls.items.map((item) => {
+              const LayerIcon = mapLayerIcons[item.id] ?? Sparkles;
+              return (
+                <button
+                  className={item.active ? "drawer-item is-active" : "drawer-item"}
+                  type="button"
+                  key={item.id}
+                  aria-pressed={item.active}
+                  onClick={() => {
+                    mapLayerControls.onToggle(item.id);
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  <LayerIcon aria-hidden="true" size={24} />
+                  <span>{item.label}</span>
+                  <strong className="drawer-layer-count">{item.count}</strong>
+                </button>
+              );
+            })}
+          </nav>
+        ) : null}
 
         {adminAction ? (
           <nav className="drawer-section drawer-section--admin" aria-label="Administracja">

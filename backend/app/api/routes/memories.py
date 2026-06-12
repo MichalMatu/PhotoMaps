@@ -47,6 +47,15 @@ def list_place_memories(place_id: str, session: Session = Depends(get_session)) 
     return [memory_to_read(memory) for memory in session.exec(statement).all()]
 
 
+@router.get("/{memory_id}", response_model=MemoryRead)
+def get_public_place_memory(place_id: str, memory_id: str, session: Session = Depends(get_session)) -> MemoryRead:
+    place = ensure_public_place(place_id, session)
+    memory = session.get(Memory, memory_id)
+    if memory is None or memory.place_id != place.id or memory.status != "approved":
+        raise HTTPException(status_code=404, detail="Memory not found")
+    return memory_to_read(memory)
+
+
 @router.post("", response_model=MemoryRead, status_code=201)
 async def upload_place_memory(
     place_id: str,

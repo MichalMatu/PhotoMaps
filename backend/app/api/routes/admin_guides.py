@@ -11,7 +11,7 @@ from app.schemas.guide import GuideCreate, GuideDetailRead, GuidePlaceCreate, Gu
 from app.serializers.guide import guide_to_detail, guide_to_read
 from app.services.guide_deletion import delete_guide_permanently
 from app.services.guide_previews import approved_cover_photos_by_place
-from app.services.guides import ensure_guide_slug_available, ensure_guide_status
+from app.services.guides import ensure_guide_places_publishable, ensure_guide_slug_available, ensure_guide_status
 
 router = APIRouter(prefix="/api/admin/guides", tags=["admin guides"], dependencies=[Depends(require_admin_token)])
 
@@ -67,6 +67,8 @@ def update_guide(guide_id: str, payload: GuideUpdate, session: Session = Depends
     data = payload.model_dump(exclude_unset=True)
     if "status" in data and data["status"] is not None:
         ensure_guide_status(data["status"])
+        if data["status"] == "published":
+            ensure_guide_places_publishable(session, guide.id)
     if "slug" in data and data["slug"] is not None:
         ensure_guide_slug_available(session, data["slug"], guide.id)
 
@@ -102,6 +104,8 @@ def add_place_to_guide(
     place = session.get(Place, payload.place_id)
     if place is None:
         raise HTTPException(status_code=404, detail="Place not found")
+    if place.status != "published":
+        raise HTTPException(status_code=409, detail="Guide places must be published")
 
     existing = session.get(PlaceGuide, (guide_id, payload.place_id))
     if existing is None:
