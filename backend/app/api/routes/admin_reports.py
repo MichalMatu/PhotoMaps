@@ -47,3 +47,14 @@ def update_report(
     session.commit()
     session.refresh(report)
     return report_to_read(report)
+
+
+@router.delete("/{report_id}", status_code=204)
+def delete_report(report_id: str, session: Session = Depends(get_session)) -> None:
+    report = session.get(Report, report_id)
+    if report is None:
+        raise HTTPException(status_code=404, detail="Report not found")
+
+    session.delete(report)
+    session.commit()
+    return None

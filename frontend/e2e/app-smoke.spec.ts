@@ -399,7 +399,10 @@ test("visitor can add a memory and admin can approve it through UI", async ({ pa
   await expect(page.locator(`[title="${caption}"]`)).toBeVisible();
 });
 
-test("visitor can report a photo and admin can close the report through UI", async ({ page, request }) => {
+test("visitor can report a photo and admin can inspect, close and delete the report through UI", async ({
+  page,
+  request,
+}) => {
   const suffix = `${Date.now()}-${test.info().workerIndex}`;
   const photoCaption = `Zdjęcie do zgłoszenia ${suffix}`;
   const reportMessage = `Opis problemu e2e ${suffix}`;
@@ -436,15 +439,32 @@ test("visitor can report a photo and admin can close the report through UI", asy
   await page.getByRole("button", { name: /Otwarte/ }).click();
 
   const openReport = page.locator(".report-item").filter({ hasText: reportMessage });
-  await expect(openReport).toContainText("open");
-  await expect(openReport).toContainText("bad_photo");
-  await openReport.getByRole("button", { name: "Zamknij" }).click();
+  await expect(openReport).toContainText("otwarte");
+  await expect(openReport).toContainText("Problem ze zdjęciem");
+  await openReport.getByRole("button", { name: "Otwórz" }).click();
+
+  const reportDialog = page.getByRole("dialog", { name: "Problem ze zdjęciem" });
+  await expect(reportDialog).toBeVisible();
+  await expect(reportDialog).toContainText(reportMessage);
+  await expect(reportDialog).toContainText("otwarte");
+  await reportDialog.getByRole("button", { name: "Zamknij zgłoszenie" }).click();
+  await expect(reportDialog).toContainText("zamknięte");
+  await reportDialog.getByRole("button", { name: "Gotowe" }).click();
   await expect(openReport).toBeHidden();
 
   await page.getByRole("button", { name: /Zamknięte/ }).click();
   const closedReport = page.locator(".report-item").filter({ hasText: reportMessage });
-  await expect(closedReport).toContainText("closed");
-  await expect(closedReport).toContainText("bad_photo");
+  await expect(closedReport).toContainText("zamknięte");
+  await expect(closedReport).toContainText("Problem ze zdjęciem");
+  await closedReport.getByRole("button", { name: "Otwórz" }).click();
+  await expect(reportDialog).toBeVisible();
+  await reportDialog.getByRole("button", { name: "Usuń" }).click();
+
+  const deleteDialog = page.getByRole("dialog", { name: "Usunąć zgłoszenie?" });
+  await expect(deleteDialog).toBeVisible();
+  await deleteDialog.getByRole("button", { name: "Usuń trwale" }).click();
+  await expect(deleteDialog).toBeHidden();
+  await expect(closedReport).toBeHidden();
 });
 
 test("map motion states animate viewer, detail modal and sheets", async ({ page, request }) => {

@@ -8,6 +8,7 @@ EXPECTED_MUTATION_OPERATIONS = {
     ("DELETE", "/api/admin/memories/{memory_id}"),
     ("DELETE", "/api/admin/photos/{photo_id}"),
     ("DELETE", "/api/admin/places/{place_id}"),
+    ("DELETE", "/api/admin/reports/{report_id}"),
     ("DELETE", "/api/places/{place_id}/memories/{memory_id}"),
     ("PATCH", "/api/admin/categories/{category_id}"),
     ("PATCH", "/api/admin/guides/{guide_id}"),

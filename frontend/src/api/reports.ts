@@ -22,3 +22,9 @@ export function updateReport(
     body: JSON.stringify(payload),
   });
 }
+
+export function deleteAdminReport(reportId: string): Promise<void> {
+  return request<void>(`/api/admin/reports/${reportId}`, {
+    method: "DELETE",
+  });
+}
