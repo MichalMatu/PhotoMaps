@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
 import { mediaUrl, type PlaceMapItem } from "../../api/client";
+import { motionClassName, useDeferredClose } from "../ui/motionPresence";
 import type { PlaceMapVisualItem } from "./placePreview";
 
 type Props = {
@@ -12,10 +13,12 @@ type Props = {
 };
 
 export function MapPhotoViewer({ item, onClose, onOpenDetails, place }: Props) {
+  const { isExiting, requestClose } = useDeferredClose(onClose);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        onClose();
+        requestClose();
       }
     };
 
@@ -24,15 +27,15 @@ export function MapPhotoViewer({ item, onClose, onOpenDetails, place }: Props) {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [onClose]);
+  }, [requestClose]);
 
   return createPortal(
     <div
-      className="map-photo-viewer"
+      className={motionClassName(["map-photo-viewer"], isExiting)}
       role="dialog"
       aria-modal="true"
       aria-label={`Zdjęcie: ${place.title}`}
-      onClick={onClose}
+      onClick={requestClose}
     >
       <div className="map-photo-viewer-image-wrap" onClick={(event) => event.stopPropagation()}>
         <button

@@ -398,9 +398,19 @@
   z-index: 10000;
 }
 
+.map-photo-viewer.is-exiting {
+  animation-name: map-photo-viewer-backdrop-out;
+  pointer-events: none;
+}
+
 .map-photo-viewer-image-wrap {
   animation: map-photo-viewer-image-in var(--motion-duration-slow) var(--motion-ease-emphasised) 80ms both;
   position: relative;
+  will-change: filter, opacity, transform;
+}
+
+.map-photo-viewer.is-exiting .map-photo-viewer-image-wrap {
+  animation: map-photo-viewer-image-out var(--motion-duration-regular) var(--motion-ease-standard) both;
 }
 
 .map-photo-viewer-image-button {
@@ -480,6 +490,16 @@
   }
 }
 
+@keyframes map-photo-viewer-backdrop-out {
+  from {
+    background: var(--surface-backdrop-photo);
+  }
+
+  to {
+    background: var(--surface-backdrop-photo-start);
+  }
+}
+
 @keyframes map-photo-viewer-image-in {
   from {
     filter: blur(8px) brightness(0.78) saturate(0.88);
@@ -495,6 +515,20 @@
     filter: blur(0) brightness(1) saturate(1);
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes map-photo-viewer-image-out {
+  from {
+    filter: blur(0) brightness(1) saturate(1);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    filter: blur(4px) brightness(0.86) saturate(0.94);
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
   }
 }
 
@@ -586,6 +620,7 @@
 
 .photo-detail-backdrop {
   align-items: center;
+  animation: photo-detail-backdrop-in var(--motion-duration-regular) var(--motion-ease-standard) both;
   background: var(--surface-backdrop-modal);
   display: flex;
   inset: 0;
@@ -595,7 +630,13 @@
   z-index: 11000;
 }
 
+.photo-detail-backdrop.is-exiting {
+  animation-name: photo-detail-backdrop-out;
+  pointer-events: none;
+}
+
 .photo-detail-modal {
+  animation: photo-detail-modal-in var(--motion-duration-regular) var(--motion-ease-emphasised) both;
   background: var(--surface-panel);
   backdrop-filter: var(--blur-glass);
   border: 1px solid var(--border-subtle);
@@ -608,7 +649,13 @@
   max-width: min(720px, calc(100vw - 24px));
   min-width: min(320px, calc(100vw - 24px));
   overflow: hidden;
+  transform-origin: center;
+  will-change: opacity, transform;
   width: fit-content;
+}
+
+.photo-detail-backdrop.is-exiting .photo-detail-modal {
+  animation: photo-detail-modal-out var(--motion-duration-regular) var(--motion-ease-standard) both;
 }
 
 .photo-detail-modal.is-dragging {
@@ -750,6 +797,54 @@
   justify-content: flex-end;
 }
 
+@keyframes photo-detail-backdrop-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes photo-detail-backdrop-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes photo-detail-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.975);
+  }
+
+  60% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes photo-detail-modal-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+}
+
 .memory-owner-tools {
   border-top: 1px solid var(--border-subtle);
   display: grid;
@@ -826,4 +921,46 @@
   font-size: var(--text-label);
   line-height: 1.35;
   overflow-wrap: anywhere;
+}
+
+@keyframes map-motion-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes map-motion-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-photo-viewer,
+  .photo-detail-backdrop {
+    animation-name: map-motion-fade-in;
+  }
+
+  .map-photo-viewer.is-exiting,
+  .photo-detail-backdrop.is-exiting {
+    animation-name: map-motion-fade-out;
+  }
+
+  .map-photo-viewer-image-wrap,
+  .photo-detail-modal {
+    animation-name: map-motion-fade-in;
+  }
+
+  .map-photo-viewer.is-exiting .map-photo-viewer-image-wrap,
+  .photo-detail-backdrop.is-exiting .photo-detail-modal {
+    animation-name: map-motion-fade-out;
+  }
 }

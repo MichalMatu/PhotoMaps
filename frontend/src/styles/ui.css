@@ -401,6 +401,7 @@ label.checkbox-field.consent-field {
 }
 
 .pm-sheet {
+  animation: pm-sheet-in var(--motion-duration-regular) var(--motion-ease-emphasised) both;
   background: var(--surface-panel);
   backdrop-filter: var(--blur-glass);
   border: 1px solid var(--border-subtle);
@@ -413,8 +414,15 @@ label.checkbox-field.consent-field {
   position: fixed;
   right: 24px;
   top: 24px;
+  transform-origin: top right;
+  will-change: opacity, transform;
   width: min(430px, calc(100vw - 112px));
   z-index: 1600;
+}
+
+.pm-sheet.is-exiting {
+  animation: pm-sheet-out var(--motion-duration-regular) var(--motion-ease-standard) both;
+  pointer-events: none;
 }
 
 .pm-sheet--report {
@@ -503,8 +511,85 @@ label.checkbox-field.consent-field {
   }
 }
 
+@keyframes pm-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateX(18px) scale(0.985);
+  }
+
+  65% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes pm-sheet-out {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(14px) scale(0.99);
+  }
+}
+
+@keyframes pm-sheet-mobile-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+
+  65% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pm-sheet-mobile-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+@keyframes pm-sheet-reduced-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pm-sheet-reduced-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
 @media (max-width: 860px) {
   .pm-sheet {
+    animation-name: pm-sheet-mobile-in;
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     bottom: 0;
     height: auto;
@@ -513,6 +598,10 @@ label.checkbox-field.consent-field {
     right: 0;
     top: auto;
     width: auto;
+  }
+
+  .pm-sheet.is-exiting {
+    animation-name: pm-sheet-mobile-out;
   }
 
   .pm-sheet--report {
@@ -535,5 +624,15 @@ label.checkbox-field.consent-field {
 
   .pm-sheet__header {
     padding-top: var(--space-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pm-sheet {
+    animation-name: pm-sheet-reduced-in;
+  }
+
+  .pm-sheet.is-exiting {
+    animation-name: pm-sheet-reduced-out;
   }
 }

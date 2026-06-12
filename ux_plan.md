@@ -9,8 +9,8 @@ Ten plan porządkuje luźne sugestie w kolejność prac, którą można realizow
 - Zrobione: komponentowa naprawa tabeli miejsc w adminie bez `.table-row span` i bez `!important` w `admin-tables.css`.
 - Zrobione: domknięcie CSS baseline w `base.css`, `layout.css`, `map-tools.css`, `map.css` i `ui.css`.
 - Zrobione: admin polish jako osobny, kompaktowy tryb; domknięte są listy miejsc, kategorii, przewodników, zgłoszeń, zdjęć miejsca oraz wspólne kolejki zdjęć/pamiątek.
-- W toku: motion system mapy; wykonany jest pierwszy slice dla stanów markera, otwarcia fana, desktop hover, mobile touch i `prefers-reduced-motion`.
-- Zostało: motion viewera i sheetów, system zdjęć z loading/aspect-ratio, screenshot regression, kontrakt i widok przewodników.
+- Zrobione: motion system mapy; domknięte są stany markera, otwarcie fana, hover/active, viewer zdjęcia, modal szczegółów, sheety, zamykanie oraz `prefers-reduced-motion`.
+- Zostało: system zdjęć z loading/aspect-ratio, screenshot regression, kontrakt i widok przewodników.
 
 ## Rekomendowana kolejność
 

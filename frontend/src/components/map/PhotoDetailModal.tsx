@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 
 import { mediaUrl, type Memory, type PlaceMapItem } from "../../api/client";
 import { ErrorModal } from "../ui/ErrorModal";
+import { motionClassName, useDeferredClose } from "../ui/motionPresence";
 import { stopFloatingWindowEvent, useDraggableWindow } from "../ui/useDraggableWindow";
 import { MemoryOwnerTools } from "./MemoryOwnerTools";
 import type { PlaceMapVisualItem } from "./placePreview";
@@ -44,18 +45,19 @@ function previewMemoryToMemory(item: PlaceMapVisualItem): Memory | null {
 
 export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
   const draggableWindow = useDraggableWindow<HTMLDivElement>("photo-detail-modal");
+  const { isExiting, requestClose } = useDeferredClose(onClose);
   const memorySource = previewMemoryToMemory(item);
   const memoryOwnerTools = useMemoryOwnerTools({
     itemKey: `${item.kind}:${item.id}`,
     memory: memorySource,
-    onDeleted: onClose,
+    onDeleted: requestClose,
     placeId: place.id,
   });
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        onClose();
+        requestClose();
       }
     };
 
@@ -64,12 +66,15 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [onClose]);
+  }, [requestClose]);
 
   return createPortal(
-    <div className="photo-detail-backdrop" role="presentation" onClick={onClose}>
+    <div className={motionClassName(["photo-detail-backdrop"], isExiting)} role="presentation" onClick={requestClose}>
       <article
-        className={draggableWindow.isDragging ? "photo-detail-modal is-dragging" : "photo-detail-modal"}
+        className={motionClassName(
+          ["photo-detail-modal", draggableWindow.isDragging ? "is-dragging" : null],
+          isExiting,
+        )}
         role="dialog"
         aria-modal="true"
         aria-labelledby="photo-detail-title"
@@ -97,7 +102,7 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
             type="button"
             onClick={(event) => {
               event.stopPropagation();
-              onClose();
+              requestClose();
             }}
             aria-label="Zamknij"
           >

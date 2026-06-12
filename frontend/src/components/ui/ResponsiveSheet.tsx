@@ -2,6 +2,7 @@ import { type ReactNode, type SyntheticEvent, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
+import { motionClassName, useDeferredClose } from "./motionPresence";
 import { stopFloatingWindowEvent, useDraggableWindow } from "./useDraggableWindow";
 
 type Props = {
@@ -26,6 +27,7 @@ export function ResponsiveSheet({
   onClose,
 }: Props) {
   const draggableWindow = useDraggableWindow<HTMLElement>(storageId, open);
+  const { isExiting, requestClose } = useDeferredClose(onClose);
 
   useEffect(() => {
     if (!open) {
@@ -34,7 +36,7 @@ export function ResponsiveSheet({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        onClose();
+        requestClose();
       }
     };
 
@@ -43,7 +45,7 @@ export function ResponsiveSheet({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [onClose, open]);
+  }, [open, requestClose]);
 
   if (!open) {
     return null;
@@ -53,7 +55,7 @@ export function ResponsiveSheet({
 
   return createPortal(
     <aside
-      className={["pm-sheet", className, draggableWindow.isDragging ? "is-dragging" : null].filter(Boolean).join(" ")}
+      className={motionClassName(["pm-sheet", className, draggableWindow.isDragging ? "is-dragging" : null], isExiting)}
       aria-label={title}
       ref={draggableWindow.windowRef}
       style={draggableWindow.style}
@@ -71,7 +73,7 @@ export function ResponsiveSheet({
           {subtitle ? <div className="pm-sheet__subtitle">{subtitle}</div> : null}
           <h2>{title}</h2>
         </div>
-        <button className="pm-sheet__close" type="button" onClick={onClose} aria-label="Zamknij panel">
+        <button className="pm-sheet__close" type="button" onClick={requestClose} aria-label="Zamknij panel">
           <X aria-hidden="true" size={18} />
         </button>
       </header>
