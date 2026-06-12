@@ -10,6 +10,11 @@
   height: 100%;
   min-height: 100vh;
   min-height: 100dvh;
+  --map-marker-hover-lift: -2px;
+  --map-marker-hover-scale: 1.035;
+  --map-marker-selected-lift: -3px;
+  --map-marker-selected-scale: 1.045;
+  --map-fan-hover-scale: 1.07;
   width: 100%;
 }
 
@@ -113,6 +118,9 @@
   display: block;
   height: 28px;
   transform: rotate(-45deg);
+  transition:
+    box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
+    transform var(--motion-duration-fast) var(--motion-ease-standard);
   width: 28px;
 }
 
@@ -132,6 +140,7 @@
   box-shadow:
     0 0 0 8px var(--accent-soft),
     var(--elevation-pin-selected);
+  transform: rotate(-45deg) scale(var(--map-marker-selected-scale));
 }
 
 .place-photo-marker {
@@ -153,6 +162,12 @@
   height: var(--place-marker-height, 52px);
   overflow: hidden;
   position: relative;
+  transform: translateY(0) scale(1);
+  transform-origin: center;
+  transition:
+    box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
+    filter var(--motion-duration-fast) var(--motion-ease-standard),
+    transform var(--motion-duration-fast) var(--motion-ease-standard);
   width: var(--place-marker-width, 64px);
 }
 
@@ -164,7 +179,7 @@
 
 .place-photo-marker.is-selected span {
   box-shadow: var(--elevation-marker-selected);
-  transform: translateY(-2px);
+  transform: translateY(var(--map-marker-selected-lift)) scale(var(--map-marker-selected-scale));
 }
 
 .place-photo-marker.is-memory span {
@@ -189,7 +204,47 @@
 .place-photo-marker.is-map-icon.is-selected span {
   box-shadow: none;
   filter: var(--shadow-map-icon-selected);
-  transform: translateY(-2px) scale(1.04);
+  transform: translateY(var(--map-marker-selected-lift)) scale(var(--map-marker-selected-scale));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .place-marker-icon:hover span {
+    box-shadow: var(--elevation-pin-selected);
+    transform: rotate(-45deg) scale(var(--map-marker-hover-scale));
+  }
+
+  .place-marker-icon.is-selected:hover span {
+    transform: rotate(-45deg) scale(var(--map-marker-selected-scale));
+  }
+
+  .place-photo-marker:hover span {
+    box-shadow: var(--elevation-marker-hover);
+    filter: saturate(1.05);
+    transform: translateY(var(--map-marker-hover-lift)) scale(var(--map-marker-hover-scale));
+  }
+
+  .place-photo-marker.is-selected:hover span {
+    box-shadow: var(--elevation-marker-selected);
+    transform: translateY(var(--map-marker-selected-lift)) scale(var(--map-marker-selected-scale));
+  }
+
+  .place-photo-marker.is-map-icon:hover span {
+    box-shadow: none;
+    filter: var(--shadow-map-icon-selected);
+    transform: translateY(var(--map-marker-hover-lift)) scale(var(--map-marker-hover-scale));
+  }
+
+  .place-photo-marker.is-map-icon.is-selected:hover span {
+    transform: translateY(var(--map-marker-selected-lift)) scale(var(--map-marker-selected-scale));
+  }
+
+  .photo-fan-marker:hover span,
+  .photo-fan-add-marker:hover span {
+    box-shadow: var(--elevation-marker-hover);
+    filter: saturate(1.06);
+    transform: translate(calc(-50% + var(--fan-x, 0px)), calc(-50% + var(--fan-y, 0px)))
+      scale(var(--map-fan-hover-scale));
+  }
 }
 
 .photo-fan-marker,
@@ -215,13 +270,6 @@
     filter var(--motion-duration-fast) var(--motion-ease-standard),
     transform var(--motion-duration-fast) var(--motion-ease-standard);
   will-change: transform, opacity;
-}
-
-.photo-fan-marker:hover span,
-.photo-fan-add-marker:hover span {
-  box-shadow: var(--elevation-marker-hover);
-  filter: saturate(1.06);
-  transform: translate(calc(-50% + var(--fan-x, 0px)), calc(-50% + var(--fan-y, 0px))) scale(1.07);
 }
 
 .photo-fan-marker span {
@@ -304,6 +352,37 @@
   100% {
     opacity: 1;
     transform: translate(calc(-50% + var(--fan-x, 0px)), calc(-50% + var(--fan-y, 0px))) scale(1);
+  }
+}
+
+@keyframes photo-fan-reduced-in {
+  from {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--fan-x, 0px)), calc(-50% + var(--fan-y, 0px))) scale(1);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--fan-x, 0px)), calc(-50% + var(--fan-y, 0px))) scale(1);
+  }
+}
+
+@media (max-width: 520px) {
+  .photo-fan-marker span {
+    height: 56px;
+    width: 56px;
+  }
+
+  .photo-fan-add-marker span {
+    height: 38px;
+    width: 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photo-fan-marker span,
+  .photo-fan-add-marker span {
+    animation-name: photo-fan-reduced-in;
   }
 }
 

@@ -5,6 +5,7 @@ import { Marker } from "react-leaflet";
 import { mediaUrl, type PlaceMapItem } from "../../api/client";
 import { escapeAttribute } from "./mapHtml";
 import { getPlaceMarkerLayout, getSquarePlaceMarkerLayout, type PlaceMarkerLayout } from "./mapMarkerScale";
+import { fanMotionStyle, getPlaceFanMotionLayout, type FanMotionItem } from "./mapMotion";
 import { getPlaceFanItems, getPlacePreviewVisual, isMapIconVisualItem, type PlaceMapVisualItem } from "./placePreview";
 
 function markerIcon(previewItem: PlaceMapVisualItem | null, isSelected: boolean, layout: PlaceMarkerLayout) {
@@ -34,12 +35,7 @@ function markerIcon(previewItem: PlaceMapVisualItem | null, isSelected: boolean,
   });
 }
 
-type FanOffset = {
-  x: number;
-  y: number;
-};
-
-function fanVisualIcon(item: PlaceMapVisualItem, offset: FanOffset, index: number) {
+function fanVisualIcon(item: PlaceMapVisualItem, motion: FanMotionItem) {
   const imageUrl = escapeAttribute(mediaUrl(item.thumb_path));
   return L.divIcon({
     className: [
@@ -49,16 +45,16 @@ function fanVisualIcon(item: PlaceMapVisualItem, offset: FanOffset, index: numbe
     ]
       .filter(Boolean)
       .join(" "),
-    html: `<span style="--photo-fan-image: url('${imageUrl}'); ${fanAnimationStyle(offset, index)}"></span>`,
+    html: `<span style="--photo-fan-image: url('${imageUrl}'); ${fanMotionStyle(motion)}"></span>`,
     iconAnchor: [0, 0],
     iconSize: [1, 1],
   });
 }
 
-function fanAddIcon(offset: FanOffset, index: number) {
+function fanAddIcon(motion: FanMotionItem) {
   return L.divIcon({
     className: "photo-fan-add-marker",
-    html: `<span style="${fanAnimationStyle(offset, index)}">+</span>`,
+    html: `<span style="${fanMotionStyle(motion)}">+</span>`,
     iconAnchor: [0, 0],
     iconSize: [1, 1],
   });
@@ -66,27 +62,6 @@ function fanAddIcon(offset: FanOffset, index: number) {
 
 function stopMarkerClick(event: L.LeafletMouseEvent) {
   L.DomEvent.stop(event.originalEvent);
-}
-
-function fanAnimationStyle(offset: FanOffset, index: number) {
-  const delay = Math.min(index * 32, 180);
-
-  return `--fan-x: ${offset.x}px; --fan-y: ${offset.y}px; --fan-delay: ${delay}ms;`;
-}
-
-function fanOffsets(itemCount: number) {
-  const radius = Math.min(92, Math.max(58, 46 + itemCount * 6));
-  const angleStep = itemCount <= 1 ? 0 : Math.PI / Math.max(1, itemCount - 1);
-  const startAngle = -Math.PI + (Math.PI - angleStep * (itemCount - 1)) / 2;
-
-  return Array.from({ length: itemCount }, (_, index) => {
-    const angle = startAngle + index * angleStep;
-
-    return {
-      x: Math.round(Math.cos(angle) * radius),
-      y: Math.round(Math.sin(angle) * radius) - 12,
-    };
-  });
 }
 
 type Props = {
@@ -113,19 +88,16 @@ export function PlaceMarker({ place, isExpanded, onMemoryOpen, onToggleFan, onVi
   const markerTitle = previewItem && isMapIconVisualItem(previewItem) ? undefined : place.title;
 
   const fanLayout = useMemo(() => {
-    return fanOffsets(fanItemCount).map((offset) => ({
-      offset,
+    return getPlaceFanMotionLayout(fanItemCount).map((motion) => ({
+      motion,
       position: L.latLng(place.lat, place.lon),
     }));
   }, [fanItemCount, place.lat, place.lon]);
   const fanVisualIcons = useMemo(
-    () => fanItems.map((item, index) => fanVisualIcon(item, fanLayout[index].offset, index)),
+    () => fanItems.map((item, index) => fanVisualIcon(item, fanLayout[index].motion)),
     [fanItems, fanLayout],
   );
-  const fanAddMarkerIcon = useMemo(
-    () => fanAddIcon(fanLayout[fanItems.length].offset, fanItems.length),
-    [fanItems.length, fanLayout],
-  );
+  const fanAddMarkerIcon = useMemo(() => fanAddIcon(fanLayout[fanItems.length].motion), [fanItems.length, fanLayout]);
 
   return (
     <>
