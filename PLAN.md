@@ -2,36 +2,42 @@
 
 Ten plan opisuje najbliższe iteracje. Aktualny priorytet to zbudować realną próbkę danych i dopiero na niej dopracowywać mapę. Mapa już używa miniaturek, więc nie projektujemy w ciemno kolejnych zachowań bez treści.
 
+Stan po ostatniej iteracji:
+
+- admin może dodać miejsce i od razu dodać zdjęcie główne,
+- w edycji miejsca można zarządzać zdjęciami miejsca,
+- adminowy upload zdjęć jest redakcyjny i nie wymaga osobnej moderacji,
+- przewodniki mają szybsze dodawanie wielu miejsc i prostą zmianę kolejności,
+- zwykłe zdjęcia miejsc są akceptowanym materiałem bazowym,
+- ikony/ilustracyjne kafle są opcjonalną warstwą jakościową, nie blockerem.
+
 ## Cel najbliższego etapu
 
-Stworzyć podstawę do oceny doświadczenia mapy:
+Stworzyć pierwszą realną paczkę danych do oceny mapy:
 
 - 10-15 sensownych miejsc we Wrocławiu,
 - każde miejsce ma miasto, kategorie, opis, lokalny komentarz i pozycję,
-- każde opublikowane miejsce ma zatwierdzone zdjęcie główne,
+- każde opublikowane miejsce ma dobre zdjęcie główne,
 - kilka miejsc ma więcej zdjęć, żeby sprawdzić wachlarz miniatur,
-- kilka miejsc ma pamiątki testowe,
 - miejsca mają różne priorytety redakcyjne, żeby sprawdzić ranking i rozmiary.
 
 ## Iteracja 1: Dane startowe
 
-Najpierw budujemy materiał do testowania mapy. Nie klikamy masowo miejsc ręcznie w adminie; panel admina zostaje do korekt i moderacji. Większe partie danych dodajemy przez [content pipeline](docs/content-pipeline.md).
+Najpierw budujemy materiał do testowania mapy. Na małą pierwszą paczkę można używać panelu admina, bo flow dodawania miejsca i zdjęcia jest już uproszczony. Większe partie danych nadal warto dodawać przez [content pipeline](docs/content-pipeline.md).
+
+Na tym etapie nie blokujemy się ikonami. Jeśli mamy dobre zwykłe zdjęcie miejsca, wrzucamy je jako zdjęcie główne. Ikony i ilustracyjne kafle zostają jako późniejsze ulepszenie wizualne.
 
 Do zrobienia:
 
-- wybrać pierwsze 10-15 miejsc,
-- uzupełnić manifest miasta w [content/cities/wroclaw/manifest.json](content/cities/wroclaw/manifest.json),
-- przygotować spójne miniatury/ikony według [promptu generowania](docs/image_generation/place-thumbnails.md), jeśli nie mamy jeszcze dobrych zdjęć,
-- trzymać robocze i finalne ikony w [assets/place-icons](assets/place-icons/README.md),
+- wybrać pierwsze 10-15 miejsc we Wrocławiu,
+- dla każdego miejsca dodać lokalizację, kategorię/kategorie, opis i lokalny komentarz,
+- dodać zwykłe zdjęcie główne, jeśli nie ma jeszcze dobrej ikony,
+- przy kilku miejscach dodać 2-4 dodatkowe zdjęcia,
+- ustawić status `published` tylko dla gotowych miejsc,
+- ustawić różne priorytety redakcyjne,
+- opcjonalnie stworzyć pierwszy prosty przewodnik z kilku miejsc,
 - zrobić backup przez `./scripts/backup_local_data.sh`,
-- zaimportować miejsca, ikony i przewodniki przez `scripts/content/import_city.py`,
-- użyć admina do korekt,
-- przypisać jedną lub kilka kategorii z panelu admina,
-- dodać i zatwierdzić zdjęcia,
-- ustawić dobre zdjęcia główne,
-- uzupełnić krótkie lokalne komentarze,
-- dodać kilka pamiątek testowych,
-- sprawdzić, czy publiczna mapa pokazuje tylko `published`.
+- sprawdzić publiczną mapę.
 
 Efekt końcowy:
 
@@ -53,7 +59,7 @@ Do oceny i poprawy:
 - czy wachlarz po kliknięciu jest czytelny,
 - czy mapa po wejściu robi efekt "chcę to sprawdzić".
 
-Nie zmieniać jeszcze moderacji, jeśli obecny flow wystarcza do budowania bazy. Upload zachowuje PNG i przezroczystość, a wygenerowane ikony importujemy jako media `map_icon`, oddzielone od zwykłej galerii zdjęć.
+Nie zmieniać teraz fundamentu danych, jeśli obecny flow wystarcza do budowania bazy. Zwykłe zdjęcia są materiałem bazowym. PNG i przezroczystość zostają wspierane, a wygenerowane ikony można później dodawać jako bardziej dopracowane miniatury.
 
 ## Iteracja 3: Warstwy i kategorie
 
@@ -116,4 +122,12 @@ Po ustabilizowaniu mapy:
 
 ## Zasada robocza
 
-Nie dodajemy dużych nowych funkcji, dopóki mapa nie działa dobrze na realnej próbce danych. Najbliższy nacisk: dane startowe, potem dopracowanie mapy, potem warstwy.
+Nie dodajemy dużych nowych funkcji, dopóki mapa nie działa dobrze na realnej próbce danych.
+
+Najbliższy nacisk:
+
+```txt
+dane startowe -> ocena mapy -> rozmiary/gęstość/zoom -> warstwy
+```
+
+Ikony nie są blockerem. Jeśli zwykłe zdjęcie dobrze pokazuje miejsce, używamy zdjęcia.
