@@ -21,6 +21,7 @@ type Props = {
   size?: "default" | "wide" | "large";
   title: string;
   tone?: "default" | "danger" | "error";
+  variant?: "default" | "media";
 };
 
 let nextModalStackId = 1;
@@ -41,6 +42,7 @@ export function SystemModal({
   size = "default",
   title,
   tone = "default",
+  variant = "default",
 }: Props) {
   const draggableWindow = useDraggableWindow<HTMLDivElement>("system-modal");
   const modalStackId = useRef(nextModalStackId++).current;
@@ -77,7 +79,7 @@ export function SystemModal({
   return createPortal(
     <div className="system-modal-backdrop" role="presentation" onClick={isBusy ? undefined : onClose}>
       <div
-        className={`system-modal system-modal--${tone} system-modal--${size}${draggableWindow.isDragging ? " is-dragging" : ""}`}
+        className={`system-modal system-modal--${tone} system-modal--${size} system-modal--${variant}${draggableWindow.isDragging ? " is-dragging" : ""}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}

@@ -43,6 +43,23 @@
     --surface-media-soft: rgb(16 18 22 / 68%);
     --surface-on-media-hover: rgb(255 255 255 / 12%);
     --surface-media-caption: linear-gradient(180deg, rgb(0 0 0 / 0%) 0%, rgb(0 0 0 / 72%) 100%);
+    --surface-media-header-gradient: linear-gradient(
+      180deg,
+      rgb(0 0 0 / 64%) 0%,
+      rgb(0 0 0 / 34%) 62%,
+      rgb(0 0 0 / 0%) 100%
+    );
+    --surface-media-bottom-gradient: linear-gradient(
+      0deg,
+      rgb(0 0 0 / 70%) 0%,
+      rgb(0 0 0 / 35%) 34%,
+      rgb(0 0 0 / 0%) 68%
+    );
+    --surface-media-glass-note: linear-gradient(135deg, rgb(255 255 255 / 30%), rgb(255 255 255 / 12%));
+    --surface-media-glass-action: linear-gradient(135deg, rgb(255 255 255 / 34%), rgb(255 255 255 / 14%));
+    --surface-media-glass-action-hover: linear-gradient(135deg, rgb(255 255 255 / 52%), rgb(255 255 255 / 24%));
+    --surface-media-control: rgb(39 39 42 / 66%);
+    --surface-media-control-hover: rgb(245 245 245 / 86%);
     --surface-backdrop-photo: rgb(0 0 0 / 68%);
     --surface-backdrop-photo-start: rgb(0 0 0 / 34%);
     --surface-backdrop-drawer: rgb(0 0 0 / 28%);
@@ -55,11 +72,15 @@
     --content-on-accent: #ffffff;
     --content-on-media: #ffffff;
     --content-on-media-muted: rgb(255 255 255 / 82%);
+    --content-on-media-glass: rgb(255 255 255 / 92%);
+    --content-media-control: rgb(245 245 245 / 86%);
+    --content-media-control-hover: rgb(39 39 42);
     --content-danger-on-media: #ffb7b1;
 
     --border-subtle: rgb(60 60 67 / 18%);
     --border-strong: rgb(60 60 67 / 28%);
     --border-on-media-subtle: rgb(255 255 255 / 18%);
+    --border-media-control: rgb(255 255 255 / 24%);
     --focus-ring: rgb(0 122 255 / 70%);
     --focus-soft: 0 0 0 3px var(--accent-soft);
 
@@ -77,6 +98,11 @@
     --shadow-card: 0 18px 50px rgb(0 0 0 / 14%);
     --shadow-sheet: 0 24px 70px rgb(0 0 0 / 24%);
     --shadow-spotlight: 0 30px 100px rgb(0 0 0 / 28%);
+    --shadow-media-glass-note: 0 14px 44px rgb(0 0 0 / 26%);
+    --shadow-media-glass-action: 0 14px 44px rgb(0 0 0 / 24%);
+    --shadow-media-glass-note-text: 0 1px 12px rgb(0 0 0 / 42%);
+    --shadow-media-glass-action-text: 0 1px 12px rgb(0 0 0 / 36%);
+    --shadow-media-header-text: 0 2px 18px rgb(0 0 0 / 48%);
     --elevation-low: var(--shadow-raised);
     --elevation-panel: var(--shadow-card);
     --elevation-floating: var(--shadow-sheet);

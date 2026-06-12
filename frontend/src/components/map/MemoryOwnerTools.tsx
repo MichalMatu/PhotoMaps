@@ -4,6 +4,7 @@ import {
   MEMORY_CAPTION_MAX_LENGTH,
   MEMORY_TEXT_MAX_LENGTH,
 } from "../places/memoryValidation";
+import { SystemModal } from "../ui/SystemModal";
 import type { MemoryOwnerToolsModel } from "./useMemoryOwnerTools";
 
 type Props = {
@@ -11,13 +12,22 @@ type Props = {
 };
 
 export function MemoryOwnerTools({ tools }: Props) {
+  const ownerModalTitle = tools.isClaimVerified ? "Edytuj pamiątkę" : "Odblokuj edycję pamiątki";
+  const ownerModalSize = tools.isClaimVerified ? "wide" : "default";
+
   return (
     <div className="memory-owner-tools">
       <button className="memory-owner-link" type="button" onClick={tools.handleToggleOwnerTools}>
-        Edytuj moją pamiątkę
+        Edytuj
       </button>
       {tools.isOwnerToolsOpen ? (
-        <>
+        <SystemModal
+          eyebrow="Pamiątki"
+          showActions={false}
+          size={ownerModalSize}
+          title={ownerModalTitle}
+          onClose={tools.handleToggleOwnerTools}
+        >
           {!tools.isClaimVerified ? (
             <form className="memory-owner-form" noValidate onSubmit={tools.handleVerifyClaim}>
               <label>
@@ -123,7 +133,7 @@ export function MemoryOwnerTools({ tools }: Props) {
             </form>
           )}
           {tools.ownerSuccessMessage ? <p className="memory-owner-message">{tools.ownerSuccessMessage}</p> : null}
-        </>
+        </SystemModal>
       ) : null}
     </div>
   );

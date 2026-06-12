@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import { mediaUrl, type PlaceMapItem } from "../../api/client";
 import { MediaImage } from "../ui/MediaImage";
 import { motionClassName, useDeferredClose } from "../ui/motionPresence";
+import { mapMediaCaption } from "./mediaDisplayText";
 import type { PlaceMapVisualItem } from "./placePreview";
 
 type Props = {
@@ -15,6 +16,7 @@ type Props = {
 
 export function MapPhotoViewer({ item, onClose, onOpenDetails, place }: Props) {
   const { isExiting, requestClose } = useDeferredClose(onClose);
+  const displayCaption = mapMediaCaption(item.caption);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -50,14 +52,13 @@ export function MapPhotoViewer({ item, onClose, onOpenDetails, place }: Props) {
             caption={
               <>
                 <strong>{place.title}</strong>
-                {item.caption ? <span>{item.caption}</span> : null}
+                {displayCaption ? <span>{displayCaption}</span> : null}
               </>
             }
             captionClassName="map-photo-viewer-caption"
             className="map-photo-viewer-media"
-            fit="contain"
             loading="eager"
-            ratio="viewer"
+            ratio="natural"
             src={mediaUrl(item.public_path)}
           />
         </button>

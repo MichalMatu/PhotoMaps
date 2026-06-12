@@ -1,7 +1,7 @@
 import { type ReactNode, useEffect, useState } from "react";
 
 type MediaFit = "contain" | "cover";
-type MediaRatio = "landscape" | "square" | "viewer" | "wide";
+type MediaRatio = "landscape" | "natural" | "square" | "viewer" | "wide";
 
 type Props = {
   alt: string;

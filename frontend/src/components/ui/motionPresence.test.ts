@@ -25,7 +25,7 @@ describe("motion presence helpers", () => {
   });
 
   it("adds the exit phase without preserving empty class values", () => {
-    expect(motionClassName(["pm-sheet", null, undefined, false], false)).toBe("pm-sheet");
-    expect(motionClassName(["pm-sheet", "pm-sheet--memory"], true)).toBe("pm-sheet pm-sheet--memory is-exiting");
+    expect(motionClassName(["map-photo-viewer", null, undefined, false], false)).toBe("map-photo-viewer");
+    expect(motionClassName(["map-photo-viewer", "is-active"], true)).toBe("map-photo-viewer is-active is-exiting");
   });
 });

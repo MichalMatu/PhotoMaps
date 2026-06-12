@@ -102,6 +102,7 @@ export function MemoryPanel({ claimToken, mode = "with-list", onUploaded, placeI
         memoryText,
       })
     : {};
+  const isSubmitDisabled = isSaving || !hasConsent;
 
   return (
     <section className="memory-panel">
@@ -226,14 +227,14 @@ export function MemoryPanel({ claimToken, mode = "with-list", onUploaded, placeI
             type="checkbox"
             onChange={(event) => setHasConsent(event.target.checked)}
           />
-          {CONSENT_TEXT}
+          <span>{CONSENT_TEXT}</span>
           {fieldErrors.hasConsent ? (
             <span className="field-error" id="memory-consent-error">
               {fieldErrors.hasConsent}
             </span>
           ) : null}
         </label>
-        <button type="submit" disabled={isSaving}>
+        <button type="submit" disabled={isSubmitDisabled}>
           {isSaving ? "Wysyłanie..." : "Dodaj pamiątkę"}
         </button>
       </form>
