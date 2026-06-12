@@ -58,7 +58,7 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
           </div>
           <div className="photo-detail-actions">
             {memorySource ? <MemoryOwnerTools tools={memoryOwnerTools} /> : null}
-            <button className="photo-detail-report-link" type="button" onClick={onReport}>
+            <button className="photo-detail-report-link" type="button" aria-label="Zgłoś problem" onClick={onReport}>
               Zgłoś
             </button>
           </div>

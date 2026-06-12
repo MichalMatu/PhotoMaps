@@ -11,8 +11,8 @@
   display: grid;
   gap: var(--space-3);
   grid-template-columns:
-    minmax(220px, 1.2fr) minmax(96px, 0.4fr) minmax(120px, 0.5fr) minmax(220px, 1fr)
-    minmax(74px, 0.25fr) minmax(390px, 0.95fr);
+    minmax(180px, 1.1fr) minmax(86px, 0.35fr) minmax(100px, 0.45fr) minmax(160px, 0.8fr)
+    minmax(68px, 0.2fr) minmax(276px, 0.9fr);
   min-height: 54px;
   padding: var(--space-3) var(--space-4);
 }

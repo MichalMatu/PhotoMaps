@@ -253,7 +253,7 @@ test("visual: mobile memory sheet", async ({ page }) => {
   await page.goto("/");
   await clickMapMarker(page, places[0].title);
   await clickMapMarker(page, `Byłem tutaj: ${places[0].title}`);
-  await expect(page.locator('aside[aria-label="Byłem tutaj"]')).toBeVisible();
+  await expect(page.getByRole("dialog", { name: "Byłem tutaj" })).toBeVisible();
   await expect(page).toHaveScreenshot("memory-sheet-mobile.png", SNAPSHOT_OPTIONS);
 });
 
@@ -275,6 +275,13 @@ test("visual: admin place table", async ({ page }) => {
   await page.goto("/");
   await page.evaluate(() => window.sessionStorage.setItem("photomaps_admin_token", "dev-admin-token"));
   await page.goto("/admin");
-  await expect(page.locator(".place-table .table-row:not(.table-head)")).toHaveCount(2);
+  await page
+    .getByRole("navigation", { name: "Sekcje panelu admina" })
+    .getByRole("button", { name: /Miejsca/ })
+    .click();
+  const cityToggle = page.locator(".place-city-toggle").filter({ hasText: city.name });
+  await cityToggle.click();
+  await expect(cityToggle).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator(".place-city-group .table-row")).toHaveCount(2);
   await expect(page).toHaveScreenshot("admin-place-table-desktop.png", SNAPSHOT_OPTIONS);
 });

@@ -482,6 +482,7 @@ label.checkbox-field.consent-field .field-error {
 
 .system-modal-backdrop {
   align-items: center;
+  animation: system-modal-backdrop-in var(--motion-duration-regular) var(--motion-ease-standard) both;
   background: var(--surface-backdrop-modal);
   display: flex;
   inset: 0;
@@ -489,6 +490,11 @@ label.checkbox-field.consent-field .field-error {
   padding: var(--space-6);
   position: fixed;
   z-index: 11000;
+}
+
+.system-modal-backdrop.is-exiting {
+  animation-name: system-modal-backdrop-out;
+  pointer-events: none;
 }
 
 .system-modal {
@@ -505,6 +511,10 @@ label.checkbox-field.consent-field .field-error {
   overflow: auto;
   padding: var(--space-6);
   width: min(460px, 100%);
+}
+
+.system-modal.is-exiting {
+  animation-name: system-modal-out;
 }
 
 .system-modal--wide {
@@ -685,5 +695,70 @@ label.checkbox-field.consent-field .field-error {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes system-modal-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+@keyframes system-modal-backdrop-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes system-modal-backdrop-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes system-modal-reduced-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes system-modal-reduced-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .system-modal-backdrop,
+  .system-modal {
+    animation-duration: var(--motion-duration-reduced);
+    animation-name: system-modal-reduced-in;
+  }
+
+  .system-modal-backdrop.is-exiting,
+  .system-modal.is-exiting {
+    animation-name: system-modal-reduced-out;
   }
 }

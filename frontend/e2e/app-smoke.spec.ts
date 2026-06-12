@@ -146,16 +146,24 @@ async function expectAnimationName(locator: Locator, expectedAnimationName: stri
     .toContain(expectedAnimationName);
 }
 
-async function expectExitPhase(page: Page, selector: string) {
+async function expectExitPhase(locator: Locator) {
   await expect
     .poll(async () => {
-      return page
-        .locator(selector)
+      return locator
         .first()
         .evaluate((element) => element.classList.contains("is-exiting"))
         .catch(() => false);
     })
     .toBe(true);
+}
+
+async function expandPlaceCityGroup(page: Page, cityName: string) {
+  const cityToggle = page.locator(".place-city-toggle").filter({ hasText: cityName });
+  await expect(cityToggle).toBeVisible();
+  if ((await cityToggle.getAttribute("aria-expanded")) !== "true") {
+    await cityToggle.click();
+  }
+  await expect(cityToggle).toHaveAttribute("aria-expanded", "true");
 }
 
 async function clickMapMarker(page: Page, title: string) {
@@ -268,6 +276,7 @@ test("admin can create category, place and guide through UI", async ({ page, req
   await placeDialog.getByRole("button", { name: "Dodaj miejsce" }).click();
   await expect(placeDialog).toBeHidden();
 
+  await expandPlaceCityGroup(page, "Wrocław");
   const placeRow = page.locator(".place-table .table-row").filter({ hasText: placeTitle });
   await expect(placeRow).toContainText(categoryLabel);
   await expect(placeRow).toContainText("published");
@@ -347,22 +356,22 @@ test("visitor can add a memory and admin can approve it through UI", async ({ pa
   await clickMapMarker(page, place.title);
   await clickMapMarker(page, `Byłem tutaj: ${place.title}`);
 
-  const memorySheet = page.locator('aside[aria-label="Byłem tutaj"]');
-  await expect(memorySheet).toBeVisible();
-  await memorySheet.getByPlaceholder("Wpisz token").fill(claimToken);
-  await memorySheet.getByLabel("Zdjęcie pamiątki").setInputFiles({
+  const memoryDialog = page.getByRole("dialog", { name: "Byłem tutaj" });
+  await expect(memoryDialog).toBeVisible();
+  await memoryDialog.getByPlaceholder("Wpisz token").fill(claimToken);
+  await memoryDialog.getByLabel("Zdjęcie pamiątki").setInputFiles({
     buffer: PHOTO_BUFFER,
     mimeType: "image/jpeg",
     name: "e2e-memory.jpg",
   });
-  await memorySheet.getByLabel("Podpis").fill(caption);
-  await memorySheet.getByLabel("Myśl / wspomnienie").fill(memoryText);
-  await memorySheet.getByLabel("Imię").fill(authorName);
-  await memorySheet.getByLabel("Miasto").fill(authorCity);
-  await memorySheet.locator('input[type="checkbox"]').check();
-  await memorySheet.getByRole("button", { name: "Dodaj pamiątkę" }).click();
+  await memoryDialog.getByLabel("Podpis").fill(caption);
+  await memoryDialog.getByLabel("Myśl / wspomnienie").fill(memoryText);
+  await memoryDialog.getByLabel("Imię").fill(authorName);
+  await memoryDialog.getByLabel("Miasto").fill(authorCity);
+  await memoryDialog.locator('input[type="checkbox"]').check();
+  await memoryDialog.getByRole("button", { name: "Dodaj pamiątkę" }).click();
 
-  await expect(memorySheet).toBeHidden();
+  await expect(memoryDialog).toBeHidden();
   const thanksDialog = page.getByRole("dialog", { name: "Pamiątka trafiła do moderacji" });
   await expect(thanksDialog).toBeVisible();
   await thanksDialog.getByRole("button", { name: "OK" }).click();
@@ -397,11 +406,11 @@ test("visitor can add a memory and admin can approve it through UI", async ({ pa
       const mapPlace = mapPlaces.find((item) => item.id === place.id);
       const memory = mapPlace?.preview_items.find((item) => item.kind === "memory");
       return {
+        memoryCaption: memory?.caption ?? null,
         memoryCount: mapPlace?.memory_count ?? 0,
-        memoryText: memory?.memory_text ?? null,
       };
     })
-    .toEqual({ memoryCount: 1, memoryText });
+    .toEqual({ memoryCaption: caption, memoryCount: 1 });
 
   await page.goto("/");
   await expect(page.locator(".map-frame")).toBeVisible();
@@ -437,12 +446,12 @@ test("visitor can report a photo and admin can inspect, close and delete the rep
   await expect(detailDialog).toBeVisible();
   await detailDialog.getByRole("button", { name: "Zgłoś problem" }).click();
 
-  const reportSheet = page.locator('aside[aria-label="Zgłoś problem"]');
-  await expect(reportSheet).toBeVisible();
-  await reportSheet.getByLabel("Powód").selectOption("bad_photo");
-  await reportSheet.getByLabel("Wiadomość").fill(reportMessage);
-  await reportSheet.getByRole("button", { name: "Wyślij zgłoszenie" }).click();
-  await expect(reportSheet.getByText("Zgłoszenie trafiło do redakcji.")).toBeVisible();
+  const reportFormDialog = page.getByRole("dialog", { name: "Zgłoś problem" });
+  await expect(reportFormDialog).toBeVisible();
+  await reportFormDialog.getByLabel("Powód").selectOption("bad_photo");
+  await reportFormDialog.getByLabel("Wiadomość").fill(reportMessage);
+  await reportFormDialog.getByRole("button", { name: "Wyślij zgłoszenie" }).click();
+  await expect(reportFormDialog.getByText("Zgłoszenie trafiło do redakcji.")).toBeVisible();
 
   const adminTabs = await unlockAdmin(page);
   await adminTabs.getByRole("button", { name: /Zgłoszenia/ }).click();
@@ -499,7 +508,7 @@ test("map motion states animate viewer, detail modal and sheets", async ({ page,
   await expectAnimationName(page.locator(".map-photo-viewer-image-wrap"), "map-photo-viewer-image-in");
 
   await page.keyboard.press("Escape");
-  await expectExitPhase(page, ".map-photo-viewer");
+  await expectExitPhase(page.locator(".map-photo-viewer"));
   await expect(previewDialog).toBeHidden();
 
   await clickMapMarker(page, photoCaption);
@@ -508,31 +517,35 @@ test("map motion states animate viewer, detail modal and sheets", async ({ page,
     .getByRole("button")
     .click();
 
-  const detailBackdrop = page.locator(".photo-detail-backdrop");
   const detailDialog = page.getByRole("dialog", { name: place.title });
+  const detailBackdrop = detailDialog.locator("..");
   await expect(detailDialog).toBeVisible();
-  await expectAnimationName(detailBackdrop, "photo-detail-backdrop-in");
-  await expectAnimationName(page.locator(".photo-detail-modal"), "photo-detail-modal-in");
+  await expectAnimationName(detailBackdrop, "system-modal-backdrop-in");
+  await expectAnimationName(detailDialog, "system-modal-in");
 
   await detailDialog.getByRole("button", { name: "Zgłoś problem" }).click();
-  const reportSheet = page.locator('aside[aria-label="Zgłoś problem"]');
-  await expect(reportSheet).toBeVisible();
-  await expectAnimationName(reportSheet, "pm-sheet-in");
-  await reportSheet.getByRole("button", { name: "Zamknij panel" }).click();
-  await expectExitPhase(page, 'aside[aria-label="Zgłoś problem"]');
-  await expect(reportSheet).toBeHidden();
+  const reportDialog = page.getByRole("dialog", { name: "Zgłoś problem" });
+  const reportBackdrop = reportDialog.locator("..");
+  await expect(reportDialog).toBeVisible();
+  await expectAnimationName(reportBackdrop, "system-modal-backdrop-in");
+  await expectAnimationName(reportDialog, "system-modal-in");
+  await reportDialog.getByRole("button", { name: "Zamknij modal" }).click();
+  await expectExitPhase(reportDialog);
+  await expect(reportDialog).toBeHidden();
 
   await page.keyboard.press("Escape");
-  await expectExitPhase(page, ".photo-detail-backdrop");
+  await expectExitPhase(detailDialog);
   await expect(detailDialog).toBeHidden();
 
   await clickMapMarker(page, `Byłem tutaj: ${place.title}`);
-  const memorySheet = page.locator('aside[aria-label="Byłem tutaj"]');
-  await expect(memorySheet).toBeVisible();
-  await expectAnimationName(memorySheet, "pm-sheet-in");
-  await memorySheet.getByRole("button", { name: "Zamknij panel" }).click();
-  await expectExitPhase(page, 'aside[aria-label="Byłem tutaj"]');
-  await expect(memorySheet).toBeHidden();
+  const memoryDialog = page.getByRole("dialog", { name: "Byłem tutaj" });
+  const memoryBackdrop = memoryDialog.locator("..");
+  await expect(memoryDialog).toBeVisible();
+  await expectAnimationName(memoryBackdrop, "system-modal-backdrop-in");
+  await expectAnimationName(memoryDialog, "system-modal-in");
+  await memoryDialog.getByRole("button", { name: "Zamknij modal" }).click();
+  await expectExitPhase(memoryDialog);
+  await expect(memoryDialog).toBeHidden();
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.reload();
@@ -547,7 +560,7 @@ test("map motion states animate viewer, detail modal and sheets", async ({ page,
   await expect(reducedPreview).toBeHidden();
 
   await clickMapMarker(page, `Byłem tutaj: ${place.title}`);
-  const reducedMemorySheet = page.locator('aside[aria-label="Byłem tutaj"]');
-  await expect(reducedMemorySheet).toBeVisible();
-  await expectAnimationName(reducedMemorySheet, "pm-sheet-reduced-in");
+  const reducedMemoryDialog = page.getByRole("dialog", { name: "Byłem tutaj" });
+  await expect(reducedMemoryDialog).toBeVisible();
+  await expectAnimationName(reducedMemoryDialog, "system-modal-reduced-in");
 });

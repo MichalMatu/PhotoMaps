@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import type { ReactNode } from "react";
 import { GripHorizontal, X } from "lucide-react";
 
+import { motionClassName, useDeferredClose } from "./motionPresence";
 import { stopFloatingWindowEvent, useDraggableWindow } from "./useDraggableWindow";
 import { useDialogFocus } from "./useDialogFocus";
 
@@ -45,6 +46,7 @@ export function SystemModal({
   variant = "default",
 }: Props) {
   const draggableWindow = useDraggableWindow<HTMLDivElement>("system-modal");
+  const { isExiting, requestClose } = useDeferredClose(onClose);
   const modalStackId = useRef(nextModalStackId++).current;
   const titleId = useId();
   const isTopModal = useCallback(() => modalStack[modalStack.length - 1] === modalStackId, [modalStackId]);
@@ -63,7 +65,7 @@ export function SystemModal({
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !isBusy && isTopModal()) {
-        onClose();
+        requestClose();
       }
     };
 
@@ -72,14 +74,27 @@ export function SystemModal({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isBusy, isTopModal, onClose]);
+  }, [isBusy, isTopModal, requestClose]);
 
   useDialogFocus(draggableWindow.windowRef, true, isTopModal);
 
   return createPortal(
-    <div className="system-modal-backdrop" role="presentation" onClick={isBusy ? undefined : onClose}>
+    <div
+      className={motionClassName(["system-modal-backdrop"], isExiting)}
+      role="presentation"
+      onClick={isBusy ? undefined : requestClose}
+    >
       <div
-        className={`system-modal system-modal--${tone} system-modal--${size} system-modal--${variant}${draggableWindow.isDragging ? " is-dragging" : ""}`}
+        className={motionClassName(
+          [
+            "system-modal",
+            `system-modal--${tone}`,
+            `system-modal--${size}`,
+            `system-modal--${variant}`,
+            draggableWindow.isDragging && "is-dragging",
+          ],
+          isExiting,
+        )}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -112,7 +127,7 @@ export function SystemModal({
               className="system-modal-close"
               type="button"
               disabled={isBusy}
-              onClick={onClose}
+              onClick={requestClose}
               aria-label="Zamknij modal"
             >
               <X aria-hidden="true" size={18} />
@@ -125,7 +140,7 @@ export function SystemModal({
         {showActions ? (
           <div className="system-modal-actions">
             {onConfirm ? (
-              <button className="ghost-button" type="button" disabled={isBusy} onClick={onClose}>
+              <button className="ghost-button" type="button" disabled={isBusy} onClick={requestClose}>
                 {cancelLabel}
               </button>
             ) : null}
@@ -133,7 +148,7 @@ export function SystemModal({
               className={tone === "danger" || tone === "error" ? "danger-button" : undefined}
               type="button"
               disabled={isBusy || confirmDisabled}
-              onClick={onConfirm ?? onClose}
+              onClick={onConfirm ?? requestClose}
             >
               {isBusy ? "Przetwarzanie..." : confirmLabel}
             </button>
