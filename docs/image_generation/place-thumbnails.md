@@ -1,22 +1,20 @@
-# Miniatury miejsc — prompt docelowy
+# Miniatury miejsc
 
-Dokument opisuje docelowy prompt do generowania spójnych miniatur miejsc używanych jako mapowe covery, markery albo tymczasowe grafiki testowe.
+Ten dokument opisuje prompt do spójnych miniatur miejsc używanych jako mapowe covery albo tymczasowe grafiki testowe. Celem jest atrakcyjna, czytelna ikonografia na mapie, nie dokumentalne zdjęcie miejsca.
 
-Celem nie jest dokumentalne zdjęcie miejsca, tylko atrakcyjna, czytelna ikonografia: znak klimatu miejsca, widoczny w małym rozmiarze, z wyraźnym pierwszym planem i przezroczystym tłem.
+## Zasada
 
-## Kierunek stylistyczny
+Miniatura ma być ikoną klimatu miejsca. Ma działać w małym rozmiarze, mieć wyraźny pierwszy plan, przezroczyste tło i zachować spójny styl w całym produkcie.
+
+Nie generować fikcyjnych szczegółów udających prawdziwą dokumentację miejsca. Jeśli nie mamy pewnego wizualnego punktu odniesienia, użyć bardziej nastrojowej sceny kategorii niż fałszywej fasady.
+
+Wybrany kierunek stylistyczny:
 
 ```txt
 editorial map icon + architectural silhouette + transparent PNG
 ```
 
-Miniatura ma wyglądać jak element spójnego systemu ikon dla mapy miasta: uproszczona bryła, symbol kategorii, fragment architektury albo nastrojowy detal, bez udawania realistycznego zdjęcia.
-
-## Główna zasada
-
-Ikona ma sugerować atmosferę miejsca, a nie dokumentować jego dokładny wygląd.
-
-Jeśli mamy pewne wizualne punkty odniesienia, można je zachować w uproszczonej formie. Jeśli ich nie mamy, nie wolno wymyślać fałszywej fasady, szyldu, układu ulicy ani detali architektonicznych. W takim przypadku należy użyć symbolu kategorii albo nastrojowej sceny inspirowanej Wrocławiem.
+To ma być piękny znak miejsca: obrys budowli, charakterystyczna bryła, fragment ulicy albo symbol kategorii z nastrojowym akcentem koloru.
 
 ## Prompt bazowy
 
@@ -25,35 +23,21 @@ Create a square transparent-background editorial map icon for a visual city map.
 
 Place:
 - name: {PLACE_NAME}
-- city: Wrocław, Poland
+- city: Wroclaw, Poland
 - category: {CATEGORY}
 - visual anchors to preserve: {VISUAL_ANCHORS}
-- visual certainty: {VISUAL_CERTAINTY}
-- fallback subject if anchors are uncertain: {FALLBACK_SUBJECT}
 - mood: {MOOD}
 - time of day: {TIME_OF_DAY}
 
-Goal:
-Create a beautiful place icon that suggests the atmosphere and category of the place.
-It should work as a small map cover or marker, not as a documentary image.
-
-Truthfulness rule:
-If the visual anchors are not certain, do not invent a realistic facade, signage, street layout, or architectural details.
-Use a stylized category-based symbol or atmospheric local silhouette instead.
-The image should feel locally believable, but it must not pretend to be an accurate record of the real place.
-
 Style:
 - premium editorial map icon
-- consistent icon family style across the whole map
-- stylized architectural or category silhouette, not a photograph
+- stylized architectural silhouette, not a photograph
 - clean line-art outline with subtle filled color accents
-- medium-thick readable outline suitable for 64–160 px display
-- simplified geometry, low detail, no clutter
-- transparent background with real alpha channel
-- no background panel, no full-bleed scene, no map pin
-- one iconic subject only, readable at small size
-- restrained Wrocław-inspired palette: warm brick, muted stone, river blue, soft amber light
-- subtle glow or shadow only if it improves separation on a map
+- transparent background with alpha channel
+- one iconic subject readable at small map-marker size
+- simplified geometry, no clutter, no busy background
+- restrained palette inspired by Wroclaw: warm brick, muted stone, river blue, soft amber light
+- subtle shadow or glow only if it helps separation on a map
 - believable local character without pretending to be a documentary photo
 - no visible text, no labels, no logos, no watermark
 - no fake signage, no invented brand names
@@ -61,189 +45,61 @@ Style:
 
 Composition:
 - square 1:1
-- centered subject
-- subject occupies about 70–85% of the canvas
-- enough safe margin for circular or rounded marker crop
-- strong outer silhouette
-- clear separation from transparent background
+- transparent background
+- centered subject with enough margin for circular or rounded marker crop
+- strong silhouette and clear outer contour
+- works as a 64-160 px thumbnail
 - visually distinct from nearby places on the map
-- same level of detail and stroke weight as the rest of the icon set
 
 Output:
-- transparent PNG-style place icon
-- clean alpha edges
-- suitable as a visual marker or cover for an interactive city map
-```
-
-## Negative prompt
-
-```txt
-photorealistic photo, documentary photo, stock photo, full-bleed background, opaque background, background panel, frame, map pin, UI, phone screenshot, text, captions, labels, logo, watermark, fake shop names, fake street signs, invented facade details, distorted architecture, fake architecture, crowded faces, close-up recognizable people, deformed hands, generic postcard composition, messy collage, oversaturated neon, heavy blur, dark unreadable image, fisheye distortion, low resolution, noisy edges, cut-off subject, too much empty space
+- beautiful transparent PNG-style place icon
+- suitable as a visual marker/cover for a place on an interactive map
 ```
 
 ## Pola do uzupełnienia
 
 ```txt
-{PLACE_NAME}
-Nazwa miejsca, np. Rynek, Pasaż Niepolda, Ostrów Tumski, Hala Targowa.
-
-{CATEGORY}
-Kategoria z admina, np. viewpoint, coffee, mural, after_22, food, park, culture, river, hidden_gem.
-
-{VISUAL_ANCHORS}
-Pewne elementy wizualne, które można bezpiecznie zachować, np. wieże, most, łuki, obrys kamienic, neony, przejście, mural wall texture.
-
-{VISUAL_CERTAINTY}
-high / medium / low
-
-high — miejsce ma znany, charakterystyczny wygląd albo pewne punkty odniesienia.
-medium — znamy ogólny typ miejsca, ale nie wszystkie detale.
-low — nie mamy pewnego wyglądu miejsca; należy użyć symbolu kategorii lub nastrojowego motywu.
-
-{FALLBACK_SUBJECT}
-Bezpieczny temat zastępczy, gdy kotwice wizualne są niepewne, np. coffee cup with Wrocław tenement arch motif, river bridge silhouette, warm bar lights in a narrow passage, stylized mural wall texture.
-
-{MOOD}
-Klimat, np. lively, quiet, romantic, rainy, nostalgic, late-night, cozy, elegant, mysterious.
-
-{TIME_OF_DAY}
-morning, golden hour, dusk, night, rainy evening.
+{PLACE_NAME}      nazwa miejsca, np. Rynek, Pasaż Niepolda, Ostrów Tumski
+{CATEGORY}        kategoria z admina, np. viewpoint, coffee, mural, after_22
+{VISUAL_ANCHORS}  pewne elementy wizualne, np. obrys kamienic, neony, most, wieże
+{MOOD}            klimat, np. lively, quiet, romantic, rainy, late-night, nostalgic
+{TIME_OF_DAY}     morning, golden hour, dusk, night, rainy evening
 ```
 
-## Reguły dla `visual certainty`
-
-### `high`
-
-Używaj, gdy miejsce ma rozpoznawalny i bezpieczny punkt odniesienia.
-
-Przykłady:
+## Negative prompt
 
 ```txt
-visual certainty: high
-visual anchors to preserve: twin cathedral towers, river island silhouette, old brick and stone atmosphere
-fallback subject if anchors are uncertain: simplified church tower silhouette with river-blue accent
+photorealistic photo, documentary photo, stock photo, rectangular full-bleed background,
+text, captions, labels, logo, watermark, map pin, UI, phone screenshot,
+fake shop names, fake street signs, distorted architecture, fake facade details,
+crowded faces, close-up recognizable people, deformed hands,
+overly generic stock photo, empty postcard composition,
+oversaturated neon, heavy blur, dark unreadable image,
+fisheye distortion, low resolution, messy collage, opaque background
 ```
 
-### `medium`
-
-Używaj, gdy znamy ogólną estetykę miejsca, ale nie chcemy odtwarzać detali.
-
-Przykłady:
-
-```txt
-visual certainty: medium
-visual anchors to preserve: narrow passage feeling, warm evening lights, subtle neon glow
-fallback subject if anchors are uncertain: narrow old-town passage silhouette with amber bar lights
-```
-
-### `low`
-
-Używaj, gdy miejsce nie ma pewnego wyglądu albo jest zwykłym lokalem/kategorią.
-
-Przykłady:
-
-```txt
-visual certainty: low
-visual anchors to preserve: cozy coffee atmosphere, local old-town feeling
-fallback subject if anchors are uncertain: warm coffee cup silhouette with Wrocław tenement arch motif
-```
-
-## Przykład 1 — miejsce z pewnymi kotwicami wizualnymi
-
-```txt
-Create a square transparent-background editorial map icon for a visual city map.
-
-Place:
-- name: Ostrów Tumski
-- city: Wrocław, Poland
-- category: historic_area
-- visual anchors to preserve: cathedral tower silhouettes, old stone and brick atmosphere, subtle river island feeling
-- visual certainty: high
-- fallback subject if anchors are uncertain: simplified gothic church tower silhouette with river-blue accent
-- mood: quiet romantic historic atmosphere
-- time of day: dusk
-
-Goal:
-Create a beautiful place icon that suggests the atmosphere and category of the place.
-It should work as a small map cover or marker, not as a documentary image.
-
-Truthfulness rule:
-If the visual anchors are not certain, do not invent a realistic facade, signage, street layout, or architectural details.
-Use a stylized category-based symbol or atmospheric local silhouette instead.
-The image should feel locally believable, but it must not pretend to be an accurate record of the real place.
-
-Style:
-- premium editorial map icon
-- consistent icon family style across the whole map
-- stylized architectural or category silhouette, not a photograph
-- clean line-art outline with subtle filled color accents
-- medium-thick readable outline suitable for 64–160 px display
-- simplified geometry, low detail, no clutter
-- transparent background with real alpha channel
-- no background panel, no full-bleed scene, no map pin
-- one iconic subject only, readable at small size
-- restrained Wrocław-inspired palette: warm brick, muted stone, river blue, soft amber light
-- subtle glow or shadow only if it improves separation on a map
-- believable local character without pretending to be a documentary photo
-- no visible text, no labels, no logos, no watermark
-- no fake signage, no invented brand names
-- no recognizable close-up faces
-
-Composition:
-- square 1:1
-- centered subject
-- subject occupies about 70–85% of the canvas
-- enough safe margin for circular or rounded marker crop
-- strong outer silhouette
-- clear separation from transparent background
-- visually distinct from nearby places on the map
-- same level of detail and stroke weight as the rest of the icon set
-
-Output:
-- transparent PNG-style place icon
-- clean alpha edges
-- suitable as a visual marker or cover for an interactive city map
-
-Negative prompt:
-photorealistic photo, documentary photo, stock photo, full-bleed background, opaque background, background panel, frame, map pin, UI, phone screenshot, text, captions, labels, logo, watermark, fake shop names, fake street signs, invented facade details, distorted architecture, fake architecture, crowded faces, close-up recognizable people, deformed hands, generic postcard composition, messy collage, oversaturated neon, heavy blur, dark unreadable image, fisheye distortion, low resolution, noisy edges, cut-off subject, too much empty space
-```
-
-## Przykład 2 — miejsce nocne bez dokumentalnego odtwarzania
+## Przykład
 
 ```txt
 Create a square transparent-background editorial map icon for a visual city map.
 
 Place:
 - name: Pasaż Niepolda
-- city: Wrocław, Poland
+- city: Wroclaw, Poland
 - category: after_22
 - visual anchors to preserve: narrow passage silhouette, warm bar lights, subtle neon glow, evening energy without recognizable faces
-- visual certainty: medium
-- fallback subject if anchors are uncertain: narrow old-town passage silhouette with amber bar lights and soft neon accent
 - mood: lively late-night local atmosphere
 - time of day: night
 
-Goal:
-Create a beautiful place icon that suggests the atmosphere and category of the place.
-It should work as a small map cover or marker, not as a documentary image.
-
-Truthfulness rule:
-If the visual anchors are not certain, do not invent a realistic facade, signage, street layout, or architectural details.
-Use a stylized category-based symbol or atmospheric local silhouette instead.
-The image should feel locally believable, but it must not pretend to be an accurate record of the real place.
-
 Style:
 - premium editorial map icon
-- consistent icon family style across the whole map
-- stylized architectural or category silhouette, not a photograph
+- stylized architectural silhouette, not a photograph
 - clean line-art outline with subtle filled color accents
-- medium-thick readable outline suitable for 64–160 px display
-- simplified geometry, low detail, no clutter
-- transparent background with real alpha channel
-- no background panel, no full-bleed scene, no map pin
-- one iconic subject only, readable at small size
-- restrained Wrocław-inspired palette: warm brick, muted stone, river blue, soft amber light
-- subtle glow or shadow only if it improves separation on a map
+- transparent background with alpha channel
+- one iconic subject readable at small map-marker size
+- simplified geometry, no clutter, no busy background
+- restrained palette inspired by Wroclaw: warm brick, muted stone, river blue, soft amber light
+- subtle shadow or glow only if it helps separation on a map
 - believable local character without pretending to be a documentary photo
 - no visible text, no labels, no logos, no watermark
 - no fake signage, no invented brand names
@@ -251,123 +107,35 @@ Style:
 
 Composition:
 - square 1:1
-- centered subject
-- subject occupies about 70–85% of the canvas
-- enough safe margin for circular or rounded marker crop
-- strong outer silhouette
-- clear separation from transparent background
+- transparent background
+- centered subject with enough margin for circular or rounded marker crop
+- strong silhouette and clear outer contour
+- works as a 64-160 px thumbnail
 - visually distinct from nearby places on the map
-- same level of detail and stroke weight as the rest of the icon set
 
 Output:
-- transparent PNG-style place icon
-- clean alpha edges
-- suitable as a visual marker or cover for an interactive city map
-
-Negative prompt:
-photorealistic photo, documentary photo, stock photo, full-bleed background, opaque background, background panel, frame, map pin, UI, phone screenshot, text, captions, labels, logo, watermark, fake shop names, fake street signs, invented facade details, distorted architecture, fake architecture, crowded faces, close-up recognizable people, deformed hands, generic postcard composition, messy collage, oversaturated neon, heavy blur, dark unreadable image, fisheye distortion, low resolution, noisy edges, cut-off subject, too much empty space
-```
-
-## Przykład 3 — kawiarnia lub lokal o niskiej pewności wizualnej
-
-```txt
-Create a square transparent-background editorial map icon for a visual city map.
-
-Place:
-- name: Local Coffee Spot
-- city: Wrocław, Poland
-- category: coffee
-- visual anchors to preserve: cozy coffee mood, local old-town feeling, warm interior light
-- visual certainty: low
-- fallback subject if anchors are uncertain: warm coffee cup silhouette with Wrocław tenement arch motif and soft amber light
-- mood: cozy calm morning atmosphere
-- time of day: morning
-
-Goal:
-Create a beautiful place icon that suggests the atmosphere and category of the place.
-It should work as a small map cover or marker, not as a documentary image.
-
-Truthfulness rule:
-If the visual anchors are not certain, do not invent a realistic facade, signage, street layout, or architectural details.
-Use a stylized category-based symbol or atmospheric local silhouette instead.
-The image should feel locally believable, but it must not pretend to be an accurate record of the real place.
-
-Style:
-- premium editorial map icon
-- consistent icon family style across the whole map
-- stylized architectural or category silhouette, not a photograph
-- clean line-art outline with subtle filled color accents
-- medium-thick readable outline suitable for 64–160 px display
-- simplified geometry, low detail, no clutter
-- transparent background with real alpha channel
-- no background panel, no full-bleed scene, no map pin
-- one iconic subject only, readable at small size
-- restrained Wrocław-inspired palette: warm brick, muted stone, river blue, soft amber light
-- subtle glow or shadow only if it improves separation on a map
-- believable local character without pretending to be a documentary photo
-- no visible text, no labels, no logos, no watermark
-- no fake signage, no invented brand names
-- no recognizable close-up faces
-
-Composition:
-- square 1:1
-- centered subject
-- subject occupies about 70–85% of the canvas
-- enough safe margin for circular or rounded marker crop
-- strong outer silhouette
-- clear separation from transparent background
-- visually distinct from nearby places on the map
-- same level of detail and stroke weight as the rest of the icon set
-
-Output:
-- transparent PNG-style place icon
-- clean alpha edges
-- suitable as a visual marker or cover for an interactive city map
-
-Negative prompt:
-photorealistic photo, documentary photo, stock photo, full-bleed background, opaque background, background panel, frame, map pin, UI, phone screenshot, text, captions, labels, logo, watermark, fake shop names, fake street signs, invented facade details, distorted architecture, fake architecture, crowded faces, close-up recognizable people, deformed hands, generic postcard composition, messy collage, oversaturated neon, heavy blur, dark unreadable image, fisheye distortion, low resolution, noisy edges, cut-off subject, too much empty space
+- beautiful transparent PNG-style place icon
+- suitable as a visual marker/cover for a place on an interactive map
 ```
 
 ## Checklist jakości
 
-Przed dodaniem miniatury do miejsca sprawdź:
+Przed dodaniem miniatury do miejsca:
 
 - czy działa jako mały marker na mapie,
-- czy ma prawdziwie przezroczyste tło albo łatwo da się wyciąć do przezroczystości,
-- czy główny obiekt jest czytelny w rozmiarze 64–160 px,
-- czy ma mocny zewnętrzny obrys,
-- czy od razu sugeruje kategorię albo klimat miejsca,
-- czy nie zawiera tekstu, logo, szyldów ani wymyślonych nazw,
+- czy ma przezroczyste tło albo da się łatwo wyciąć do przezroczystości,
+- czy ma czytelny obrys budowli/symbolu,
+- czy od razu sugeruje klimat miejsca,
+- czy nie zawiera tekstu, logo ani fałszywych szyldów,
 - czy nie pokazuje rozpoznawalnych twarzy,
-- czy nie udaje dokumentalnego zdjęcia,
-- czy nie wymyśla fałszywych detali architektury,
-- czy pasuje stylem, grubością kreski i poziomem detalu do pozostałych miniatur,
-- czy jest wystarczająco różna od ikon pobliskich miejsc na mapie.
+- czy nie udaje dokumentalnego zdjęcia, jeśli scena jest wygenerowana,
+- czy pasuje stylem do pozostałych miniatur.
 
 ## Nazewnictwo plików
 
 ```txt
 place-{slug}-icon-v01.png
 place-{slug}-icon-v02.png
-place-{slug}-icon-v03.png
 ```
 
-Wersje robocze trzymaj poza publicznym storage. Do aplikacji dodawaj tylko wybrane i zaakceptowane miniatury.
-
-## Rekomendacja operacyjna
-
-Dla miejsc z `visual certainty: low` preferuj symbol kategorii zamiast architektury.
-
-Przykłady bezpiecznych fallbacków:
-
-```txt
-coffee: coffee cup + Wrocław tenement arch motif
-bar / after_22: narrow passage lights + soft amber/neon accent
-river: bridge silhouette + river-blue accent
-viewpoint: simplified skyline contour + soft golden light
-mural: stylized wall texture + paint shape, no readable text
-park: old tree silhouette + muted stone path accent
-culture: theatre curtain or gallery arch silhouette, no logos
-food: plate or doorway silhouette with warm light, no fake signage
-hidden_gem: small arched doorway + soft glow, no specific fake facade
-```
+Wersje robocze trzymać poza publicznym storage. Do aplikacji dodawać tylko wybrane, zaakceptowane miniatury.
