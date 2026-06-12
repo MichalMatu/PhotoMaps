@@ -1,9 +1,13 @@
+import json
 import os
 import subprocess
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parents[3]
 DEVCTL = ROOT_DIR / "scripts" / "devctl.sh"
+E2E_SCRIPT = ROOT_DIR / "scripts" / "quality" / "e2e.sh"
+FRONTEND_PACKAGE = ROOT_DIR / "frontend" / "package.json"
+VISUAL_E2E_SPEC = ROOT_DIR / "frontend" / "e2e" / "visual-regression.spec.ts"
 
 
 def run_devctl(tmp_path: Path, *args: str) -> subprocess.CompletedProcess[str]:
@@ -54,3 +58,21 @@ def test_devctl_stop_cleans_stale_pid_files_without_running_servers(tmp_path: Pa
     assert response.returncode == 0
     assert not backend_pid.exists()
     assert not frontend_pid.exists()
+
+
+def test_frontend_e2e_uses_isolated_runner() -> None:
+    package_json = json.loads(FRONTEND_PACKAGE.read_text(encoding="utf-8"))
+    script = E2E_SCRIPT.read_text(encoding="utf-8")
+
+    assert package_json["scripts"]["test:e2e"] == "../scripts/quality/e2e.sh"
+    assert 'DEV_DIR="$ROOT_DIR/.dev/e2e"' in script
+    assert 'DATABASE_URL="sqlite:///$DEV_DIR/backend-data/app.db"' in script
+    assert 'PHOTOMAP_DATA_DIR="$DEV_DIR/backend-data"' in script
+    assert "./node_modules/.bin/playwright test --config playwright.config.ts" in script
+    assert "npm run test:e2e" not in script
+
+
+def test_visual_e2e_uses_runner_api_url() -> None:
+    spec = VISUAL_E2E_SPEC.read_text(encoding="utf-8")
+
+    assert 'const API_URL = process.env.E2E_API_URL ?? "http://127.0.0.1:8000";' in spec

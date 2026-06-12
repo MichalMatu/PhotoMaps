@@ -32,4 +32,4 @@ mkdir -p "$PHOTOMAP_DATA_DIR" "$PHOTOMAP_STORAGE_DIR/private" "$PHOTOMAP_STORAGE
 "$ROOT_DIR/scripts/devctl.sh" start
 
 cd "$ROOT_DIR/frontend" || exit
-npm run test:e2e -- --config playwright.config.ts
+./node_modules/.bin/playwright test --config playwright.config.ts "$@"
