@@ -1,25 +1,25 @@
 .place-table {
-  background: var(--color-surface-strong);
+  background: var(--material-regular);
   backdrop-filter: var(--blur-glass);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: var(--radius-panel);
   overflow: hidden;
 }
 
 .table-row {
   align-items: center;
   display: grid;
-  gap: 12px;
+  gap: var(--space-3);
   grid-template-columns: minmax(150px, 1.5fr) 0.65fr 0.9fr minmax(140px, 1.1fr) 0.55fr minmax(300px, auto);
   min-height: 54px;
-  padding: 12px 16px;
+  padding: var(--space-3) var(--space-4);
 }
 
 .table-row + .table-row {
   border-top: 1px solid var(--color-border);
 }
 
-.table-row span {
+.table-cell {
   align-self: center;
   line-height: 1.2;
   min-width: 0;
@@ -28,8 +28,7 @@
   white-space: nowrap;
 }
 
-.table-row span:nth-child(2),
-.table-row span:nth-child(4) {
+.table-cell--start {
   justify-self: start;
 }
 
@@ -39,12 +38,16 @@
 
 .table-actions {
   align-items: center;
+  display: flex;
   flex-wrap: nowrap;
   justify-content: flex-start;
   min-width: 0;
-  overflow: visible !important;
-  text-overflow: clip !important;
-  white-space: nowrap !important;
+}
+
+.table-cell--actions {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
 }
 
 .table-actions button {

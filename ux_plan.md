@@ -2,6 +2,14 @@
 
 Ten plan porządkuje luźne sugestie w kolejność prac, którą można realizować etapami. Celem nie jest dodanie większej liczby efektów, tylko usunięcie przypadkowości w CSS, ruchu, zdjęciach i komponentach.
 
+## Status prac
+
+- Zrobione: fixture danych do oceny UI, pierwsza warstwa tokenów materiałów/media/elevation/motion, usunięcie grupowania miejsc na mapie, skalowanie markerów po zoomie i wadze miejsca, pełniejszy fan zdjęć, lepszy viewer zdjęcia.
+- Zrobione: techniczny CSS quality gate z baseline, podpięty do `scripts/check.sh` i pre-commit dla CSS.
+- Zrobione: komponentowa naprawa tabeli miejsc w adminie bez `.table-row span` i bez `!important` w `admin-tables.css`.
+- W toku: dalsza migracja CSS poza mapą i tabelą miejsc.
+- Zostało: reszta admin polish, pełny motion system, system zdjęć z loading/aspect-ratio, screenshot regression, kontrakt i widok przewodników.
+
 ## Rekomendowana kolejność
 
 1. Minimalne dane/fixture do oceny UI, żeby nie projektować na pustym stanie.

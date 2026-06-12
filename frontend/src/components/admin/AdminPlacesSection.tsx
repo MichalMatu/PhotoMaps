@@ -46,12 +46,24 @@ export function AdminPlacesSection({
       <div className="admin-list">
         <div className="place-table" role="table">
           <div className="table-row table-head" role="row">
-            <span>Nazwa</span>
-            <span>Status</span>
-            <span>Miasto</span>
-            <span>Kategoria</span>
-            <span>Priorytet</span>
-            <span>Akcje</span>
+            <span className="table-cell" role="columnheader">
+              Nazwa
+            </span>
+            <span className="table-cell table-cell--start" role="columnheader">
+              Status
+            </span>
+            <span className="table-cell" role="columnheader">
+              Miasto
+            </span>
+            <span className="table-cell table-cell--start" role="columnheader">
+              Kategoria
+            </span>
+            <span className="table-cell" role="columnheader">
+              Priorytet
+            </span>
+            <span className="table-cell" role="columnheader">
+              Akcje
+            </span>
           </div>
           {places.map((place) => (
             <div
@@ -59,16 +71,24 @@ export function AdminPlacesSection({
               role="row"
               key={place.id}
             >
-              <span>{place.title}</span>
-              <span>{place.status}</span>
-              <span>{cityById.get(place.city_id)?.name ?? place.city_id}</span>
-              <span>
+              <span className="table-cell" role="cell">
+                {place.title}
+              </span>
+              <span className="table-cell table-cell--start" role="cell">
+                {place.status}
+              </span>
+              <span className="table-cell" role="cell">
+                {cityById.get(place.city_id)?.name ?? place.city_id}
+              </span>
+              <span className="table-cell table-cell--start" role="cell">
                 {place.category_ids.length
                   ? place.category_ids.map((categoryId) => categoryById.get(categoryId)?.label ?? categoryId).join(", ")
                   : "-"}
               </span>
-              <span>{place.weight.toFixed(1)}</span>
-              <div className="category-actions table-actions">
+              <span className="table-cell" role="cell">
+                {place.weight.toFixed(1)}
+              </span>
+              <div className="table-cell table-cell--actions table-actions" role="cell">
                 <button type="button" onClick={() => onEdit(place)}>
                   Edytuj
                 </button>

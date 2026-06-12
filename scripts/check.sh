@@ -15,14 +15,15 @@ mkdir -p \
 
 cd "$ROOT_DIR/backend"
 "$PYTHON_BIN" -m alembic -c alembic.ini upgrade head
-"$PYTHON_BIN" -m ruff format --check app ../scripts/check_schema.py
-"$PYTHON_BIN" -m ruff check app ../scripts/check_schema.py
+"$PYTHON_BIN" -m ruff format --check app ../scripts/check_schema.py ../scripts/quality/css_token_gate.py
+"$PYTHON_BIN" -m ruff check app ../scripts/check_schema.py ../scripts/quality/css_token_gate.py
 "$PYTHON_BIN" -m coverage run -m pytest
 "$PYTHON_BIN" -m coverage report
 "$PYTHON_BIN" -m compileall app
 
 cd "$ROOT_DIR"
 "$PYTHON_BIN" scripts/check_schema.py
+"$PYTHON_BIN" scripts/quality/css_token_gate.py
 
 if command -v shellcheck >/dev/null 2>&1; then
   shellcheck scripts/*.sh scripts/dev/*.sh scripts/quality/*.sh
