@@ -5,20 +5,14 @@ export function getPlaceMemories(placeId: string): Promise<Memory[]> {
   return request<Memory[]>(`/api/places/${placeId}/memories`);
 }
 
-export function uploadPlacePhoto(
-  placeId: string,
-  file: File,
-  caption: string,
-  consentConfirmed: boolean,
-): Promise<Photo> {
+export function uploadAdminPlacePhoto(placeId: string, file: File, caption: string): Promise<Photo> {
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("consent_confirmed", String(consentConfirmed));
   if (caption.trim()) {
     formData.append("caption", caption.trim());
   }
 
-  return request<Photo>(`/api/places/${placeId}/photos`, {
+  return request<Photo>(`/api/admin/places/${placeId}/photos`, {
     method: "POST",
     body: formData,
   });

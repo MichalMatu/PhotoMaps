@@ -10,6 +10,7 @@ from app.api.routes import (
     admin_guides,
     admin_memories,
     admin_photos,
+    admin_place_photos,
     admin_places,
     admin_reports,
     categories,
@@ -50,6 +51,7 @@ app.include_router(reports.router)
 app.include_router(admin_categories.router)
 app.include_router(admin_cities.router)
 app.include_router(admin_places.router)
+app.include_router(admin_place_photos.router)
 app.include_router(admin_photos.router)
 app.include_router(admin_memories.router)
 app.include_router(admin_guides.router)

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { apiErrorMessageFromBody, mediaUrl, uploadPlaceMemory } from "./client";
+import { apiErrorMessageFromBody, mediaUrl, uploadAdminPlacePhoto, uploadPlaceMemory } from "./client";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -85,5 +85,49 @@ describe("uploadPlaceMemory", () => {
     expect(body.get("consent_confirmed")).toBe("true");
     expect(body.get("author_name")).toBe("Marta");
     expect(body.get("author_city")).toBe("Wrocław");
+  });
+});
+
+describe("uploadAdminPlacePhoto", () => {
+  it("uses the admin place photo contract without public consent fields", async () => {
+    vi.stubGlobal("window", {
+      sessionStorage: {
+        getItem: vi.fn(() => "admin-token"),
+        removeItem: vi.fn(),
+        setItem: vi.fn(),
+      },
+    });
+    const fetchMock = vi.fn<typeof fetch>(async () => {
+      return new Response(
+        JSON.stringify({
+          approved_at: null,
+          caption: "Główne",
+          consent_confirmed: true,
+          created_at: "2026-06-10T00:00:00",
+          id: "photo-1",
+          place_id: "place-1",
+          public_path: "/media/photos/photo-1.jpg",
+          role: "gallery",
+          source: "editorial",
+          status: "pending",
+          thumb_path: "/media/photos/photo-1-thumb.jpg",
+        }),
+        { headers: { "Content-Type": "application/json" }, status: 201 },
+      );
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await uploadAdminPlacePhoto("place-1", new File(["image"], "place.jpg", { type: "image/jpeg" }), " Główne ");
+
+    const calls = fetchMock.mock.calls as Array<Parameters<typeof fetch>>;
+    const [url, options] = calls[0];
+    const body = options?.body as FormData;
+    const headers = options?.headers as Headers;
+
+    expect(url).toBe("http://127.0.0.1:8000/api/admin/places/place-1/photos");
+    expect(options?.method).toBe("POST");
+    expect(headers.get("Authorization")).toBe("Bearer admin-token");
+    expect(body.get("caption")).toBe("Główne");
+    expect(body.get("consent_confirmed")).toBeNull();
   });
 });

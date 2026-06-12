@@ -3,10 +3,17 @@ import { useEffect, useState } from "react";
 import { archivePlace, createPlace, deletePlacePermanently, updatePlace, type PlacePayload } from "../../api/client";
 import type { Place } from "../../api/types";
 import { errorDetails, type OperationError } from "../ui/ErrorModal";
+import { uploadAndApproveAdminPlacePhoto } from "./adminPhotoUpload";
 
 type Options = {
   isSessionActive: boolean;
+  onPhotosChanged?: () => Promise<void>;
   onPlacesChanged: () => Promise<void>;
+};
+
+export type PlaceFormPayload = PlacePayload & {
+  coverPhotoCaption: string;
+  coverPhotoFile: File | null;
 };
 
 type Result = {
@@ -27,7 +34,7 @@ type Result = {
   placeToDelete: Place | null;
   requestArchivePlace: (place: Place) => void;
   requestDeletePlace: (place: Place) => void;
-  submitPlace: (payload: PlacePayload) => Promise<void>;
+  submitPlace: (payload: PlaceFormPayload) => Promise<void>;
 };
 
 export function getClosedPlaceManagementState() {
@@ -53,7 +60,22 @@ export function getEditPlaceModalState(place: Place) {
   };
 }
 
-export function useAdminPlaceManagement({ isSessionActive, onPlacesChanged }: Options): Result {
+export function placePayloadFromFormPayload(payload: PlaceFormPayload): PlacePayload {
+  return {
+    category_ids: payload.category_ids,
+    city_id: payload.city_id,
+    description: payload.description,
+    lat: payload.lat,
+    local_comment: payload.local_comment,
+    lon: payload.lon,
+    slug: payload.slug,
+    status: payload.status,
+    title: payload.title,
+    weight: payload.weight,
+  };
+}
+
+export function useAdminPlaceManagement({ isSessionActive, onPhotosChanged, onPlacesChanged }: Options): Result {
   const [editingPlace, setEditingPlace] = useState<Place | null>(null);
   const [placeToArchive, setPlaceToArchive] = useState<Place | null>(null);
   const [placeToDelete, setPlaceToDelete] = useState<Place | null>(null);
@@ -92,16 +114,38 @@ export function useAdminPlaceManagement({ isSessionActive, onPlacesChanged }: Op
     setIsPlaceModalOpen(nextState.isPlaceModalOpen);
   }
 
-  async function submitPlace(payload: PlacePayload) {
+  async function refreshAfterPlaceSubmit(hasPhoto: boolean) {
+    if (hasPhoto && onPhotosChanged) {
+      await onPhotosChanged();
+      return;
+    }
+    await onPlacesChanged();
+  }
+
+  async function submitPlace(payload: PlaceFormPayload) {
     setOperationError(null);
     try {
       if (editingPlace) {
-        await updatePlace(editingPlace.id, payload);
+        await updatePlace(editingPlace.id, placePayloadFromFormPayload(payload));
       } else {
-        await createPlace(payload);
+        const createdPlace = await createPlace(placePayloadFromFormPayload(payload));
+        if (payload.coverPhotoFile) {
+          try {
+            await uploadAndApproveAdminPlacePhoto(createdPlace.id, payload.coverPhotoFile, payload.coverPhotoCaption);
+          } catch (reason) {
+            closePlaceModal();
+            await refreshAfterPlaceSubmit(true);
+            setOperationError({
+              details: errorDetails(reason),
+              message: "Miejsce zostało dodane, ale nie udało się dodać zdjęcia głównego.",
+              title: "Miejsce zapisane bez zdjęcia",
+            });
+            return;
+          }
+        }
       }
       closePlaceModal();
-      await onPlacesChanged();
+      await refreshAfterPlaceSubmit(Boolean(payload.coverPhotoFile));
     } catch (reason) {
       setOperationError({
         details: errorDetails(reason),

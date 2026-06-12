@@ -23,6 +23,7 @@ EXPECTED_MUTATION_OPERATIONS = {
     ("POST", "/api/admin/photos/{photo_id}/cover"),
     ("POST", "/api/admin/photos/{photo_id}/review"),
     ("POST", "/api/admin/places"),
+    ("POST", "/api/admin/places/{place_id}/photos"),
     ("POST", "/api/places/{place_id}/memories"),
     ("POST", "/api/places/{place_id}/memories/{memory_id}/claim"),
     ("POST", "/api/places/{place_id}/photos"),

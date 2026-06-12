@@ -1,7 +1,9 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
-import type { Category, City, Place, PlacePayload, PlaceStatus } from "../../api/client";
+import type { Category, City, Place, PlaceStatus } from "../../api/client";
+import { PHOTO_CAPTION_MAX_LENGTH } from "./adminMediaUi";
 import { PlaceLocationPicker } from "./PlaceLocationPicker";
+import type { PlaceFormPayload } from "./useAdminPlaceManagement";
 
 type Props = {
   categories: Category[];
@@ -9,7 +11,7 @@ type Props = {
   className?: string;
   place?: Place | null;
   onCancel?: () => void;
-  onSubmit: (payload: PlacePayload) => Promise<void>;
+  onSubmit: (payload: PlaceFormPayload) => Promise<void>;
 };
 
 const INITIAL_LOCATION = {
@@ -45,6 +47,9 @@ export function PlaceForm({ categories, cities, className = "admin-form", onCanc
   const [localComment, setLocalComment] = useState("");
   const [weight, setWeight] = useState("1");
   const [status, setStatus] = useState<PlaceStatus>("draft");
+  const [coverPhotoCaption, setCoverPhotoCaption] = useState("");
+  const [coverPhotoFile, setCoverPhotoFile] = useState<File | null>(null);
+  const [coverPhotoInputKey, setCoverPhotoInputKey] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
 
   const generatedSlug = useMemo(() => slugify(title), [title]);
@@ -68,6 +73,9 @@ export function PlaceForm({ categories, cities, className = "admin-form", onCanc
       setLocalComment("");
       setWeight("1");
       setStatus("draft");
+      setCoverPhotoCaption("");
+      setCoverPhotoFile(null);
+      setCoverPhotoInputKey((currentKey) => currentKey + 1);
       return;
     }
 
@@ -79,6 +87,9 @@ export function PlaceForm({ categories, cities, className = "admin-form", onCanc
     setLocalComment(place.local_comment ?? "");
     setWeight(String(place.weight));
     setStatus(place.status);
+    setCoverPhotoCaption("");
+    setCoverPhotoFile(null);
+    setCoverPhotoInputKey((currentKey) => currentKey + 1);
   }, [defaultCityId, place]);
 
   function toggleCategory(categoryId: string) {
@@ -104,6 +115,8 @@ export function PlaceForm({ categories, cities, className = "admin-form", onCanc
         local_comment: localComment.trim() || null,
         weight: Number(weight),
         status,
+        coverPhotoCaption,
+        coverPhotoFile,
       });
       if (!place) {
         setTitle("");
@@ -114,6 +127,9 @@ export function PlaceForm({ categories, cities, className = "admin-form", onCanc
         setLocalComment("");
         setWeight("1");
         setStatus("draft");
+        setCoverPhotoCaption("");
+        setCoverPhotoFile(null);
+        setCoverPhotoInputKey((currentKey) => currentKey + 1);
       }
     } finally {
       setIsSaving(false);
@@ -189,6 +205,31 @@ export function PlaceForm({ categories, cities, className = "admin-form", onCanc
           </select>
         </label>
       </div>
+
+      {!place ? (
+        <fieldset className="cover-photo-fieldset">
+          <legend>Zdjęcie główne</legend>
+          <div className="cover-photo-grid">
+            <label>
+              Plik
+              <input
+                accept="image/*"
+                key={coverPhotoInputKey}
+                type="file"
+                onChange={(event) => setCoverPhotoFile(event.target.files?.[0] ?? null)}
+              />
+            </label>
+            <label>
+              Podpis
+              <input
+                maxLength={PHOTO_CAPTION_MAX_LENGTH}
+                value={coverPhotoCaption}
+                onChange={(event) => setCoverPhotoCaption(event.target.value)}
+              />
+            </label>
+          </div>
+        </fieldset>
+      ) : null}
 
       <button type="submit" disabled={!cityId || !generatedSlug || isSaving}>
         {isSaving ? "Zapisywanie..." : place ? "Zapisz zmiany" : "Dodaj miejsce"}

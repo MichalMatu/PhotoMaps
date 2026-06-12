@@ -1,9 +1,7 @@
 import { useState } from "react";
 
-import { uploadPlacePhoto } from "../../api/client";
+import { uploadAndApproveAdminPlacePhoto } from "./adminPhotoUpload";
 import { canSubmitPhotoUpload } from "./photoUploadState";
-
-const PHOTO_CONSENT_CONFIRMED = true;
 
 type UsePhotoUploadModalArgs = {
   onReviewed: () => Promise<void>;
@@ -42,7 +40,7 @@ export function usePhotoUploadModal({ onReviewed, setErrorMessage }: UsePhotoUpl
     setIsUploading(true);
     setErrorMessage(null);
     try {
-      await uploadPlacePhoto(placeId, file, caption, PHOTO_CONSENT_CONFIRMED);
+      await uploadAndApproveAdminPlacePhoto(placeId, file, caption);
       setIsOpen(false);
       reset();
       await onReviewed();

@@ -189,6 +189,28 @@ def test_photo_upload_requires_publication_consent(client_session) -> None:
     assert response.status_code == 422
 
 
+def test_admin_can_upload_photo_for_draft_place(client_session) -> None:
+    client, session = client_session
+    place = create_place(session, status="draft")
+
+    response = client.post(
+        f"/api/admin/places/{place.id}/photos",
+        headers=ADMIN_HEADERS,
+        files={"file": image_upload("draft-place.jpg")},
+        data={"caption": "Główne"},
+    )
+    photo = session.exec(select(Photo)).one()
+
+    assert response.status_code == 201
+    body = response.json()
+    assert body["id"] == photo.id
+    assert body["place_id"] == place.id
+    assert body["status"] == "pending"
+    assert body["source"] == "editorial"
+    assert body["caption"] == "Główne"
+    assert body["consent_confirmed"] is True
+
+
 def test_admin_photo_list_can_return_all_or_filtered_statuses(client_session) -> None:
     client, session = client_session
     place = create_place(session)

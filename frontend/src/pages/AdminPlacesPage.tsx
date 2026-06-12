@@ -77,6 +77,7 @@ export function AdminPlacesPage() {
     submitPlace,
   } = useAdminPlaceManagement({
     isSessionActive: Boolean(adminToken),
+    onPhotosChanged: refreshPhotos,
     onPlacesChanged: refreshPlaces,
   });
 

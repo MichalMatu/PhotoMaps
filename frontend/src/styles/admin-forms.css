@@ -104,7 +104,8 @@
   padding: 10px 12px 12px;
 }
 
-.category-checkboxes legend {
+.category-checkboxes legend,
+.cover-photo-fieldset legend {
   color: var(--color-muted-strong);
   font-size: 0.86rem;
   font-weight: 600;
@@ -127,6 +128,19 @@
 .category-checkbox-grid input {
   min-height: auto;
   width: auto;
+}
+
+.cover-photo-fieldset {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  margin: 0;
+  padding: 10px 12px 12px;
+}
+
+.cover-photo-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(180px, 1fr) minmax(160px, 1fr);
 }
 
 .location-field {

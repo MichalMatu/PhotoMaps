@@ -5,6 +5,7 @@ import {
   getClosedPlaceManagementState,
   getCreatePlaceModalState,
   getEditPlaceModalState,
+  placePayloadFromFormPayload,
 } from "./useAdminPlaceManagement";
 
 const PLACE: Place = {
@@ -48,6 +49,38 @@ describe("useAdminPlaceManagement helpers", () => {
     expect(getEditPlaceModalState(PLACE)).toEqual({
       editingPlace: PLACE,
       isPlaceModalOpen: true,
+    });
+  });
+
+  it("strips create-only photo fields before saving a place payload", () => {
+    const file = new File(["image"], "place.jpg", { type: "image/jpeg" });
+
+    expect(
+      placePayloadFromFormPayload({
+        category_ids: ["coffee"],
+        city_id: "wroclaw",
+        coverPhotoCaption: "Główne",
+        coverPhotoFile: file,
+        description: null,
+        lat: 51.1,
+        local_comment: null,
+        lon: 17.03,
+        slug: "nowe",
+        status: "draft",
+        title: "Nowe",
+        weight: 1,
+      }),
+    ).toEqual({
+      category_ids: ["coffee"],
+      city_id: "wroclaw",
+      description: null,
+      lat: 51.1,
+      local_comment: null,
+      lon: 17.03,
+      slug: "nowe",
+      status: "draft",
+      title: "Nowe",
+      weight: 1,
     });
   });
 });
