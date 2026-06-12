@@ -36,3 +36,13 @@ export function getPlaceMarkerLayout({ editorialPriority, zoom }: MarkerLayoutIn
     zoomScale,
   };
 }
+
+export function getSquarePlaceMarkerLayout(layout: PlaceMarkerLayout): PlaceMarkerLayout {
+  const side = Math.max(layout.width, layout.height);
+
+  return {
+    ...layout,
+    height: side,
+    width: side,
+  };
+}

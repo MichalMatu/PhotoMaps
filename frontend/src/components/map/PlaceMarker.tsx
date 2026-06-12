@@ -3,11 +3,10 @@ import { useMemo } from "react";
 import { Marker, useMap } from "react-leaflet";
 
 import { mediaUrl, type PlaceMapItem } from "../../api/client";
-import { getPlaceMarkerLayout, type PlaceMarkerLayout } from "./mapMarkerScale";
-import { getPlaceFanItems, getPlacePreviewVisual, type PlaceMapVisualItem } from "./placePreview";
+import { getPlaceMarkerLayout, getSquarePlaceMarkerLayout, type PlaceMarkerLayout } from "./mapMarkerScale";
+import { getPlaceFanItems, getPlacePreviewVisual, isMapIconVisualItem, type PlaceMapVisualItem } from "./placePreview";
 
-function markerIcon(place: PlaceMapItem, isSelected: boolean, layout: PlaceMarkerLayout) {
-  const previewItem = getPlacePreviewVisual(place);
+function markerIcon(previewItem: PlaceMapVisualItem | null, isSelected: boolean, layout: PlaceMarkerLayout) {
   if (!previewItem) {
     return L.divIcon({
       className: isSelected ? "place-marker-icon is-selected" : "place-marker-icon",
@@ -17,18 +16,20 @@ function markerIcon(place: PlaceMapItem, isSelected: boolean, layout: PlaceMarke
     });
   }
 
+  const markerLayout = isMapIconVisualItem(previewItem) ? getSquarePlaceMarkerLayout(layout) : layout;
   const imageUrl = escapeAttribute(mediaUrl(previewItem.thumb_path));
   return L.divIcon({
     className: [
       "place-photo-marker",
       previewItem.kind === "memory" ? "is-memory" : "is-photo",
+      isMapIconVisualItem(previewItem) ? "is-map-icon" : null,
       isSelected ? "is-selected" : null,
     ]
       .filter(Boolean)
       .join(" "),
-    html: `<span style="--place-marker-width: ${layout.width}px; --place-marker-height: ${layout.height}px; background-image: url('${imageUrl}')"></span>`,
-    iconAnchor: [Math.round(layout.width / 2), Math.round(layout.height / 2)],
-    iconSize: [layout.width, layout.height],
+    html: `<span style="--place-marker-width: ${markerLayout.width}px; --place-marker-height: ${markerLayout.height}px; --place-marker-image: url('${imageUrl}')"></span>`,
+    iconAnchor: [Math.round(markerLayout.width / 2), Math.round(markerLayout.height / 2)],
+    iconSize: [markerLayout.width, markerLayout.height],
   });
 }
 
@@ -38,9 +39,16 @@ type FanOffset = {
 };
 
 function fanVisualIcon(item: PlaceMapVisualItem, offset: FanOffset, index: number) {
+  const imageUrl = escapeAttribute(mediaUrl(item.thumb_path));
   return L.divIcon({
-    className: `photo-fan-marker ${item.kind === "memory" ? "is-memory" : "is-photo"}`,
-    html: `<span style="background-image: url('${escapeAttribute(mediaUrl(item.thumb_path))}'); ${fanAnimationStyle(offset, index)}"></span>`,
+    className: [
+      "photo-fan-marker",
+      item.kind === "memory" ? "is-memory" : "is-photo",
+      isMapIconVisualItem(item) ? "is-map-icon" : null,
+    ]
+      .filter(Boolean)
+      .join(" "),
+    html: `<span style="--photo-fan-image: url('${imageUrl}'); ${fanAnimationStyle(offset, index)}"></span>`,
     iconAnchor: [31, 31],
     iconSize: [62, 62],
   });
@@ -96,11 +104,16 @@ export function PlaceMarker({ place, isExpanded, onMemoryOpen, onToggleFan, onVi
   const map = useMap();
   const fanItems = useMemo(() => getPlaceFanItems(place), [place]);
   const fanItemCount = fanItems.length + 1;
+  const previewItem = useMemo(() => getPlacePreviewVisual(place), [place]);
   const placeLayout = useMemo(
     () => getPlaceMarkerLayout({ editorialPriority: place.weight, zoom }),
     [place.weight, zoom],
   );
-  const placeIcon = useMemo(() => markerIcon(place, isExpanded, placeLayout), [isExpanded, place, placeLayout]);
+  const placeIcon = useMemo(
+    () => markerIcon(previewItem, isExpanded, placeLayout),
+    [isExpanded, placeLayout, previewItem],
+  );
+  const markerTitle = previewItem && isMapIconVisualItem(previewItem) ? undefined : place.title;
 
   const fanLayout = useMemo(() => {
     const origin = map.project([place.lat, place.lon], zoom);
@@ -125,7 +138,7 @@ export function PlaceMarker({ place, isExpanded, onMemoryOpen, onToggleFan, onVi
         icon={placeIcon}
         position={[place.lat, place.lon]}
         riseOnHover
-        title={place.title}
+        title={markerTitle}
         zIndexOffset={isExpanded ? 1200 : placeLayout.zIndexOffset}
         eventHandlers={{
           click: (event) => {

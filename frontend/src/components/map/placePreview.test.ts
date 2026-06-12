@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import type { Memory, Photo } from "../../api/client";
-import { findPlaceFanItem, getPlaceFanItems, getPlacePreviewVisual } from "./placePreview";
+import { findPlaceFanItem, getPlaceFanItems, getPlacePreviewVisual, isMapIconVisualItem } from "./placePreview";
 
-function photo(id: string): Photo {
+function photo(id: string, role: Photo["role"] = "gallery"): Photo {
   return {
     approved_at: null,
     caption: null,
@@ -11,7 +11,7 @@ function photo(id: string): Photo {
     id,
     place_id: "place-1",
     public_path: `/media/photos/${id}.jpg`,
-    role: "gallery",
+    role,
     source: "user_upload",
     status: "approved",
     thumb_path: `/media/photos/${id}-thumb.jpg`,
@@ -100,7 +100,7 @@ describe("place preview helpers", () => {
     });
   });
 
-  it("keeps photo and memory identities in fan items", () => {
+  it("keeps additional photo and memory identities in fan items", () => {
     const firstPhoto = photo("photo-1");
     const firstMemory = memory("memory-1");
 
@@ -117,10 +117,55 @@ describe("place preview helpers", () => {
       { ...firstMemory, kind: "memory" as const, role: null, source: null },
     ];
 
-    expect(getPlaceFanItems({ preview_items: previewItems }).map((item) => item.kind)).toEqual(["photo", "memory"]);
-    expect(findPlaceFanItem({ preview_items: previewItems }, { id: "memory-1", kind: "memory" })).toMatchObject({
+    expect(getPlaceFanItems({ cover_photo: null, preview_items: previewItems }).map((item) => item.kind)).toEqual([
+      "memory",
+    ]);
+    expect(
+      findPlaceFanItem({ cover_photo: null, preview_items: previewItems }, { id: "memory-1", kind: "memory" }),
+    ).toMatchObject({
       id: "memory-1",
       kind: "memory",
     });
+  });
+
+  it("does not duplicate the explicit cover photo in fan items", () => {
+    const cover = photo("cover", "map_icon");
+    const secondPhoto = photo("second-photo");
+    const firstMemory = memory("memory-1");
+
+    const previewItems = [
+      {
+        ...cover,
+        author_city: null,
+        author_name: null,
+        kind: "photo" as const,
+        memory_text: null,
+        paid: null,
+        share_slug: null,
+      },
+      {
+        ...secondPhoto,
+        author_city: null,
+        author_name: null,
+        kind: "photo" as const,
+        memory_text: null,
+        paid: null,
+        share_slug: null,
+      },
+      { ...firstMemory, kind: "memory" as const, role: null, source: null },
+    ];
+
+    expect(getPlaceFanItems({ cover_photo: cover, preview_items: previewItems }).map((item) => item.id)).toEqual([
+      "second-photo",
+      "memory-1",
+    ]);
+  });
+
+  it("identifies generated map icons as marker-specific visuals", () => {
+    const mapIcon = photo("map-icon", "map_icon");
+    const galleryPhoto = photo("gallery-photo");
+
+    expect(isMapIconVisualItem({ ...mapIcon, kind: "photo", source: mapIcon })).toBe(true);
+    expect(isMapIconVisualItem({ ...galleryPhoto, kind: "photo", source: galleryPhoto })).toBe(false);
   });
 });

@@ -137,8 +137,10 @@
 }
 
 .place-photo-marker span {
+  background-image: var(--place-marker-image);
   background-color: var(--color-surface-soft);
   background-position: center;
+  background-repeat: no-repeat;
   background-size: cover;
   border-radius: 8px;
   box-shadow: 0 8px 12px rgb(0 0 0 / 28%);
@@ -166,6 +168,23 @@
 
 .place-photo-marker.is-memory.is-selected span {
   box-shadow: 0 9px 12px rgb(0 0 0 / 32%);
+}
+
+.place-photo-marker.is-map-icon span {
+  background-image: var(--place-marker-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  background-size: contain;
+  border-radius: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 5px 4px rgb(0 0 0 / 34%));
+}
+
+.place-photo-marker.is-map-icon.is-selected span {
+  box-shadow: none;
+  filter: drop-shadow(0 6px 5px rgb(0 0 0 / 38%));
+  transform: translateY(-2px) scale(1.04);
 }
 
 .place-cluster-marker {
@@ -221,11 +240,26 @@
 }
 
 .photo-fan-marker span {
+  background-image: var(--photo-fan-image);
   background-color: var(--color-surface-soft);
   background-position: center;
+  background-repeat: no-repeat;
   background-size: cover;
   height: 62px;
   width: 62px;
+}
+
+.photo-fan-marker.is-map-icon span {
+  background-color: transparent;
+  background-size: contain;
+  border-radius: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 5px 4px rgb(0 0 0 / 34%));
+}
+
+.photo-fan-marker.is-map-icon:hover span {
+  box-shadow: none;
+  filter: drop-shadow(0 6px 5px rgb(0 0 0 / 38%));
 }
 
 .photo-fan-marker.is-memory span {

@@ -8,6 +8,20 @@
     "sort_order": 10,
     "status": "active"
   },
-  "places": [],
+  "places": [
+    {
+      "slug": "rynek-wroclaw",
+      "title": "Rynek Wrocław",
+      "description": "Historyczne centrum miasta z ratuszem, kamienicami i najbardziej rozpoznawalnym rytmem starego Wrocławia.",
+      "local_comment": "Dobry pierwszy punkt mapy: od razu pokazuje, że kafelki mają działać jak ikoniczne wejście w miejsce, nie zwykłe zdjęcie.",
+      "category_ids": ["local_classic"],
+      "lat": 51.1097,
+      "lon": 17.0325,
+      "weight": 3.0,
+      "status": "published",
+      "cover_icon_path": "assets/place-icons/20_approved/rynek-wroclaw/place-rynek-wroclaw-icon-v01.png",
+      "cover_caption": "Ikoniczna miniatura Rynku Wrocławskiego"
+    }
+  ],
   "guides": []
 }

@@ -68,7 +68,7 @@ export function AdminPlacesSection({
                   : "-"}
               </span>
               <span>{place.weight.toFixed(1)}</span>
-              <span className="table-actions">
+              <div className="category-actions table-actions">
                 <button type="button" onClick={() => onEdit(place)}>
                   Edytuj
                 </button>
@@ -83,7 +83,7 @@ export function AdminPlacesSection({
                 <button className="danger-button" type="button" onClick={() => onDelete(place)}>
                   Usuń trwale
                 </button>
-              </span>
+              </div>
             </div>
           ))}
           {places.length === 0 ? <p className="notice">Brak miejsc w bazie.</p> : null}

@@ -10,7 +10,7 @@
   align-items: center;
   display: grid;
   gap: 12px;
-  grid-template-columns: minmax(150px, 1.6fr) 0.75fr 1fr minmax(150px, 1.3fr) 0.65fr minmax(160px, 1fr);
+  grid-template-columns: minmax(150px, 1.5fr) 0.65fr 0.9fr minmax(140px, 1.1fr) 0.55fr minmax(300px, auto);
   min-height: 54px;
   padding: 12px 16px;
 }
@@ -39,13 +39,16 @@
 
 .table-actions {
   align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-wrap: nowrap;
   justify-content: flex-start;
+  min-width: 0;
   overflow: visible !important;
   text-overflow: clip !important;
-  white-space: normal !important;
+  white-space: nowrap !important;
+}
+
+.table-actions button {
+  white-space: nowrap;
 }
 
 .table-head {

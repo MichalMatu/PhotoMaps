@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getPlaceMarkerLayout } from "./mapMarkerScale";
+import { getPlaceMarkerLayout, getSquarePlaceMarkerLayout } from "./mapMarkerScale";
 
 describe("getPlaceMarkerLayout", () => {
   it("grows place markers as map zoom increases", () => {
@@ -28,5 +28,14 @@ describe("getPlaceMarkerLayout", () => {
     expect(smallest.height).toBe(42);
     expect(largest.width).toBe(105);
     expect(largest.height).toBe(85);
+  });
+
+  it("can derive a square map icon layout from the weighted marker size", () => {
+    const layout = getPlaceMarkerLayout({ editorialPriority: 3, zoom: 15 });
+    const squareLayout = getSquarePlaceMarkerLayout(layout);
+
+    expect(squareLayout.width).toBe(squareLayout.height);
+    expect(squareLayout.width).toBe(Math.max(layout.width, layout.height));
+    expect(squareLayout.zIndexOffset).toBe(layout.zIndexOffset);
   });
 });

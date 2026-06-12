@@ -77,12 +77,20 @@ export function getPlacePreviewVisual(
   return previewItem ? previewItemVisualItem(previewItem) : null;
 }
 
-export function getPlaceFanItems(place: Pick<PlaceMapItem, "preview_items">): PlaceMapVisualItem[] {
-  return place.preview_items.map(previewItemVisualItem);
+export function isMapIconVisualItem(item: PlaceMapVisualItem): boolean {
+  return item.kind === "photo" && item.source.role === "map_icon";
+}
+
+export function getPlaceFanItems(place: Pick<PlaceMapItem, "cover_photo" | "preview_items">): PlaceMapVisualItem[] {
+  const previewVisual = getPlacePreviewVisual(place);
+
+  return place.preview_items
+    .map(previewItemVisualItem)
+    .filter((item) => !previewVisual || item.kind !== previewVisual.kind || item.id !== previewVisual.id);
 }
 
 export function findPlaceFanItem(
-  place: Pick<PlaceMapItem, "preview_items">,
+  place: Pick<PlaceMapItem, "cover_photo" | "preview_items">,
   target: { id: string; kind: PlaceMapVisualItem["kind"] },
 ): PlaceMapVisualItem | null {
   return getPlaceFanItems(place).find((item) => item.kind === target.kind && item.id === target.id) ?? null;
