@@ -1,6 +1,6 @@
 # Wrocław
 
-Manifest Wrocławia trzymamy w `manifest.json`.
+Manifest Wroclawia trzymamy w `manifest.json`. Wroclaw jest pierwsza plansza startowa i datasetem do strojenia PhotoMap, nie marka calego produktu.
 
 ## Schemat miasta
 

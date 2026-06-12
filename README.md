@@ -1,8 +1,8 @@
 # PhotoMap
 
-PhotoMap to wizualna mapa miejsc z klimatem. Wrocław jest pierwszym miastem startowym: budujemy mapę-miniaturową tablicę miejsc, zdjęcia, pamiątki użytkowników, przewodniki i prostą moderację, a później warstwy audio, tras i cyfrowych pieczątek.
+PhotoMap to wizualna mapa miejsc z klimatem. Wroclaw jest pierwszym miastem startowym, na ktorym dopracowujemy mape miniaturek, zdjecia, pamiatki, trasy/kolekcje, moderacje i content pipeline. Architektura ma od poczatku wspierac kolejne miasta.
 
-Głównym bytem systemu jest `place`. Wszystkie zdjęcia, pamiątki, przewodniki, zgłoszenia i przyszłe rozszerzenia są przypięte do miejsca albo kolekcji miejsc.
+Glownym bytem systemu jest `place`. Zdjecia, pamiatki, trasy/kolekcje, zgloszenia i przyszle rozszerzenia sa przypiete do miejsca albo kolekcji miejsc.
 
 ## Dokumenty
 
@@ -14,8 +14,6 @@ Głównym bytem systemu jest `place`. Wszystkie zdjęcia, pamiątki, przewodniki
 - [Uruchamianie i testy](docs/dev.md)
 
 ## Dev
-
-Podstawowe komendy:
 
 ```bash
 make start

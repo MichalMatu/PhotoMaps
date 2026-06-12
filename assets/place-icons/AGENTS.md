@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`assets/place-icons` trzyma redakcyjne miniatury miejsc do mapy: przezroczyste PNG, warianty do review i finalne assety gotowe do importu albo uploadu.
+`assets/place-icons` trzyma opcjonalne redakcyjne miniatury miejsc dla PhotoMap: przezroczyste PNG, warianty do review i finalne assety gotowe do importu albo uploadu.
 
 ## Ownership
 
@@ -16,9 +16,11 @@
 
 - Finalna ikona miejsca trafia do `20_approved/{place_slug}/place-{place_slug}-icon-vNN.png`.
 - Ikony sa assetami redakcyjnymi, nie dokumentalnymi zdjeciami uzytkownikow.
+- Ikony sa opcjonalna warstwa jakosciowa; zwykle zdjecie moze byc lepszym coverem miejsca.
 - Zachowuj PNG i przezroczystosc; nie konwertuj ikon do formatu tracacego kanal alpha.
 - Status w `manifest.csv` powinien odpowiadac realnemu etapowi assetu.
 - Ikony miejsc maja wspierac publiczny efekt mapy miniaturek, nie zastepowac danych miejsca.
+- Nie generuj fikcyjnych detali udajacych dokumentalne zdjecia miejsca.
 
 ## Work Guidance
 

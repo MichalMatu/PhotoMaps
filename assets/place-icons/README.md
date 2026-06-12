@@ -1,6 +1,6 @@
 # Place Icons
 
-Ikony miejsc to redakcyjne miniatury do mapy: przezroczyste PNG, obrysy budowli, symbole kategorii i spójna ikonografia. Nie są dokumentalnymi zdjęciami.
+Ikony miejsc to opcjonalna redakcyjna warstwa jakosciowa dla PhotoMap: przezroczyste PNG, obrysy budowli, symbole kategorii i spojna ikonografia. Nie sa dokumentalnymi zdjeciami i nie blokuja pracy, jesli zwykle zdjecie lepiej pokazuje miejsce jako cover.
 
 Prompt i zasady jakości: [docs/image_generation/place-thumbnails.md](../../docs/image_generation/place-thumbnails.md)
 
@@ -31,9 +31,9 @@ Finalne pliki w `20_approved` też układać per miejsce:
 
 ## Ważne technicznie
 
-Upload zdjęć zachowuje PNG i przezroczystość w publicznej kopii oraz miniaturze. Ikony można więc testowo dodawać przez obecny flow zdjęć miejsca.
+Upload zdjec zachowuje PNG i przezroczystosc w publicznej kopii oraz miniaturze. Ikony mozna wiec testowo dodawac przez obecny flow zdjec miejsca.
 
-Docelowo warto rozważyć osobne pole albo osobny asset ikony miejsca, jeśli ikona ma być traktowana inaczej niż zwykła galeria zdjęć.
+Finalne ikony maja wspierac mape miniaturek, nie zastepowac danych miejsca. Nie generuj fikcyjnych detali udajacych dokumentalne zdjecia miejsca.
 
 ## Statusy w manifest.csv
 

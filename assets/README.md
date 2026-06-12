@@ -1,12 +1,14 @@
 # Assets
 
-Ten katalog jest na redakcyjne materiały źródłowe, które nie są runtime storage aplikacji.
+Ten katalog jest na redakcyjne materialy zrodlowe, ktore nie sa runtime storage aplikacji.
 
 Nie mieszać:
 
-- `assets/` — uporządkowane materiały robocze i zaakceptowane źródła,
-- `backend/storage/` — lokalne pliki tworzone przez aplikację po uploadzie.
+- `assets/` - uporzadkowane materialy robocze i zaakceptowane zrodla,
+- `backend/storage/` - lokalne pliki tworzone przez aplikacje po uploadzie.
 
 Aktualnie używany zakres:
 
-- [place-icons](place-icons/README.md) — ikonograficzne miniatury miejsc na mapę.
+- [place-icons](place-icons/README.md) - opcjonalne ikonograficzne miniatury miejsc na mape.
+
+Zwykle zdjecie moze byc coverem, jesli lepiej pokazuje miejsce. Redakcyjne ikony maja wspierac efekt mapy miniaturek, nie zastepowac danych miejsca.

@@ -1,65 +1,74 @@
 # Content Pipeline
 
-Docelowo nie chcemy ręcznie klikać tysięcy miejsc w panelu admina. Panel admina służy do korekt i moderacji, a masowe dodawanie miast powinno iść przez manifesty oraz importer.
+Content pipeline sluzy do powtarzalnego importu miast do PhotoMap. Wroclaw jest pierwszym przykladem i miastem startowym, ale ten sam mechanizm ma obslugiwac kolejne miasta.
 
-## Przepływ pracy
+Admin UI sluzy do korekt, moderacji i pojedynczych zmian. Wieksze partie danych powinny isc przez manifesty i importer.
 
-1. Przygotuj albo uzupełnij manifest miasta:
+## Manifesty
+
+Manifest miasta trzymamy w:
 
 ```txt
 content/cities/{city}/manifest.json
 ```
 
-Manifest zawiera definicję miasta, listę miejsc i przewodniki. Miejsca używają `category_ids`, bo jedno miejsce może należeć do kilku kategorii.
+Manifest jest roboczym zrodlem wiekszych zmian. Zawiera definicje miasta, miejsca i trasy/kolekcje miejsc. Miejsca uzywaja `category_ids`, bo jedno miejsce moze nalezec do kilku kategorii.
 
-2. Wygeneruj albo wybierz ikony miejsc według promptu:
-
-```txt
-docs/image_generation/place-thumbnails.md
-```
-
-3. Uporządkuj ikony:
-
-```txt
-assets/place-icons/00_inbox
-assets/place-icons/10_review
-assets/place-icons/20_approved
-assets/place-icons/90_archive
-```
-
-4. Zrób backup lokalnej bazy i storage:
-
-```bash
-./scripts/backup_local_data.sh
-```
-
-5. Uruchom import:
+Wroclaw jako przyklad:
 
 ```bash
 backend/.venv/bin/python scripts/content/import_city.py content/cities/wroclaw/manifest.json
 ```
 
-6. Sprawdź mapę i panel admina. Poprawki redakcyjne można robić w adminie albo wrócić do manifestu i zaimportować ponownie.
+## Import
 
-## Co importer robi teraz
+Przed wiekszym importem zawsze zrob backup lokalnej bazy i storage:
 
-- tworzy lub aktualizuje miejsca po `slug`,
-- tworzy lub aktualizuje miasto po `city.id`,
-- waliduje aktywne kategorie z `category_ids`,
-- importuje ikonę jako zatwierdzony `map_icon`, jeśli miejsce nie ma jeszcze covera,
-- zachowuje PNG i przezroczystość dzięki wspólnemu pipeline'owi obrazów,
-- tworzy lub aktualizuje przewodniki po `slug`,
-- odbudowuje przypisania miejsc do przewodników.
+```bash
+./scripts/backup_local_data.sh
+```
 
-## Czego importer jeszcze nie robi
+Importer jest idempotentny po stabilnych kluczach:
 
-- nie pobiera danych z internetu,
-- nie generuje obrazów,
-- nie tworzy pamiątek,
-- nie importuje audio,
-- nie obsługuje płatności,
-- nie rozwiązuje konfliktów redakcyjnych między adminem a manifestem.
+- `city.id`,
+- `place.slug`,
+- `guide.slug`.
 
-## Zasada bezpieczeństwa
+Ponowne uruchomienie na tym samym manifiescie ma aktualizowac istniejace rekordy zamiast tworzyc duplikaty.
 
-Przed większym importem zawsze zrobić backup lokalnej bazy i storage. Pliki backupów trafiają do `backups/`, które jest ignorowane przez git.
+## Co Importer Robi
+
+- Tworzy albo aktualizuje miasto po `city.id`.
+- Tworzy albo aktualizuje miejsca po `place.slug`.
+- Waliduje aktywne kategorie z `category_ids`.
+- Przypina wiele kategorii do miejsca.
+- Tworzy albo aktualizuje trasy/kolekcje po technicznym `guide.slug`.
+- Odbudowuje przypisania miejsc do tras/kolekcji.
+- Importuje `cover_icon_path` jako zatwierdzony `map_icon`, jesli ma to sens dla covera.
+
+`cover_icon_path` jest opcjonalne. Assety ikon/coverow sa ulepszeniem jakosciowym i nie blokuja importu. Jesli dobre zwykle zdjecie lepiej pokazuje miejsce, moze byc coverem.
+
+Flaga `--replace-covers` powinna byc uzywana swiadomie: wymienia covery zamiast tylko uzupelniac brakujace.
+
+## Assety
+
+Redakcyjne ikony miejsc trzymamy w:
+
+```txt
+assets/place-icons
+```
+
+Finalne ikony powinny wspierac mape miniaturek, nie zastepowac danych miejsca. Nie generuj fikcyjnych detali udajacych dokumentalne zdjecia miejsca.
+
+## Czego Importer Nie Robi W MVP
+
+- Nie pobiera danych z internetu.
+- Nie generuje obrazow.
+- Nie tworzy pamiatek.
+- Nie importuje audio.
+- Nie obsluguje platnosci.
+- Nie rozbudowuje kont ani uprawnien.
+
+## Weryfikacja
+
+Po imporcie sprawdz publiczna mape i admin. Po zmianie formatu manifestu zaktualizuj importer, testy oraz lokalne instrukcje w `content/AGENTS.md` i `scripts/content/AGENTS.md`.

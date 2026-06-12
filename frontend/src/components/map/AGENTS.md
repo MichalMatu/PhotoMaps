@@ -19,6 +19,7 @@ Publiczna mapa jest glownym produktem: wizualna tablica miniaturek miejsc, warst
 - Nie pobieraj pelnych galerii ani pelnych pamiatek tylko po to, zeby wyrenderowac pierwszy widok mapy.
 - Warstwy mapy sa sposobem ogladania danych; kategorie i filtry maja byc dynamiczne z API.
 - Publicznie renderuj tylko opublikowane miejsca oraz zatwierdzone media i pamiatki.
+- Najblizszy zakres mapy to Map Experience v1, Galerie, dynamiczne kategorie i stabilizacja preview bez utraty wizualnego pierwszego widoku.
 
 ## Work Guidance
 

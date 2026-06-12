@@ -16,7 +16,7 @@ Backend odpowiada za FastAPI, SQLite/Alembic, modele domenowe, publiczne i admin
 
 ## Local Contracts
 
-- `place` jest centralnym bytem; zdjecia, pamiatki, przewodniki i raporty sa przypiete do miejsca albo kolekcji miejsc.
+- `place` jest centralnym bytem; zdjecia, pamiatki, techniczne guides/trasy i raporty sa przypiete do miejsca albo kolekcji miejsc.
 - Kategorie miejsc sa relacja wiele-do-wielu przez `PlaceCategory`; nie wracac do pojedynczej kategorii na `Place`.
 - Publiczne endpointy zwracaja tylko `published` miejsca oraz tylko zatwierdzone publiczne media.
 - Publiczne odpowiedzi nigdy nie moga ujawnic `original_path` ani sciezek do prywatnego storage.
@@ -27,7 +27,7 @@ Backend odpowiada za FastAPI, SQLite/Alembic, modele domenowe, publiczne i admin
 
 ## Work Guidance
 
-- Dodawaj route'y wedlug domeny, np. `places.py`, `photos.py`, `memories.py`, `guides.py`, `reports.py`.
+- Dodawaj route'y wedlug domeny, np. `places.py`, `photos.py`, `memories.py`, `guides.py`, `reports.py`; produktowo guides oznaczaja trasy albo kolekcje miejsc.
 - Dla nowych response'ow preferuj jawne schematy i serializery zamiast zwracania modeli ORM.
 - Operacje na plikach mediow prowadz przez `services/media`; route nie powinien sam tworzyc miniaturek ani publicznych kopii.
 - Aktualizacje `photo_count` i `memory_count` trzymaj przy review albo serwisie, ktory zmienia widocznosc publiczna.

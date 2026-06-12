@@ -2,11 +2,11 @@
 
 ## Purpose
 
-Admin UI sluzy do korekt, moderacji i pojedynczych zmian w danych. Nie jest narzedziem do masowego dodawania miast ani miejsc.
+Admin UI sluzy do korekt, moderacji i pojedynczych zmian w danych. Nie jest narzedziem do masowego dodawania miast ani miejsc; wieksze partie danych ida przez content pipeline.
 
 ## Ownership
 
-- Sekcje admina skladaja widoki dla miejsc, kategorii, zdjec, pamiatek, przewodnikow i raportow.
+- Sekcje admina skladaja widoki dla miejsc, kategorii, zdjec, pamiatek, tras/kolekcji i raportow.
 - Hooki `use*Actions`, `useAdmin*` i helpery stanu trzymaja logike przeplywow, payloadow oraz wyborow.
 - Modale formularzy trzymaja tylko dane potrzebne do danej akcji.
 - Kolejki mediow i raportow sa osobnymi trybami pracy, nie dodatkiem do formularzy tworzenia.
@@ -23,7 +23,7 @@ Admin UI sluzy do korekt, moderacji i pojedynczych zmian w danych. Nie jest narz
 ## Work Guidance
 
 - Gdy komponent zaczyna laczyc formularz, liste i szczegoly rekordu, rozbij go albo wprowadz jawny tryb komponentu.
-- Preferuj testowalne helpery dla wyboru sekcji, stanu uploadu, grupowania mediow i selekcji miejsc do przewodnika.
+- Preferuj testowalne helpery dla wyboru sekcji, stanu uploadu, grupowania mediow i selekcji miejsc do trasy albo kolekcji.
 - Nie dodawaj opisow wyjasniajacych oczywiste UI; popraw layout, etykiete albo kolejnosc pol.
 - Przy pracy na modalach sprawdz wysokosc, szerokosc, puste obszary i zachowanie dlugiego tekstu.
 

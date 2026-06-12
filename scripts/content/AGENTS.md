@@ -2,11 +2,11 @@
 
 ## Purpose
 
-`scripts/content` trzyma narzedzia masowego importu redakcyjnych manifestow do lokalnej aplikacji.
+`scripts/content` trzyma narzedzia importu redakcyjnych manifestow miast do PhotoMap.
 
 ## Ownership
 
-- `import_city.py` waliduje manifest miasta, tworzy lub aktualizuje miasto, miejsca, kategorie miejsc, ikony i przewodniki.
+- `import_city.py` waliduje manifest miasta, tworzy lub aktualizuje miasto, miejsca, kategorie miejsc, opcjonalne ikony i techniczne guides jako trasy/kolekcje.
 
 ## Local Contracts
 

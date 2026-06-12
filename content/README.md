@@ -1,19 +1,19 @@
 # Content
 
-Ten katalog jest na redakcyjne manifesty danych importowanych do aplikacji.
+Ten katalog trzyma redakcyjne manifesty miast importowanych do PhotoMap. Wroclaw jest pierwszym miastem startowym i przykladem struktury, ale ten sam przeplyw ma obslugiwac kolejne miasta.
 
-Panel admina zostaje do ręcznych korekt, ale większe miasta powinny powstawać przez:
+Panel admina sluzy do recznych korekt, moderacji i pojedynczych zmian. Wieksze partie danych powinny powstawac przez:
 
 1. manifest miasta w `content/cities/{city}/manifest.json`,
-2. ikony i miniatury w `assets/place-icons`,
+2. opcjonalne ikony i miniatury w `assets/place-icons`,
 3. backup lokalnej bazy,
 4. import skryptem `scripts/content/import_city.py`.
 
 ## Zasada
 
-Manifesty są źródłem roboczym, które Codex może edytować i importować powtarzalnie. Importer działa po `city.id` oraz `slug`, więc może tworzyć miasta, nowe miejsca i aktualizować istniejące bez ręcznego klikania rekordów w UI.
+Manifesty sa roboczym zrodlem wiekszych zmian, a nie runtime storage aplikacji. Importer dziala po `city.id`, `place.slug` i `guide.slug`, wiec moze tworzyc miasta, nowe miejsca i aktualizowac istniejace bez masowego klikania rekordow w UI.
 
-Każdy manifest zawiera obiekt `city`, a miejsca używają `category_ids`, żeby jedno miejsce mogło należeć do kilku kategorii.
+Kazdy manifest zawiera obiekt `city`, a miejsca uzywaja `category_ids`, zeby jedno miejsce moglo nalezec do kilku kategorii.
 
 ## Przykład
 

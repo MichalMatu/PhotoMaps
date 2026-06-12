@@ -2,22 +2,22 @@
 
 ## Purpose
 
-`content` trzyma redakcyjne manifesty danych importowanych do aplikacji. To podstawowy przeplyw masowego dodawania miast i miejsc.
+`content` trzyma redakcyjne manifesty miast importowanych do PhotoMap. Wroclaw jest pierwszym miastem startowym i przykladem, ale przeplyw ma obslugiwac kolejne miasta.
 
 ## Ownership
 
-- `cities/{city}/manifest.json` trzyma definicje miasta, miejsc i przewodnikow.
+- `cities/{city}/manifest.json` trzyma definicje miasta, miejsc i tras/kolekcji.
 - `cities/{city}/README.md` moze dokumentowac lokalne uwagi redakcyjne dla miasta.
 - `README.md` opisuje ogolny workflow content pipeline.
 
 ## Local Contracts
 
-- Manifest miasta jest roboczym zrodlem masowych zmian; admin UI sluzy tylko do korekt i pojedynczych zmian.
+- Manifest miasta jest roboczym zrodlem wiekszych zmian, a nie runtime storage; admin UI sluzy tylko do korekt, moderacji i pojedynczych zmian.
 - Importer ma byc idempotentny po `city.id`, `place.slug` i `guide.slug`.
 - Miejsca uzywaja `category_ids`; nie wracac do pojedynczej kategorii.
 - Przed wiekszym importem zrobic backup lokalnej bazy i storage.
-- Manifesty nie powinny implementowac audio, platnosci, kont ani innych funkcji spoza MVP.
-- Assety ikon miejsc referencjonuj z `assets/place-icons`, nie kopiuj ich do manifestu jako dane binarne.
+- Manifesty nie powinny implementowac audio, platnosci, kont ani innych funkcji spoza aktualnego etapu.
+- Assety ikon miejsc referencjonuj z `assets/place-icons`, nie kopiuj ich do manifestu jako dane binarne; ikony sa opcjonalna warstwa jakosciowa.
 
 ## Work Guidance
 

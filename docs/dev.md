@@ -5,7 +5,7 @@ Backend FastAPI działa na `http://127.0.0.1:8000`, frontend Vite na `http://127
 Wszystko uruchamiaj z katalogu repo:
 
 ```bash
-cd /Users/michal/Desktop/PhotoMap
+cd <repo-root>
 ```
 
 ## Komendy

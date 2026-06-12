@@ -1,133 +1,106 @@
-# Plan działania
+# Plan
 
-Ten plan opisuje najbliższe iteracje. Aktualny priorytet to zbudować realną próbkę danych i dopiero na niej dopracowywać mapę. Mapa już używa miniaturek, więc nie projektujemy w ciemno kolejnych zachowań bez treści.
+PhotoMap ma techniczny szkielet MVP. Teraz priorytetem jest domkniecie pierwszej jakosciowej probki danych dla Wroclawia jako miasta startowego, uzupelnienie coverow i ocena publicznej mapy na realnych danych. Dopiero po tym stroimy Map Experience v1: rozmiary, gestosc, zoom, ranking, wachlarz podgladow, galerie i filtry kategorii. Audio, pieczatki i platnosci zostaja poza aktualnym etapem.
 
-Stan po ostatniej iteracji:
+## 1. Aktualny Stan
 
-- admin może dodać miejsce i od razu dodać zdjęcie główne,
-- w edycji miejsca można zarządzać zdjęciami miejsca,
-- adminowy upload zdjęć jest redakcyjny i nie wymaga osobnej moderacji,
-- przewodniki mają szybsze dodawanie wielu miejsc i prostą zmianę kolejności,
-- zwykłe zdjęcia miejsc są akceptowanym materiałem bazowym,
-- ikony/ilustracyjne kafle są opcjonalną warstwą jakościową, nie blockerem.
+- Techniczne MVP jest w wiekszosci zlozone.
+- Publiczna mapa dziala i renderuje miniaturowe markery miejsc.
+- Admin dziala dla miejsc, kategorii, miast, tras/kolekcji, mediow i zgloszen.
+- Upload i moderacja zdjec dzialaja.
+- Pamiatki dzialaja z flow dodawania i moderacji.
+- Guides/PlaceGuide dzialaja jako techniczny model tras albo kolekcji miejsc.
+- Reports dzialaja.
+- Content pipeline dziala przez manifest miasta i importer.
+- Istnieje manifest Wroclawia z pierwsza paczka miejsc.
+- `map preview` juz istnieje: miejsce, city, categories, score/liczniki, cover_photo i preview_items.
 
-## Cel najbliższego etapu
+## 2. Najblizszy Cel
 
-Stworzyć pierwszą realną paczkę danych do oceny mapy:
+Domknac pierwsza realna probke danych na Wroclawiu jako miescie startowym i ocenic mape na tresci, a nie w prozni.
 
-- 10-15 sensownych miejsc we Wrocławiu,
-- każde miejsce ma miasto, kategorie, opis, lokalny komentarz i pozycję,
-- każde opublikowane miejsce ma dobre zdjęcie główne,
-- kilka miejsc ma więcej zdjęć, żeby sprawdzić wachlarz miniatur,
-- miejsca mają różne priorytety redakcyjne, żeby sprawdzić ranking i rozmiary.
+- 10-15 miejsc to probka do strojenia mapy.
+- 30-50 miejsc to docelowy zakres MVP dla pierwszego miasta.
+- Kolejne miasta naleza do pozniejszego globalnego rollout przez content pipeline.
 
-## Iteracja 1: Dane startowe
+Warunki najblizszego celu:
 
-Najpierw budujemy materiał do testowania mapy. Na małą pierwszą paczkę można używać panelu admina, bo flow dodawania miejsca i zdjęcia jest już uproszczony. Większe partie danych nadal warto dodawać przez [content pipeline](docs/content-pipeline.md).
+- kazde opublikowane miejsce ma sensowny cover,
+- kilka miejsc ma 2-4 dodatkowe zdjecia,
+- miejsca maja zroznicowane wagi, zeby testowac ranking i rozmiary markerow,
+- statusy `published`/`draft` odpowiadaja realnej gotowosci,
+- po imporcie albo korektach sprawdzamy publiczna mape.
 
-Na tym etapie nie blokujemy się ikonami. Jeśli mamy dobre zwykłe zdjęcie miejsca, wrzucamy je jako zdjęcie główne. Ikony i ilustracyjne kafle zostają jako późniejsze ulepszenie wizualne.
+## 3. Iteracja 1: Content Sample / Cover Pass
 
-Do zrobienia:
+Zbudowac material do oceny mapy.
 
-- wybrać pierwsze 10-15 miejsc we Wrocławiu,
-- dla każdego miejsca dodać lokalizację, kategorię/kategorie, opis i lokalny komentarz,
-- dodać zwykłe zdjęcie główne, jeśli nie ma jeszcze dobrej ikony,
-- przy kilku miejscach dodać 2-4 dodatkowe zdjęcia,
-- ustawić status `published` tylko dla gotowych miejsc,
-- ustawić różne priorytety redakcyjne,
-- opcjonalnie stworzyć pierwszy prosty przewodnik z kilku miejsc,
-- zrobić backup przez `./scripts/backup_local_data.sh`,
-- sprawdzić publiczną mapę.
+- Przejrzec manifest Wroclawia.
+- Potwierdzic 10-15 miejsc jako probke do strojenia.
+- Dodac albo zaimportowac covery.
+- Kilka miejsc wzbogacic dodatkowymi zdjeciami.
+- Sprawdzic statusy `published`/`draft`.
+- Ustawic wagi miejsc tak, zeby ranking mial realny material testowy.
+- Zrobic backup przed wiekszym importem.
+- Uruchomic import, jesli zmiany ida przez manifest.
+- Sprawdzic publiczna mape i admin.
 
-Efekt końcowy:
+Ikony miejsc sa opcjonalna warstwa jakosciowa. Jesli zwykle zdjecie lepiej pokazuje miejsce, moze byc coverem.
 
-```txt
-Mapa ma wystarczająco danych, żeby ocenić miniatury, gęstość, zoom i ranking.
-```
+## 4. Iteracja 2: Map Experience v1
 
-## Iteracja 2: Map Experience v1
+Stroic zachowanie mapy dopiero na realnych danych.
 
-Dopiero na realnych danych dopracowujemy zachowanie mapy.
+- Rozmiary markerow na roznych zoomach.
+- Gestosc miejsc przy oddaleniu i zblizeniu.
+- Zachowanie zoomu.
+- Ranking i wybor miejsc widocznych w pierwszej kolejnosci.
+- Czy miejsca z wieksza waga sa odpowiednio wybite.
+- Czy wachlarz zdjec i pamiatek jest czytelny.
+- Czy pierwszy widok mapy daje efekt "chce to sprawdzic".
+- Czy potrzebne sa klastry i w jakim zakresie.
 
-Do oceny i poprawy:
+Nie zmieniac fundamentu danych, jesli obecny flow wystarcza do budowania probki.
 
-- rozmiary miniaturek na różnych zoomach,
-- gęstość miejsc przy oddaleniu i zbliżeniu,
-- klastry i moment ich rozbijania,
-- które miejsca pojawiają się wcześniej,
-- czy ranking faktycznie wybija najmocniejsze miejsca,
-- czy wachlarz po kliknięciu jest czytelny,
-- czy mapa po wejściu robi efekt "chcę to sprawdzić".
+## 5. Iteracja 3: Warstwy I Kategorie
 
-Nie zmieniać teraz fundamentu danych, jeśli obecny flow wystarcza do budowania bazy. Zwykłe zdjęcia są materiałem bazowym. PNG i przezroczystość zostają wspierane, a wygenerowane ikony można później dodawać jako bardziej dopracowane miniatury.
+Ustabilizowac sposob ogladania danych bez zamiany mapy w zwykly panel filtrow.
 
-## Iteracja 3: Warstwy i kategorie
+- Obecnie sa podstawowe warstwy.
+- Dodac albo ustabilizowac warstwe `Galerie`.
+- Dodac dynamiczne filtry kategorii z API.
+- Nie hardkodowac kategorii.
+- `Polecane` pozostaje domyslna warstwa oparta o covery i ranking.
+- `Galerie` eksponuja miejsca z dodatkowymi zatwierdzonymi zdjeciami poza coverem.
+- `Pamiatki` eksponuja miejsca z tresciami typu "bylem tutaj".
 
-Po dopracowaniu podstawowej mapy dodajemy sterowanie widokiem.
+Efekt koncowy: uzytkownik moze zmienic sposob ogladania mapy bez utraty wizualnego efektu miniaturek.
 
-Warstwy:
+## 6. Iteracja 4: Stabilizacja Map Preview
 
-- `Polecane` jako domyślna warstwa,
-- `Galerie`,
-- `Pamiątki`,
-- później `Audio`,
-- później `Trasy`.
+Kontrakt juz istnieje. Celem jest dopracowanie, testy i ewentualne odchudzenie bez utraty wizualnego pierwszego widoku.
 
-Znaczenie warstw:
-
-- `Polecane` pokazuje miejsca przez główne miniatury/covery i ranking redakcyjny,
-- `Galerie` mocniej eksponują miejsca z dodatkowymi zatwierdzonymi zdjęciami poza coverem,
-- `Pamiątki` eksponują miejsca z treściami typu "byłem tutaj",
-- przyszłe `Audio` pokaże miejsca z ambientem albo krótką opowieścią,
-- przyszłe `Trasy` pokażą kolekcje punktów do przejścia.
-
-Kategorie:
-
-- pochodzą z admina,
-- nie są hardkodowane w UI,
-- działają jako filtr miejsc niezależny od warstwy.
-
-Efekt końcowy:
-
-```txt
-Użytkownik może zmienić sposób oglądania mapy bez utraty wizualnego efektu miniaturek.
-```
-
-## Iteracja 4: Kontrakt mapy
-
-Kiedy będzie jasne, co mapa faktycznie pokazuje, porządkujemy API.
-
-Docelowo `/api/places/map` powinno działać jako `map preview`:
+`/api/places/map` powinno pozostac lekkim `map preview`:
 
 - dane miejsca,
 - miasto i kategorie,
 - score,
 - liczniki,
 - cover,
-- kilka kuratorowanych podglądów.
+- kilka kuratorowanych podgladow.
 
-Nie ładować pełnych galerii i pełnych pamiątek tylko po to, żeby wyrenderować pierwszy widok mapy. Jednocześnie nie wolno utracić efektu wizualnej tablicy miniaturek.
+Nie ladowac pelnych galerii i pelnych pamiatek tylko po to, zeby wyrenderowac pierwszy widok mapy. Jednoczesnie nie wolno utracic efektu wizualnej tablicy miniaturek.
 
-## Później
+## 7. Pozniej
 
-Po ustabilizowaniu mapy:
+Po ustabilizowaniu mapy i pierwszego miasta:
 
 - `AudioClip`,
 - upload i moderacja audio,
-- cichy audio-hover z fade in/fade out po włączeniu dźwięku mapy,
-- trasy `Route` i `RoutePoint`,
-- pieczątki,
+- audio-hover po swiadomym wlaczeniu dzwieku,
+- `Route`/`RoutePoint`, jesli obecne guides nie wystarcza,
+- pieczatki,
 - share cardy,
-- płatności.
+- platnosci.
 
-## Zasada robocza
-
-Nie dodajemy dużych nowych funkcji, dopóki mapa nie działa dobrze na realnej próbce danych.
-
-Najbliższy nacisk:
-
-```txt
-dane startowe -> ocena mapy -> rozmiary/gęstość/zoom -> warstwy
-```
-
-Ikony nie są blockerem. Jeśli zwykłe zdjęcie dobrze pokazuje miejsce, używamy zdjęcia.
+Nie dodajemy duzych nowych funkcji, dopoki mapa nie dziala dobrze na realnej probce danych.

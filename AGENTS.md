@@ -1,118 +1,92 @@
-# AGENTS.md — Wrocław Bez Ściemy
+# AGENTS.md - PhotoMap
 
 ## Cel projektu
 
-Budujemy nową aplikację: wizualną mapę miejsc z charakterem we Wrocławiu, opartą o miniatury miejsc, zdjęcia, pamiątki użytkowników i architekturę gotową pod późniejsze przewodniki, audio, historię oraz płatności.
+PhotoMap to globalny produkt: wizualna mapa miejsc z klimatem. Uzytkownik ma wejsc na mape miasta i od razu zobaczyc atrakcyjna tablice miniaturek miejsc: zdjecia, covery, pamiatki ludzi, trasy/kolekcje i pozniej audio oraz pieczatki.
 
-To jest nowy produkt, nie dalszy rozwój WreckScanner.
+Wroclaw jest pierwszym miastem startowym i datasetem do strojenia produktu. Nie jest marka produktu ani ograniczeniem domeny. Repozytorium moze nadal nazywac sie technicznie PhotoMaps, ale w dokumentacji produktowej i UI uzywamy nazwy PhotoMap.
 
-Repozytorium WreckScanner może istnieć w folderze `_legacy/WreckScanner` tylko jako materiał referencyjny. Nie wolno modyfikować plików w `_legacy` bez wyraźnego polecenia użytkownika.
+To jest nowy produkt, nie dalszy rozwoj WreckScanner. Repozytorium WreckScanner moze istniec w `_legacy/WreckScanner` tylko jako material referencyjny. Nie modyfikuj plikow w `_legacy` bez wyraznego polecenia uzytkownika.
 
-## Najważniejsza zasada domenowa
+## Rdzen Domeny
 
-Głównym bytem systemu jest `place`.
+Centralnym bytem systemu jest `place`.
 
-Wszystko inne jest warstwą przypiętą do miejsca albo kolekcją miejsc:
+Wszystko inne jest warstwa przypieta do miejsca albo kolekcja miejsc:
 
 ```txt
 place
  ├── category
  ├── photos
  ├── memories
- ├── guides
+ ├── guides / collections
  ├── reports
- ├── audio_items          później
- ├── historical_items     później
- └── payments             później
+ ├── audio clips        pozniej
+ └── stamps             pozniej
 ```
 
-Nie tworzyć osobnych światów dla zdjęć, pamiątek, audio, historii i przewodników.
+Nie tworz osobnych swiatow dla zdjec, pamiatek, tras, audio, historii ani pieczatek. `City` jest kontekstem organizacyjnym, `Category` opisuje charakter miejsca, a `Photo`, `Memory`, `Guide/Route`, `Report` i przyszle `AudioClip`/`Stamp` sa przypiete do miejsca albo kolekcji miejsc.
 
-## Zasada pracy z treścią
+Techniczne `guide` moze zostac w backendzie i API. Produktowo w UI i dokumentacji preferuj `trasa` albo `kolekcja miejsc`, zaleznie od kontekstu.
 
-Nie dodawać dużych partii miejsc ręcznie przez admin UI. Panel admina służy do korekt, moderacji i pojedynczych zmian.
+## Mapa Publiczna
 
-Masowe dodawanie miast prowadzić przez:
+Publiczna mapa jest glownym produktem i ma dzialac jak zywa tablica miniaturek miejsc, nie jak pusta mapa z pinami.
+
+- Pierwszy widok ma od razu pokazywac atrakcyjne miniatury miejsc albo klastry miniaturek.
+- Publiczne markery sa coverami/miniaturami miejsc; klasyczna pinezka zostaje tylko w adminie do wyboru lokalizacji.
+- Klikniecie miejsca pokazuje wiecej, ale nie moze byc wymagane, zeby mapa robila efekt wizualny.
+- Zoom steruje gestoscia i rozmiarem miniaturek: daleko mniej elementow i klastry, blisko wiecej miejsc oraz wachlarz podgladow.
+- Warstwy mapy sa sposobem ogladania danych: polecane, galerie, pamiatki, pozniej audio i trasy.
+- Kategorie pochodza z admina/API; nie hardkoduj kategorii w filtrach UI.
+- `map preview` ma pozostac lekkim kontraktem: miejsce, miasto, kategorie, score/liczniki, cover i kilka kuratorowanych podgladow.
+- Nie laduj pelnych galerii ani pelnych pamiatek do pierwszego renderu mapy.
+- Optymalizacja kontraktu mapy nie moze zamienic pierwszego widoku w pusta mape bez miniaturek.
+
+## Tresc I Import
+
+Admin sluzy do korekt, moderacji i pojedynczych zmian. Wieksze partie danych i kolejne miasta prowadzi content pipeline:
 
 - manifesty w `content/cities/{city}/manifest.json`,
-- redakcyjne assety w `assets/place-icons`,
+- redakcyjne assety w `assets/place-icons` jako opcjonalna warstwa jakosciowa,
 - backup przez `scripts/backup_local_data.sh`,
 - import przez `scripts/content/import_city.py`.
 
-Importer ma być idempotentny po `slug`: może tworzyć nowe miejsca i aktualizować istniejące. Przed większym importem zawsze zrobić backup lokalnej bazy i storage.
+Szczegoly workflow sa w [docs/content-pipeline.md](docs/content-pipeline.md), [content/AGENTS.md](content/AGENTS.md) i [assets/place-icons/AGENTS.md](assets/place-icons/AGENTS.md).
 
-## Zasada doświadczenia mapy
+## Jakosc Kodu
 
-Publiczna mapa jest głównym produktem i ma działać jak żywa tablica miniaturek miejsc, nie jak pusta mapa z pinezkami.
+Domyslnie nie utrzymuj kompatybilnosci wstecznej dla wewnetrznych kontraktow. Jesli zmienia sie model, endpoint, pole requestu, konfiguracja, flaga albo komponent, w tej samej zmianie migruj aktualnych callerow i usun stare wejscia, fallbacki, adaptery, komentarze oraz martwe sciezki. Wyjatek tylko wtedy, gdy uzytkownik wyraznie poprosi o okres przejsciowy albo migracje danych produkcyjnych.
 
-- Po wejściu użytkownik ma od razu widzieć atrakcyjne miniatury miejsc albo klastry miniaturek.
-- Publiczne markery są wizualnymi miniaturami miejsc; typowa pinezka zostaje tylko w adminie do wyboru lokalizacji.
-- Kliknięcie miejsca ma pokazywać więcej, ale nie może być wymagane, żeby mapa robiła efekt wizualny.
-- Zoom steruje gęstością i rozmiarem miniaturek: daleko mniej elementów i klastry, średnio wybrane miejsca, blisko więcej miejsc i wachlarz podglądów.
-- Warstwy mapy są sposobem oglądania danych, np. polecane, galerie, pamiątki, później audio i trasy.
-- Warstwa `Polecane` pokazuje miejsca przez główne miniatury/covery i ranking redakcyjny; `Galerie` oznaczają dodatkowe zatwierdzone zdjęcia miejsca poza coverem.
-- Kategorie są zarządzane w adminie i frontend mapy ma korzystać z nich dynamicznie; nie hardkodować kategorii w filtrach UI.
-- Kontrakt mapy powinien być `map preview`: dane miejsca, miasto, kategorie, score, liczniki, cover i kilka kuratorowanych podglądów. Nie zwracać pełnych galerii i pełnych pamiątek tylko po to, żeby wyrenderować pierwszy widok.
-- Nie zamieniać odchudzenia endpointu mapy w pustą mapę bez miniaturek. Optymalizacja kontraktu ma zachować efekt "wow" pierwszego widoku.
+Kod ma byc prosty, modulowy i separowany wedlug odpowiedzialnosci:
 
-Planowany kierunek audio: jeśli miniatura ma zatwierdzone audio miejsca, hover może płynnie i cicho uruchamiać krótki ambient z fade in/fade out. Implementując to później, uwzględnić ograniczenia autoplay w przeglądarkach i dodać jawne włączenie dźwięku mapy, jeśli będzie potrzebne.
+- nie tworz zbednych warstw abstrakcji, wrapperow ani konfiguracji na pozniej,
+- nie dopuszczaj do `god objectow`; rozbij plik, komponent, route albo serwis, jesli zaczyna obslugiwac kilka niezaleznych odpowiedzialnosci,
+- logika domenowa nie powinna mieszkac w UI ani w route'ach, jesli nalezy do serwisu, helpera albo modelu,
+- publiczny UI/API i admin UI/API trzymaj jako osobne przeplywy,
+- zaleznosci dodawaj tylko wtedy, gdy rozwiazuja realny problem lepiej niz prosty kod lokalny,
+- nie trzymaj martwych pol, stalych, typow, endpointow ani CSS po usunietych funkcjach.
 
-## Zasady jakości kodu i architektury
+## Jakosc UI
 
-Domyślnie nie utrzymywać kompatybilności wstecznej dla wewnętrznych kontraktów. Jeśli zmienia się model, endpoint, pole requestu, konfiguracja, flaga albo komponent, w tej samej zmianie usunąć stare wejścia, fallbacki, adaptery, komentarze i martwe ścieżki kodu. Wyjątek tylko wtedy, gdy użytkownik wyraźnie poprosi o okres przejściowy albo migrację danych produkcyjnych.
+UI ma byc kompaktowy, spojny i minimalistyczny. Nie duplikuj tytulow, opisow, licznikow ani etykiet, jesli ta sama informacja jest juz widoczna w aktywnej karcie, filtrze, naglowku albo bezposrednim kontekscie.
 
-Kod ma być prosty, modułowy i separowany według odpowiedzialności:
+- Wykorzystuj miejsce layoutem, zamiast rozpychac strone dodatkowymi naglowkami i opisami.
+- Usuwaj lokalne naglowki sekcji, jesli tylko powtarzaja nazwe wybranej zakladki albo karty.
+- Liczniki pokazuj w jednym sensownym miejscu.
+- Tekst pomocniczy trzymaj krotko i blisko kontrolki.
+- Formularze i modale projektuj mozliwie nisko i wasko, bez pustych obszarow i niepotrzebnych blokow tekstu.
+- Modal albo sheet akcji pokazuje tylko dane potrzebne do tej akcji.
+- Formularz dodawania nie powinien automatycznie pokazywac listy istniejacych rekordow.
+- Jesli komponent ma kilka wariantow, nazwij tryb w API komponentu, np. `form-only`, `with-list`, `readonly`, zamiast dodawac luzne flagi boolean.
 
-- nie tworzyć zbędnych warstw abstrakcji, wrapperów ani konfiguracji „na później”,
-- nie dopuszczać do `god objectów`; jeśli plik, komponent, route albo serwis zaczyna obsługiwać kilka niezależnych odpowiedzialności, rozbić go przed dokładaniem kolejnej funkcji,
-- logika domenowa nie powinna mieszkać w UI ani w route'ach, jeśli należy do serwisu, helpera albo modelu,
-- publiczny UI/API i admin UI/API trzymać jako osobne przepływy, nawet jeśli korzystają z tych samych modeli,
-- zależności dodawać tylko wtedy, gdy rozwiązują realny problem lepiej niż prosty kod lokalny,
-- nie trzymać martwych pól, stałych, typów, endpointów ani CSS po usuniętych funkcjach.
+## Prywatnosc Mediow
 
-Każda zmiana kontraktu albo zachowania powinna mieć adekwatne pokrycie testami. Minimum:
+Dla zdjec i pamiatek trzymaj zasade: oryginal trafia do private storage, publiczna kopia jest bezpieczna do zwrocenia przez API, a publiczne API nigdy nie ujawnia prywatnych sciezek. Publicznie widoczne sa tylko tresci zatwierdzone.
 
-- test publicznego kontraktu API, jeśli zmienia się publiczny endpoint,
-- test admin API, jeśli zmienia się akcja admina,
-- test schematu albo migracji, jeśli zmienia się model bazy,
-- build frontendu, jeśli zmienia się TypeScript albo komponenty,
-- diagnostyka/skrypt check, jeśli problem może wrócić przez lokalne dane lub środowisko.
+## Zakazane Slownictwo
 
-Nie ignorować czerwonych testów komendą typu `|| true`. Jeśli test nie może przejść z powodu znanego ograniczenia środowiska, opisać to jawnie w podsumowaniu.
-
-## Zasady UI i layoutu
-
-UI ma być kompaktowy, spójny i minimalistyczny. Nie duplikować tytułów, opisów, liczników ani etykiet, jeśli ta sama informacja jest już widoczna w aktywnej karcie, filtrze, nagłówku albo bezpośrednim kontekście.
-
-Każdy centymetr ekranu traktować jako ograniczony zasób. Oczekiwany standard to przemyślany, kompaktowy układ już w pierwszej implementacji, bez czekania na poprawki użytkownika po screenach. Przed oddaniem zmiany UI zrobić własny audyt: czy nie ma pustych pasów, powtórzonych nazw, nadmiarowych opisów, zbyt wysokich modali, za dużych odstępów albo kontrolek ustawionych w miejscu, które marnuje przestrzeń.
-
-- wykorzystywać miejsce layoutem, zamiast rozpychać stronę dodatkowymi nagłówkami i opisami,
-- usuwać lokalne nagłówki sekcji, jeśli tylko powtarzają nazwę wybranej zakładki albo karty,
-- liczniki pokazywać w jednym sensownym miejscu; nie powtarzać ich obok listy i w karcie wyboru jednocześnie,
-- tekst pomocniczy trzymać krótko i blisko kontrolki, której dotyczy,
-- formularze i modale projektować możliwie nisko i wąsko, bez pustych obszarów i bez niepotrzebnych bloków tekstu,
-- każdy ekran powinien być czytelny przez układ, odstępy i kolejność pól, a nie przez nadmiar opisów.
-
-## Zasady przepływów UI
-
-Nie mieszać trybów użytkownika w jednym widoku bez wyraźnej potrzeby. Szczególnie:
-
-- modal albo sheet służący do wykonania akcji ma pokazywać tylko dane potrzebne do tej akcji,
-- formularz dodawania nie powinien automatycznie pokazywać listy istniejących rekordów,
-- podgląd szczegółów może pokazywać dane wybranego rekordu, ale nie powinien zawierać formularzy dodawania nowych rekordów,
-- lista, ranking, historia i moderacja mają być osobnymi trybami albo jawnie nazwanymi sekcjami,
-- jeśli jeden komponent jest używany w kilku trybach, nazwać tryb w API komponentu, np. `form-only`, `with-list`, `readonly`, zamiast dodawać kilka luźnych flag boolean,
-- nie dodawać fallbacków UX „na wszelki wypadek”; jeśli nie wiadomo, czy informacja ma być widoczna w danym flow, najpierw ograniczyć ją do najwęższego potrzebnego kontekstu albo zapytać użytkownika.
-
-Zmiany w modalach, sheetach, uploadzie, edycji i mapowych warstwach muszą mieć test regresyjny, jeśli problem może wrócić przez przypadkowe reużycie komponentu. Minimum:
-
-- test helpera albo trybu komponentu, jeśli UI ma różne warianty,
-- test payloadu API clienta, jeśli formularz wysyła dane,
-- test backendu, jeśli endpoint waliduje pola, statusy, liczniki albo prywatność ścieżek.
-
-## Zakazane słownictwo w nowym kodzie
-
-Nie używać w nowym kodzie, API, UI, modelach, komponentach ani nazwach plików:
+Nie uzywaj w nowym kodzie, API, UI, modelach, komponentach ani nazwach plikow:
 
 ```txt
 wreck
@@ -126,418 +100,41 @@ report_package
 savedWreck
 ```
 
-Stare nazwy mogą występować tylko w folderze `_legacy/WreckScanner`.
+Stare nazwy moga wystepowac tylko w `_legacy/WreckScanner` oraz w dokumentacji wyjasniajacej granice legacy.
 
-## Podejście do WreckScanner
+## Testowanie
 
-Nie robimy refaktoryzacji starego repo jako głównego projektu.
+Kazda zmiana kontraktu albo zachowania powinna miec adekwatne pokrycie testami:
 
-Budujemy czysty projekt od zera, ale można selektywnie przepisać małe, wartościowe fragmenty logiki z WreckScanner, szczególnie:
+- test publicznego kontraktu API, jesli zmienia sie publiczny endpoint,
+- test admin API, jesli zmienia sie akcja admina,
+- test schematu albo migracji, jesli zmienia sie model bazy,
+- build frontendu, jesli zmienia sie TypeScript albo komponenty,
+- test helpera/trybu komponentu, jesli UI ma rozne warianty,
+- diagnostyka albo skrypt check, jesli problem moze wrocic przez lokalne dane lub srodowisko.
 
-- upload zdjęć,
-- tworzenie miniatur,
-- usuwanie EXIF,
-- prywatny oryginał + publiczna kopia,
-- statusy moderacji `pending / approved / rejected`,
-- prosta logika panelu admina.
-
-Nie kopiować dużych plików 1:1. Jeśli logika jest potrzebna, przepisać ją do nowych modułów z nazwami domenowymi projektu.
-
-## Stack technologiczny MVP
-
-Backend:
-
-- Python 3.11+
-- FastAPI
-- SQLModel albo SQLAlchemy 2.0
-- SQLite na MVP
-- Alembic na migracje
-- Pillow do obrazów
-- python-multipart do uploadu
-- pytest do testów
-- ruff do formatowania/lintingu
-
-Frontend:
-
-- React
-- Vite
-- TypeScript
-- Leaflet / React-Leaflet
-- zwykły CSS na start; Tailwind można dodać później
-
-Storage MVP:
-
-- lokalny folder `backend/storage/private` na oryginały,
-- lokalny folder `backend/storage/public` na publiczne kopie i miniatury,
-- publiczne API nigdy nie zwraca ścieżki do prywatnego oryginału.
-
-Baza:
-
-- SQLite: `backend/data/app.db`,
-- modele projektować tak, żeby później łatwo przejść na PostgreSQL.
-
-## Struktura katalogów
-
-Docelowy układ:
-
-```txt
-.
-├── AGENTS.md
-├── README.md
-├── .gitignore
-├── _legacy/
-│   └── WreckScanner/          # read-only reference
-├── backend/
-│   ├── app/
-│   │   ├── main.py
-│   │   ├── api/
-│   │   │   └── routes/
-│   │   ├── core/
-│   │   ├── db/
-│   │   ├── models/
-│   │   ├── schemas/
-│   │   ├── services/
-│   │   │   └── media/
-│   │   └── tests/
-│   ├── data/
-│   ├── storage/
-│   │   ├── private/
-│   │   └── public/
-│   ├── alembic/
-│   ├── alembic.ini
-│   └── requirements.txt
-└── frontend/
-    ├── src/
-    │   ├── api/
-    │   ├── components/
-    │   │   ├── map/
-    │   │   ├── places/
-    │   │   └── admin/
-    │   ├── pages/
-    │   └── main.tsx
-    ├── package.json
-    └── vite.config.ts
-```
-
-## Modele MVP
-
-Na start wdrożyć tylko:
-
-- `Category`,
-- `City`,
-- `Place`,
-- `Photo`,
-- `Memory`,
-- `Guide`,
-- `PlaceGuide`,
-- `Report`.
-
-Pola minimalne:
-
-### Category
-
-- `id`
-- `label`
-- `description`
-- `icon`
-- `sort_order`
-
-### Place
-
-- `id`
-- `city_id`
-- `slug`
-- `title`
-- `description`
-- `local_comment`
-- `lat`
-- `lon`
-- `weight`
-- `status`: `draft | published | archived`
-- `photo_count`
-- `memory_count`
-- `cover_photo_id`
-- `created_at`
-- `updated_at`
-
-Kategorie miejsc są relacją wiele-do-wielu przez `PlaceCategory`, nie pojedynczym polem w `Place`.
-
-### City
-
-- `id`
-- `name`
-- `lat`
-- `lon`
-- `default_zoom`
-- `sort_order`
-- `status`: `active | archived`
-
-### Photo
-
-- `id`
-- `place_id`
-- `original_path`
-- `public_path`
-- `thumb_path`
-- `role`: `gallery | map_icon`
-- `source`: `user_upload | editorial | generated`
-- `status`: `pending | approved | rejected`
-- `caption`
-- `created_at`
-- `approved_at`
-
-### Memory
-
-- `id`
-- `place_id`
-- `author_name`
-- `author_city`
-- `caption`
-- `memory_text`
-- `original_path`
-- `public_path`
-- `thumb_path`
-- `status`: `pending | approved | rejected`
-- `paid`
-- `share_slug`
-- `claim_token_hash`
-- `created_at`
-- `approved_at`
-
-### Guide
-
-- `id`
-- `slug`
-- `title`
-- `description`
-- `status`: `draft | published | archived`
-- `created_at`
-- `updated_at`
-
-### Report
-
-- `id`
-- `target_type`
-- `target_id`
-- `reason`
-- `message`
-- `status`: `open | closed`
-- `created_at`
-
-## Endpointy MVP
-
-Publiczne:
-
-```txt
-GET /health
-GET /api/cities
-GET /api/categories
-GET /api/places
-GET /api/places/map
-GET /api/places/{id_or_slug}
-GET /api/places/{place_id}/photos
-POST /api/places/{place_id}/photos
-GET /api/places/{place_id}/memories
-POST /api/places/{place_id}/memories
-GET /api/guides
-GET /api/guides/{slug}
-POST /api/reports
-```
-
-Admin:
-
-```txt
-GET /api/admin/cities
-POST /api/admin/places
-PATCH /api/admin/places/{place_id}
-DELETE /api/admin/places/{place_id}
-POST /api/admin/photos/{photo_id}/review
-POST /api/admin/memories/{memory_id}/review
-POST /api/admin/guides
-PATCH /api/admin/guides/{guide_id}
-POST /api/admin/guides/{guide_id}/places
-DELETE /api/admin/guides/{guide_id}/places/{place_id}
-GET /api/admin/reports
-PATCH /api/admin/reports/{report_id}
-```
-
-Na MVP admin może być zabezpieczony prostym hasłem albo tokenem z `.env`. Nie budować jeszcze pełnego systemu kont.
-
-## Kategorie startowe
-
-Przy inicjalizacji bazy dodać:
-
-```txt
-bar_mleczny
-street_food
-coffee
-viewpoint
-mural
-hidden_gem
-cheap_food
-date_spot
-rainy_day
-after_22
-local_classic
-```
-
-## Ranking MVP
-
-Ranking to helper, nie twarda logika rozsiana po aplikacji:
-
-```txt
-score = (photo_count + memory_count * 2) * weight
-```
-
-Nie wolno dodawać płatnego boosta miejsc.
-
-W UI nie pokazywać technicznego słowa `weight`. Używać etykiet typu:
-
-- polecane przez lokalsów,
-- hidden gem,
-- lokalny klasyk,
-- popularne wśród odwiedzających,
-- najwięcej wspomnień.
-
-## Zasady zdjęć i prywatności
-
-Dla wszystkich zdjęć i pamiątek:
-
-- oryginał trafia do private storage,
-- publiczna kopia jest pozbawiona EXIF,
-- miniatura jest generowana osobno,
-- domyślny status to `pending`,
-- publicznie widoczne są tylko treści `approved`,
-- publiczne API nie zwraca prywatnych ścieżek,
-- admin może `approve` albo `reject`,
-- po zatwierdzeniu aktualizować `photo_count` albo `memory_count`.
-
-W formularzu uploadu dodać zgodę:
-
-```txt
-Potwierdzam, że jestem autorem zdjęcia albo mam prawo je opublikować. Jeśli na zdjęciu są rozpoznawalne osoby jako główny temat, mam ich zgodę.
-```
-
-## Czego nie implementować przed MVP
-
-Nie wdrażać przed ukończeniem szkieletu:
-
-- audio GPS,
-- audio-wspomnień,
-- pełnego systemu audio-hover,
-- płatności,
-- kont użytkowników,
-- paszportu/pieczątek,
-- historii „kiedyś i dziś”,
-- wielojęzyczności,
-- zaawansowanego SEO,
-- natywnej aplikacji mobilnej,
-- rozbudowanych ról i uprawnień.
-
-Można zostawić pola i architekturę gotową na przyszłość, ale nie implementować tych funkcji teraz.
-
-## Kolejność pracy
-
-Pracuj etapami. Nie przechodź dalej, jeśli aktualny etap nie działa.
-
-```txt
-0. Utworzenie struktury projektu
-1. Backend FastAPI + SQLite
-2. Modele City, Category i Place
-3. Seed kategorii
-4. API categories i places
-5. Frontend Vite + React + Leaflet
-6. Mapa renderująca places
-7. Prosty admin CRUD miejsc
-8. Upload zdjęć miejsca
-9. Moderacja zdjęć
-10. Memories: zdjęcie + podpis + autor
-11. Moderacja memories
-12. Ranking helper
-13. Guides jako kolekcje miejsc
-14. Reports jakości
-15. Map Experience v1: miniatury, gęstość, zoom, klastry i warstwy
-16. Lekki kontrakt `map preview` bez utraty wizualnego pierwszego widoku
-17. AudioClip i moderacja audio dopiero po ustabilizowaniu mapy
-```
-
-## Testy po każdym etapie
-
-Po każdej większej zmianie uruchomić:
-
-Pełny check projektu:
+Po wiekszej zmianie uruchom:
 
 ```bash
 ./scripts/check.sh
 ```
 
-Jeśli trzeba uruchomić elementy osobno:
+Nie ignoruj czerwonych testow komenda typu `|| true`. Jesli test nie moze przejsc z powodu znanego ograniczenia srodowiska, opisz to jawnie w podsumowaniu.
 
-Backend:
+## Hierarchia AGENTS.md
 
-```bash
-cd backend
-pytest
-python -m compileall app
-```
+Ten plik jest glownym kontraktem projektu. Lokalne `AGENTS.md` sluza tylko do trwalych granic odpowiedzialnosci i nie powinny powtarzac zasad z roota.
 
-Frontend:
+Przed edycja sciezki objetej lokalnym plikiem przeczytaj root `AGENTS.md` oraz najblizszy lokalny `AGENTS.md`.
 
-```bash
-cd frontend
-npm run build
-```
+- `backend/AGENTS.md` - backend FastAPI, modele, migracje, serwisy, storage i testy API.
+- `frontend/AGENTS.md` - frontend React/Vite, klient API, style i ogolne reguly UI.
+- `frontend/src/components/admin/AGENTS.md` - admin UI, CRUD, moderacja, raporty i flow korekt.
+- `frontend/src/components/map/AGENTS.md` - publiczna mapa, miniatury, warstwy, sheets i markery.
+- `content/AGENTS.md` - manifesty miast i redakcyjny content importowany masowo.
+- `assets/place-icons/AGENTS.md` - cykl zycia redakcyjnych ikon miejsc.
+- `scripts/content/AGENTS.md` - importer manifestow i jego kontrakt idempotencji.
 
-Dodatkowo sprawdzić ręcznie:
+## Roadmapa
 
-- `/health` odpowiada,
-- `/api/categories` zwraca kategorie,
-- `/api/places` zwraca tylko opublikowane miejsca w publicznym trybie,
-- mapa się ładuje,
-- admin może dodać miejsce,
-- zdjęcie po uploadzie ma status `pending`,
-- pending nie jest widoczne publicznie.
-
-## Styl kodu
-
-- Małe pliki zamiast jednego ogromnego pliku.
-- Route'y API dzielić według domen: `places.py`, `categories.py`, `photos.py`, `memories.py`, `guides.py`, `reports.py`.
-- Logikę przetwarzania zdjęć trzymać w `services/media`, nie w route'ach.
-- Modele DB trzymać w `models`.
-- Schematy request/response trzymać w `schemas`.
-- Frontend dzielić na komponenty: mapa, miejsca, admin, upload, guides.
-- Nie mieszać UI admina z publicznym UI, jeśli da się tego uniknąć.
-
-## Lokalna hierarchia AGENTS.md
-
-Ten plik zostaje głównym kontraktem projektu. Lokalne `AGENTS.md` służą tylko do trwałych granic odpowiedzialności i nie powinny powtarzać zasad z roota.
-
-Przed edycją ścieżki objętej lokalnym plikiem przeczytać root `AGENTS.md` oraz najbliższy lokalny `AGENTS.md`. Nie tworzyć lokalnych instrukcji dla każdego folderu; dodawać je tylko wtedy, gdy katalog ma własne kontrakty, workflow albo standard weryfikacji.
-
-- `backend/AGENTS.md` — backend FastAPI, modele, migracje, serwisy, storage i testy API.
-- `frontend/AGENTS.md` — frontend React/Vite, klient API, style i ogólne reguły UI.
-- `frontend/src/components/admin/AGENTS.md` — admin UI, CRUD, moderacja, raporty i flow korekt.
-- `frontend/src/components/map/AGENTS.md` — publiczna mapa, miniatury, warstwy, sheets i markery.
-- `content/AGENTS.md` — manifesty miast i redakcyjny content importowany masowo.
-- `assets/place-icons/AGENTS.md` — cykl życia redakcyjnych ikon miejsc.
-- `scripts/content/AGENTS.md` — importer manifestów i jego kontrakt idempotencji.
-
-## Definicja gotowego MVP
-
-MVP jest gotowe, gdy:
-
-- admin może dodać miejsce,
-- miejsce ma co najmniej jedną sensowną kategorię,
-- miejsce pojawia się na mapie,
-- publiczna mapa pokazuje tylko `published`,
-- miejsce ma opis i lokalny komentarz,
-- można dodać zdjęcie do miejsca,
-- zdjęcie trafia do moderacji,
-- admin może zatwierdzić zdjęcie,
-- publicznie widoczne są tylko zatwierdzone zdjęcia,
-- można dodać pamiątkę `byłem tutaj`,
-- pamiątka trafia do moderacji,
-- miejsce ma licznik zdjęć i pamiątek,
-- ranking korzysta z `photo_count`, `memory_count` i `weight`,
-- istnieją proste guides jako kolekcje miejsc,
-- UI nie zawiera słów związanych z WreckScanner.
+Biezaca roadmapa jest tylko w [PLAN.md](PLAN.md). Nie dopisuj drugiej roadmapy do tego pliku.
