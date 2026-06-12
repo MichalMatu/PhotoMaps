@@ -24,8 +24,8 @@
   }
 
   .rail-item span {
-    font-size: 0.64rem;
-    max-width: 68px;
+    font-size: 0.55rem;
+    max-width: none;
   }
 
   .admin-workspace {
@@ -43,6 +43,7 @@
   .map-frame,
   .place-map {
     min-height: 100vh;
+    min-height: 100dvh;
   }
 
   .field-row,

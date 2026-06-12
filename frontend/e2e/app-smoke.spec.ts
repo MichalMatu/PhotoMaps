@@ -11,6 +11,10 @@ type CategoryResponse = {
   id: string;
 };
 
+type CityResponse = {
+  id: string;
+};
+
 type PlaceResponse = {
   id: string;
   title: string;
@@ -62,16 +66,24 @@ async function createCategory(request: APIRequestContext, suffix: string) {
   );
 }
 
+async function getDefaultCityId(request: APIRequestContext) {
+  const cities = await expectJson<CityResponse[]>(request.get(`${API_URL}/api/cities`), 200);
+  expect(cities.length, "seeded e2e city").toBeGreaterThan(0);
+  return cities[0].id;
+}
+
 async function createPlace(
   request: APIRequestContext,
   categoryId: string,
   suffix: string,
   overrides: Partial<{ lat: number; lon: number; title: string }> = {},
 ) {
+  const cityId = await getDefaultCityId(request);
   return expectJson<PlaceResponse>(
     request.post(`${API_URL}/api/admin/places`, {
       data: {
-        category_id: categoryId,
+        category_ids: [categoryId],
+        city_id: cityId,
         description: "Miejsce przygotowane przez test e2e",
         lat: overrides.lat ?? 51.1079,
         local_comment: "Lokalny komentarz e2e",
@@ -140,7 +152,7 @@ test("admin gate is reachable", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Wejdź do panelu" })).toBeVisible();
 });
 
-test("admin can upload and approve a place photo through UI", async ({ page, request }) => {
+test("admin can upload an approved place photo through UI", async ({ page, request }) => {
   const suffix = `${Date.now()}-${test.info().workerIndex}`;
   const caption = `Zdjęcie e2e ${suffix}`;
   const category = await createCategory(request, suffix);
@@ -161,16 +173,6 @@ test("admin can upload and approve a place photo through UI", async ({ page, req
   await uploadDialog.getByLabel("Podpis").fill(caption);
   await uploadDialog.getByRole("button", { name: "Dodaj zdjęcie" }).click();
   await expect(uploadDialog).toBeHidden();
-
-  await page.getByRole("button", { name: /Do sprawdzenia/ }).click();
-  const pendingAlbum = page.locator(".admin-media-album-summary").filter({ hasText: place.title });
-  await expect(pendingAlbum).toContainText("1 zdjęcie");
-  await pendingAlbum.click();
-
-  const pendingItem = page.locator(".admin-media-item").filter({ hasText: caption });
-  await expect(pendingItem).toContainText("do sprawdzenia");
-  await pendingItem.getByRole("button", { name: "Zatwierdź" }).click();
-  await expect(pendingItem).toBeHidden();
 
   await page.getByRole("button", { name: /Zatwierdzone/ }).click();
   const approvedAlbum = page.locator(".admin-media-album-summary").filter({ hasText: place.title });
@@ -230,7 +232,7 @@ test("admin can create category, place and guide through UI", async ({ page, req
   const placeDialog = page.getByRole("dialog", { name: "Dodaj miejsce" });
   await expect(placeDialog).toBeVisible();
   await placeDialog.getByLabel("Nazwa").fill(placeTitle);
-  await placeDialog.getByLabel("Kategoria").selectOption({ label: categoryLabel });
+  await placeDialog.getByRole("checkbox", { name: categoryLabel }).check();
   await placeDialog.getByLabel("Opis").fill("Opis miejsca dodanego przez e2e");
   await placeDialog.getByLabel("Lokalny komentarz").fill("Komentarz lokalny e2e");
   await placeDialog.getByLabel("Priorytet redakcji").selectOption("2.5");
@@ -270,8 +272,8 @@ test("admin can create category, place and guide through UI", async ({ page, req
     await guideRow.getByRole("button", { exact: true, name: "Miejsca" }).click();
   }
   await expect(guidePanel).toBeVisible();
-  await guideRow.getByLabel("Dodaj miejsce").selectOption({ label: editedPlaceTitle });
-  await guideRow.getByRole("button", { name: "Dodaj do przewodnika" }).click();
+  await guideRow.locator(".guide-place-choice").filter({ hasText: editedPlaceTitle }).getByRole("checkbox").check();
+  await guideRow.getByRole("button", { name: "Dodaj 1" }).click();
   await expect(guideRow.locator(".guide-place-row").filter({ hasText: editedPlaceTitle })).toBeVisible();
 
   await expect
@@ -355,9 +357,10 @@ test("visitor can add a memory and admin can approve it through UI", async ({ pa
     .poll(async () => {
       const mapPlaces = await getMapPlaces(request);
       const mapPlace = mapPlaces.find((item) => item.id === place.id);
+      const memory = mapPlace?.preview_items.find((item) => item.kind === "memory");
       return {
         memoryCount: mapPlace?.memory_count ?? 0,
-        memoryText: mapPlace?.memories[0]?.memory_text ?? null,
+        memoryText: memory?.memory_text ?? null,
       };
     })
     .toEqual({ memoryCount: 1, memoryText });
@@ -383,7 +386,7 @@ test("visitor can report a photo and admin can close the report through UI", asy
   await page.goto("/");
   await expect(page.locator(".map-frame")).toBeVisible();
   await page.locator(`[title="${place.title}"]`).first().click();
-  await page.locator(`[title="${photoCaption}"]`).click();
+  await page.locator(`[title="${photoCaption}"] span`).click();
 
   const previewDialog = page.getByRole("dialog", { name: `Zdjęcie: ${place.title}` });
   await expect(previewDialog).toBeVisible();

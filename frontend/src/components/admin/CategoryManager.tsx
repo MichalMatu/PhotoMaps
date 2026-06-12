@@ -17,31 +17,55 @@ export function CategoryManager({ categories, onChanged, places }: Props) {
     <section className="admin-panel category-manager">
       <div className="category-toolbar">
         <div className="admin-summary-pills" aria-label="Status kategorii">
-          <span>Wszystkie {categories.length}</span>
-          <span>Aktywne {categoryActions.categoryStatusCounts.active}</span>
-          <span>Archiwalne {categoryActions.categoryStatusCounts.archived}</span>
+          <span className="admin-summary-pill">Wszystkie {categories.length}</span>
+          <span className="admin-summary-pill">Aktywne {categoryActions.categoryStatusCounts.active}</span>
+          <span className="admin-summary-pill">Archiwalne {categoryActions.categoryStatusCounts.archived}</span>
         </div>
         <button type="button" onClick={categoryActions.openCreateCategoryModal}>
           Dodaj kategorię
         </button>
       </div>
 
-      <div className="category-list">
+      <div className="category-list" role="table">
+        <div className="category-row category-head" role="row">
+          <span className="category-cell" role="columnheader">
+            Nazwa
+          </span>
+          <span className="category-cell" role="columnheader">
+            Status
+          </span>
+          <span className="category-cell" role="columnheader">
+            Kolejność
+          </span>
+          <span className="category-cell" role="columnheader">
+            Ikona
+          </span>
+          <span className="category-cell category-cell--actions" role="columnheader">
+            Akcje
+          </span>
+        </div>
         {categories.map((category) => (
           <div
             className={
               categoryActions.editingCategory?.id === category.id ? "category-row is-selected" : "category-row"
             }
+            role="row"
             key={category.id}
           >
-            <div>
+            <div className="category-cell category-cell--title" role="cell" data-label="Nazwa">
               <strong>{category.label}</strong>
-              <span>{category.id}</span>
+              <span className="category-id">{category.id}</span>
             </div>
-            <span className={`status-badge status-badge--${category.status}`}>{category.status}</span>
-            <span>{category.sort_order}</span>
-            <span>{category.icon ?? "-"}</span>
-            <div className="category-actions">
+            <span className="category-cell" role="cell" data-label="Status">
+              <span className={`status-badge status-badge--${category.status}`}>{category.status}</span>
+            </span>
+            <span className="category-cell" role="cell" data-label="Kolejność">
+              {category.sort_order}
+            </span>
+            <span className="category-cell category-cell--icon" role="cell" data-label="Ikona">
+              {category.icon ?? "-"}
+            </span>
+            <div className="category-cell category-cell--actions category-actions" role="cell">
               <button type="button" onClick={() => categoryActions.openEditCategoryModal(category)}>
                 Edytuj
               </button>

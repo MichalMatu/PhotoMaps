@@ -36,10 +36,16 @@ export function AdminMediaAlbums<TItem extends AdminMediaItem>({
               type="button"
               onClick={() => onTogglePlace(group.placeId)}
             >
-              <img alt={group.title} decoding="async" loading="lazy" src={mediaUrl(group.coverItem.thumb_path)} />
-              <div>
-                <strong>{group.title}</strong>
-                <span>{group.categoryLabel}</span>
+              <img
+                className="admin-media-album-cover"
+                alt={group.title}
+                decoding="async"
+                loading="lazy"
+                src={mediaUrl(group.coverItem.thumb_path)}
+              />
+              <div className="admin-media-album-meta">
+                <strong className="admin-media-album-title">{group.title}</strong>
+                <span className="admin-media-album-category">{group.categoryLabel}</span>
               </div>
               <span className="admin-media-count">{countLabel(group.items.length)}</span>
             </button>

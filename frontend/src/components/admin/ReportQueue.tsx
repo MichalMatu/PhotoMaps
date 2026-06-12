@@ -41,7 +41,7 @@ export function ReportQueue({ onChanged, onStatusFilterChange, reports, statusCo
                 type="button"
                 onClick={() => onStatusFilterChange(filter.value)}
               >
-                {filter.label} <span>{statusCounts[filter.value]}</span>
+                {filter.label} <span className="status-tab-count">{statusCounts[filter.value]}</span>
               </button>
             ))}
           </div>
@@ -50,15 +50,15 @@ export function ReportQueue({ onChanged, onStatusFilterChange, reports, statusCo
           <div className="report-list" role="list">
             {reports.map((report) => (
               <article className="report-item" key={report.id} role="listitem">
-                <div>
-                  <span className={`status-badge status-badge--${report.status}`}>{report.status}</span>
-                  <strong>{report.reason}</strong>
-                  <p>{report.message ?? "Brak wiadomości."}</p>
-                  <span className="muted-text">
+                <div className="report-item-body">
+                  <span className={`report-status status-badge status-badge--${report.status}`}>{report.status}</span>
+                  <strong className="report-reason">{report.reason}</strong>
+                  <p className="report-message">{report.message ?? "Brak wiadomości."}</p>
+                  <span className="report-target muted-text">
                     {report.target_type}: {report.target_id}
                   </span>
                 </div>
-                <div className="review-actions">
+                <div className="report-actions review-actions">
                   {report.status !== "closed" ? (
                     <button type="button" onClick={() => handleStatus(report.id, "closed")}>
                       Zamknij

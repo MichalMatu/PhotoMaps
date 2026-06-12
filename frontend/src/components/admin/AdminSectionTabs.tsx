@@ -35,8 +35,8 @@ export function AdminSectionTabs({ activeSection, counts, onChange }: Props) {
           onClick={() => onChange(key)}
         >
           <Icon aria-hidden="true" size={20} />
-          <span>{label}</span>
-          <strong>{counts[key]}</strong>
+          <span className="admin-section-tab-label">{label}</span>
+          <strong className="admin-section-tab-count">{counts[key]}</strong>
         </button>
       ))}
     </nav>

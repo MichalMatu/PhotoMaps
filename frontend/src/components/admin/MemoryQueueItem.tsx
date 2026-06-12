@@ -47,7 +47,13 @@ export function MemoryQueueItem({
 }: Props) {
   return (
     <article className="admin-media-item">
-      <img alt={memory.caption} decoding="async" loading="lazy" src={mediaUrl(memory.thumb_path)} />
+      <img
+        className="admin-media-item-image"
+        alt={memory.caption}
+        decoding="async"
+        loading="lazy"
+        src={mediaUrl(memory.thumb_path)}
+      />
       <div className="admin-media-item-body">
         <div className="photo-meta-row">
           <span className={`status-badge status-badge--${memory.status}`}>
@@ -104,8 +110,8 @@ export function MemoryQueueItem({
         ) : (
           <>
             <p className="admin-media-caption">{memory.caption}</p>
-            <p className="muted-text">{memory.memory_text}</p>
-            <span className="muted-text">
+            <p className="admin-media-text">{memory.memory_text}</p>
+            <span className="admin-media-author muted-text">
               {memory.author_name ?? "Gość"}
               {memory.author_city ? `, ${memory.author_city}` : ""}
             </span>

@@ -1,5 +1,6 @@
 .page-shell {
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .app-shell {
@@ -7,10 +8,12 @@
   display: grid;
   grid-template-columns: 88px minmax(0, 1fr);
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .app-content {
   min-height: 100vh;
+  min-height: 100dvh;
   min-width: 0;
 }
 
@@ -23,6 +26,7 @@
   flex-direction: column;
   gap: 28px;
   min-height: 100vh;
+  min-height: 100dvh;
   padding: 24px 8px;
   position: relative;
   z-index: 900;
@@ -81,12 +85,12 @@
 
 .rail-item span {
   display: block;
-  font-size: 0.64rem;
-  line-height: 1.05;
+  font-size: 0.58rem;
+  line-height: 1;
   max-width: 100%;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
   text-align: center;
-  white-space: normal;
+  white-space: nowrap;
   width: 100%;
 }
 
@@ -128,6 +132,7 @@
   display: grid;
   grid-auto-rows: max-content;
   height: 100vh;
+  height: 100dvh;
   left: 0;
   overflow-y: auto;
   position: fixed;

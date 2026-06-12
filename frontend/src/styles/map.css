@@ -1,18 +1,23 @@
 .map-frame {
   height: 100vh;
+  height: 100dvh;
   min-height: 100vh;
+  min-height: 100dvh;
   overflow: hidden;
 }
 
 .place-map {
   height: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
 }
 
 .map-page {
   height: 100vh;
+  height: 100dvh;
   min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
 }
 

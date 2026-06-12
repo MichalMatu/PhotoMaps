@@ -53,8 +53,8 @@ export function GuidePlacePanel({
               checked={selectedPlaceIds.includes(place.id)}
               onChange={() => onTogglePlaceSelection(place.id)}
             />
-            <span>{place.title}</span>
-            <small>{place.status}</small>
+            <span className="guide-place-choice-title">{place.title}</span>
+            <small className="guide-place-choice-status">{place.status}</small>
           </label>
         ))}
         {availablePlaces.length === 0 ? <p className="notice">Brak aktywnych miejsc do dodania.</p> : null}
@@ -70,9 +70,9 @@ export function GuidePlacePanel({
         {!isLoading
           ? guidePlaces.map((place, index) => (
               <div className="guide-place-row" key={place.id}>
-                <div>
-                  <strong>{place.title}</strong>
-                  <span>{place.status}</span>
+                <div className="guide-place-row-copy">
+                  <strong className="guide-place-row-title">{place.title}</strong>
+                  <span className="guide-place-row-status">{place.status}</span>
                 </div>
                 <div className="guide-place-row-actions">
                   <button

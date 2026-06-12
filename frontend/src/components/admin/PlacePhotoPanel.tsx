@@ -88,8 +88,8 @@ export function PlacePhotoPanel({ onChanged, photos, place }: Props) {
   return (
     <section className="place-photo-panel">
       <div className="place-photo-panel-header">
-        <strong>Zdjęcia miejsca</strong>
-        <span>{photos.length === 1 ? "1 zdjęcie" : `${photos.length} zdjęć`}</span>
+        <strong className="place-photo-panel-title">Zdjęcia miejsca</strong>
+        <span className="place-photo-panel-count">{photos.length === 1 ? "1 zdjęcie" : `${photos.length} zdjęć`}</span>
       </div>
 
       <form className="place-photo-upload" onSubmit={handleUpload}>
@@ -121,19 +121,20 @@ export function PlacePhotoPanel({ onChanged, photos, place }: Props) {
           return (
             <article className="place-photo-card" key={photo.id}>
               <img
+                className="place-photo-card-image"
                 alt={photo.caption ?? place.title}
                 decoding="async"
                 loading="lazy"
                 src={mediaUrl(photo.thumb_path)}
               />
-              <div>
+              <div className="place-photo-card-body">
                 <div className="photo-meta-row">
                   <span className={`status-badge status-badge--${photo.status}`}>
                     {ADMIN_MEDIA_STATUS_LABELS[photo.status]}
                   </span>
                   {isCover ? <span className="status-badge status-badge--cover">główne</span> : null}
                 </div>
-                <p>{photo.caption ?? "Brak podpisu"}</p>
+                <p className="place-photo-card-caption">{photo.caption ?? "Brak podpisu"}</p>
                 <div className="review-actions">
                   {photo.status === "approved" && !isCover ? (
                     <button

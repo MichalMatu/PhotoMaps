@@ -28,16 +28,32 @@ function MapSizeUpdater() {
   const map = useMap();
 
   useEffect(() => {
-    const frameId = window.requestAnimationFrame(() => map.invalidateSize());
-    const timeoutId = window.setTimeout(() => map.invalidateSize(), 250);
-    const handleResize = () => map.invalidateSize();
+    let resizeFrameId: number | null = null;
+    const scheduleInvalidate = () => {
+      if (resizeFrameId !== null) {
+        window.cancelAnimationFrame(resizeFrameId);
+      }
+      resizeFrameId = window.requestAnimationFrame(() => {
+        resizeFrameId = null;
+        map.invalidateSize();
+      });
+    };
+    const timeoutId = window.setTimeout(scheduleInvalidate, 250);
+    const handleResize = () => scheduleInvalidate();
+    const resizeObserver =
+      typeof ResizeObserver === "undefined" ? null : new ResizeObserver(() => scheduleInvalidate());
 
     window.addEventListener("resize", handleResize);
+    resizeObserver?.observe(map.getContainer());
+    scheduleInvalidate();
 
     return () => {
-      window.cancelAnimationFrame(frameId);
+      if (resizeFrameId !== null) {
+        window.cancelAnimationFrame(resizeFrameId);
+      }
       window.clearTimeout(timeoutId);
       window.removeEventListener("resize", handleResize);
+      resizeObserver?.disconnect();
     };
   }, [map]);
 

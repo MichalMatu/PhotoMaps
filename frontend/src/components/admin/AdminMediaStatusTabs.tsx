@@ -18,7 +18,7 @@ export function AdminMediaStatusTabs({ ariaLabel, counts, onChange, value }: Pro
           type="button"
           onClick={() => onChange(filter.value)}
         >
-          {filter.label} <span>{counts[filter.value]}</span>
+          {filter.label} <span className="status-tab-count">{counts[filter.value]}</span>
         </button>
       ))}
     </div>

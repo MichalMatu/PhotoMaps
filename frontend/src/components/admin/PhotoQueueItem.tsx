@@ -37,7 +37,13 @@ export function PhotoQueueItem({
 
   return (
     <article className="admin-media-item">
-      <img alt={photo.caption ?? group.title} decoding="async" loading="lazy" src={mediaUrl(photo.thumb_path)} />
+      <img
+        className="admin-media-item-image"
+        alt={photo.caption ?? group.title}
+        decoding="async"
+        loading="lazy"
+        src={mediaUrl(photo.thumb_path)}
+      />
       <div className="admin-media-item-body">
         <div className="photo-meta-row">
           <span className={`status-badge status-badge--${photo.status}`}>

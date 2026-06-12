@@ -24,10 +24,10 @@ export function GuideManager({ guides, places, onChanged }: Props) {
     <section className="admin-section admin-section-single guide-manager">
       <div className="guide-toolbar">
         <div className="admin-summary-pills" aria-label="Status przewodników">
-          <span>Wszystkie {guides.length}</span>
-          <span>Opublikowane {guideActions.guideStatusCounts.published}</span>
-          <span>Szkice {guideActions.guideStatusCounts.draft}</span>
-          <span>Archiwalne {guideActions.guideStatusCounts.archived}</span>
+          <span className="admin-summary-pill">Wszystkie {guides.length}</span>
+          <span className="admin-summary-pill">Opublikowane {guideActions.guideStatusCounts.published}</span>
+          <span className="admin-summary-pill">Szkice {guideActions.guideStatusCounts.draft}</span>
+          <span className="admin-summary-pill">Archiwalne {guideActions.guideStatusCounts.archived}</span>
         </div>
         <button type="button" onClick={guideActions.openCreateGuideModal}>
           Dodaj przewodnik
@@ -40,11 +40,11 @@ export function GuideManager({ guides, places, onChanged }: Props) {
           return (
             <article className={isExpanded ? "guide-row is-expanded" : "guide-row"} key={guide.id}>
               <div className="guide-row-summary">
-                <div>
-                  <strong>{guide.title}</strong>
-                  <span>{guide.slug}</span>
+                <div className="guide-row-copy">
+                  <strong className="guide-row-title">{guide.title}</strong>
+                  <span className="guide-row-slug">{guide.slug}</span>
                 </div>
-                <span className={`status-badge status-badge--${guide.status}`}>{guide.status}</span>
+                <span className={`guide-row-status status-badge status-badge--${guide.status}`}>{guide.status}</span>
                 <div className="guide-actions">
                   <button className="secondary-button" type="button" onClick={() => guideActions.toggleGuide(guide.id)}>
                     {isExpanded ? "Zwiń miejsca" : "Miejsca"}

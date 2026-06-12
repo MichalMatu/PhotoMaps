@@ -33,10 +33,10 @@ export function AdminPlacesSection({
     <section className="admin-section admin-section-single places-manager">
       <div className="place-toolbar">
         <div className="admin-summary-pills" aria-label="Status miejsc">
-          <span>Wszystkie {places.length}</span>
-          <span>Opublikowane {placeStatusCounts.published}</span>
-          <span>Szkice {placeStatusCounts.draft}</span>
-          <span>Archiwalne {placeStatusCounts.archived}</span>
+          <span className="admin-summary-pill">Wszystkie {places.length}</span>
+          <span className="admin-summary-pill">Opublikowane {placeStatusCounts.published}</span>
+          <span className="admin-summary-pill">Szkice {placeStatusCounts.draft}</span>
+          <span className="admin-summary-pill">Archiwalne {placeStatusCounts.archived}</span>
         </div>
         <button type="button" onClick={onCreate}>
           Dodaj miejsce

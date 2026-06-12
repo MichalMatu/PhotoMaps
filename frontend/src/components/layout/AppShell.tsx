@@ -17,7 +17,7 @@ type Props = {
 
 const primaryItems = [
   { href: "/", label: "Mapa", section: "map" as const, Icon: MapPinned },
-  { href: "/guides", label: "Przewodniki", section: "guides" as const, Icon: BookOpen },
+  { href: "/guides", label: "Przewodniki", railLabel: "Przewodnik", section: "guides" as const, Icon: BookOpen },
 ];
 
 export function AppShell({ activeSection, adminAction, children }: Props) {
@@ -36,10 +36,10 @@ export function AppShell({ activeSection, adminAction, children }: Props) {
         </button>
 
         <nav className="rail-nav">
-          {railItems.map(({ href, label, section, Icon }) => (
-            <a className="rail-item" href={href} key={section}>
+          {railItems.map(({ href, label, railLabel, section, Icon }) => (
+            <a className="rail-item" href={href} key={section} aria-label={label}>
               <Icon aria-hidden="true" size={28} />
-              <span>{label}</span>
+              <span>{railLabel ?? label}</span>
             </a>
           ))}
         </nav>

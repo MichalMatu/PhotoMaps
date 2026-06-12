@@ -37,29 +37,33 @@
   padding: var(--space-3) var(--space-4);
 }
 
-.guide-row-summary div {
+.guide-row-copy {
   min-width: 0;
 }
 
-.guide-row-summary strong,
-.guide-row-summary span {
+.guide-row-title,
+.guide-row-slug {
   display: block;
   min-width: 0;
 }
 
-.guide-row-summary strong {
+.guide-row-title {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.guide-row-summary div > span {
+.guide-row-slug {
   color: var(--color-muted);
   font-size: 0.78rem;
   margin-top: 3px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.guide-row-status {
+  justify-self: start;
 }
 
 .guide-actions {
@@ -73,6 +77,7 @@
   border-top: 1px solid var(--color-border);
   display: grid;
   gap: var(--space-3);
+  min-width: 0;
   padding: var(--space-3) var(--space-4) var(--space-4);
 }
 
@@ -128,6 +133,7 @@
   gap: var(--space-2);
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   max-height: 190px;
+  min-width: 0;
   overflow: auto;
 }
 
@@ -140,6 +146,7 @@
   display: grid;
   gap: 6px;
   grid-template-columns: auto minmax(0, 1fr) auto;
+  min-width: 0;
   padding: 9px 10px;
 }
 
@@ -148,13 +155,13 @@
   width: auto;
 }
 
-.guide-place-choice span {
+.guide-place-choice-title {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.guide-place-choice small {
+.guide-place-choice-status {
   color: var(--color-muted);
   font-size: 0.72rem;
 }
@@ -162,6 +169,7 @@
 .guide-place-list {
   display: grid;
   gap: var(--space-2);
+  min-width: 0;
 }
 
 .guide-place-row {
@@ -172,7 +180,12 @@
   display: grid;
   gap: var(--space-3);
   grid-template-columns: minmax(0, 1fr) auto;
+  min-width: 0;
   padding: 10px 12px;
+}
+
+.guide-place-row-copy {
+  min-width: 0;
 }
 
 .guide-place-row-actions {
@@ -182,19 +195,19 @@
   justify-content: flex-end;
 }
 
-.guide-place-row strong,
-.guide-place-row span {
+.guide-place-row-title,
+.guide-place-row-status {
   display: block;
   min-width: 0;
 }
 
-.guide-place-row strong {
+.guide-place-row-title {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.guide-place-row span {
+.guide-place-row-status {
   color: var(--color-muted);
   font-size: 0.78rem;
   margin-top: 2px;
@@ -220,6 +233,7 @@
 
   .guide-actions,
   .guide-place-row-actions {
+    flex-wrap: wrap;
     justify-content: flex-start;
   }
 }

@@ -5,10 +5,11 @@ Ten plan porządkuje luźne sugestie w kolejność prac, którą można realizow
 ## Status prac
 
 - Zrobione: fixture danych do oceny UI, pierwsza warstwa tokenów materiałów/media/elevation/motion, usunięcie grupowania miejsc na mapie, skalowanie markerów po zoomie i wadze miejsca, pełniejszy fan zdjęć, lepszy viewer zdjęcia.
-- Zrobione: techniczny CSS quality gate z baseline, podpięty do `scripts/check.sh` i pre-commit dla CSS.
+- Zrobione: techniczny CSS quality gate bez baseline, podpięty do `scripts/check.sh` i pre-commit dla CSS.
 - Zrobione: komponentowa naprawa tabeli miejsc w adminie bez `.table-row span` i bez `!important` w `admin-tables.css`.
-- W toku: dalsza migracja CSS poza mapą i tabelą miejsc.
-- Zostało: reszta admin polish, pełny motion system, system zdjęć z loading/aspect-ratio, screenshot regression, kontrakt i widok przewodników.
+- Zrobione: domknięcie CSS baseline w `base.css`, `layout.css`, `map-tools.css`, `map.css` i `ui.css`.
+- Zrobione: admin polish jako osobny, kompaktowy tryb; domknięte są listy miejsc, kategorii, przewodników, zgłoszeń, zdjęć miejsca oraz wspólne kolejki zdjęć/pamiątek.
+- Zostało: pełny motion system, system zdjęć z loading/aspect-ratio, screenshot regression, kontrakt i widok przewodników.
 
 ## Rekomendowana kolejność
 

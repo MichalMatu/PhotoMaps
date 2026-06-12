@@ -108,10 +108,11 @@
   color: var(--color-accent);
 }
 
-.admin-section-tab strong {
+.admin-section-tab-count {
   background: var(--color-accent-soft);
   border-radius: var(--radius-full);
   color: var(--color-accent);
+  font-weight: 700;
   min-width: 30px;
   padding: 4px 8px;
   text-align: center;
@@ -149,7 +150,7 @@
   gap: var(--space-2);
 }
 
-.admin-summary-pills span {
+.admin-summary-pill {
   background: var(--color-surface-strong);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
@@ -180,7 +181,7 @@
 }
 
 .admin-panel {
-  margin-bottom: var(--space-8);
+  margin: 0;
 }
 
 .compact-admin-form {
@@ -223,22 +224,27 @@
   border-top: 1px solid var(--color-border);
 }
 
-.report-item > div {
+.report-item-body {
   min-width: 0;
 }
 
-.report-item strong,
-.report-item p {
+.report-reason,
+.report-message {
   display: block;
   margin: var(--space-2) 0 0;
 }
 
-.report-item p {
-  color: var(--color-muted-strong);
-  line-height: 1.45;
+.report-reason {
+  color: var(--color-text);
 }
 
-.report-item .muted-text {
+.report-message {
+  color: var(--color-muted-strong);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.report-target {
   display: block;
   margin-top: var(--space-2);
   overflow-wrap: anywhere;
@@ -252,4 +258,15 @@
   color: var(--color-muted-strong);
   margin: 0;
   padding: var(--space-4);
+}
+
+@media (max-width: 760px) {
+  .report-item {
+    align-items: start;
+    grid-template-columns: 1fr;
+  }
+
+  .report-actions {
+    justify-content: flex-start;
+  }
 }
