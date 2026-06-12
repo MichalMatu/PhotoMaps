@@ -2,7 +2,7 @@
   background: var(--color-surface-strong);
   backdrop-filter: var(--blur-glass);
   border: 1px solid var(--color-border);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   margin: 18px 0 0;
   padding: 12px 14px;
 }
@@ -27,7 +27,7 @@
 .photo-upload textarea {
   background: var(--color-surface-strong);
   border: 1px solid var(--color-border);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   max-width: 100%;
   min-height: 34px;
   padding: 6px 8px;
@@ -120,7 +120,7 @@
 
 .memory-card img {
   aspect-ratio: 1;
-  border-radius: 6px;
+  border-radius: var(--radius-media);
   object-fit: cover;
   width: 54px;
 }
@@ -161,7 +161,7 @@
 .report-form textarea {
   background: var(--color-surface-strong);
   border: 1px solid var(--color-border);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   max-width: 100%;
   min-height: 34px;
   padding: 6px 8px;
@@ -178,6 +178,28 @@
 .guide-page {
   min-height: 100vh;
   overflow: auto;
+}
+
+.guide-page-heading {
+  align-items: center;
+  display: flex;
+  gap: var(--space-4);
+  justify-content: space-between;
+}
+
+.guide-page-heading h1 {
+  margin-bottom: 0;
+}
+
+.guide-page-count {
+  background: var(--color-accent-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-accent);
+  flex: 0 0 auto;
+  font-size: 0.86rem;
+  font-weight: 650;
+  padding: var(--space-2) var(--space-3);
 }
 
 .lead-text {
@@ -197,7 +219,7 @@
 .simple-card {
   background: var(--color-surface-strong);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: var(--radius-panel);
   color: var(--color-text);
   display: grid;
   gap: 8px;
@@ -223,28 +245,28 @@
 
 .system-modal-backdrop {
   align-items: center;
-  background: rgb(0 0 0 / 42%);
+  background: var(--surface-backdrop-modal);
   display: flex;
   inset: 0;
   justify-content: center;
-  padding: 24px;
+  padding: var(--space-6);
   position: fixed;
   z-index: 11000;
 }
 
 .system-modal {
-  animation: system-modal-in 180ms ease-out both;
+  animation: system-modal-in var(--motion-duration-regular) var(--motion-ease-standard) both;
   background: var(--surface-panel);
   backdrop-filter: var(--blur-glass);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
-  box-shadow: var(--shadow-floating);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--elevation-floating);
   display: grid;
-  gap: 14px;
+  gap: var(--space-4);
   max-height: calc(100vh - 48px);
   max-width: 460px;
   overflow: auto;
-  padding: 24px;
+  padding: var(--space-6);
   width: min(460px, 100%);
 }
 
@@ -265,12 +287,37 @@
   justify-content: space-between;
 }
 
-.system-modal-drag-handle {
-  flex: 1 1 auto;
+.system-modal-title-block {
   min-width: 0;
+}
+
+.system-modal-header-actions {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--space-2);
+}
+
+.system-modal-drag-handle {
+  align-items: center;
+  background: var(--surface-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  color: var(--content-secondary);
   cursor: grab;
+  display: flex;
+  height: 36px;
+  justify-content: center;
+  min-height: 0;
+  padding: 0;
   touch-action: none;
   user-select: none;
+  width: 36px;
+}
+
+.system-modal-drag-handle:hover {
+  background: var(--accent-soft);
+  color: var(--accent-primary);
 }
 
 .system-modal.is-dragging .system-modal-drag-handle,

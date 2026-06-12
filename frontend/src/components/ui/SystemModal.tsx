@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import type { ReactNode } from "react";
-import { X } from "lucide-react";
+import { GripHorizontal, X } from "lucide-react";
 
 import { stopFloatingWindowEvent, useDraggableWindow } from "./useDraggableWindow";
 
@@ -72,19 +72,29 @@ export function SystemModal({
         onWheel={stopFloatingWindowEvent}
       >
         <header className="system-modal-header">
-          <div className="system-modal-drag-handle" {...draggableWindow.handleProps}>
+          <div className="system-modal-title-block">
             <span className="eyebrow">{eyebrow}</span>
             <h2 id="system-modal-title">{title}</h2>
           </div>
-          <button
-            className="system-modal-close"
-            type="button"
-            disabled={isBusy}
-            onClick={onClose}
-            aria-label="Zamknij modal"
-          >
-            <X aria-hidden="true" size={18} />
-          </button>
+          <div className="system-modal-header-actions">
+            <div
+              className="system-modal-drag-handle"
+              aria-label="Przesuń modal"
+              title="Przesuń modal"
+              {...draggableWindow.handleProps}
+            >
+              <GripHorizontal aria-hidden="true" size={18} />
+            </div>
+            <button
+              className="system-modal-close"
+              type="button"
+              disabled={isBusy}
+              onClick={onClose}
+              aria-label="Zamknij modal"
+            >
+              <X aria-hidden="true" size={18} />
+            </button>
+          </div>
         </header>
         {message ? <p>{message}</p> : null}
         {children}

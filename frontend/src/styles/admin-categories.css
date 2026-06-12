@@ -6,9 +6,9 @@
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: var(--space-3);
   justify-content: space-between;
-  margin-bottom: 14px;
+  margin-bottom: var(--space-4);
 }
 
 .category-toolbar button {
@@ -17,21 +17,21 @@
 }
 
 .category-form {
-  background: var(--color-surface-strong);
+  background: var(--material-regular);
   backdrop-filter: var(--blur-glass);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: var(--radius-panel);
   display: grid;
-  gap: 12px;
+  gap: var(--space-3);
   grid-template-columns: 1fr 1.4fr 1fr 0.7fr;
-  margin-bottom: 14px;
-  padding: 14px;
+  margin-bottom: var(--space-4);
+  padding: var(--space-4);
 }
 
 .category-form--modal {
   background: transparent;
   border: 0;
-  gap: 12px;
+  gap: var(--space-3);
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin: 0;
   padding: 0;
@@ -42,15 +42,15 @@
   display: grid;
   font-size: 0.82rem;
   font-weight: 500;
-  gap: 6px;
+  gap: var(--space-2);
   min-width: 0;
 }
 
 .category-form input,
 .category-form select {
-  background: var(--color-surface-strong);
+  background: var(--color-surface-soft);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   min-height: 40px;
   min-width: 0;
   padding: 8px 10px;
@@ -62,20 +62,20 @@
 }
 
 .category-list {
-  background: var(--color-surface-strong);
+  background: var(--material-regular);
   backdrop-filter: var(--blur-glass);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: var(--radius-panel);
   overflow: hidden;
 }
 
 .category-row {
   align-items: center;
   display: grid;
-  gap: 12px;
-  grid-template-columns: minmax(140px, 1fr) 100px 70px 100px minmax(240px, auto);
+  gap: var(--space-3);
+  grid-template-columns: minmax(140px, 1fr) 100px 70px 100px max-content;
   min-height: 52px;
-  padding: 11px 14px;
+  padding: var(--space-3) var(--space-4);
 }
 
 .category-row + .category-row {
@@ -110,15 +110,9 @@
 
 .category-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-wrap: nowrap;
+  gap: var(--space-2);
   justify-content: flex-end;
-}
-
-.category-actions button {
-  font-size: 0.82rem;
-  min-height: 32px;
-  padding: 0 11px;
 }
 
 @media (max-width: 640px) {

@@ -1,9 +1,13 @@
+.category-actions button,
+.guide-actions button,
+.guide-place-row-actions button,
 .review-actions button,
-.table-actions button {
+.table-actions button,
+.system-modal-actions button {
+  border-radius: var(--radius-control);
   font-size: 0.82rem;
-  border-radius: 999px;
-  min-height: 32px;
-  padding: 0 11px;
+  min-height: 34px;
+  padding: 0 12px;
 }
 
 .secondary-button {
@@ -23,11 +27,11 @@
 
 .danger-button:hover {
   background: var(--color-danger);
-  color: #ffffff;
+  color: var(--content-on-accent);
 }
 
 .status-badge {
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   display: inline-block;
   font-size: 0.72rem;
   font-weight: 600;
@@ -43,6 +47,16 @@
 .status-badge--approved {
   background: var(--color-success-soft);
   color: var(--color-success);
+}
+
+.status-badge--published {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.status-badge--draft {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
 }
 
 .status-badge--rejected {

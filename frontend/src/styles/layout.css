@@ -5,7 +5,7 @@
 .app-shell {
   background: var(--color-page);
   display: grid;
-  grid-template-columns: 76px minmax(0, 1fr);
+  grid-template-columns: 88px minmax(0, 1fr);
   min-height: 100vh;
 }
 
@@ -57,7 +57,8 @@
 
 .rail-item {
   align-items: center;
-  border-radius: 8px;
+  box-sizing: border-box;
+  border-radius: var(--radius-control);
   color: var(--color-muted);
   display: grid;
   font-size: 0.78rem;
@@ -65,13 +66,29 @@
   gap: 6px;
   justify-items: center;
   min-height: 68px;
+  min-width: 0;
+  overflow: hidden;
   padding: 8px 4px;
   text-align: center;
+  width: 100%;
+}
+
+.rail-item svg {
+  display: block;
+  justify-self: center;
+  margin-inline: auto;
 }
 
 .rail-item span {
-  max-width: 64px;
-  overflow-wrap: anywhere;
+  display: block;
+  font-size: 0.68rem;
+  line-height: 1.05;
+  max-width: 100%;
+  overflow: hidden;
+  overflow-wrap: normal;
+  text-align: center;
+  white-space: nowrap;
+  width: 100%;
 }
 
 .rail-admin-button {

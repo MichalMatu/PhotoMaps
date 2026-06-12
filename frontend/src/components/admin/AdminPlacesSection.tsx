@@ -61,7 +61,7 @@ export function AdminPlacesSection({
             <span className="table-cell" role="columnheader">
               Priorytet
             </span>
-            <span className="table-cell" role="columnheader">
+            <span className="table-cell table-cell--actions" role="columnheader">
               Akcje
             </span>
           </div>
@@ -71,21 +71,21 @@ export function AdminPlacesSection({
               role="row"
               key={place.id}
             >
-              <span className="table-cell" role="cell">
+              <span className="table-cell table-cell--title" role="cell" data-label="Nazwa">
                 {place.title}
               </span>
-              <span className="table-cell table-cell--start" role="cell">
-                {place.status}
+              <span className="table-cell" role="cell" data-label="Status">
+                <span className={`status-badge status-badge--${place.status}`}>{place.status}</span>
               </span>
-              <span className="table-cell" role="cell">
+              <span className="table-cell" role="cell" data-label="Miasto">
                 {cityById.get(place.city_id)?.name ?? place.city_id}
               </span>
-              <span className="table-cell table-cell--start" role="cell">
+              <span className="table-cell table-cell--categories" role="cell" data-label="Kategoria">
                 {place.category_ids.length
                   ? place.category_ids.map((categoryId) => categoryById.get(categoryId)?.label ?? categoryId).join(", ")
                   : "-"}
               </span>
-              <span className="table-cell" role="cell">
+              <span className="table-cell" role="cell" data-label="Priorytet">
                 {place.weight.toFixed(1)}
               </span>
               <div className="table-cell table-cell--actions table-actions" role="cell">

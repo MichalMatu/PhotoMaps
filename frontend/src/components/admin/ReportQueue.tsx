@@ -31,8 +31,8 @@ export function ReportQueue({ onChanged, onStatusFilterChange, reports, statusCo
 
   return (
     <>
-      <div className="photo-queue">
-        <div className="photo-queue-toolbar">
+      <div className="report-queue">
+        <div className="report-queue-toolbar">
           <div className="status-tabs" role="tablist" aria-label="Status zgłoszeń">
             {STATUS_FILTERS.map((filter) => (
               <button
@@ -46,32 +46,35 @@ export function ReportQueue({ onChanged, onStatusFilterChange, reports, statusCo
             ))}
           </div>
         </div>
-        <div className="report-list">
-          {reports.map((report) => (
-            <article className="report-item" key={report.id}>
-              <div>
-                <span className={`status-badge status-badge--${report.status}`}>{report.status}</span>
-                <strong>{report.reason}</strong>
-                <p>{report.message ?? "Brak wiadomości."}</p>
-                <span className="muted-text">
-                  {report.target_type}: {report.target_id}
-                </span>
-              </div>
-              <div className="review-actions">
-                {report.status !== "closed" ? (
-                  <button type="button" onClick={() => handleStatus(report.id, "closed")}>
-                    Zamknij
-                  </button>
-                ) : (
-                  <button className="secondary-button" type="button" onClick={() => handleStatus(report.id, "open")}>
-                    Otwórz
-                  </button>
-                )}
-              </div>
-            </article>
-          ))}
-        </div>
-        {reports.length === 0 ? <p className="notice">Brak zgłoszeń dla wybranego statusu.</p> : null}
+        {reports.length > 0 ? (
+          <div className="report-list" role="list">
+            {reports.map((report) => (
+              <article className="report-item" key={report.id} role="listitem">
+                <div>
+                  <span className={`status-badge status-badge--${report.status}`}>{report.status}</span>
+                  <strong>{report.reason}</strong>
+                  <p>{report.message ?? "Brak wiadomości."}</p>
+                  <span className="muted-text">
+                    {report.target_type}: {report.target_id}
+                  </span>
+                </div>
+                <div className="review-actions">
+                  {report.status !== "closed" ? (
+                    <button type="button" onClick={() => handleStatus(report.id, "closed")}>
+                      Zamknij
+                    </button>
+                  ) : (
+                    <button className="secondary-button" type="button" onClick={() => handleStatus(report.id, "open")}>
+                      Otwórz
+                    </button>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="report-empty-state">Brak zgłoszeń dla wybranego statusu.</p>
+        )}
       </div>
       {errorMessage ? (
         <SystemModal

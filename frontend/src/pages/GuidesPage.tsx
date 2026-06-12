@@ -4,10 +4,27 @@ import { useQuery } from "@tanstack/react-query";
 import { getGuide, getGuides } from "../api/client";
 import { AppShell } from "../components/layout/AppShell";
 import { ErrorModal, errorDetails } from "../components/ui/ErrorModal";
+import { polishCountLabel } from "../components/ui/polishCountLabel";
 
 function currentGuideSlug() {
   const match = window.location.pathname.match(/^\/guides\/([^/]+)$/);
   return match ? decodeURIComponent(match[1]) : null;
+}
+
+function guideCountLabel(count: number) {
+  return polishCountLabel(count, {
+    few: "przewodniki",
+    many: "przewodników",
+    one: "przewodnik",
+  });
+}
+
+function placeCountLabel(count: number) {
+  return polishCountLabel(count, {
+    few: "miejsca",
+    many: "miejsc",
+    one: "miejsce",
+  });
 }
 
 export function GuidesPage() {
@@ -44,9 +61,9 @@ export function GuidesPage() {
       <main className="page-shell guide-page">
         {slug === null ? (
           <section className="content-panel">
-            <div className="section-heading">
+            <div className="guide-page-heading">
               <h1>Przewodniki</h1>
-              <span>{guidesQuery.data?.length ?? 0}</span>
+              <span className="guide-page-count">{guideCountLabel(guidesQuery.data?.length ?? 0)}</span>
             </div>
             {guidesQuery.isLoading ? <p className="notice">Ładowanie przewodników...</p> : null}
             <div className="simple-card-grid">
@@ -67,9 +84,9 @@ export function GuidesPage() {
                 <a className="ghost-link" href="/guides">
                   Wszystkie przewodniki
                 </a>
-                <div className="section-heading">
+                <div className="guide-page-heading">
                   <h1>{guideQuery.data.title}</h1>
-                  <span>{guideQuery.data.places.length} miejsc</span>
+                  <span className="guide-page-count">{placeCountLabel(guideQuery.data.places.length)}</span>
                 </div>
                 {guideQuery.data.description ? <p className="lead-text">{guideQuery.data.description}</p> : null}
                 <div className="simple-card-grid">

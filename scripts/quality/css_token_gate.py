@@ -20,28 +20,6 @@ RULES = {
 }
 
 BASELINE: dict[str, dict[str, int]] = {
-    "frontend/src/styles/admin-categories.css": {
-        "raw-radius": 3,
-    },
-    "frontend/src/styles/admin-controls.css": {
-        "raw-color": 1,
-    },
-    "frontend/src/styles/admin-forms.css": {
-        "important": 1,
-        "raw-radius": 4,
-        "raw-shadow": 1,
-    },
-    "frontend/src/styles/admin-guides.css": {
-        "raw-radius": 4,
-    },
-    "frontend/src/styles/admin-photos.css": {
-        "important": 1,
-        "raw-color": 2,
-        "raw-radius": 8,
-    },
-    "frontend/src/styles/admin.css": {
-        "raw-radius": 7,
-    },
     "frontend/src/styles/base.css": {
         "important": 4,
         "raw-motion": 2,
@@ -49,7 +27,6 @@ BASELINE: dict[str, dict[str, int]] = {
     "frontend/src/styles/layout.css": {
         "raw-color": 2,
         "raw-motion": 1,
-        "raw-radius": 1,
     },
     "frontend/src/styles/map-tools.css": {
         "important": 1,
@@ -62,9 +39,7 @@ BASELINE: dict[str, dict[str, int]] = {
     },
     "frontend/src/styles/ui.css": {
         "important": 6,
-        "raw-color": 1,
-        "raw-motion": 1,
-        "raw-radius": 7,
+        "raw-radius": 1,
     },
 }
 

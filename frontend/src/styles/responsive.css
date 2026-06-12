@@ -10,7 +10,7 @@
 
 @media (max-width: 860px) {
   .app-shell {
-    grid-template-columns: 64px minmax(0, 1fr);
+    grid-template-columns: 76px minmax(0, 1fr);
   }
 
   .side-rail {
@@ -19,8 +19,13 @@
   }
 
   .rail-item {
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     min-height: 62px;
+  }
+
+  .rail-item span {
+    font-size: 0.64rem;
+    max-width: 68px;
   }
 
   .admin-workspace {
@@ -42,7 +47,6 @@
 
   .field-row,
   .cover-photo-grid,
-  .table-row,
   .category-form,
   .category-row {
     grid-template-columns: 1fr;
@@ -53,7 +57,13 @@
   }
 
   .category-actions {
+    flex-wrap: wrap;
     justify-content: flex-start;
+  }
+
+  .guide-actions,
+  .guide-place-row-actions {
+    flex-wrap: wrap;
   }
 
   .drawer-item {
@@ -62,13 +72,13 @@
   }
 
   .map-status-panel {
-    left: calc(64px + 12px);
-    max-width: calc(100vw - 88px);
+    left: calc(76px + 12px);
+    max-width: calc(100vw - 100px);
     right: 12px;
     top: 12px;
   }
 
   .measure-panel {
-    left: 76px;
+    left: 88px;
   }
 }

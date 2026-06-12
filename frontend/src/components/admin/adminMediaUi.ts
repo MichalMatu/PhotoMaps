@@ -1,4 +1,5 @@
 import type { PhotoStatus } from "../../api/client";
+import { polishCountLabel } from "../ui/polishCountLabel";
 
 export const ADMIN_MEDIA_STATUS_FILTERS: Array<{ label: string; value: PhotoStatus | "all" }> = [
   { label: "Wszystkie", value: "all" },
@@ -16,15 +17,9 @@ export const ADMIN_MEDIA_STATUS_LABELS: Record<PhotoStatus, string> = {
 export const PHOTO_CAPTION_MAX_LENGTH = 120;
 
 export function memoryCountLabel(count: number) {
-  if (count === 1) {
-    return "1 pamiątka";
-  }
-  const lastTwoDigits = count % 100;
-  const lastDigit = count % 10;
-  if (lastTwoDigits < 12 || lastTwoDigits > 14) {
-    if (lastDigit >= 2 && lastDigit <= 4) {
-      return `${count} pamiątki`;
-    }
-  }
-  return `${count} pamiątek`;
+  return polishCountLabel(count, {
+    few: "pamiątki",
+    many: "pamiątek",
+    one: "pamiątka",
+  });
 }
