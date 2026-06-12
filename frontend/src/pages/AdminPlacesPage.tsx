@@ -8,6 +8,7 @@ import { AdminPlacesSection } from "../components/admin/AdminPlacesSection";
 import { AdminReportsSection } from "../components/admin/AdminReportsSection";
 import { AdminSectionTabs } from "../components/admin/AdminSectionTabs";
 import { PlaceForm } from "../components/admin/PlaceForm";
+import { PlacePhotoPanel } from "../components/admin/PlacePhotoPanel";
 import { SystemModal } from "../components/admin/SystemModal";
 import { useAdminPanelData } from "../components/admin/useAdminPanelData";
 import { useAdminPlaceManagement } from "../components/admin/useAdminPlaceManagement";
@@ -80,6 +81,8 @@ export function AdminPlacesPage() {
     onPhotosChanged: refreshPhotos,
     onPlacesChanged: refreshPlaces,
   });
+  const editingPlaceView = editingPlace ? (places.find((place) => place.id === editingPlace.id) ?? editingPlace) : null;
+  const editingPlacePhotos = editingPlaceView ? photos.filter((photo) => photo.place_id === editingPlaceView.id) : [];
 
   async function refreshCategoriesAndPlaces() {
     await Promise.all([refreshCategories(), refreshPlaces()]);
@@ -192,6 +195,9 @@ export function AdminPlacesPage() {
               onCancel={closePlaceModal}
               onSubmit={submitPlace}
             />
+            {editingPlaceView ? (
+              <PlacePhotoPanel photos={editingPlacePhotos} place={editingPlaceView} onChanged={refreshPhotos} />
+            ) : null}
           </SystemModal>
         ) : null}
         {placeToArchive ? (

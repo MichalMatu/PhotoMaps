@@ -2,6 +2,7 @@ import type { Guide, Place } from "../../api/client";
 import { ErrorModal } from "../ui/ErrorModal";
 import { GuideFormModal } from "./GuideFormModal";
 import { GuidePlacePanel } from "./GuidePlacePanel";
+import { filterGuidePlaceCandidates } from "./guidePlaceSelection";
 import { useGuideActions } from "./useGuideActions";
 
 type Props = {
@@ -13,6 +14,11 @@ type Props = {
 export function GuideManager({ guides, places, onChanged }: Props) {
   const guideActions = useGuideActions({ guides, onChanged });
   const availablePlaces = places.filter((place) => place.status !== "archived");
+  const candidatePlaces = filterGuidePlaceCandidates(
+    availablePlaces,
+    guideActions.guideDetail?.places ?? [],
+    guideActions.placeQuery,
+  );
 
   return (
     <section className="admin-section admin-section-single guide-manager">
@@ -51,15 +57,17 @@ export function GuideManager({ guides, places, onChanged }: Props) {
               {isExpanded ? (
                 <GuidePlacePanel
                   availablePlaces={availablePlaces}
+                  candidatePlaces={candidatePlaces}
                   guideDetail={guideActions.guideDetail}
                   isLoading={guideActions.isGuideDetailLoading}
-                  placeId={guideActions.placeId}
+                  placeQuery={guideActions.placeQuery}
+                  selectedPlaceIds={guideActions.selectedPlaceIds}
                   selectedGuide={guideActions.selectedGuide}
-                  sortOrder={guideActions.sortOrder}
-                  onAddPlace={guideActions.addPlace}
-                  onPlaceChange={guideActions.setPlaceId}
+                  onAddPlaces={guideActions.addPlaces}
+                  onMovePlace={guideActions.movePlace}
                   onRemovePlace={guideActions.removePlace}
-                  onSortOrderChange={guideActions.setSortOrder}
+                  onPlaceQueryChange={guideActions.setPlaceQuery}
+                  onTogglePlaceSelection={guideActions.toggleSelectedPlace}
                 />
               ) : null}
             </article>

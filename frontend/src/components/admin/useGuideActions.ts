@@ -12,6 +12,7 @@ import {
   type GuideStatus,
 } from "../../api/client";
 import { errorDetails, type OperationError } from "../ui/ErrorModal";
+import { moveGuidePlace, toggleGuidePlaceSelection, type GuidePlaceMoveDirection } from "./guidePlaceSelection";
 
 function slugify(value: string) {
   return value
@@ -36,9 +37,9 @@ export function useGuideActions({ guides, onChanged }: UseGuideActionsArgs) {
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
   const [isGuideSaving, setIsGuideSaving] = useState(false);
   const [operationError, setOperationError] = useState<OperationError | null>(null);
-  const [placeId, setPlaceId] = useState("");
+  const [placeQuery, setPlaceQuery] = useState("");
+  const [selectedPlaceIds, setSelectedPlaceIds] = useState<string[]>([]);
   const [selectedGuideId, setSelectedGuideId] = useState<string>("");
-  const [sortOrder, setSortOrder] = useState("0");
   const [status, setStatus] = useState<GuideStatus>("draft");
   const [title, setTitle] = useState("");
   const selectedGuide = guides.find((guide) => guide.id === selectedGuideId) ?? null;
@@ -109,8 +110,8 @@ export function useGuideActions({ guides, onChanged }: UseGuideActionsArgs) {
 
   function toggleGuide(guideId: string) {
     setSelectedGuideId((currentGuideId) => (currentGuideId === guideId ? "" : guideId));
-    setPlaceId("");
-    setSortOrder("0");
+    setPlaceQuery("");
+    setSelectedPlaceIds([]);
   }
 
   async function saveGuide() {
@@ -145,26 +146,65 @@ export function useGuideActions({ guides, onChanged }: UseGuideActionsArgs) {
     }
   }
 
-  async function addPlace(event: FormEvent<HTMLFormElement>) {
+  function toggleSelectedPlace(placeId: string) {
+    setSelectedPlaceIds((currentPlaceIds) => toggleGuidePlaceSelection(currentPlaceIds, placeId));
+  }
+
+  async function addPlaces(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!selectedGuide || !placeId) {
+    if (!selectedGuide || selectedPlaceIds.length === 0) {
       return;
     }
     setOperationError(null);
     try {
-      const detail = await addPlaceToGuide(selectedGuide.id, {
-        place_id: placeId,
-        sort_order: Number(sortOrder),
-      });
-      setGuideDetail(detail);
-      setPlaceId("");
-      setSortOrder("0");
+      let detail: GuideDetail | null = null;
+      const currentPlaceCount = guideDetail?.places.length ?? 0;
+      for (const [index, selectedPlaceId] of selectedPlaceIds.entries()) {
+        detail = await addPlaceToGuide(selectedGuide.id, {
+          place_id: selectedPlaceId,
+          sort_order: currentPlaceCount + index,
+        });
+      }
+      if (detail) {
+        setGuideDetail(detail);
+      }
+      setPlaceQuery("");
+      setSelectedPlaceIds([]);
       await onChanged();
     } catch (reason) {
       setOperationError({
         details: errorDetails(reason),
-        message: "Nie udało się dodać miejsca do przewodnika. Spróbuj ponownie.",
-        title: "Nie udało się dodać miejsca",
+        message: "Nie udało się dodać miejsc do przewodnika. Spróbuj ponownie.",
+        title: "Nie udało się dodać miejsc",
+      });
+    }
+  }
+
+  async function movePlace(placeId: string, direction: GuidePlaceMoveDirection) {
+    if (!selectedGuide || !guideDetail) {
+      return;
+    }
+
+    const nextPlaces = moveGuidePlace(guideDetail.places, placeId, direction);
+    if (nextPlaces === guideDetail.places) {
+      return;
+    }
+
+    setOperationError(null);
+    try {
+      for (const [index, place] of nextPlaces.entries()) {
+        await addPlaceToGuide(selectedGuide.id, {
+          place_id: place.id,
+          sort_order: index,
+        });
+      }
+      await refreshGuideDetail(selectedGuide.id);
+      await onChanged();
+    } catch (reason) {
+      setOperationError({
+        details: errorDetails(reason),
+        message: "Nie udało się zmienić kolejności miejsc. Spróbuj ponownie.",
+        title: "Nie udało się zmienić kolejności",
       });
     }
   }
@@ -188,7 +228,7 @@ export function useGuideActions({ guides, onChanged }: UseGuideActionsArgs) {
   }
 
   return {
-    addPlace,
+    addPlaces,
     closeGuideModal,
     description,
     editingGuide,
@@ -201,20 +241,21 @@ export function useGuideActions({ guides, onChanged }: UseGuideActionsArgs) {
     openCreateGuideModal,
     openEditGuideModal,
     operationError,
-    placeId,
+    movePlace,
+    placeQuery,
     removePlace,
     saveGuide,
     selectedGuide,
     selectedGuideId,
     setDescription,
     setOperationError,
-    setPlaceId,
-    setSortOrder,
+    selectedPlaceIds,
+    setPlaceQuery,
     setStatus,
     setTitle,
-    sortOrder,
     status,
     title,
     toggleGuide,
+    toggleSelectedPlace,
   };
 }

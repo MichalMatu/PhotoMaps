@@ -59,6 +59,98 @@
   width: 100%;
 }
 
+.place-photo-panel {
+  border-top: 1px solid var(--color-border);
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 14px;
+}
+
+.place-photo-panel-header {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.place-photo-panel-header strong {
+  color: var(--color-text);
+}
+
+.place-photo-panel-header span {
+  color: var(--color-muted);
+  font-size: 0.82rem;
+}
+
+.place-photo-upload {
+  align-items: end;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(160px, 1fr) minmax(160px, 1fr) auto;
+}
+
+.place-photo-upload label {
+  color: var(--color-muted-strong);
+  display: grid;
+  font-size: 0.82rem;
+  font-weight: 650;
+  gap: 5px;
+  min-width: 0;
+}
+
+.place-photo-upload input {
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  min-height: 38px;
+  min-width: 0;
+  padding: 8px 10px;
+  width: 100%;
+}
+
+.place-photo-upload button {
+  min-height: 38px;
+  white-space: nowrap;
+}
+
+.place-photo-strip {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.place-photo-card {
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.place-photo-card img {
+  aspect-ratio: 4 / 3;
+  background: var(--color-page);
+  object-fit: cover;
+  width: 100%;
+}
+
+.place-photo-card > div {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px;
+}
+
+.place-photo-card p {
+  color: var(--color-text);
+  font-size: 0.86rem;
+  font-weight: 650;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
 .status-tabs {
   display: flex;
   flex-wrap: wrap;
@@ -272,7 +364,8 @@
 }
 
 @media (max-width: 900px) {
-  .admin-photo-upload {
+  .admin-photo-upload,
+  .place-photo-upload {
     grid-template-columns: 1fr 1fr;
   }
 
@@ -283,7 +376,8 @@
 
 @media (max-width: 640px) {
   .admin-media-album-summary,
-  .admin-media-edit-row {
+  .admin-media-edit-row,
+  .place-photo-upload {
     grid-template-columns: 1fr;
   }
 
