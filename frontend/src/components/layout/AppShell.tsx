@@ -17,7 +17,7 @@ type Props = {
 
 const primaryItems = [
   { href: "/", label: "Mapa", section: "map" as const, Icon: MapPinned },
-  { href: "/guides", label: "Przewodniki", railLabel: "Przewodnik", section: "guides" as const, Icon: BookOpen },
+  { href: "/guides", label: "Trasy", railLabel: "Trasa", section: "guides" as const, Icon: BookOpen },
 ];
 
 export function AppShell({ activeSection, adminAction, children }: Props) {

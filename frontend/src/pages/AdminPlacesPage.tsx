@@ -215,7 +215,7 @@ export function AdminPlacesPage() {
           <SystemModal
             confirmLabel="Usuń trwale"
             isBusy={isDeleting}
-            message={`Miejsce "${placeToDelete.title}" zostanie trwale usunięte razem ze zdjęciami, pamiątkami, przypisaniami do przewodników i zgłoszeniami. Tej operacji nie da się cofnąć.`}
+            message={`Miejsce "${placeToDelete.title}" zostanie trwale usunięte razem ze zdjęciami, pamiątkami, przypisaniami do tras i zgłoszeniami. Tej operacji nie da się cofnąć.`}
             title="Usunąć miejsce trwale?"
             tone="danger"
             onClose={clearDeleteRequest}

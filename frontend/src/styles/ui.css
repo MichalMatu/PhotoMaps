@@ -281,6 +281,16 @@ label.checkbox-field.consent-field {
   overflow: auto;
 }
 
+.guide-detail-view {
+  box-sizing: border-box;
+  margin: 0;
+  max-width: none;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: clamp(22px, 3vw, 48px) clamp(18px, 4vw, 72px);
+  width: 100%;
+}
+
 .guide-page-heading {
   align-items: center;
   display: flex;
@@ -411,6 +421,10 @@ label.checkbox-field.consent-field {
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
+.guide-detail-view .guide-place-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+}
+
 .guide-place-card {
   background: var(--material-regular);
   border: 1px solid var(--border-subtle);
@@ -423,13 +437,6 @@ label.checkbox-field.consent-field {
 
 .guide-place-card-media {
   width: 100%;
-}
-
-.guide-place-card .media-frame__caption {
-  color: var(--content-on-media-muted);
-  font-size: var(--text-label);
-  font-weight: 750;
-  padding: var(--space-8) var(--space-3) var(--space-3);
 }
 
 .guide-place-card-copy {

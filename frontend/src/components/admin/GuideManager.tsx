@@ -24,14 +24,14 @@ export function GuideManager({ guides, places, onChanged }: Props) {
   return (
     <section className="admin-section admin-section-single guide-manager">
       <div className="guide-toolbar">
-        <div className="admin-summary-pills" aria-label="Status przewodników">
+        <div className="admin-summary-pills" aria-label="Status tras">
           <span className="admin-summary-pill">Wszystkie {guides.length}</span>
           <span className="admin-summary-pill">Opublikowane {guideActions.guideStatusCounts.published}</span>
           <span className="admin-summary-pill">Szkice {guideActions.guideStatusCounts.draft}</span>
           <span className="admin-summary-pill">Archiwalne {guideActions.guideStatusCounts.archived}</span>
         </div>
         <button type="button" onClick={guideActions.openCreateGuideModal}>
-          Dodaj przewodnik
+          Dodaj trasę
         </button>
       </div>
 
@@ -81,9 +81,7 @@ export function GuideManager({ guides, places, onChanged }: Props) {
             </article>
           );
         })}
-        {guides.length === 0 ? (
-          <p className="notice">Brak przewodników. Dodaj pierwszy przewodnik przyciskiem powyżej.</p>
-        ) : null}
+        {guides.length === 0 ? <p className="notice">Brak tras. Dodaj pierwszą trasę przyciskiem powyżej.</p> : null}
       </div>
 
       {guideActions.isGuideModalOpen ? (
@@ -105,8 +103,8 @@ export function GuideManager({ guides, places, onChanged }: Props) {
         <SystemModal
           confirmLabel="Usuń trwale"
           isBusy={guideActions.isDeletingGuide}
-          message={`Przewodnik "${guideActions.guideToDelete.title}" zostanie trwale usunięty razem z przypięciami miejsc i zgłoszeniami dotyczącymi tego przewodnika. Same miejsca zostaną w bazie.`}
-          title="Usunąć przewodnik?"
+          message={`Trasa "${guideActions.guideToDelete.title}" zostanie trwale usunięta razem z przypięciami miejsc i zgłoszeniami dotyczącymi tej trasy. Same miejsca zostaną w bazie.`}
+          title="Usunąć trasę?"
           tone="danger"
           onClose={guideActions.clearDeleteGuideRequest}
           onConfirm={guideActions.confirmDeleteGuide}

@@ -20,7 +20,7 @@ const TAB_ITEMS = [
   { icon: Tags, key: "categories", label: "Kategorie" },
   { icon: Images, key: "photos", label: "Zdjęcia" },
   { icon: MessageSquare, key: "memories", label: "Pamiątki" },
-  { icon: BookOpen, key: "guides", label: "Przewodniki" },
+  { icon: BookOpen, key: "guides", label: "Trasy" },
   { icon: Flag, key: "reports", label: "Zgłoszenia" },
 ] as const satisfies ReadonlyArray<{ icon: typeof MapPin; key: AdminSection; label: string }>;
 

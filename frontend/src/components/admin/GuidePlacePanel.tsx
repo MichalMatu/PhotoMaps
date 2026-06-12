@@ -63,10 +63,8 @@ export function GuidePlacePanel({
         ) : null}
       </div>
       <div className="guide-place-list">
-        {isLoading ? <p className="notice">Ładowanie miejsc przewodnika.</p> : null}
-        {!isLoading && guidePlaces.length === 0 ? (
-          <p className="notice">Ten przewodnik nie ma jeszcze miejsc.</p>
-        ) : null}
+        {isLoading ? <p className="notice">Ładowanie miejsc trasy.</p> : null}
+        {!isLoading && guidePlaces.length === 0 ? <p className="notice">Ta trasa nie ma jeszcze miejsc.</p> : null}
         {!isLoading
           ? guidePlaces.map((place, index) => (
               <div className="guide-place-row" key={place.id}>

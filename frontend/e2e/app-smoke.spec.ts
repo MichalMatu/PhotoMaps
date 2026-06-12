@@ -233,8 +233,8 @@ test("admin can create category, place and guide through UI", async ({ page, req
   const categoryLabel = `E2E UI kategoria ${suffix}`;
   const placeTitle = `E2E UI miejsce ${suffix}`;
   const editedPlaceTitle = `${placeTitle} edycja`;
-  const guideTitle = `E2E UI przewodnik ${suffix}`;
-  const guideSlug = `e2e-ui-przewodnik-${suffix}`;
+  const guideTitle = `E2E UI trasa ${suffix}`;
+  const guideSlug = `e2e-ui-trasa-${suffix}`;
 
   const adminTabs = await unlockAdmin(page);
   await adminTabs.getByRole("button", { name: /Kategorie/ }).click();
@@ -283,14 +283,14 @@ test("admin can create category, place and guide through UI", async ({ page, req
   const editedPlaceRow = page.locator(".place-table .table-row").filter({ hasText: editedPlaceTitle });
   await expect(editedPlaceRow).toContainText(categoryLabel);
 
-  await adminTabs.getByRole("button", { name: /Przewodniki/ }).click();
-  await page.locator(".guide-toolbar").getByRole("button", { name: "Dodaj przewodnik" }).click();
-  const guideDialog = page.getByRole("dialog", { name: "Dodaj przewodnik" });
+  await adminTabs.getByRole("button", { name: /Trasy/ }).click();
+  await page.locator(".guide-toolbar").getByRole("button", { name: "Dodaj trasę" }).click();
+  const guideDialog = page.getByRole("dialog", { name: "Dodaj trasę" });
   await expect(guideDialog).toBeVisible();
   await guideDialog.getByLabel("Tytuł").fill(guideTitle);
-  await guideDialog.getByLabel("Opis").fill("Przewodnik dodany przez e2e");
+  await guideDialog.getByLabel("Opis").fill("Trasa dodana przez e2e");
   await guideDialog.getByLabel("Status").selectOption("published");
-  await guideDialog.getByRole("button", { name: "Dodaj przewodnik" }).click();
+  await guideDialog.getByRole("button", { name: "Dodaj trasę" }).click();
   await expect(guideDialog).toBeHidden();
 
   const guideRow = page.locator(".guide-row").filter({ hasText: guideTitle });
@@ -318,7 +318,7 @@ test("admin can create category, place and guide through UI", async ({ page, req
     .toEqual({ placeTitles: [editedPlaceTitle], status: "published" });
 
   await guideRow.getByRole("button", { name: "Usuń trwale" }).click();
-  const deleteGuideDialog = page.getByRole("dialog", { name: "Usunąć przewodnik?" });
+  const deleteGuideDialog = page.getByRole("dialog", { name: "Usunąć trasę?" });
   await expect(deleteGuideDialog).toBeVisible();
   await expect(deleteGuideDialog).toContainText("Same miejsca zostaną w bazie.");
   await deleteGuideDialog.getByRole("button", { name: "Usuń trwale" }).click();

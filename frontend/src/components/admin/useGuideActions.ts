@@ -69,8 +69,8 @@ export function useGuideActions({ guides, onChanged }: UseGuideActionsArgs) {
       .catch((reason: unknown) => {
         setOperationError({
           details: errorDetails(reason),
-          message: "Nie udało się pobrać szczegółów przewodnika. Spróbuj ponownie.",
-          title: "Nie udało się pobrać przewodnika",
+          message: "Nie udało się pobrać szczegółów trasy. Spróbuj ponownie.",
+          title: "Nie udało się pobrać trasy",
         });
       })
       .finally(() => {
@@ -152,8 +152,8 @@ export function useGuideActions({ guides, onChanged }: UseGuideActionsArgs) {
     } catch (reason) {
       setOperationError({
         details: errorDetails(reason),
-        message: "Nie udało się zapisać przewodnika. Sprawdź dane i spróbuj ponownie.",
-        title: "Nie udało się zapisać przewodnika",
+        message: "Nie udało się zapisać trasy. Sprawdź dane i spróbuj ponownie.",
+        title: "Nie udało się zapisać trasy",
       });
     } finally {
       setIsGuideSaving(false);
@@ -188,7 +188,7 @@ export function useGuideActions({ guides, onChanged }: UseGuideActionsArgs) {
     } catch (reason) {
       setOperationError({
         details: errorDetails(reason),
-        message: "Nie udało się dodać miejsc do przewodnika. Spróbuj ponownie.",
+        message: "Nie udało się dodać miejsc do trasy. Spróbuj ponownie.",
         title: "Nie udało się dodać miejsc",
       });
     }
@@ -235,7 +235,7 @@ export function useGuideActions({ guides, onChanged }: UseGuideActionsArgs) {
     } catch (reason) {
       setOperationError({
         details: errorDetails(reason),
-        message: "Nie udało się usunąć miejsca z przewodnika. Spróbuj ponownie.",
+        message: "Nie udało się usunąć miejsca z trasy. Spróbuj ponownie.",
         title: "Nie udało się usunąć miejsca",
       });
     }
@@ -266,8 +266,8 @@ export function useGuideActions({ guides, onChanged }: UseGuideActionsArgs) {
       setGuideToDelete(null);
       setOperationError({
         details: errorDetails(reason),
-        message: "Nie udało się trwale usunąć przewodnika. Spróbuj ponownie.",
-        title: "Nie udało się usunąć przewodnika",
+        message: "Nie udało się trwale usunąć trasy. Spróbuj ponownie.",
+        title: "Nie udało się usunąć trasy",
       });
     } finally {
       setIsDeletingGuide(false);

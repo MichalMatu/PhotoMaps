@@ -14,9 +14,9 @@ function currentGuideSlug() {
 
 function guideCountLabel(count: number) {
   return polishCountLabel(count, {
-    few: "przewodniki",
-    many: "przewodników",
-    one: "przewodnik",
+    few: "trasy",
+    many: "tras",
+    one: "trasa",
   });
 }
 
@@ -25,14 +25,6 @@ function placeCountLabel(count: number) {
     few: "miejsca",
     many: "miejsc",
     one: "miejsce",
-  });
-}
-
-function entryCountLabel(count: number) {
-  return polishCountLabel(count, {
-    few: "wpisy",
-    many: "wpisów",
-    one: "wpis",
   });
 }
 
@@ -56,14 +48,11 @@ function GuideCover({ guide }: { guide: Guide }) {
 }
 
 function GuidePlaceCard({ place }: { place: GuidePlacePreview }) {
-  const entryCount = place.photo_count + place.memory_count;
-
   return (
     <article className="guide-place-card">
       {place.cover_photo ? (
         <MediaImage
           alt={place.title}
-          caption={entryCountLabel(entryCount)}
           className="guide-place-card-media"
           ratio="landscape"
           src={mediaUrl(place.cover_photo.thumb_path)}
@@ -97,14 +86,14 @@ export function GuidesPage() {
     guidesQuery.isError && slug === null
       ? {
           details: errorDetails(guidesQuery.error),
-          message: "Nie udało się pobrać listy przewodników. Sprawdź połączenie i spróbuj ponownie.",
-          title: "Nie udało się pobrać przewodników",
+          message: "Nie udało się pobrać listy tras. Sprawdź połączenie i spróbuj ponownie.",
+          title: "Nie udało się pobrać tras",
         }
       : guideQuery.isError && slug !== null
         ? {
             details: errorDetails(guideQuery.error),
-            message: "Nie udało się pobrać tego przewodnika. Sprawdź połączenie i spróbuj ponownie.",
-            title: "Nie udało się pobrać przewodnika",
+            message: "Nie udało się pobrać tej trasy. Sprawdź połączenie i spróbuj ponownie.",
+            title: "Nie udało się pobrać trasy",
           }
         : null;
 
@@ -114,10 +103,10 @@ export function GuidesPage() {
         {slug === null ? (
           <section className="content-panel">
             <div className="guide-page-heading">
-              <h1>Przewodniki</h1>
+              <h1>Trasy</h1>
               <span className="guide-page-count">{guideCountLabel(guidesQuery.data?.length ?? 0)}</span>
             </div>
-            {guidesQuery.isLoading ? <p className="notice">Ładowanie przewodników...</p> : null}
+            {guidesQuery.isLoading ? <p className="notice">Ładowanie tras...</p> : null}
             <div className="guide-card-grid">
               {guidesQuery.data?.map((guide) => (
                 <a className="guide-card" href={`/guides/${guide.slug}`} key={guide.id}>
@@ -132,12 +121,12 @@ export function GuidesPage() {
             </div>
           </section>
         ) : (
-          <section className="content-panel">
-            {guideQuery.isLoading ? <p className="notice">Ładowanie przewodnika...</p> : null}
+          <section className="content-panel guide-detail-view">
+            {guideQuery.isLoading ? <p className="notice">Ładowanie trasy...</p> : null}
             {guideQuery.data ? (
               <>
                 <a className="ghost-link" href="/guides">
-                  Wszystkie przewodniki
+                  Wszystkie trasy
                 </a>
                 <div className="guide-page-heading">
                   <h1>{guideQuery.data.title}</h1>

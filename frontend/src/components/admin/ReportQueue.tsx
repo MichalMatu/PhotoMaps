@@ -29,7 +29,7 @@ const REPORT_STATUS_LABELS: Record<ReportStatus, string> = {
 };
 
 const REPORT_TARGET_LABELS: Record<ReportTargetType, string> = {
-  guide: "przewodnik",
+  guide: "trasa",
   memory: "pamiątka",
   photo: "zdjęcie",
   place: "miejsce",

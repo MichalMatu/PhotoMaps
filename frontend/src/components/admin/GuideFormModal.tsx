@@ -32,10 +32,10 @@ export function GuideFormModal({
     <SystemModal
       cancelLabel="Zamknij"
       confirmDisabled={!title.trim() || (!editingGuide && !generatedSlug)}
-      confirmLabel={editingGuide ? "Zapisz przewodnik" : "Dodaj przewodnik"}
-      eyebrow="Przewodniki"
+      confirmLabel={editingGuide ? "Zapisz trasę" : "Dodaj trasę"}
+      eyebrow="Trasy"
       isBusy={isSaving}
-      title={editingGuide ? "Edytuj przewodnik" : "Dodaj przewodnik"}
+      title={editingGuide ? "Edytuj trasę" : "Dodaj trasę"}
       onClose={onClose}
       onConfirm={onConfirm}
     >
