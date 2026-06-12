@@ -18,11 +18,11 @@
 
 .map-status-panel {
   align-items: center;
-  background: var(--color-surface-strong);
+  background: var(--material-regular);
   backdrop-filter: var(--blur-glass);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
-  box-shadow: var(--shadow-glass);
+  border-radius: var(--radius-media);
+  box-shadow: var(--elevation-panel);
   display: flex;
   gap: 10px;
   max-width: min(360px, calc(100vw - 124px));
@@ -36,7 +36,7 @@
 
 .map-status-panel::before {
   background: var(--color-accent);
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   content: "";
   display: block;
   flex: 0 0 auto;
@@ -70,7 +70,7 @@
   align-items: center;
   background: transparent;
   border: 0;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   box-shadow: none;
   color: var(--color-text-strong);
   display: flex;
@@ -83,7 +83,7 @@
 
 .place-map .leaflet-control-zoom a:first-child,
 .place-map .leaflet-control-zoom a:last-child {
-  border-radius: 50%;
+  border-radius: var(--radius-full);
 }
 
 .place-map .leaflet-control-zoom a:first-child {
@@ -104,7 +104,7 @@
   background: var(--color-accent);
   border: 3px solid var(--color-surface-strong);
   border-radius: 50% 50% 50% 0;
-  box-shadow: 0 8px 16px rgb(0 0 0 / 24%);
+  box-shadow: var(--elevation-pin);
   display: block;
   height: 28px;
   transform: rotate(-45deg);
@@ -113,7 +113,7 @@
 
 .place-marker-icon span::after {
   background: var(--color-surface-strong);
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   content: "";
   display: block;
   height: 8px;
@@ -126,7 +126,7 @@
 .place-marker-icon.is-selected span {
   box-shadow:
     0 0 0 8px var(--accent-soft),
-    0 12px 22px rgb(0 0 0 / 28%);
+    var(--elevation-pin-selected);
 }
 
 .place-photo-marker {
@@ -142,8 +142,8 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  border-radius: 8px;
-  box-shadow: 0 8px 12px rgb(0 0 0 / 28%);
+  border-radius: var(--radius-media);
+  box-shadow: var(--elevation-marker);
   display: block;
   height: var(--place-marker-height, 52px);
   overflow: hidden;
@@ -158,16 +158,16 @@
 }
 
 .place-photo-marker.is-selected span {
-  box-shadow: 0 9px 12px rgb(0 0 0 / 32%);
+  box-shadow: var(--elevation-marker-selected);
   transform: translateY(-2px);
 }
 
 .place-photo-marker.is-memory span {
-  box-shadow: 0 8px 12px rgb(0 0 0 / 28%);
+  box-shadow: var(--elevation-marker);
 }
 
 .place-photo-marker.is-memory.is-selected span {
-  box-shadow: 0 9px 12px rgb(0 0 0 / 32%);
+  box-shadow: var(--elevation-marker-selected);
 }
 
 .place-photo-marker.is-map-icon span {
@@ -178,33 +178,13 @@
   background-size: contain;
   border-radius: 0;
   box-shadow: none;
-  filter: drop-shadow(0 5px 4px rgb(0 0 0 / 34%));
+  filter: var(--shadow-map-icon);
 }
 
 .place-photo-marker.is-map-icon.is-selected span {
   box-shadow: none;
-  filter: drop-shadow(0 6px 5px rgb(0 0 0 / 38%));
+  filter: var(--shadow-map-icon-selected);
   transform: translateY(-2px) scale(1.04);
-}
-
-.place-cluster-marker {
-  background: transparent;
-  border: 0;
-}
-
-.place-cluster-marker span {
-  align-items: center;
-  background: var(--color-surface-dark);
-  border: 2px solid var(--color-surface-strong);
-  border-radius: 50%;
-  box-shadow: 0 14px 24px rgb(0 0 0 / 30%);
-  color: #ffffff;
-  display: flex;
-  font-size: 0.95rem;
-  font-weight: 700;
-  height: 48px;
-  justify-content: center;
-  width: 48px;
 }
 
 .photo-fan-marker,
@@ -215,28 +195,28 @@
 
 .photo-fan-marker span,
 .photo-fan-add-marker span {
-  animation: photo-fan-in 260ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation: photo-fan-in var(--motion-duration-slow) var(--motion-ease-emphasised) backwards;
   animation-delay: var(--fan-delay, 0ms);
-  border-radius: 8px;
-  box-shadow: 0 8px 12px rgb(0 0 0 / 30%);
+  border-radius: var(--radius-media);
+  box-shadow: var(--elevation-marker);
   display: block;
   opacity: 1;
   overflow: hidden;
-  position: relative;
-  transform: translate(0, 0) scale(1);
+  position: absolute;
+  transform: translate(calc(-50% + var(--fan-x, 0px)), calc(-50% + var(--fan-y, 0px))) scale(1);
   transform-origin: center;
   transition:
-    box-shadow 140ms ease,
-    filter 140ms ease,
-    transform 140ms ease;
+    box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
+    filter var(--motion-duration-fast) var(--motion-ease-standard),
+    transform var(--motion-duration-fast) var(--motion-ease-standard);
   will-change: transform, opacity;
 }
 
 .photo-fan-marker:hover span,
 .photo-fan-add-marker:hover span {
-  box-shadow: 0 10px 12px rgb(0 0 0 / 34%);
+  box-shadow: var(--elevation-marker-hover);
   filter: saturate(1.06);
-  transform: scale(1.07);
+  transform: translate(calc(-50% + var(--fan-x, 0px)), calc(-50% + var(--fan-y, 0px))) scale(1.07);
 }
 
 .photo-fan-marker span {
@@ -254,25 +234,25 @@
   background-size: contain;
   border-radius: 0;
   box-shadow: none;
-  filter: drop-shadow(0 5px 4px rgb(0 0 0 / 34%));
+  filter: var(--shadow-map-icon);
 }
 
 .photo-fan-marker.is-map-icon:hover span {
   box-shadow: none;
-  filter: drop-shadow(0 6px 5px rgb(0 0 0 / 38%));
+  filter: var(--shadow-map-icon-selected);
 }
 
 .photo-fan-marker.is-memory span {
-  box-shadow: 0 8px 12px rgb(0 0 0 / 30%);
+  box-shadow: var(--elevation-marker);
 }
 
 .photo-fan-add-marker span {
   align-items: center;
-  background: var(--color-surface-dark);
+  background: var(--surface-media);
   border: 1px solid var(--color-border-strong);
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   backdrop-filter: blur(6px);
-  color: #ffffff;
+  color: var(--content-on-media);
   display: flex;
   font-size: 0;
   font-weight: 650;
@@ -285,8 +265,8 @@
 
 .photo-fan-add-marker span::before,
 .photo-fan-add-marker span::after {
-  background: #ffffff;
-  border-radius: 999px;
+  background: var(--content-on-media);
+  border-radius: var(--radius-full);
   content: "";
   height: 3px;
   left: 50%;
@@ -301,31 +281,31 @@
 }
 
 .photo-fan-add-marker:hover span {
-  background: var(--color-surface-dark);
+  background: var(--surface-media);
   border-color: var(--color-border-strong);
 }
 
 @keyframes photo-fan-in {
   0% {
     opacity: 0;
-    transform: translate(var(--fan-from-x, 0), var(--fan-from-y, 0)) scale(0.5);
+    transform: translate(-50%, -50%) scale(0.5);
   }
 
   72% {
     opacity: 1;
-    transform: translate(0, 0) scale(1.06);
+    transform: translate(calc(-50% + var(--fan-x, 0px)), calc(-50% + var(--fan-y, 0px))) scale(1.06);
   }
 
   100% {
     opacity: 1;
-    transform: translate(0, 0) scale(1);
+    transform: translate(calc(-50% + var(--fan-x, 0px)), calc(-50% + var(--fan-y, 0px))) scale(1);
   }
 }
 
 .map-photo-viewer {
   align-items: center;
-  animation: map-photo-viewer-backdrop-in 340ms ease-out both;
-  background: rgb(0 0 0 / 68%);
+  animation: map-photo-viewer-backdrop-in var(--motion-duration-slow) var(--motion-ease-standard) both;
+  background: var(--surface-backdrop-photo);
   display: flex;
   inset: 0;
   justify-content: center;
@@ -335,39 +315,84 @@
 }
 
 .map-photo-viewer-image-wrap {
+  animation: map-photo-viewer-image-in var(--motion-duration-slow) var(--motion-ease-emphasised) 80ms both;
   position: relative;
 }
 
 .map-photo-viewer-image-button {
-  background: transparent;
+  background: var(--surface-media);
   border: 0;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-floating);
   display: block;
+  max-height: 86vh;
+  max-width: 88vw;
   min-height: 0;
+  overflow: hidden;
   padding: 0;
+  position: relative;
 }
 
 .map-photo-viewer-image-button:hover {
-  background: transparent;
+  background: var(--surface-media);
+}
+
+.map-photo-viewer-image-button:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 4px;
 }
 
 .map-photo-viewer-image-button img {
-  animation: map-photo-viewer-image-in 420ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
   border: 0;
-  border-radius: 6px;
-  box-shadow: var(--shadow-floating);
   display: block;
   max-height: 86vh;
   max-width: 88vw;
   object-fit: contain;
 }
 
+.map-photo-viewer-caption {
+  align-items: flex-start;
+  background: var(--surface-media-caption);
+  bottom: 0;
+  color: var(--content-on-media);
+  display: grid;
+  gap: 3px;
+  left: 0;
+  padding: 42px 16px 14px;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  text-align: left;
+}
+
+.map-photo-viewer-caption strong,
+.map-photo-viewer-caption span {
+  display: -webkit-box;
+  line-height: 1.18;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+}
+
+.map-photo-viewer-caption strong {
+  -webkit-line-clamp: 1;
+  font-size: 0.96rem;
+  font-weight: 800;
+}
+
+.map-photo-viewer-caption span {
+  -webkit-line-clamp: 2;
+  color: var(--content-on-media-muted);
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
 @keyframes map-photo-viewer-backdrop-in {
   from {
-    background: rgb(0 0 0 / 34%);
+    background: var(--surface-backdrop-photo-start);
   }
 
   to {
-    background: rgb(0 0 0 / 68%);
+    background: var(--surface-backdrop-photo);
   }
 }
 
@@ -477,7 +502,7 @@
 
 .photo-detail-backdrop {
   align-items: center;
-  background: rgb(0 0 0 / 58%);
+  background: var(--surface-backdrop-modal);
   display: flex;
   inset: 0;
   justify-content: center;
@@ -583,11 +608,11 @@
 }
 
 .photo-detail-image-caption {
-  background: rgb(0 0 0 / 54%);
-  border: 1px solid rgb(255 255 255 / 18%);
+  background: var(--surface-media-soft);
+  border: 1px solid var(--border-on-media-subtle);
   border-radius: var(--radius-sm);
   bottom: var(--space-2);
-  color: #ffffff;
+  color: var(--content-on-media);
   font-size: var(--text-label);
   font-weight: 650;
   line-height: 1.25;
@@ -696,7 +721,7 @@
 .memory-owner-form input:focus,
 .memory-owner-form textarea:focus {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px var(--accent-soft);
+  box-shadow: var(--focus-soft);
   outline: none;
 }
 

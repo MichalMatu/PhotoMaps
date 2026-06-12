@@ -82,11 +82,18 @@ export function isMapIconVisualItem(item: PlaceMapVisualItem): boolean {
 }
 
 export function getPlaceFanItems(place: Pick<PlaceMapItem, "cover_photo" | "preview_items">): PlaceMapVisualItem[] {
-  const previewVisual = getPlacePreviewVisual(place);
+  const items = place.cover_photo ? [photoVisualItem(place.cover_photo)] : [];
+  const seenIds = new Set(items.map((item) => `${item.kind}:${item.id}`));
 
-  return place.preview_items
-    .map(previewItemVisualItem)
-    .filter((item) => !previewVisual || item.kind !== previewVisual.kind || item.id !== previewVisual.id);
+  for (const previewItem of place.preview_items.map(previewItemVisualItem)) {
+    const itemKey = `${previewItem.kind}:${previewItem.id}`;
+    if (!seenIds.has(itemKey)) {
+      items.push(previewItem);
+      seenIds.add(itemKey);
+    }
+  }
+
+  return items;
 }
 
 export function findPlaceFanItem(

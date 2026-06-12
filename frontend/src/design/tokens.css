@@ -27,6 +27,9 @@
     --radius-lg: 16px;
     --radius-xl: 24px;
     --radius-full: 999px;
+    --radius-panel: var(--radius-lg);
+    --radius-media: var(--radius-sm);
+    --radius-sheet: var(--radius-xl);
 
     --surface-canvas: #f5f5f7;
     --surface-elevated: rgb(255 255 255 / 88%);
@@ -35,16 +38,26 @@
     --surface-panel: rgb(255 255 255 / 96%);
     --surface-contrast: rgb(28 28 30 / 82%);
     --surface-overlay: rgb(16 18 22 / 72%);
+    --surface-media: rgb(16 18 22 / 88%);
+    --surface-media-soft: rgb(16 18 22 / 68%);
+    --surface-media-caption: linear-gradient(180deg, rgb(0 0 0 / 0%) 0%, rgb(0 0 0 / 72%) 100%);
+    --surface-backdrop-photo: rgb(0 0 0 / 68%);
+    --surface-backdrop-photo-start: rgb(0 0 0 / 34%);
+    --surface-backdrop-modal: rgb(0 0 0 / 58%);
 
     --content-primary: #1d1d1f;
     --content-strong: #050505;
     --content-secondary: #6e6e73;
     --content-tertiary: #515154;
     --content-on-accent: #ffffff;
+    --content-on-media: #ffffff;
+    --content-on-media-muted: rgb(255 255 255 / 82%);
 
     --border-subtle: rgb(60 60 67 / 18%);
     --border-strong: rgb(60 60 67 / 28%);
+    --border-on-media-subtle: rgb(255 255 255 / 18%);
     --focus-ring: rgb(0 122 255 / 70%);
+    --focus-soft: 0 0 0 3px var(--accent-soft);
 
     --accent-primary: #007aff;
     --accent-primary-hover: #0067d8;
@@ -60,6 +73,17 @@
     --shadow-card: 0 18px 50px rgb(0 0 0 / 14%);
     --shadow-sheet: 0 24px 70px rgb(0 0 0 / 24%);
     --shadow-spotlight: 0 30px 100px rgb(0 0 0 / 28%);
+    --elevation-low: var(--shadow-raised);
+    --elevation-panel: var(--shadow-card);
+    --elevation-floating: var(--shadow-sheet);
+    --elevation-spotlight: var(--shadow-spotlight);
+    --elevation-pin: 0 8px 16px rgb(0 0 0 / 24%);
+    --elevation-pin-selected: 0 12px 22px rgb(0 0 0 / 28%);
+    --elevation-marker: 0 8px 12px rgb(0 0 0 / 28%);
+    --elevation-marker-selected: 0 9px 12px rgb(0 0 0 / 32%);
+    --elevation-marker-hover: 0 10px 12px rgb(0 0 0 / 34%);
+    --shadow-map-icon: drop-shadow(0 5px 4px rgb(0 0 0 / 34%));
+    --shadow-map-icon-selected: drop-shadow(0 6px 5px rgb(0 0 0 / 38%));
     --blur-glass: blur(18px);
 
     --duration-fast: 120ms;
@@ -67,6 +91,11 @@
     --duration-slow: 280ms;
     --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
     --ease-emphasised: cubic-bezier(0.16, 1, 0.3, 1);
+    --motion-duration-fast: var(--duration-fast);
+    --motion-duration-regular: var(--duration-normal);
+    --motion-duration-slow: var(--duration-slow);
+    --motion-ease-standard: var(--ease-standard);
+    --motion-ease-emphasised: var(--ease-emphasised);
 
     --control-height-comfortable: 44px;
     --control-hit-target: 44px;
@@ -80,6 +109,10 @@
     --color-surface-strong: var(--surface-elevated);
     --color-surface-soft: var(--surface-inset);
     --color-surface-dark: var(--surface-contrast);
+    --material-thin: var(--surface-glass);
+    --material-regular: var(--surface-elevated);
+    --material-heavy: var(--surface-panel);
+    --material-contrast: var(--surface-contrast);
     --color-border: var(--border-subtle);
     --color-border-strong: var(--border-strong);
     --color-accent: var(--accent-primary);
@@ -107,6 +140,10 @@
       --surface-panel: rgb(44 44 46 / 96%);
       --surface-contrast: rgb(18 18 20 / 86%);
       --surface-overlay: rgb(0 0 0 / 74%);
+      --surface-media: rgb(0 0 0 / 88%);
+      --surface-media-soft: rgb(0 0 0 / 72%);
+      --surface-backdrop-photo: rgb(0 0 0 / 74%);
+      --surface-backdrop-modal: rgb(0 0 0 / 64%);
 
       --content-primary: #f5f5f7;
       --content-strong: #ffffff;
@@ -131,6 +168,11 @@
       --shadow-card: 0 18px 50px rgb(0 0 0 / 30%);
       --shadow-sheet: 0 24px 70px rgb(0 0 0 / 48%);
       --shadow-spotlight: 0 30px 100px rgb(0 0 0 / 54%);
+      --elevation-pin: 0 8px 16px rgb(0 0 0 / 34%);
+      --elevation-pin-selected: 0 12px 22px rgb(0 0 0 / 40%);
+      --elevation-marker: 0 8px 12px rgb(0 0 0 / 38%);
+      --elevation-marker-selected: 0 9px 12px rgb(0 0 0 / 44%);
+      --elevation-marker-hover: 0 10px 12px rgb(0 0 0 / 46%);
     }
   }
 }

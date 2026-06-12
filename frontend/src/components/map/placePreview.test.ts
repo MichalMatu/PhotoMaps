@@ -100,7 +100,7 @@ describe("place preview helpers", () => {
     });
   });
 
-  it("keeps additional photo and memory identities in fan items", () => {
+  it("keeps photo and memory identities in fan items", () => {
     const firstPhoto = photo("photo-1");
     const firstMemory = memory("memory-1");
 
@@ -118,6 +118,7 @@ describe("place preview helpers", () => {
     ];
 
     expect(getPlaceFanItems({ cover_photo: null, preview_items: previewItems }).map((item) => item.kind)).toEqual([
+      "photo",
       "memory",
     ]);
     expect(
@@ -128,7 +129,7 @@ describe("place preview helpers", () => {
     });
   });
 
-  it("does not duplicate the explicit cover photo in fan items", () => {
+  it("puts the explicit cover first without duplicating it in fan items", () => {
     const cover = photo("cover", "map_icon");
     const secondPhoto = photo("second-photo");
     const firstMemory = memory("memory-1");
@@ -156,6 +157,7 @@ describe("place preview helpers", () => {
     ];
 
     expect(getPlaceFanItems({ cover_photo: cover, preview_items: previewItems }).map((item) => item.id)).toEqual([
+      "cover",
       "second-photo",
       "memory-1",
     ]);

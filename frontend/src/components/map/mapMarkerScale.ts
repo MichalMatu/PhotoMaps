@@ -2,6 +2,8 @@ const BASE_MARKER_WIDTH = 64;
 const BASE_MARKER_HEIGHT = 52;
 const MIN_EDITORIAL_PRIORITY = 0.5;
 const MAX_EDITORIAL_PRIORITY = 3;
+const MIN_MARKER_SCALE = 0.52;
+const MAX_MARKER_SCALE = 1.55;
 
 type MarkerLayoutInput = {
   editorialPriority: number;
@@ -24,9 +26,10 @@ export function getPlaceMarkerLayout({ editorialPriority, zoom }: MarkerLayoutIn
   const safePriority = Number.isFinite(editorialPriority) ? editorialPriority : 1;
   const safeZoom = Number.isFinite(zoom) ? zoom : 13;
   const clampedPriority = clamp(safePriority, MIN_EDITORIAL_PRIORITY, MAX_EDITORIAL_PRIORITY);
-  const priorityScale = 1 + ((clampedPriority - 1) / (MAX_EDITORIAL_PRIORITY - 1)) * 0.26;
-  const zoomScale = clamp(0.86 + (safeZoom - 12) * 0.08, 0.86, 1.3);
-  const scale = priorityScale * zoomScale;
+  const priorityScale =
+    0.88 + ((clampedPriority - MIN_EDITORIAL_PRIORITY) / (MAX_EDITORIAL_PRIORITY - MIN_EDITORIAL_PRIORITY)) * 0.37;
+  const zoomScale = clamp(0.58 + (safeZoom - 11) * 0.13, 0.58, 1.25);
+  const scale = clamp(priorityScale * zoomScale, MIN_MARKER_SCALE, MAX_MARKER_SCALE);
 
   return {
     height: Math.round(BASE_MARKER_HEIGHT * scale),

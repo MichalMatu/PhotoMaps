@@ -35,8 +35,17 @@ export function MapPhotoViewer({ item, onClose, onOpenDetails, place }: Props) {
       onClick={onClose}
     >
       <div className="map-photo-viewer-image-wrap" onClick={(event) => event.stopPropagation()}>
-        <button className="map-photo-viewer-image-button" type="button" onClick={onOpenDetails}>
+        <button
+          className="map-photo-viewer-image-button"
+          type="button"
+          onClick={onOpenDetails}
+          aria-label={`Otwórz szczegóły zdjęcia: ${place.title}`}
+        >
           <img src={mediaUrl(item.public_path)} alt={item.caption ?? place.title} />
+          <span className="map-photo-viewer-caption">
+            <strong>{place.title}</strong>
+            {item.caption ? <span>{item.caption}</span> : null}
+          </span>
         </button>
       </div>
     </div>,

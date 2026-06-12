@@ -13,15 +13,211 @@
       "slug": "rynek-wroclaw",
       "title": "Rynek Wrocław",
       "description": "Historyczne centrum miasta z ratuszem, kamienicami i najbardziej rozpoznawalnym rytmem starego Wrocławia.",
-      "local_comment": "Dobry pierwszy punkt mapy: od razu pokazuje, że kafelki mają działać jak ikoniczne wejście w miejsce, nie zwykłe zdjęcie.",
-      "category_ids": ["local_classic"],
+      "local_comment": "Najlepszy punkt startowy: dużo ludzi, światła i detali, ale najciekawsze kadry często są w bocznych przejściach, nie na środku placu.",
+      "category_ids": ["local_classic", "date_spot"],
       "lat": 51.1097,
       "lon": 17.0325,
       "weight": 3.0,
       "status": "published",
       "cover_icon_path": "assets/place-icons/20_approved/rynek-wroclaw/place-rynek-wroclaw-icon-v01.png",
       "cover_caption": "Ikoniczna miniatura Rynku Wrocławskiego"
+    },
+    {
+      "slug": "ostrow-tumski",
+      "title": "Ostrów Tumski",
+      "description": "Najstarsza część Wrocławia, z ceglanymi kościołami, brukiem i spokojniejszym tempem po drugiej stronie Odry.",
+      "local_comment": "Najbardziej działa o zmierzchu, kiedy latarnie i mosty robią z tego miejsca gotową scenę do spaceru.",
+      "category_ids": ["local_classic", "date_spot", "viewpoint"],
+      "lat": 51.1142,
+      "lon": 17.0466,
+      "weight": 2.8,
+      "status": "published"
+    },
+    {
+      "slug": "wyspa-slodowa",
+      "title": "Wyspa Słodowa",
+      "description": "Zielona wyspa między ramionami Odry, kojarzona ze spotkaniami, siedzeniem nad wodą i luźnym miejskim rytmem.",
+      "local_comment": "Dobre miejsce do testowania mapy po zmroku: powinno mieć energię, ale nie może wizualnie przykrywać spokojniejszych punktów obok.",
+      "category_ids": ["date_spot", "after_22", "hidden_gem"],
+      "lat": 51.114,
+      "lon": 17.0384,
+      "weight": 2.2,
+      "status": "published"
+    },
+    {
+      "slug": "hala-targowa",
+      "title": "Hala Targowa",
+      "description": "Modernistyczna hala handlowa z monumentalnym wnętrzem, straganami i bardzo lokalnym, codziennym ruchem.",
+      "local_comment": "Dobry kontrapunkt do pocztówkowego Wrocławia: mniej wygładzony, bardziej użytkowy i przez to ciekawszy.",
+      "category_ids": ["local_classic", "cheap_food", "rainy_day"],
+      "lat": 51.1129,
+      "lon": 17.0431,
+      "weight": 2.4,
+      "status": "published"
+    },
+    {
+      "slug": "neon-side",
+      "title": "Neon Side",
+      "description": "Podwórko z kolekcją neonów, szyldów i śladów miejskiej typografii przy ulicy Ruskiej.",
+      "local_comment": "Mały obszar, ale bardzo mocny wizualnie. Idealny do sprawdzenia, czy miniatury potrafią robić efekt bez dużej liczby markerów.",
+      "category_ids": ["mural", "after_22", "hidden_gem"],
+      "lat": 51.1093,
+      "lon": 17.0249,
+      "weight": 2.5,
+      "status": "published"
+    },
+    {
+      "slug": "nadodrze-murale",
+      "title": "Nadodrze: murale i szyldy",
+      "description": "Kwartały Nadodrza z muralami, rzemieślniczymi witrynami, podwórkami i warstwami starej miejskiej grafiki.",
+      "local_comment": "To nie jest jeden punkt do odhaczenia, tylko obszar do spokojnego chodzenia i łapania detali.",
+      "category_ids": ["mural", "hidden_gem"],
+      "lat": 51.1208,
+      "lon": 17.0332,
+      "weight": 2.0,
+      "status": "published"
+    },
+    {
+      "slug": "bulwar-dunikowskiego",
+      "title": "Bulwar Dunikowskiego",
+      "description": "Nadrzeczny odcinek z widokiem na Ostrów Tumski, mosty i spokojniejszą panoramę centrum.",
+      "local_comment": "Dobry test dla zdjęć panoramicznych: podpisy i gradienty nie mogą psuć szerokich kadrów.",
+      "category_ids": ["viewpoint", "date_spot"],
+      "lat": 51.112,
+      "lon": 17.0446,
+      "weight": 2.1,
+      "status": "published"
+    },
+    {
+      "slug": "most-grunwaldzki",
+      "title": "Most Grunwaldzki",
+      "description": "Charakterystyczny most nad Odrą, mocny znak miasta i dobry punkt obserwacji ruchu między centrum a wschodem Wrocławia.",
+      "local_comment": "Najlepiej działa jako kadr z ruchem: tramwaje, rzeka, stal i szeroka perspektywa.",
+      "category_ids": ["local_classic", "viewpoint"],
+      "lat": 51.1105,
+      "lon": 17.0525,
+      "weight": 2.0,
+      "status": "published"
+    },
+    {
+      "slug": "wzgorze-partyzantow",
+      "title": "Wzgórze Partyzantów",
+      "description": "Odnowiony fragment dawnej promenady z kolumnadą, schodami i widokiem na bardziej teatralną stronę centrum.",
+      "local_comment": "Ma inną temperaturę niż Rynek: trochę elegancką, trochę niedzisiejszą, bardzo dobrą na krótką sesję zdjęciową.",
+      "category_ids": ["viewpoint", "date_spot", "hidden_gem"],
+      "lat": 51.107,
+      "lon": 17.0418,
+      "weight": 2.1,
+      "status": "published"
+    },
+    {
+      "slug": "hala-stulecia-pergola",
+      "title": "Hala Stulecia i Pergola",
+      "description": "Duży modernistyczny kompleks z monumentalną halą, pergolą, alejami i przestrzenią do spaceru poza ścisłym centrum.",
+      "local_comment": "Dobre miejsce do sprawdzenia, czy mapa nie skupia całej energii wyłącznie wokół Rynku.",
+      "category_ids": ["local_classic", "viewpoint", "rainy_day"],
+      "lat": 51.1069,
+      "lon": 17.0771,
+      "weight": 2.6,
+      "status": "published"
+    },
+    {
+      "slug": "park-szczytnicki",
+      "title": "Park Szczytnicki",
+      "description": "Rozległy park po wschodniej stronie miasta, dobry na wolniejszy spacer, cień i zdjęcia bez pośpiechu.",
+      "local_comment": "Tu zdjęcia powinny uspokajać mapę: mniej miejskiego hałasu, więcej zieleni i oddechu.",
+      "category_ids": ["date_spot", "rainy_day"],
+      "lat": 51.1098,
+      "lon": 17.0833,
+      "weight": 1.8,
+      "status": "published"
+    },
+    {
+      "slug": "dworzec-swiebodzki",
+      "title": "Dworzec Świebodzki",
+      "description": "Dawny dworzec z dużym placem, surową architekturą i przestrzenią, która wygląda inaczej niż klasyczne centrum.",
+      "local_comment": "Dobry materiał na bardziej surowe, miejskie kadry i test mniej oczywistych punktów na mapie.",
+      "category_ids": ["hidden_gem", "local_classic"],
+      "lat": 51.1045,
+      "lon": 17.0198,
+      "weight": 1.7,
+      "status": "published"
+    },
+    {
+      "slug": "dzielnica-czterech-wyznan",
+      "title": "Dzielnica Czterech Wyznań",
+      "description": "Zwarty obszar między świątyniami, podwórkami i bocznymi ulicami, gdzie centrum robi się bardziej kameralne.",
+      "local_comment": "Najciekawsza jest nie jako pojedynczy zabytek, ale jako sekwencja przejść, bram i małych odkryć.",
+      "category_ids": ["hidden_gem", "date_spot", "local_classic"],
+      "lat": 51.1083,
+      "lon": 17.0264,
+      "weight": 2.0,
+      "status": "published"
+    },
+    {
+      "slug": "przejscie-garncarskie",
+      "title": "Przejście Garncarskie",
+      "description": "Krótki pasaż przy Rynku, który szybko przenosi z otwartego placu w ciaśniejszy, bardziej lokalny rytm miasta.",
+      "local_comment": "Mały punkt, ale przydatny w mapie: pokazuje, że charakter miasta często mieści się w przejściu, nie tylko w wielkim placu.",
+      "category_ids": ["hidden_gem", "local_classic"],
+      "lat": 51.1105,
+      "lon": 17.0326,
+      "weight": 1.8,
+      "status": "published"
+    },
+    {
+      "slug": "promenada-staromiejska",
+      "title": "Promenada Staromiejska",
+      "description": "Zielony pierścień spacerowy wokół centrum, z mostkami, wodą, ławkami i krótkimi odcinkami dobrymi na odpoczynek.",
+      "local_comment": "Dobry łącznik między mocniejszymi punktami: nie krzyczy, ale pomaga mapie oddychać.",
+      "category_ids": ["date_spot", "viewpoint", "hidden_gem"],
+      "lat": 51.1062,
+      "lon": 17.0346,
+      "weight": 1.6,
+      "status": "published"
     }
   ],
-  "guides": []
+  "guides": [
+    {
+      "slug": "pierwszy-spacer-bez-spiny",
+      "title": "Pierwszy spacer bez spiny",
+      "description": "Krótka trasa przez centrum, boczne przejścia, neony i wodę. Dobra do pierwszego sprawdzenia mapy na żywych miejscach.",
+      "status": "published",
+      "places": [
+        { "slug": "rynek-wroclaw", "sort_order": 0 },
+        { "slug": "przejscie-garncarskie", "sort_order": 1 },
+        { "slug": "dzielnica-czterech-wyznan", "sort_order": 2 },
+        { "slug": "neon-side", "sort_order": 3 },
+        { "slug": "wyspa-slodowa", "sort_order": 4 },
+        { "slug": "ostrow-tumski", "sort_order": 5 },
+        { "slug": "bulwar-dunikowskiego", "sort_order": 6 }
+      ]
+    },
+    {
+      "slug": "kadry-nad-odra",
+      "title": "Kadry nad Odrą",
+      "description": "Miejsca, w których Wrocław najlepiej testuje szerokie kadry, mosty, wodę i spokojniejsze panoramy.",
+      "status": "published",
+      "places": [
+        { "slug": "most-grunwaldzki", "sort_order": 0 },
+        { "slug": "bulwar-dunikowskiego", "sort_order": 1 },
+        { "slug": "ostrow-tumski", "sort_order": 2 },
+        { "slug": "wyspa-slodowa", "sort_order": 3 },
+        { "slug": "promenada-staromiejska", "sort_order": 4 }
+      ]
+    },
+    {
+      "slug": "na-deszcz-i-detale",
+      "title": "Na deszcz i detale",
+      "description": "Zestaw miejsc do sprawdzania gęstszych, mniej pocztówkowych widoków: wnętrza, pasaże, szyldy i krótsze przystanki.",
+      "status": "published",
+      "places": [
+        { "slug": "hala-targowa", "sort_order": 0 },
+        { "slug": "przejscie-garncarskie", "sort_order": 1 },
+        { "slug": "neon-side", "sort_order": 2 },
+        { "slug": "nadodrze-murale", "sort_order": 3 },
+        { "slug": "hala-stulecia-pergola", "sort_order": 4 }
+      ]
+    }
+  ]
 }
