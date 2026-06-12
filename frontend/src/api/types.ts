@@ -20,7 +20,7 @@ export type CategoryPayload = {
 
 export type CategoryUpdatePayload = Omit<CategoryPayload, "id">;
 
-type CityStatus = "active" | "archived";
+export type CityStatus = "active" | "archived";
 
 export type City = {
   id: string;
@@ -31,6 +31,18 @@ export type City = {
   sort_order: number;
   status: CityStatus;
 };
+
+export type CityPayload = {
+  id: string;
+  name: string;
+  lat: number;
+  lon: number;
+  default_zoom: number;
+  sort_order: number;
+  status: CityStatus;
+};
+
+export type CityUpdatePayload = Omit<CityPayload, "id">;
 
 export type PlaceStatus = "draft" | "published" | "archived";
 

@@ -21,6 +21,70 @@
   border-top: 1px solid var(--color-border);
 }
 
+.place-city-row {
+  border-top: 1px solid var(--color-border);
+}
+
+.place-city-row:first-of-type {
+  border-top: 0;
+}
+
+.place-city-toggle {
+  align-items: center;
+  background: var(--color-surface-soft);
+  border: 0;
+  border-radius: 0;
+  color: var(--color-text);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 24px minmax(160px, 1fr) auto auto;
+  justify-items: start;
+  min-height: 52px;
+  padding: 0 var(--space-4);
+  text-align: left;
+  width: 100%;
+}
+
+.place-city-toggle:hover {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.place-city-title {
+  font-weight: 700;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.place-city-count,
+.place-city-statuses {
+  color: var(--color-muted-strong);
+  font-size: 0.78rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.place-city-count {
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 4px 9px;
+}
+
+.place-city-group {
+  background: color-mix(in srgb, var(--color-surface-soft) 52%, transparent);
+}
+
+.place-city-group .table-row {
+  padding-left: calc(var(--space-4) + 34px);
+}
+
+.place-city-group + .place-city-row {
+  border-top: 1px solid var(--color-border);
+}
+
 .table-cell {
   align-self: center;
   line-height: 1.2;
@@ -103,6 +167,33 @@
     border-top: 1px solid var(--color-border);
   }
 
+  .place-city-row {
+    background: var(--material-regular);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-panel);
+    overflow: hidden;
+  }
+
+  .place-city-toggle {
+    border-radius: 0;
+    grid-template-columns: 24px minmax(0, 1fr) auto;
+    min-height: 54px;
+    padding: 0 var(--space-4);
+  }
+
+  .place-city-statuses {
+    display: none;
+  }
+
+  .place-city-group {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .place-city-group .table-row {
+    padding-left: var(--space-4);
+  }
+
   .table-row:not(.table-head) .table-cell {
     display: grid;
     gap: var(--space-1);
@@ -153,6 +244,14 @@
 @media (max-width: 640px) {
   .table-row {
     grid-template-columns: 1fr;
+  }
+
+  .place-city-toggle {
+    grid-template-columns: 24px minmax(0, 1fr);
+  }
+
+  .place-city-count {
+    grid-column: 2;
   }
 
   .table-actions button {

@@ -171,14 +171,123 @@
   width: 100%;
 }
 
-.location-readout {
+.location-picker-footer {
+  align-items: center;
   background: var(--color-surface-soft);
   border-top: 1px solid var(--color-border);
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  padding: 8px 10px;
+}
+
+.location-readout {
   color: var(--color-muted);
   font-size: 0.8rem;
   font-weight: 500;
   margin: 0;
-  padding: 8px 10px;
+}
+
+.location-expand-button {
+  align-items: center;
+  background: var(--surface-inset);
+  border: 1px solid var(--border-subtle);
+  color: var(--content-secondary);
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 12px;
+}
+
+.location-expand-button:hover {
+  background: var(--accent-soft);
+  color: var(--accent-primary);
+}
+
+.location-modal-body {
+  display: grid;
+  gap: 12px;
+}
+
+.location-modal-readout {
+  color: var(--color-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.location-modal-map {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  height: clamp(300px, 62dvh, 560px);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.location-modal-footer {
+  align-items: stretch;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.location-modal-footer > button {
+  flex: 0 0 auto;
+  min-height: 42px;
+}
+
+.location-lookup-hint,
+.location-lookup-error,
+.location-lookup-result {
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  color: var(--color-muted-strong);
+  flex: 1 1 auto;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  margin: 0;
+  min-width: 0;
+  padding: 10px 12px;
+}
+
+.location-lookup-error {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.location-lookup-result {
+  display: grid;
+  gap: 3px;
+}
+
+.location-lookup-result strong {
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.location-lookup-result span,
+.location-lookup-result p {
+  color: var(--color-muted);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.location-lookup-result p {
+  font-size: 0.82rem;
+}
+
+@media (max-width: 720px) {
+  .location-modal-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .location-modal-footer > button {
+    justify-content: center;
+    width: 100%;
+  }
 }
 
 .section-heading {

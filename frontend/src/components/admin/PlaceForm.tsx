@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 
 import type { Category, City, Place, PlaceStatus } from "../../api/client";
 import { PHOTO_CAPTION_MAX_LENGTH } from "./adminMediaUi";
-import { PlaceLocationPicker } from "./PlaceLocationPicker";
+import { LocationPicker } from "./LocationPicker";
 import type { PlaceFormPayload } from "./useAdminPlaceManagement";
 
 type Props = {
@@ -172,7 +172,7 @@ export function PlaceForm({ categories, cities, className = "admin-form", onCanc
 
       <div className="location-field">
         <span>Lokalizacja</span>
-        <PlaceLocationPicker position={location} onChange={setLocation} />
+        <LocationPicker position={location} onChange={setLocation} />
       </div>
 
       <label>

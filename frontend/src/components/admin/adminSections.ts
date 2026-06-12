@@ -1,1 +1,1 @@
-export type AdminSection = "places" | "categories" | "photos" | "memories" | "guides" | "reports";
+export type AdminSection = "cities" | "categories" | "places" | "photos" | "memories" | "guides" | "reports";

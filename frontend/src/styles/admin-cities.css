@@ -1,0 +1,215 @@
+.city-manager {
+  min-width: 0;
+}
+
+.city-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.city-toolbar button {
+  min-height: 36px;
+  padding-inline: 14px;
+}
+
+.city-form--modal {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.city-form label {
+  color: var(--color-muted-strong);
+  display: grid;
+  font-size: 0.82rem;
+  font-weight: 500;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.city-form input,
+.city-form select {
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  min-height: 40px;
+  min-width: 0;
+  padding: 8px 10px;
+  width: 100%;
+}
+
+.city-location-field {
+  color: var(--color-muted-strong);
+  display: grid;
+  font-size: 0.82rem;
+  font-weight: 500;
+  gap: var(--space-2);
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.city-form--modal .location-picker-map {
+  height: 190px;
+  min-height: 190px;
+}
+
+.city-list {
+  background: var(--material-regular);
+  backdrop-filter: var(--blur-glass);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+}
+
+.city-row {
+  align-items: center;
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(170px, 1fr) 106px minmax(180px, 0.8fr) 74px 82px max-content;
+  min-height: 52px;
+  padding: var(--space-3) var(--space-4);
+}
+
+.city-row + .city-row {
+  border-top: 1px solid var(--color-border);
+}
+
+.city-row.is-selected {
+  background: var(--color-accent-soft);
+}
+
+.city-cell {
+  align-self: center;
+  line-height: 1.2;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.city-cell--title {
+  display: block;
+}
+
+.city-cell--title strong,
+.city-id {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.city-id {
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  margin-top: 3px;
+}
+
+.city-head {
+  color: var(--color-muted);
+  font-size: 0.74rem;
+  font-weight: 650;
+  min-height: 42px;
+}
+
+.city-row:not(.city-head) .status-badge {
+  justify-self: start;
+}
+
+.city-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+@media (max-width: 640px) {
+  .city-form--modal {
+    grid-template-columns: 1fr;
+  }
+
+  .city-toolbar button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .city-list {
+    background: transparent;
+    backdrop-filter: none;
+    border: 0;
+    display: grid;
+    gap: var(--space-3);
+    overflow: visible;
+  }
+
+  .city-head {
+    display: none;
+  }
+
+  .city-row {
+    background: var(--material-regular);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-panel);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-height: 0;
+    overflow: hidden;
+    padding: var(--space-4);
+  }
+
+  .city-row + .city-row {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .city-row:not(.city-head) .city-cell {
+    display: grid;
+    gap: var(--space-1);
+    white-space: normal;
+  }
+
+  .city-row:not(.city-head) .city-cell::before {
+    color: var(--color-muted);
+    content: attr(data-label);
+    font-size: 0.72rem;
+    font-weight: 650;
+    line-height: 1;
+  }
+
+  .city-row:not(.city-head) .city-cell--title {
+    display: block;
+    grid-column: 1 / -1;
+  }
+
+  .city-row:not(.city-head) .city-cell--title::before,
+  .city-row:not(.city-head) .city-cell--actions::before {
+    content: none;
+  }
+
+  .city-row:not(.city-head) .city-cell--actions {
+    display: flex;
+    flex-wrap: wrap;
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+
+  .city-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 520px) {
+  .city-row {
+    grid-template-columns: 1fr;
+  }
+
+  .city-actions button {
+    flex: 1 1 140px;
+  }
+}

@@ -1,4 +1,4 @@
-import { BookOpen, Flag, Images, MapPin, MessageSquare, Tags } from "lucide-react";
+import { BookOpen, Building2, Flag, Images, MapPin, MessageSquare, Tags } from "lucide-react";
 
 import type { AdminSection } from "./adminSections";
 
@@ -6,6 +6,7 @@ type Props = {
   activeSection: AdminSection;
   counts: {
     categories: number;
+    cities: number;
     guides: number;
     memories: number;
     photos: number;
@@ -16,8 +17,9 @@ type Props = {
 };
 
 const TAB_ITEMS = [
-  { icon: MapPin, key: "places", label: "Miejsca" },
+  { icon: Building2, key: "cities", label: "Miasta" },
   { icon: Tags, key: "categories", label: "Kategorie" },
+  { icon: MapPin, key: "places", label: "Miejsca" },
   { icon: Images, key: "photos", label: "Zdjęcia" },
   { icon: MessageSquare, key: "memories", label: "Pamiątki" },
   { icon: BookOpen, key: "guides", label: "Trasy" },

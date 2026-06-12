@@ -33,6 +33,7 @@ type Result = {
   memories: Memory[];
   photos: Photo[];
   places: Place[];
+  refreshCities: () => Promise<void>;
   refreshCategories: () => Promise<void>;
   refreshGuides: () => Promise<void>;
   refreshMemories: () => Promise<void>;
@@ -107,6 +108,10 @@ export function useAdminPanelData(): Result {
     setCategories(await getAdminCategories());
   }
 
+  async function refreshCities() {
+    setCities(await getAdminCities());
+  }
+
   async function refreshGuides() {
     setGuides(await getAdminGuides());
   }
@@ -161,6 +166,7 @@ export function useAdminPanelData(): Result {
     memories,
     photos,
     places,
+    refreshCities,
     refreshCategories,
     refreshGuides,
     refreshMemories,

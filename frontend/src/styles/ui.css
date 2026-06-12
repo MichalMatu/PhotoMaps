@@ -487,6 +487,11 @@ label.checkbox-field.consent-field {
   width: min(760px, 100%);
 }
 
+.system-modal--large {
+  max-width: 1120px;
+  width: min(1120px, 100%);
+}
+
 .system-modal.is-dragging,
 .pm-sheet.is-dragging {
   user-select: none;

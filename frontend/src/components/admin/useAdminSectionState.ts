@@ -37,7 +37,7 @@ export function useAdminSectionState({
   photos: Photo[];
   reports: Report[];
 }): Result {
-  const [activeSection, setActiveSection] = useState<AdminSection>("places");
+  const [activeSection, setActiveSection] = useState<AdminSection>("cities");
   const [memoryStatusFilter, setMemoryStatusFilter] = useState<PhotoStatus | "all">("all");
   const [photoStatusFilter, setPhotoStatusFilter] = useState<PhotoStatus | "all">("all");
   const [reportStatusFilter, setReportStatusFilter] = useState<ReportStatus | "all">("all");

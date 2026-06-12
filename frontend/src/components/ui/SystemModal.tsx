@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import type { ReactNode } from "react";
 import { GripHorizontal, X } from "lucide-react";
@@ -17,10 +17,13 @@ type Props = {
   onClose: () => void;
   onConfirm?: () => void;
   showActions?: boolean;
-  size?: "default" | "wide";
+  size?: "default" | "wide" | "large";
   title: string;
   tone?: "default" | "danger" | "error";
 };
+
+let nextModalStackId = 1;
+const modalStack: number[] = [];
 
 export function SystemModal({
   cancelLabel = "Anuluj",
@@ -39,10 +42,23 @@ export function SystemModal({
   tone = "default",
 }: Props) {
   const draggableWindow = useDraggableWindow<HTMLDivElement>("system-modal");
+  const modalStackId = useRef(nextModalStackId++).current;
+
+  useEffect(() => {
+    modalStack.push(modalStackId);
+
+    return () => {
+      const stackIndex = modalStack.indexOf(modalStackId);
+      if (stackIndex >= 0) {
+        modalStack.splice(stackIndex, 1);
+      }
+    };
+  }, [modalStackId]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !isBusy) {
+      const isTopModal = modalStack[modalStack.length - 1] === modalStackId;
+      if (event.key === "Escape" && !isBusy && isTopModal) {
         onClose();
       }
     };
@@ -52,7 +68,7 @@ export function SystemModal({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isBusy, onClose]);
+  }, [isBusy, modalStackId, onClose]);
 
   return createPortal(
     <div className="system-modal-backdrop" role="presentation" onClick={isBusy ? undefined : onClose}>

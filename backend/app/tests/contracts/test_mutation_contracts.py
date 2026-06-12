@@ -4,6 +4,7 @@ from app.main import app
 
 EXPECTED_MUTATION_OPERATIONS = {
     ("DELETE", "/api/admin/categories/{category_id}"),
+    ("DELETE", "/api/admin/cities/{city_id}"),
     ("DELETE", "/api/admin/guides/{guide_id}"),
     ("DELETE", "/api/admin/guides/{guide_id}/places/{place_id}"),
     ("DELETE", "/api/admin/memories/{memory_id}"),
@@ -12,6 +13,7 @@ EXPECTED_MUTATION_OPERATIONS = {
     ("DELETE", "/api/admin/reports/{report_id}"),
     ("DELETE", "/api/places/{place_id}/memories/{memory_id}"),
     ("PATCH", "/api/admin/categories/{category_id}"),
+    ("PATCH", "/api/admin/cities/{city_id}"),
     ("PATCH", "/api/admin/guides/{guide_id}"),
     ("PATCH", "/api/admin/memories/{memory_id}"),
     ("PATCH", "/api/admin/photos/{photo_id}"),
@@ -19,6 +21,7 @@ EXPECTED_MUTATION_OPERATIONS = {
     ("PATCH", "/api/admin/reports/{report_id}"),
     ("PATCH", "/api/places/{place_id}/memories/{memory_id}"),
     ("POST", "/api/admin/categories"),
+    ("POST", "/api/admin/cities"),
     ("POST", "/api/admin/guides"),
     ("POST", "/api/admin/guides/{guide_id}/places"),
     ("POST", "/api/admin/memories/{memory_id}/review"),
@@ -59,6 +62,7 @@ def mutation_operations_from_openapi() -> set[tuple[str, str]]:
 def concrete_path(path: str) -> str:
     return (
         path.replace("{category_id}", "missing")
+        .replace("{city_id}", "missing")
         .replace("{guide_id}", "missing")
         .replace("{memory_id}", "missing")
         .replace("{photo_id}", "missing")

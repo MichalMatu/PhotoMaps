@@ -1,4 +1,5 @@
 import { AdminCategoriesSection } from "../components/admin/AdminCategoriesSection";
+import { AdminCitiesSection } from "../components/admin/AdminCitiesSection";
 import { AdminGuidesSection } from "../components/admin/AdminGuidesSection";
 import { AdminMemoriesSection } from "../components/admin/AdminMemoriesSection";
 import { AdminPhotosSection } from "../components/admin/AdminPhotosSection";
@@ -28,6 +29,7 @@ export function AdminPlacesPage() {
     memories,
     photos,
     places,
+    refreshCities,
     refreshCategories,
     refreshGuides,
     refreshMemories,
@@ -115,6 +117,7 @@ export function AdminPlacesPage() {
             activeSection={activeSection}
             counts={{
               categories: categories.length,
+              cities: cities.length,
               guides: guides.length,
               memories: memoryStatusCounts.all,
               photos: photoStatusCounts.all,
@@ -135,6 +138,10 @@ export function AdminPlacesPage() {
               onDelete={requestDeletePlace}
               onEdit={openEditPlaceModal}
             />
+          ) : null}
+
+          {activeSection === "cities" ? (
+            <AdminCitiesSection cities={cities} places={places} onChanged={refreshCities} />
           ) : null}
 
           {activeSection === "categories" ? (
