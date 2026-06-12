@@ -2,6 +2,7 @@ import type { Guide, Place } from "../../api/client";
 import { ErrorModal } from "../ui/ErrorModal";
 import { GuideFormModal } from "./GuideFormModal";
 import { GuidePlacePanel } from "./GuidePlacePanel";
+import { SystemModal } from "./SystemModal";
 import { filterGuidePlaceCandidates } from "./guidePlaceSelection";
 import { useGuideActions } from "./useGuideActions";
 
@@ -52,6 +53,13 @@ export function GuideManager({ guides, places, onChanged }: Props) {
                   <button type="button" onClick={() => guideActions.openEditGuideModal(guide)}>
                     Edytuj
                   </button>
+                  <button
+                    className="danger-button"
+                    type="button"
+                    onClick={() => guideActions.requestDeleteGuide(guide)}
+                  >
+                    Usuń trwale
+                  </button>
                 </div>
               </div>
               {isExpanded ? (
@@ -91,6 +99,17 @@ export function GuideManager({ guides, places, onChanged }: Props) {
           onDescriptionChange={guideActions.setDescription}
           onStatusChange={guideActions.setStatus}
           onTitleChange={guideActions.setTitle}
+        />
+      ) : null}
+      {guideActions.guideToDelete ? (
+        <SystemModal
+          confirmLabel="Usuń trwale"
+          isBusy={guideActions.isDeletingGuide}
+          message={`Przewodnik "${guideActions.guideToDelete.title}" zostanie trwale usunięty razem z przypięciami miejsc i zgłoszeniami dotyczącymi tego przewodnika. Same miejsca zostaną w bazie.`}
+          title="Usunąć przewodnik?"
+          tone="danger"
+          onClose={guideActions.clearDeleteGuideRequest}
+          onConfirm={guideActions.confirmDeleteGuide}
         />
       ) : null}
       {guideActions.operationError ? (

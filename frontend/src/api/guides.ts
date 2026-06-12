@@ -31,6 +31,12 @@ export function updateGuide(guideId: string, payload: GuidePayload): Promise<Gui
   });
 }
 
+export function deleteGuide(guideId: string): Promise<void> {
+  return request<void>(`/api/admin/guides/${guideId}`, {
+    method: "DELETE",
+  });
+}
+
 export function addPlaceToGuide(guideId: string, payload: GuidePlacePayload): Promise<GuideDetail> {
   return request<GuideDetail>(`/api/admin/guides/${guideId}/places`, {
     method: "POST",

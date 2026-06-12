@@ -9,6 +9,7 @@ from app.models.guide import Guide, PlaceGuide
 from app.models.place import Place
 from app.schemas.guide import GuideCreate, GuideDetailRead, GuidePlaceCreate, GuideRead, GuideUpdate
 from app.serializers.guide import guide_to_detail, guide_to_read
+from app.services.guide_deletion import delete_guide_permanently
 from app.services.guide_previews import approved_cover_photos_by_place
 from app.services.guides import ensure_guide_slug_available, ensure_guide_status
 
@@ -77,6 +78,16 @@ def update_guide(guide_id: str, payload: GuideUpdate, session: Session = Depends
     session.refresh(guide)
     places = admin_guide_places(session, guide.id)
     return guide_to_read(guide, places, approved_cover_photos_by_place(session, places))
+
+
+@router.delete("/{guide_id}", status_code=204)
+def delete_guide(guide_id: str, session: Session = Depends(get_session)) -> None:
+    guide = session.get(Guide, guide_id)
+    if guide is None:
+        raise HTTPException(status_code=404, detail="Guide not found")
+
+    delete_guide_permanently(guide, session)
+    return None
 
 
 @router.post("/{guide_id}/places", response_model=GuideDetailRead)

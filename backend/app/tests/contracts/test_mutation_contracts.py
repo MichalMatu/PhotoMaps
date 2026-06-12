@@ -4,6 +4,7 @@ from app.main import app
 
 EXPECTED_MUTATION_OPERATIONS = {
     ("DELETE", "/api/admin/categories/{category_id}"),
+    ("DELETE", "/api/admin/guides/{guide_id}"),
     ("DELETE", "/api/admin/guides/{guide_id}/places/{place_id}"),
     ("DELETE", "/api/admin/memories/{memory_id}"),
     ("DELETE", "/api/admin/photos/{photo_id}"),

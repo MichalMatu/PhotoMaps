@@ -1,7 +1,10 @@
 from conftest import ADMIN_HEADERS, create_place
+from sqlmodel import select
 
+from app.models.guide import Guide, PlaceGuide
 from app.models.photo import Photo
 from app.models.place import Place
+from app.models.report import Report
 
 
 def test_public_guides_only_show_published_with_published_places(client_session) -> None:
@@ -90,3 +93,30 @@ def test_admin_can_remove_place_from_guide(client_session) -> None:
 
     assert response.status_code == 200
     assert response.json()["places"] == []
+
+
+def test_admin_can_delete_guide_with_assignments_and_reports(client_session) -> None:
+    client, session = client_session
+    place = create_place(session)
+    guide = Guide(slug="delete-guide", title="Delete guide", status="published")
+    session.add(guide)
+    session.commit()
+    session.refresh(guide)
+    session.add(PlaceGuide(guide_id=guide.id, place_id=place.id))
+    session.add(Report(target_type="guide", target_id=guide.id, reason="wrong_data"))
+    session.commit()
+
+    response = client.delete(f"/api/admin/guides/{guide.id}", headers=ADMIN_HEADERS)
+    list_response = client.get("/api/admin/guides", headers=ADMIN_HEADERS)
+    public_response = client.get("/api/guides/delete-guide")
+
+    assert response.status_code == 204
+    assert list_response.status_code == 200
+    assert list_response.json() == []
+    assert public_response.status_code == 404
+    assert session.get(Guide, guide.id) is None
+    assert session.get(PlaceGuide, (guide.id, place.id)) is None
+    assert (
+        session.exec(select(Report).where(Report.target_type == "guide").where(Report.target_id == guide.id)).all()
+        == []
+    )

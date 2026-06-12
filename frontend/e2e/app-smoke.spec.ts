@@ -316,6 +316,16 @@ test("admin can create category, place and guide through UI", async ({ page, req
       };
     })
     .toEqual({ placeTitles: [editedPlaceTitle], status: "published" });
+
+  await guideRow.getByRole("button", { name: "Usuń trwale" }).click();
+  const deleteGuideDialog = page.getByRole("dialog", { name: "Usunąć przewodnik?" });
+  await expect(deleteGuideDialog).toBeVisible();
+  await expect(deleteGuideDialog).toContainText("Same miejsca zostaną w bazie.");
+  await deleteGuideDialog.getByRole("button", { name: "Usuń trwale" }).click();
+  await expect(deleteGuideDialog).toBeHidden();
+  await expect(guideRow).toBeHidden();
+  const deletedGuideResponse = await request.get(`${API_URL}/api/guides/${guideSlug}`);
+  expect(deletedGuideResponse.status()).toBe(404);
 });
 
 test("visitor can add a memory and admin can approve it through UI", async ({ page, request }) => {

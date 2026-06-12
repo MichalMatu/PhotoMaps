@@ -3,6 +3,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import {
   addPlaceToGuide,
   createGuide,
+  deleteGuide,
   getAdminGuide,
   removePlaceFromGuide,
   updateGuide,
@@ -32,7 +33,9 @@ type UseGuideActionsArgs = {
 export function useGuideActions({ guides, onChanged }: UseGuideActionsArgs) {
   const [description, setDescription] = useState("");
   const [editingGuide, setEditingGuide] = useState<Guide | null>(null);
+  const [guideToDelete, setGuideToDelete] = useState<Guide | null>(null);
   const [guideDetail, setGuideDetail] = useState<GuideDetail | null>(null);
+  const [isDeletingGuide, setIsDeletingGuide] = useState(false);
   const [isGuideDetailLoading, setIsGuideDetailLoading] = useState(false);
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
   const [isGuideSaving, setIsGuideSaving] = useState(false);
@@ -112,6 +115,17 @@ export function useGuideActions({ guides, onChanged }: UseGuideActionsArgs) {
     setSelectedGuideId((currentGuideId) => (currentGuideId === guideId ? "" : guideId));
     setPlaceQuery("");
     setSelectedPlaceIds([]);
+  }
+
+  function requestDeleteGuide(guide: Guide) {
+    setGuideToDelete(guide);
+  }
+
+  function clearDeleteGuideRequest() {
+    if (isDeletingGuide) {
+      return;
+    }
+    setGuideToDelete(null);
   }
 
   async function saveGuide() {
@@ -227,14 +241,51 @@ export function useGuideActions({ guides, onChanged }: UseGuideActionsArgs) {
     }
   }
 
+  async function confirmDeleteGuide() {
+    if (!guideToDelete) {
+      return;
+    }
+
+    setOperationError(null);
+    setIsDeletingGuide(true);
+    try {
+      await deleteGuide(guideToDelete.id);
+      if (selectedGuideId === guideToDelete.id) {
+        setSelectedGuideId("");
+        setGuideDetail(null);
+        setPlaceQuery("");
+        setSelectedPlaceIds([]);
+      }
+      if (editingGuide?.id === guideToDelete.id) {
+        setIsGuideModalOpen(false);
+        resetGuideForm();
+      }
+      setGuideToDelete(null);
+      await onChanged();
+    } catch (reason) {
+      setGuideToDelete(null);
+      setOperationError({
+        details: errorDetails(reason),
+        message: "Nie udało się trwale usunąć przewodnika. Spróbuj ponownie.",
+        title: "Nie udało się usunąć przewodnika",
+      });
+    } finally {
+      setIsDeletingGuide(false);
+    }
+  }
+
   return {
     addPlaces,
+    clearDeleteGuideRequest,
     closeGuideModal,
+    confirmDeleteGuide,
     description,
     editingGuide,
     generatedSlug,
     guideDetail,
     guideStatusCounts,
+    guideToDelete,
+    isDeletingGuide,
     isGuideDetailLoading,
     isGuideModalOpen,
     isGuideSaving,
@@ -244,6 +295,7 @@ export function useGuideActions({ guides, onChanged }: UseGuideActionsArgs) {
     movePlace,
     placeQuery,
     removePlace,
+    requestDeleteGuide,
     saveGuide,
     selectedGuide,
     selectedGuideId,
