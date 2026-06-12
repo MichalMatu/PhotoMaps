@@ -508,6 +508,20 @@ Dodatkowo sprawdzić ręcznie:
 - Frontend dzielić na komponenty: mapa, miejsca, admin, upload, guides.
 - Nie mieszać UI admina z publicznym UI, jeśli da się tego uniknąć.
 
+## Lokalna hierarchia AGENTS.md
+
+Ten plik zostaje głównym kontraktem projektu. Lokalne `AGENTS.md` służą tylko do trwałych granic odpowiedzialności i nie powinny powtarzać zasad z roota.
+
+Przed edycją ścieżki objętej lokalnym plikiem przeczytać root `AGENTS.md` oraz najbliższy lokalny `AGENTS.md`. Nie tworzyć lokalnych instrukcji dla każdego folderu; dodawać je tylko wtedy, gdy katalog ma własne kontrakty, workflow albo standard weryfikacji.
+
+- `backend/AGENTS.md` — backend FastAPI, modele, migracje, serwisy, storage i testy API.
+- `frontend/AGENTS.md` — frontend React/Vite, klient API, style i ogólne reguły UI.
+- `frontend/src/components/admin/AGENTS.md` — admin UI, CRUD, moderacja, raporty i flow korekt.
+- `frontend/src/components/map/AGENTS.md` — publiczna mapa, miniatury, warstwy, sheets i markery.
+- `content/AGENTS.md` — manifesty miast i redakcyjny content importowany masowo.
+- `assets/place-icons/AGENTS.md` — cykl życia redakcyjnych ikon miejsc.
+- `scripts/content/AGENTS.md` — importer manifestów i jego kontrakt idempotencji.
+
 ## Definicja gotowego MVP
 
 MVP jest gotowe, gdy:
