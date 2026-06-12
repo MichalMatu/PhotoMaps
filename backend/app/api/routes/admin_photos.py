@@ -34,7 +34,7 @@ def list_admin_photos(
     if status is not None:
         ensure_visible_review_status(status)
 
-    statement = select(Photo).order_by(Photo.created_at.desc())
+    statement = select(Photo).join(Place, Photo.place_id == Place.id).order_by(Photo.created_at.desc())
     if status is not None:
         statement = statement.where(Photo.status == status)
 

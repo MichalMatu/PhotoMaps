@@ -32,13 +32,13 @@ const place: Place = {
   weight: 1,
 };
 
-function photo(id: string): Photo {
+function photo(id: string, placeId = "place-1"): Photo {
   return {
     approved_at: null,
     caption: null,
     created_at: "2026-06-10T00:00:00",
     id,
-    place_id: "place-1",
+    place_id: placeId,
     public_path: `/media/photos/${id}.jpg`,
     role: "gallery",
     source: "user_upload",
@@ -56,6 +56,18 @@ describe("groupAdminMediaByPlace", () => {
         categoryLabel: "Sklepy",
         coverItem: { id: "photo-2" },
         items: [{ id: "photo-1" }, { id: "photo-2" }],
+        title: "Sklep",
+      },
+    ]);
+  });
+
+  it("skips media records whose place is no longer available", () => {
+    expect(
+      groupAdminMediaByPlace([photo("photo-1"), photo("orphan-photo", "deleted-place")], [place], [category]),
+    ).toMatchObject([
+      {
+        items: [{ id: "photo-1" }],
+        placeId: "place-1",
         title: "Sklep",
       },
     ]);

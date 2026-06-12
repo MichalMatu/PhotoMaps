@@ -80,6 +80,10 @@ export function AdminPlacesPage() {
     onPlacesChanged: refreshPlaces,
   });
 
+  async function refreshCategoriesAndPlaces() {
+    await Promise.all([refreshCategories(), refreshPlaces()]);
+  }
+
   if (!adminToken) {
     return (
       <AppShell activeSection="admin">
@@ -130,7 +134,7 @@ export function AdminPlacesPage() {
           ) : null}
 
           {activeSection === "categories" ? (
-            <AdminCategoriesSection categories={categories} places={places} onChanged={refreshCategories} />
+            <AdminCategoriesSection categories={categories} places={places} onChanged={refreshCategoriesAndPlaces} />
           ) : null}
 
           {activeSection === "photos" ? (

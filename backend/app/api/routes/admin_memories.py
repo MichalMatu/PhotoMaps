@@ -33,7 +33,7 @@ def list_admin_memories(
     if status is not None:
         ensure_visible_review_status(status)
 
-    statement = select(Memory).order_by(Memory.created_at.desc())
+    statement = select(Memory).join(Place, Memory.place_id == Place.id).order_by(Memory.created_at.desc())
     if status is not None:
         statement = statement.where(Memory.status == status)
 

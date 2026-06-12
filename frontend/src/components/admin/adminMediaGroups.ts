@@ -28,7 +28,10 @@ export function groupAdminMediaByPlace<TItem extends AdminMediaItem>(
 
   for (const item of items) {
     const place = placeById.get(item.place_id);
-    const placeId = place?.id ?? item.place_id;
+    if (!place) {
+      continue;
+    }
+    const placeId = place.id;
     const groupItems = itemsByPlaceId.get(placeId) ?? [];
     groupItems.push(item);
     itemsByPlaceId.set(placeId, groupItems);

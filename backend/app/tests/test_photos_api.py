@@ -214,6 +214,25 @@ def test_admin_photo_list_can_return_all_or_filtered_statuses(client_session) ->
     assert [photo["status"] for photo in pending_response.json()] == ["pending"]
 
 
+def test_admin_photo_list_ignores_records_without_place(client_session) -> None:
+    client, session = client_session
+    session.add(
+        Photo(
+            place_id="deleted-place",
+            original_path="photos/orphan-original.jpg",
+            public_path="/media/photos/orphan.jpg",
+            thumb_path="/media/photos/orphan-thumb.jpg",
+            status="approved",
+        )
+    )
+    session.commit()
+
+    response = client.get("/api/admin/photos", headers=ADMIN_HEADERS)
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
 def test_admin_can_update_photo_caption(client_session) -> None:
     client, session = client_session
     place = create_place(session)

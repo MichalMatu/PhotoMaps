@@ -310,6 +310,28 @@ def test_memory_hash_is_not_plaintext(client_session) -> None:
     assert memory.claim_token_hash != MEMORY_TOKEN
 
 
+def test_admin_memory_list_ignores_records_without_place(client_session) -> None:
+    client, session = client_session
+    session.add(
+        Memory(
+            place_id="deleted-place",
+            caption="Pamiątka",
+            memory_text=MEMORY_TEXT,
+            original_path="memories/orphan-original.jpg",
+            public_path="/media/memories/orphan.jpg",
+            thumb_path="/media/memories/orphan-thumb.jpg",
+            status="approved",
+            claim_token_hash=claim_token_hash(MEMORY_TOKEN),
+        )
+    )
+    session.commit()
+
+    response = client.get("/api/admin/memories", headers=ADMIN_HEADERS)
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
 def test_admin_can_update_memory_text_fields(client_session) -> None:
     client, session = client_session
     place = create_place(session)
