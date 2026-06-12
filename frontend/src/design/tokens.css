@@ -30,6 +30,7 @@
     --radius-panel: var(--radius-lg);
     --radius-media: var(--radius-sm);
     --radius-sheet: var(--radius-xl);
+    --radius-map-pin: 50% 50% 50% 0;
 
     --surface-canvas: #f5f5f7;
     --surface-elevated: rgb(255 255 255 / 88%);
@@ -40,9 +41,11 @@
     --surface-overlay: rgb(16 18 22 / 72%);
     --surface-media: rgb(16 18 22 / 88%);
     --surface-media-soft: rgb(16 18 22 / 68%);
+    --surface-on-media-hover: rgb(255 255 255 / 12%);
     --surface-media-caption: linear-gradient(180deg, rgb(0 0 0 / 0%) 0%, rgb(0 0 0 / 72%) 100%);
     --surface-backdrop-photo: rgb(0 0 0 / 68%);
     --surface-backdrop-photo-start: rgb(0 0 0 / 34%);
+    --surface-backdrop-drawer: rgb(0 0 0 / 28%);
     --surface-backdrop-modal: rgb(0 0 0 / 58%);
 
     --content-primary: #1d1d1f;
@@ -52,6 +55,7 @@
     --content-on-accent: #ffffff;
     --content-on-media: #ffffff;
     --content-on-media-muted: rgb(255 255 255 / 82%);
+    --content-danger-on-media: #ffb7b1;
 
     --border-subtle: rgb(60 60 67 / 18%);
     --border-strong: rgb(60 60 67 / 28%);
@@ -82,6 +86,7 @@
     --elevation-marker: 0 8px 12px rgb(0 0 0 / 28%);
     --elevation-marker-selected: 0 9px 12px rgb(0 0 0 / 32%);
     --elevation-marker-hover: 0 10px 12px rgb(0 0 0 / 34%);
+    --elevation-map-label: 0 8px 18px rgb(0 0 0 / 18%);
     --shadow-map-icon: drop-shadow(0 5px 4px rgb(0 0 0 / 34%));
     --shadow-map-icon-selected: drop-shadow(0 6px 5px rgb(0 0 0 / 38%));
     --blur-glass: blur(18px);
@@ -94,6 +99,7 @@
     --motion-duration-fast: var(--duration-fast);
     --motion-duration-regular: var(--duration-normal);
     --motion-duration-slow: var(--duration-slow);
+    --motion-duration-reduced: 1ms;
     --motion-ease-standard: var(--ease-standard);
     --motion-ease-emphasised: var(--ease-emphasised);
 

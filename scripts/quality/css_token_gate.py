@@ -19,29 +19,7 @@ RULES = {
     "raw-motion": "Use motion duration/easing tokens for component animation and transition values.",
 }
 
-BASELINE: dict[str, dict[str, int]] = {
-    "frontend/src/styles/base.css": {
-        "important": 4,
-        "raw-motion": 2,
-    },
-    "frontend/src/styles/layout.css": {
-        "raw-color": 2,
-        "raw-motion": 1,
-    },
-    "frontend/src/styles/map-tools.css": {
-        "important": 1,
-        "raw-color": 5,
-        "raw-radius": 4,
-        "raw-shadow": 1,
-    },
-    "frontend/src/styles/map.css": {
-        "raw-radius": 1,
-    },
-    "frontend/src/styles/ui.css": {
-        "important": 6,
-        "raw-radius": 1,
-    },
-}
+BASELINE: dict[str, dict[str, int]] = {}
 
 COLOR_RE = re.compile(r"(#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\()")
 TIME_RE = re.compile(r"\b\d+(?:\.\d+)?m?s\b")
@@ -105,6 +83,23 @@ def has_raw_motion(line: str) -> bool:
     return ("var(" not in stripped) and (bool(TIME_RE.search(stripped)) or "cubic-bezier(" in stripped)
 
 
+def is_reduced_motion_reset(path_label: str, line: str) -> bool:
+    if path_label != "frontend/src/styles/base.css":
+        return False
+
+    if "!important" not in line:
+        return False
+
+    return line.startswith(
+        (
+            "animation-duration:",
+            "animation-iteration-count:",
+            "scroll-behavior:",
+            "transition-duration:",
+        )
+    )
+
+
 def scan_file(path: Path) -> list[Finding]:
     findings: list[Finding] = []
     path_label = relative_path(path)
@@ -115,7 +110,7 @@ def scan_file(path: Path) -> list[Finding]:
         if not line:
             continue
 
-        if "!important" in line:
+        if "!important" in line and not is_reduced_motion_reset(path_label, line):
             findings.append(Finding(path_label, "important", line_number, line))
 
         if not token_file and COLOR_RE.search(line):

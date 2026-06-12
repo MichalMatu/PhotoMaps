@@ -69,16 +69,15 @@
   overflow-wrap: anywhere;
 }
 
-.consent-field {
+label.checkbox-field.consent-field {
   align-items: flex-start;
-  color: var(--color-muted) !important;
-  font-size: 0.72rem !important;
-  font-weight: 600 !important;
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
   line-height: 1.35;
 }
 
 .inline-status {
-  color: var(--color-accent) !important;
   font-size: 0.78rem;
   font-weight: 600;
   line-height: 1.35;
@@ -86,6 +85,11 @@
   max-width: 100%;
   overflow-wrap: anywhere;
   white-space: normal;
+}
+
+.memory-panel .inline-status,
+.report-form .inline-status {
+  color: var(--color-accent);
 }
 
 .compact-heading {
@@ -144,9 +148,9 @@
   line-height: 1.35;
 }
 
-.memory-card-note {
-  color: var(--color-muted-strong) !important;
-  margin-top: 3px !important;
+.memory-card p.memory-card-note {
+  color: var(--color-muted-strong);
+  margin-top: 3px;
 }
 
 .report-form label {
@@ -372,7 +376,7 @@
 .system-modal-details {
   background: var(--color-surface-strong);
   border: 1px solid var(--color-border);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   color: var(--color-muted-strong);
   font: inherit;
   font-size: 0.76rem;

@@ -103,7 +103,7 @@
 .place-marker-icon span {
   background: var(--color-accent);
   border: 3px solid var(--color-surface-strong);
-  border-radius: 50% 50% 50% 0;
+  border-radius: var(--radius-map-pin);
   box-shadow: var(--elevation-pin);
   display: block;
   height: 28px;
