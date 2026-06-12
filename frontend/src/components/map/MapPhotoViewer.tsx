@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
 import { mediaUrl, type PlaceMapItem } from "../../api/client";
+import { MediaImage } from "../ui/MediaImage";
 import { motionClassName, useDeferredClose } from "../ui/motionPresence";
 import type { PlaceMapVisualItem } from "./placePreview";
 
@@ -44,11 +45,21 @@ export function MapPhotoViewer({ item, onClose, onOpenDetails, place }: Props) {
           onClick={onOpenDetails}
           aria-label={`Otwórz szczegóły zdjęcia: ${place.title}`}
         >
-          <img src={mediaUrl(item.public_path)} alt={item.caption ?? place.title} />
-          <span className="map-photo-viewer-caption">
-            <strong>{place.title}</strong>
-            {item.caption ? <span>{item.caption}</span> : null}
-          </span>
+          <MediaImage
+            alt={item.caption ?? place.title}
+            caption={
+              <>
+                <strong>{place.title}</strong>
+                {item.caption ? <span>{item.caption}</span> : null}
+              </>
+            }
+            captionClassName="map-photo-viewer-caption"
+            className="map-photo-viewer-media"
+            fit="contain"
+            loading="eager"
+            ratio="viewer"
+            src={mediaUrl(item.public_path)}
+          />
         </button>
       </div>
     </div>,

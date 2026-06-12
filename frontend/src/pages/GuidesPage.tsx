@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-import { getGuide, getGuides } from "../api/client";
+import { getGuide, getGuides, mediaUrl, type Guide, type GuidePlacePreview } from "../api/client";
 import { AppShell } from "../components/layout/AppShell";
 import { ErrorModal, errorDetails } from "../components/ui/ErrorModal";
+import { MediaImage } from "../components/ui/MediaImage";
 import { polishCountLabel } from "../components/ui/polishCountLabel";
 
 function currentGuideSlug() {
@@ -25,6 +26,57 @@ function placeCountLabel(count: number) {
     many: "miejsc",
     one: "miejsce",
   });
+}
+
+function entryCountLabel(count: number) {
+  return polishCountLabel(count, {
+    few: "wpisy",
+    many: "wpisów",
+    one: "wpis",
+  });
+}
+
+function guideCoverAlt(guide: Guide) {
+  return guide.preview_places[0]?.title ?? guide.title;
+}
+
+function GuideCover({ guide }: { guide: Guide }) {
+  if (!guide.cover_photo) {
+    return <span className="guide-card-media guide-card-media--empty" aria-hidden="true" />;
+  }
+
+  return (
+    <MediaImage
+      alt={guideCoverAlt(guide)}
+      className="guide-card-media"
+      ratio="wide"
+      src={mediaUrl(guide.cover_photo.thumb_path)}
+    />
+  );
+}
+
+function GuidePlaceCard({ place }: { place: GuidePlacePreview }) {
+  const entryCount = place.photo_count + place.memory_count;
+
+  return (
+    <article className="guide-place-card">
+      {place.cover_photo ? (
+        <MediaImage
+          alt={place.title}
+          caption={entryCountLabel(entryCount)}
+          className="guide-place-card-media"
+          ratio="landscape"
+          src={mediaUrl(place.cover_photo.thumb_path)}
+        />
+      ) : (
+        <span className="guide-place-card-media guide-place-card-media--empty" aria-hidden="true" />
+      )}
+      <div className="guide-place-card-copy">
+        <strong>{place.title}</strong>
+        {(place.local_comment ?? place.description) ? <p>{place.local_comment ?? place.description}</p> : null}
+      </div>
+    </article>
+  );
 }
 
 export function GuidesPage() {
@@ -66,12 +118,15 @@ export function GuidesPage() {
               <span className="guide-page-count">{guideCountLabel(guidesQuery.data?.length ?? 0)}</span>
             </div>
             {guidesQuery.isLoading ? <p className="notice">Ładowanie przewodników...</p> : null}
-            <div className="simple-card-grid">
+            <div className="guide-card-grid">
               {guidesQuery.data?.map((guide) => (
-                <a className="simple-card" href={`/guides/${guide.slug}`} key={guide.id}>
-                  <span className="eyebrow">Przewodnik</span>
-                  <strong>{guide.title}</strong>
-                  {guide.description ? <p>{guide.description}</p> : null}
+                <a className="guide-card" href={`/guides/${guide.slug}`} key={guide.id}>
+                  <GuideCover guide={guide} />
+                  <span className="guide-card-count">{placeCountLabel(guide.place_count)}</span>
+                  <span className="guide-card-copy">
+                    <strong>{guide.title}</strong>
+                    {guide.description ? <span>{guide.description}</span> : null}
+                  </span>
                 </a>
               ))}
             </div>
@@ -89,15 +144,9 @@ export function GuidesPage() {
                   <span className="guide-page-count">{placeCountLabel(guideQuery.data.places.length)}</span>
                 </div>
                 {guideQuery.data.description ? <p className="lead-text">{guideQuery.data.description}</p> : null}
-                <div className="simple-card-grid">
+                <div className="guide-place-grid">
                   {guideQuery.data.places.map((place) => (
-                    <article className="simple-card" key={place.id}>
-                      <span className="eyebrow">{place.photo_count + place.memory_count} wpisów</span>
-                      <strong>{place.title}</strong>
-                      {(place.local_comment ?? place.description) ? (
-                        <p>{place.local_comment ?? place.description}</p>
-                      ) : null}
-                    </article>
+                    <GuidePlaceCard key={place.id} place={place} />
                   ))}
                 </div>
               </>

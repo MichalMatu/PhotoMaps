@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { getPlaceMemories, mediaUrl, uploadPlaceMemory } from "../../api/client";
 import { ErrorModal, errorDetails, type OperationError } from "../ui/ErrorModal";
+import { MediaImage } from "../ui/MediaImage";
 import { getMemoryPanelVisibility, type MemoryPanelMode } from "./memoryPanelMode";
 import {
   CLAIM_TOKEN_MIN_LENGTH,
@@ -117,7 +118,12 @@ export function MemoryPanel({ claimToken, mode = "with-list", onUploaded, placeI
         <div className="memory-list">
           {memoriesQuery.data?.map((memory) => (
             <article className="memory-card" key={memory.id}>
-              <img src={mediaUrl(memory.thumb_path)} alt={memory.caption} />
+              <MediaImage
+                alt={memory.caption}
+                className="memory-card-media"
+                ratio="square"
+                src={mediaUrl(memory.thumb_path)}
+              />
               <div>
                 <strong>{memory.author_name ?? "Gość"}</strong>
                 {memory.author_city ? <span>{memory.author_city}</span> : null}

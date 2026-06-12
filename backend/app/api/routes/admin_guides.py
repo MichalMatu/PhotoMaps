@@ -9,8 +9,8 @@ from app.models.guide import Guide, PlaceGuide
 from app.models.place import Place
 from app.schemas.guide import GuideCreate, GuideDetailRead, GuidePlaceCreate, GuideRead, GuideUpdate
 from app.serializers.guide import guide_to_detail, guide_to_read
+from app.services.guide_previews import approved_cover_photos_by_place
 from app.services.guides import ensure_guide_slug_available, ensure_guide_status
-from app.services.place_taxonomy import category_ids_by_place_id
 
 router = APIRouter(prefix="/api/admin/guides", tags=["admin guides"], dependencies=[Depends(require_admin_token)])
 
@@ -28,7 +28,13 @@ def admin_guide_places(session: Session, guide_id: str) -> list[Place]:
 @router.get("", response_model=list[GuideRead])
 def list_admin_guides(session: Session = Depends(get_session)) -> list[GuideRead]:
     statement = select(Guide).order_by(Guide.updated_at.desc())
-    return [guide_to_read(guide) for guide in session.exec(statement).all()]
+    guides = list(session.exec(statement).all())
+    places_by_guide = {guide.id: admin_guide_places(session, guide.id) for guide in guides}
+    cover_photos_by_place = approved_cover_photos_by_place(
+        session,
+        [place for places in places_by_guide.values() for place in places],
+    )
+    return [guide_to_read(guide, places_by_guide[guide.id], cover_photos_by_place) for guide in guides]
 
 
 @router.get("/{guide_id}", response_model=GuideDetailRead)
@@ -37,7 +43,7 @@ def get_admin_guide(guide_id: str, session: Session = Depends(get_session)) -> G
     if guide is None:
         raise HTTPException(status_code=404, detail="Guide not found")
     places = admin_guide_places(session, guide.id)
-    return guide_to_detail(guide, places, category_ids_by_place_id(session, [place.id for place in places]))
+    return guide_to_detail(guide, places, approved_cover_photos_by_place(session, places))
 
 
 @router.post("", response_model=GuideRead, status_code=201)
@@ -48,7 +54,7 @@ def create_guide(payload: GuideCreate, session: Session = Depends(get_session)) 
     session.add(guide)
     session.commit()
     session.refresh(guide)
-    return guide_to_read(guide)
+    return guide_to_read(guide, [], {})
 
 
 @router.patch("/{guide_id}", response_model=GuideRead)
@@ -69,7 +75,8 @@ def update_guide(guide_id: str, payload: GuideUpdate, session: Session = Depends
     session.add(guide)
     session.commit()
     session.refresh(guide)
-    return guide_to_read(guide)
+    places = admin_guide_places(session, guide.id)
+    return guide_to_read(guide, places, approved_cover_photos_by_place(session, places))
 
 
 @router.post("/{guide_id}/places", response_model=GuideDetailRead)
@@ -95,7 +102,7 @@ def add_place_to_guide(
     session.commit()
     session.refresh(guide)
     places = admin_guide_places(session, guide.id)
-    return guide_to_detail(guide, places, category_ids_by_place_id(session, [place.id for place in places]))
+    return guide_to_detail(guide, places, approved_cover_photos_by_place(session, places))
 
 
 @router.delete("/{guide_id}/places/{place_id}", response_model=GuideDetailRead)
@@ -117,4 +124,4 @@ def remove_place_from_guide(
     session.commit()
     session.refresh(guide)
     places = admin_guide_places(session, guide.id)
-    return guide_to_detail(guide, places, category_ids_by_place_id(session, [place.id for place in places]))
+    return guide_to_detail(guide, places, approved_cover_photos_by_place(session, places))

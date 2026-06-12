@@ -139,12 +139,27 @@ export type Guide = {
   title: string;
   description: string | null;
   status: GuideStatus;
+  place_count: number;
+  cover_photo: Photo | null;
+  preview_places: GuidePlacePreview[];
   created_at: string;
   updated_at: string;
 };
 
+export type GuidePlacePreview = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  local_comment: string | null;
+  status: PlaceStatus;
+  photo_count: number;
+  memory_count: number;
+  cover_photo: Photo | null;
+};
+
 export type GuideDetail = Guide & {
-  places: Place[];
+  places: GuidePlacePreview[];
 };
 
 export type GuidePayload = {

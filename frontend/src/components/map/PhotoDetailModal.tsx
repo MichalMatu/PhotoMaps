@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 
 import { mediaUrl, type Memory, type PlaceMapItem } from "../../api/client";
 import { ErrorModal } from "../ui/ErrorModal";
+import { MediaImage } from "../ui/MediaImage";
 import { motionClassName, useDeferredClose } from "../ui/motionPresence";
 import { stopFloatingWindowEvent, useDraggableWindow } from "../ui/useDraggableWindow";
 import { MemoryOwnerTools } from "./MemoryOwnerTools";
@@ -110,10 +111,17 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
           </button>
         </header>
 
-        <div className="photo-detail-image-wrap">
-          <img className="photo-detail-image" src={mediaUrl(item.public_path)} alt={item.caption ?? place.title} />
-          {item.caption ? <span className="photo-detail-image-caption">{item.caption}</span> : null}
-        </div>
+        <MediaImage
+          alt={item.caption ?? place.title}
+          caption={item.caption}
+          captionClassName="photo-detail-image-caption"
+          className="photo-detail-image-wrap"
+          fit="contain"
+          imageClassName="photo-detail-image"
+          loading="eager"
+          ratio="landscape"
+          src={mediaUrl(item.public_path)}
+        />
 
         <div className="photo-detail-body">
           {memorySource ? <p className="photo-detail-memory-text">{memorySource.memory_text}</p> : null}

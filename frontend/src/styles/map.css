@@ -425,6 +425,7 @@
   overflow: hidden;
   padding: 0;
   position: relative;
+  width: min(88vw, 920px);
 }
 
 .map-photo-viewer-image-button:hover {
@@ -436,12 +437,9 @@
   outline-offset: 4px;
 }
 
-.map-photo-viewer-image-button img {
-  border: 0;
-  display: block;
+.map-photo-viewer-media {
   max-height: 86vh;
-  max-width: 88vw;
-  object-fit: contain;
+  width: 100%;
 }
 
 .map-photo-viewer-caption {
@@ -725,17 +723,17 @@
 .photo-detail-image-wrap {
   justify-self: center;
   max-width: 100%;
-  position: relative;
+  width: min(720px, calc(100vw - 24px));
 }
 
 .photo-detail-image {
   display: block;
-  height: auto;
+  height: 100%;
   justify-self: center;
   max-height: min(50vh, 560px);
   max-width: 100%;
   object-fit: contain;
-  width: auto;
+  width: 100%;
 }
 
 .photo-detail-image-caption {
