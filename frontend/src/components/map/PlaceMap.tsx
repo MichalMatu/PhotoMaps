@@ -1,5 +1,5 @@
 import "leaflet/dist/leaflet.css";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { MapContainer, TileLayer, useMap, useMapEvents, ZoomControl } from "react-leaflet";
 
 import type { City, PlaceMapItem } from "../../api/client";
@@ -71,6 +71,18 @@ function MapCloseEvents({ onClose }: { onClose: () => void }) {
 
 function PlaceLayer({ places }: Props) {
   const map = useMap();
+  const placesMotionSignature = useMemo(
+    () =>
+      places
+        .map((place) => {
+          const previewSignature = place.preview_items.map((item) => `${item.kind}:${item.id}`).join(",");
+          return `${place.id}:${place.cover_photo?.id ?? "none"}:${previewSignature}`;
+        })
+        .join("|"),
+    [places],
+  );
+  const previousPlacesMotionSignature = useRef<string | null>(null);
+  const shouldAnimateMarkers = previousPlacesMotionSignature.current !== placesMotionSignature;
   const [expandedPlaceId, setExpandedPlaceId] = useState<string | null>(null);
   const [memoryPlace, setMemoryPlace] = useState<PlaceMapItem | null>(null);
   const [visualDetail, setVisualDetail] = useState<VisualTarget | null>(null);
@@ -88,6 +100,10 @@ function PlaceLayer({ places }: Props) {
   useMapEvents({
     zoomend: () => setZoom(map.getZoom()),
   });
+
+  useEffect(() => {
+    previousPlacesMotionSignature.current = placesMotionSignature;
+  }, [placesMotionSignature]);
 
   useEffect(() => {
     if (expandedPlaceId && !places.some((place) => place.id === expandedPlaceId)) {
@@ -115,11 +131,13 @@ function PlaceLayer({ places }: Props) {
           setMemoryPlace(null);
         }}
       />
-      {places.map((place) => (
+      {places.map((place, index) => (
         <PlaceMarker
-          key={place.id}
+          key={`${placesMotionSignature}:${place.id}`}
           place={place}
           isExpanded={expandedPlaceId === place.id}
+          enterIndex={index}
+          isEntering={shouldAnimateMarkers}
           onMemoryOpen={setMemoryPlace}
           onVisualPreview={(nextPlace, nextItem) => {
             setVisualPreview({ id: nextItem.id, kind: nextItem.kind, placeId: nextPlace.id });

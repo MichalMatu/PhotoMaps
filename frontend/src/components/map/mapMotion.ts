@@ -4,6 +4,8 @@ const FAN_MIN_RADIUS = 58;
 const FAN_RADIUS_STEP = 6;
 const FAN_STAGGER_MS = 26;
 const FAN_MAX_DELAY_MS = 156;
+const MARKER_ENTER_STAGGER_MS = 16;
+const MARKER_ENTER_MAX_DELAY_MS = 144;
 
 type FanOffset = {
   x: number;
@@ -39,4 +41,12 @@ export function getPlaceFanMotionLayout(itemCount: number): FanMotionItem[] {
 
 export function fanMotionStyle({ delayMs, offset }: FanMotionItem) {
   return `--fan-x: ${offset.x}px; --fan-y: ${offset.y}px; --fan-delay: ${delayMs}ms;`;
+}
+
+export function getPlaceMarkerEnterDelayMs(index: number) {
+  return Math.min(Math.max(0, index) * MARKER_ENTER_STAGGER_MS, MARKER_ENTER_MAX_DELAY_MS);
+}
+
+export function placeMarkerEnterStyle(index: number) {
+  return `--place-marker-enter-delay: ${getPlaceMarkerEnterDelayMs(index)}ms;`;
 }

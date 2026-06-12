@@ -4,6 +4,7 @@ import type { PlaceMapItem } from "../../api/client";
 import {
   countMapLayerPlaces,
   DEFAULT_MAP_LAYER_STATE,
+  EMPTY_MAP_LAYER_STATE,
   filterMapPlaces,
   isAllMapLayerPresetActive,
   toggleMapLayer,
@@ -218,7 +219,7 @@ describe("map layer filtering", () => {
     expect(memoryPlace.preview_items.map((item) => item.kind)).toEqual(["memory"]);
   });
 
-  it("treats everything as a preset and prevents an empty content selection", () => {
+  it("toggles the all preset to a clean map while individual layers remain non-empty", () => {
     const placesOnly = toggleMapLayer(DEFAULT_MAP_LAYER_STATE, "places");
     const featuredPlacesOnly = toggleMapLayer(DEFAULT_MAP_LAYER_STATE, "featured");
     const memoriesOnly = toggleMapLayer(DEFAULT_MAP_LAYER_STATE, "memories");
@@ -239,6 +240,9 @@ describe("map layer filtering", () => {
       memories: true,
       places: false,
     });
+    expect(toggleMapLayer(DEFAULT_MAP_LAYER_STATE, "all")).toEqual(EMPTY_MAP_LAYER_STATE);
+    expect(filterMapPlaces([place({ id: "hidden" })], EMPTY_MAP_LAYER_STATE)).toEqual([]);
+    expect(toggleMapLayer(EMPTY_MAP_LAYER_STATE, "all")).toEqual(DEFAULT_MAP_LAYER_STATE);
     expect(toggleMapLayer(placesOnly, "places")).toBe(placesOnly);
     expect(toggleMapLayer(memoriesOnly, "memories")).toBe(memoriesOnly);
     expect(toggleMapLayer({ featuredOnly: true, memories: true, places: false }, "all")).toEqual(

@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { fanMotionStyle, getPlaceFanMotionLayout } from "./mapMotion";
+import {
+  fanMotionStyle,
+  getPlaceFanMotionLayout,
+  getPlaceMarkerEnterDelayMs,
+  placeMarkerEnterStyle,
+} from "./mapMotion";
 
 describe("map motion helpers", () => {
   it("creates one fan motion item per visible fan target", () => {
@@ -26,5 +31,15 @@ describe("map motion helpers", () => {
     expect(fanMotionStyle({ delayMs: 52, offset: { x: -12, y: 34 } })).toBe(
       "--fan-x: -12px; --fan-y: 34px; --fan-delay: 52ms;",
     );
+  });
+
+  it("keeps marker filter-entry delays short and capped", () => {
+    expect(getPlaceMarkerEnterDelayMs(0)).toBe(0);
+    expect(getPlaceMarkerEnterDelayMs(2)).toBe(32);
+    expect(getPlaceMarkerEnterDelayMs(20)).toBe(144);
+  });
+
+  it("serializes marker entry delay as a CSS custom property", () => {
+    expect(placeMarkerEnterStyle(3)).toBe("--place-marker-enter-delay: 48ms;");
   });
 });

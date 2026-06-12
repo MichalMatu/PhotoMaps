@@ -143,6 +143,11 @@
   transform: rotate(-45deg) scale(var(--map-marker-selected-scale));
 }
 
+.place-marker-icon.is-entering span {
+  animation: place-pin-filter-in var(--motion-duration-slow) var(--motion-ease-emphasised) backwards;
+  animation-delay: var(--place-marker-enter-delay, 0ms);
+}
+
 .place-photo-marker {
   background: transparent;
   border: 0;
@@ -169,6 +174,11 @@
     filter var(--motion-duration-fast) var(--motion-ease-standard),
     transform var(--motion-duration-fast) var(--motion-ease-standard);
   width: var(--place-marker-width, 64px);
+}
+
+.place-photo-marker.is-entering span {
+  animation: place-marker-filter-in var(--motion-duration-slow) var(--motion-ease-emphasised) backwards;
+  animation-delay: var(--place-marker-enter-delay, 0ms);
 }
 
 .place-photo-marker:focus,
@@ -355,6 +365,50 @@
   }
 }
 
+@keyframes place-marker-filter-in {
+  0% {
+    opacity: 0;
+    transform: translateY(7px) scale(0.9);
+  }
+
+  68% {
+    opacity: 1;
+    transform: translateY(-1px) scale(1.035);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes place-pin-filter-in {
+  0% {
+    opacity: 0;
+    transform: rotate(-45deg) scale(0.82);
+  }
+
+  68% {
+    opacity: 1;
+    transform: rotate(-45deg) scale(1.06);
+  }
+
+  100% {
+    opacity: 1;
+    transform: rotate(-45deg) scale(1);
+  }
+}
+
+@keyframes place-marker-filter-reduced-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 @keyframes photo-fan-reduced-in {
   from {
     opacity: 0;
@@ -380,6 +434,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .place-marker-icon.is-entering span,
+  .place-photo-marker.is-entering span {
+    animation-name: place-marker-filter-reduced-in;
+  }
+
   .photo-fan-marker span,
   .photo-fan-add-marker span {
     animation-name: photo-fan-reduced-in;

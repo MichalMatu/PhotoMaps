@@ -16,6 +16,12 @@ export const DEFAULT_MAP_LAYER_STATE: MapLayerState = {
   places: true,
 };
 
+export const EMPTY_MAP_LAYER_STATE: MapLayerState = {
+  featuredOnly: false,
+  memories: false,
+  places: false,
+};
+
 export const MAP_LAYER_CONTROLS: Array<{ id: MapLayerControlId; label: string }> = [
   { id: "all", label: "Wszystkie" },
   { id: "featured", label: "Polecane" },
@@ -42,7 +48,7 @@ function countPlaceMemories(place: PlaceMapItem) {
 
 export function toggleMapLayer(state: MapLayerState, layerId: MapLayerControlId): MapLayerState {
   if (layerId === "all") {
-    return DEFAULT_MAP_LAYER_STATE;
+    return isAllMapLayerPresetActive(state) ? EMPTY_MAP_LAYER_STATE : DEFAULT_MAP_LAYER_STATE;
   }
 
   if (isAllMapLayerPresetActive(state) && layerId === "featured") {

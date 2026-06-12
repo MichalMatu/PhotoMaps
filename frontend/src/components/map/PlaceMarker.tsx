@@ -5,14 +5,22 @@ import { Marker } from "react-leaflet";
 import { mediaUrl, type PlaceMapItem } from "../../api/client";
 import { escapeAttribute } from "./mapHtml";
 import { getPlaceMarkerLayout, getSquarePlaceMarkerLayout, type PlaceMarkerLayout } from "./mapMarkerScale";
-import { fanMotionStyle, getPlaceFanMotionLayout, type FanMotionItem } from "./mapMotion";
+import { fanMotionStyle, getPlaceFanMotionLayout, placeMarkerEnterStyle, type FanMotionItem } from "./mapMotion";
 import { getPlaceFanItems, getPlacePreviewVisual, isMapIconVisualItem, type PlaceMapVisualItem } from "./placePreview";
 
-function markerIcon(previewItem: PlaceMapVisualItem | null, isSelected: boolean, layout: PlaceMarkerLayout) {
+function markerIcon(
+  previewItem: PlaceMapVisualItem | null,
+  isSelected: boolean,
+  layout: PlaceMarkerLayout,
+  enterIndex: number,
+  isEntering: boolean,
+) {
+  const markerEnterStyle = placeMarkerEnterStyle(enterIndex);
+  const enterClassName = isEntering ? "is-entering" : null;
   if (!previewItem) {
     return L.divIcon({
-      className: isSelected ? "place-marker-icon is-selected" : "place-marker-icon",
-      html: "<span></span>",
+      className: ["place-marker-icon", enterClassName, isSelected ? "is-selected" : null].filter(Boolean).join(" "),
+      html: `<span style="${markerEnterStyle}"></span>`,
       iconAnchor: [14, 34],
       iconSize: [28, 34],
     });
@@ -23,13 +31,14 @@ function markerIcon(previewItem: PlaceMapVisualItem | null, isSelected: boolean,
   return L.divIcon({
     className: [
       "place-photo-marker",
+      enterClassName,
       previewItem.kind === "memory" ? "is-memory" : "is-photo",
       isMapIconVisualItem(previewItem) ? "is-map-icon" : null,
       isSelected ? "is-selected" : null,
     ]
       .filter(Boolean)
       .join(" "),
-    html: `<span style="--place-marker-width: ${markerLayout.width}px; --place-marker-height: ${markerLayout.height}px; --place-marker-image: url('${imageUrl}')"></span>`,
+    html: `<span style="--place-marker-width: ${markerLayout.width}px; --place-marker-height: ${markerLayout.height}px; --place-marker-image: url('${imageUrl}'); ${markerEnterStyle}"></span>`,
     iconAnchor: [Math.round(markerLayout.width / 2), Math.round(markerLayout.height / 2)],
     iconSize: [markerLayout.width, markerLayout.height],
   });
@@ -67,13 +76,24 @@ function stopMarkerClick(event: L.LeafletMouseEvent) {
 type Props = {
   place: PlaceMapItem;
   isExpanded: boolean;
+  isEntering: boolean;
   onMemoryOpen: (place: PlaceMapItem) => void;
   onVisualPreview: (place: PlaceMapItem, item: PlaceMapVisualItem) => void;
   onToggleFan: () => void;
+  enterIndex: number;
   zoom: number;
 };
 
-export function PlaceMarker({ place, isExpanded, onMemoryOpen, onToggleFan, onVisualPreview, zoom }: Props) {
+export function PlaceMarker({
+  place,
+  isExpanded,
+  isEntering,
+  onMemoryOpen,
+  onToggleFan,
+  onVisualPreview,
+  enterIndex,
+  zoom,
+}: Props) {
   const fanItems = useMemo(() => getPlaceFanItems(place), [place]);
   const fanItemCount = fanItems.length + 1;
   const previewItem = useMemo(() => getPlacePreviewVisual(place), [place]);
@@ -82,8 +102,8 @@ export function PlaceMarker({ place, isExpanded, onMemoryOpen, onToggleFan, onVi
     [place.weight, zoom],
   );
   const placeIcon = useMemo(
-    () => markerIcon(previewItem, isExpanded, placeLayout),
-    [isExpanded, placeLayout, previewItem],
+    () => markerIcon(previewItem, isExpanded, placeLayout, enterIndex, isEntering),
+    [enterIndex, isEntering, isExpanded, placeLayout, previewItem],
   );
   const markerTitle = previewItem && isMapIconVisualItem(previewItem) ? undefined : place.title;
 
