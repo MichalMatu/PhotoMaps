@@ -1,6 +1,12 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
 import type { Category, City, Place, PlaceStatus } from "../../api/client";
+import {
+  DEFAULT_PLACE_PRIORITY,
+  MAX_PLACE_PRIORITY,
+  MIN_PLACE_PRIORITY,
+  PLACE_PRIORITY_STEP,
+} from "../../config/placePriority";
 import { PHOTO_CAPTION_MAX_LENGTH } from "./adminMediaUi";
 import { LocationPicker } from "./LocationPicker";
 import type { PlaceFormPayload } from "./useAdminPlaceManagement";
@@ -19,15 +25,6 @@ const INITIAL_LOCATION = {
   lon: 17.0385,
 };
 
-const PRIORITY_OPTIONS = [
-  { label: "0.5 - niski priorytet", value: "0.5" },
-  { label: "1.0 - normalny priorytet", value: "1" },
-  { label: "1.5 - podbity priorytet", value: "1.5" },
-  { label: "2.0 - wysoki priorytet", value: "2" },
-  { label: "2.5 - bardzo wysoki priorytet", value: "2.5" },
-  { label: "3.0 - najwyższy priorytet", value: "3" },
-];
-
 function slugify(value: string) {
   return value
     .trim()
@@ -45,7 +42,7 @@ export function PlaceForm({ categories, cities, className = "admin-form", onCanc
   const [location, setLocation] = useState(INITIAL_LOCATION);
   const [description, setDescription] = useState("");
   const [localComment, setLocalComment] = useState("");
-  const [weight, setWeight] = useState("1");
+  const [weight, setWeight] = useState(String(DEFAULT_PLACE_PRIORITY));
   const [status, setStatus] = useState<PlaceStatus>("draft");
   const [coverPhotoCaption, setCoverPhotoCaption] = useState("");
   const [coverPhotoFile, setCoverPhotoFile] = useState<File | null>(null);
@@ -71,7 +68,7 @@ export function PlaceForm({ categories, cities, className = "admin-form", onCanc
       setLocation(INITIAL_LOCATION);
       setDescription("");
       setLocalComment("");
-      setWeight("1");
+      setWeight(String(DEFAULT_PLACE_PRIORITY));
       setStatus("draft");
       setCoverPhotoCaption("");
       setCoverPhotoFile(null);
@@ -125,7 +122,7 @@ export function PlaceForm({ categories, cities, className = "admin-form", onCanc
         setLocation(INITIAL_LOCATION);
         setDescription("");
         setLocalComment("");
-        setWeight("1");
+        setWeight(String(DEFAULT_PLACE_PRIORITY));
         setStatus("draft");
         setCoverPhotoCaption("");
         setCoverPhotoFile(null);
@@ -188,13 +185,15 @@ export function PlaceForm({ categories, cities, className = "admin-form", onCanc
       <div className="field-row">
         <label>
           Priorytet redakcji
-          <select value={weight} onChange={(event) => setWeight(event.target.value)}>
-            {PRIORITY_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          <input
+            type="number"
+            min={MIN_PLACE_PRIORITY}
+            max={MAX_PLACE_PRIORITY}
+            step={PLACE_PRIORITY_STEP}
+            value={weight}
+            onChange={(event) => setWeight(event.target.value)}
+            required
+          />
         </label>
         <label>
           Status

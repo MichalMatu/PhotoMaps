@@ -271,7 +271,7 @@ test("admin can create category, place and guide through UI", async ({ page, req
   await placeDialog.getByRole("checkbox", { name: categoryLabel }).check();
   await placeDialog.getByLabel("Opis").fill("Opis miejsca dodanego przez e2e");
   await placeDialog.getByLabel("Lokalny komentarz").fill("Komentarz lokalny e2e");
-  await placeDialog.getByLabel("Priorytet redakcji").selectOption("2.5");
+  await placeDialog.getByLabel("Priorytet redakcji").fill("1.8");
   await placeDialog.getByLabel("Status").selectOption("published");
   await placeDialog.getByRole("button", { name: "Dodaj miejsce" }).click();
   await expect(placeDialog).toBeHidden();
@@ -280,11 +280,12 @@ test("admin can create category, place and guide through UI", async ({ page, req
   const placeRow = page.locator(".place-table .table-row").filter({ hasText: placeTitle });
   await expect(placeRow).toContainText(categoryLabel);
   await expect(placeRow).toContainText("published");
-  await expect(placeRow).toContainText("2.5");
+  await expect(placeRow).toContainText("1.8");
 
   await placeRow.getByRole("button", { name: "Edytuj" }).click();
   const editPlaceDialog = page.getByRole("dialog", { name: "Edytuj miejsce" });
   await expect(editPlaceDialog).toBeVisible();
+  await expect(editPlaceDialog.getByLabel("Priorytet redakcji")).toHaveValue("1.8");
   await editPlaceDialog.getByLabel("Nazwa").fill(editedPlaceTitle);
   await editPlaceDialog.getByRole("button", { name: "Zapisz zmiany" }).click();
   await expect(editPlaceDialog).toBeHidden();
