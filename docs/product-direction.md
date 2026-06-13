@@ -30,6 +30,10 @@ Zasady produktu:
 - publiczne markery to miniatury, covery albo klastry miniaturek,
 - zwykle pinezki nie sa domyslnym jezykiem publicznej mapy,
 - zoom zmienia gestosc i rozmiar elementow,
+- klikniecie miniatury w wachlarzu otwiera bezposrednio jeden lekki widok medium; nie dodajemy posredniego podgladu tego samego zdjecia,
+- widok medium eksponuje obraz, nazwe miejsca i najwyzej jeden krotki tekst: podpis zdjecia albo tresc pamiatki,
+- akcje pomocnicze, takie jak edycja pamiatki i zgloszenie problemu, pozostaja male i drugoplanowe,
+- zewnetrzne materialy maja byc pozniej osobnymi, strukturalnymi linkami przypietymi do miejsca, a nie tekstem w podpisie zdjecia,
 - warstwy pomagaja ogladac dane: polecane, galerie, pamiatki, pozniej audio i trasy,
 - kategorie pochodza z danych i nie powinny byc twardo wpisane w UI,
 - publiczna mapa ma zachowac efekt wizualnej tablicy nawet po optymalizacji kontraktu API.

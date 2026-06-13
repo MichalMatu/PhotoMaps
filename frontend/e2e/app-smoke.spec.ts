@@ -439,12 +439,9 @@ test("visitor can report a photo and admin can inspect, close and delete the rep
   await clickMapMarker(page, place.title);
   await clickMapMarker(page, photoCaption);
 
-  const previewDialog = page.getByRole("dialog", { name: `Zdjęcie: ${place.title}` });
-  await expect(previewDialog).toBeVisible();
-  await previewDialog.getByRole("button").click();
-
   const detailDialog = page.getByRole("dialog", { name: place.title });
   await expect(detailDialog).toBeVisible();
+  await expect(detailDialog.getByText(photoCaption)).toBeVisible();
   await detailDialog.getByRole("button", { name: "Zgłoś problem" }).click();
 
   const reportFormDialog = page.getByRole("dialog", { name: "Zgłoś problem" });
@@ -487,7 +484,7 @@ test("visitor can report a photo and admin can inspect, close and delete the rep
   await expect(closedReport).toBeHidden();
 });
 
-test("map motion states animate viewer, detail modal and sheets", async ({ page, request }) => {
+test("map motion states animate media modal and sheets", async ({ page, request }) => {
   const suffix = `${Date.now()}-${test.info().workerIndex}`;
   const photoCaption = `Zdjęcie motion ${suffix}`;
   const category = await createCategory(request, suffix);
@@ -503,26 +500,18 @@ test("map motion states animate viewer, detail modal and sheets", async ({ page,
   await clickMapMarker(page, place.title);
   await clickMapMarker(page, photoCaption);
 
-  const previewDialog = page.getByRole("dialog", { name: `Zdjęcie: ${place.title}` });
-  await expect(previewDialog).toBeVisible();
-  await expectAnimationName(page.locator(".map-photo-viewer"), "map-photo-viewer-backdrop-in");
-  await expectAnimationName(page.locator(".map-photo-viewer-image-wrap"), "map-photo-viewer-image-in");
-
-  await page.keyboard.press("Escape");
-  await expectExitPhase(page.locator(".map-photo-viewer"));
-  await expect(previewDialog).toBeHidden();
-
-  await clickMapMarker(page, photoCaption);
-  await page
-    .getByRole("dialog", { name: `Zdjęcie: ${place.title}` })
-    .getByRole("button")
-    .click();
-
   const detailDialog = page.getByRole("dialog", { name: place.title });
   const detailBackdrop = detailDialog.locator("..");
   await expect(detailDialog).toBeVisible();
   await expectAnimationName(detailBackdrop, "system-modal-backdrop-in");
   await expectAnimationName(detailDialog, "system-modal-in");
+
+  await page.keyboard.press("Escape");
+  await expectExitPhase(detailDialog);
+  await expect(detailDialog).toBeHidden();
+
+  await clickMapMarker(page, photoCaption);
+  await expect(detailDialog).toBeVisible();
 
   await detailDialog.getByRole("button", { name: "Zgłoś problem" }).click();
   const reportDialog = page.getByRole("dialog", { name: "Zgłoś problem" });
@@ -553,12 +542,11 @@ test("map motion states animate viewer, detail modal and sheets", async ({ page,
   await expect(page.locator(".map-frame")).toBeVisible();
   await clickMapMarker(page, place.title);
   await clickMapMarker(page, photoCaption);
-  const reducedPreview = page.getByRole("dialog", { name: `Zdjęcie: ${place.title}` });
-  await expect(reducedPreview).toBeVisible();
-  await expectAnimationName(page.locator(".map-photo-viewer"), "map-motion-fade-in");
-  await expectAnimationName(page.locator(".map-photo-viewer-image-wrap"), "map-motion-fade-in");
+  const reducedDetail = page.getByRole("dialog", { name: place.title });
+  await expect(reducedDetail).toBeVisible();
+  await expectAnimationName(reducedDetail, "system-modal-reduced-in");
   await page.keyboard.press("Escape");
-  await expect(reducedPreview).toBeHidden();
+  await expect(reducedDetail).toBeHidden();
 
   await clickMapMarker(page, `Byłem tutaj: ${place.title}`);
   const reducedMemoryDialog = page.getByRole("dialog", { name: "Byłem tutaj" });

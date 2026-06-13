@@ -60,8 +60,6 @@
     --surface-media-glass-action-hover: linear-gradient(135deg, rgb(255 255 255 / 52%), rgb(255 255 255 / 24%));
     --surface-media-control: rgb(39 39 42 / 66%);
     --surface-media-control-hover: rgb(245 245 245 / 86%);
-    --surface-backdrop-photo: rgb(0 0 0 / 68%);
-    --surface-backdrop-photo-start: rgb(0 0 0 / 34%);
     --surface-backdrop-drawer: rgb(0 0 0 / 28%);
     --surface-backdrop-modal: rgb(0 0 0 / 58%);
 
@@ -174,7 +172,6 @@
       --surface-overlay: rgb(0 0 0 / 74%);
       --surface-media: rgb(0 0 0 / 88%);
       --surface-media-soft: rgb(0 0 0 / 72%);
-      --surface-backdrop-photo: rgb(0 0 0 / 74%);
       --surface-backdrop-modal: rgb(0 0 0 / 64%);
 
       --content-primary: #f5f5f7;

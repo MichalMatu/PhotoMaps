@@ -77,8 +77,8 @@ type Props = {
   place: PlaceMapItem;
   isExpanded: boolean;
   isEntering: boolean;
+  onMediaOpen: (place: PlaceMapItem, item: PlaceMapVisualItem) => void;
   onMemoryOpen: (place: PlaceMapItem) => void;
-  onVisualPreview: (place: PlaceMapItem, item: PlaceMapVisualItem) => void;
   onToggleFan: () => void;
   enterIndex: number;
   zoom: number;
@@ -88,9 +88,9 @@ export function PlaceMarker({
   place,
   isExpanded,
   isEntering,
+  onMediaOpen,
   onMemoryOpen,
   onToggleFan,
-  onVisualPreview,
   enterIndex,
   zoom,
 }: Props) {
@@ -147,7 +147,7 @@ export function PlaceMarker({
               eventHandlers={{
                 click: (event) => {
                   stopMarkerClick(event);
-                  onVisualPreview(place, item);
+                  onMediaOpen(place, item);
                 },
               }}
             />

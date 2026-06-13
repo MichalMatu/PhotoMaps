@@ -4,7 +4,7 @@ import { getPlaceMemory, mediaUrl, type PlaceMapItem } from "../../api/client";
 import { ErrorModal } from "../ui/ErrorModal";
 import { MediaImage } from "../ui/MediaImage";
 import { SystemModal } from "../ui/SystemModal";
-import { mapMediaCaption, mapMemoryText } from "./mediaDisplayText";
+import { mapMediaDescription } from "./mediaDisplayText";
 import { MemoryOwnerTools } from "./MemoryOwnerTools";
 import type { PlaceMapVisualItem } from "./placePreview";
 import { useMemoryOwnerTools } from "./useMemoryOwnerTools";
@@ -28,8 +28,7 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
     onDeleted: onClose,
     placeId: place.id,
   });
-  const displayCaption = mapMediaCaption(item.caption);
-  const displayMemoryText = memorySource ? mapMemoryText(memorySource.memory_text) : "";
+  const displayText = mapMediaDescription(item.kind, item.caption, memorySource?.memory_text);
   const modalEyebrow = place.categories[0]?.label ?? "Miejsce";
 
   return (
@@ -41,7 +40,7 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
       variant="media"
       onClose={onClose}
     >
-      <div className="photo-detail-content">
+      <div className={displayText ? "photo-detail-content has-copy" : "photo-detail-content"}>
         <MediaImage
           alt={item.caption ?? place.title}
           className="photo-detail-image-wrap"
@@ -53,8 +52,7 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
 
         <div className="photo-detail-overlay">
           <div className="photo-detail-copy">
-            {displayCaption ? <p className="photo-detail-caption-text">{displayCaption}</p> : null}
-            {displayMemoryText ? <p className="photo-detail-memory-text">{displayMemoryText}</p> : null}
+            {displayText ? <div className="photo-detail-text">{displayText}</div> : null}
           </div>
           <div className="photo-detail-actions">
             {memorySource ? <MemoryOwnerTools tools={memoryOwnerTools} /> : null}

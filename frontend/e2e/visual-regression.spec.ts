@@ -231,7 +231,7 @@ test("visual: empty desktop map", async ({ page }) => {
   await expect(page).toHaveScreenshot("map-empty-desktop.png", SNAPSHOT_OPTIONS);
 });
 
-test("visual: map markers, fan and photo viewer", async ({ page }) => {
+test("visual: map markers, fan and photo detail", async ({ page }) => {
   await page.setViewportSize({ height: 820, width: 1280 });
   await mockSharedApi(page);
   await page.goto("/");
@@ -243,8 +243,55 @@ test("visual: map markers, fan and photo viewer", async ({ page }) => {
   await expect(page).toHaveScreenshot("map-fan-desktop.png", SNAPSHOT_OPTIONS);
 
   await clickMapMarker(page, rynekCover.caption);
-  await expect(page.getByRole("dialog", { name: `Zdjęcie: ${places[0].title}` })).toBeVisible();
-  await expect(page).toHaveScreenshot("photo-viewer-desktop.png", SNAPSHOT_OPTIONS);
+  const detailDialog = page.getByRole("dialog", { name: places[0].title });
+  await expect(detailDialog).toBeVisible();
+  await expect(detailDialog.getByText(rynekCover.caption)).toBeVisible();
+  await expect(page.locator(".map-photo-viewer")).toHaveCount(0);
+
+  const desktopLayout = await detailDialog.evaluate((element) => {
+    const dialogRect = element.getBoundingClientRect();
+    const imageRect = element.querySelector(".photo-detail-image")?.getBoundingClientRect();
+    return {
+      dialogHeight: Math.round(dialogRect.height),
+      dialogWidth: Math.round(dialogRect.width),
+      imageHeight: Math.round(imageRect?.height ?? 0),
+      imageWidth: Math.round(imageRect?.width ?? 0),
+      internalScroll: element.scrollHeight > element.clientHeight,
+      textBlocks: element.querySelectorAll(".photo-detail-text").length,
+    };
+  });
+
+  expect(desktopLayout.internalScroll).toBe(false);
+  expect(desktopLayout.textBlocks).toBe(1);
+  expect(desktopLayout.imageWidth).toBeGreaterThanOrEqual(desktopLayout.dialogWidth - 4);
+  expect(desktopLayout.imageHeight).toBeGreaterThanOrEqual(desktopLayout.dialogHeight - 4);
+});
+
+test("visual: mobile photo detail fills the modal without internal scrolling", async ({ page }) => {
+  await page.setViewportSize({ height: 780, width: 390 });
+  await mockSharedApi(page);
+  await page.goto("/");
+  await clickMapMarker(page, places[0].title);
+  await clickMapMarker(page, rynekCover.caption);
+
+  const detailDialog = page.getByRole("dialog", { name: places[0].title });
+  await expect(detailDialog).toBeVisible();
+  const mobileLayout = await detailDialog.evaluate((element) => {
+    const dialogRect = element.getBoundingClientRect();
+    const imageRect = element.querySelector(".photo-detail-image")?.getBoundingClientRect();
+    return {
+      dialogHeight: Math.round(dialogRect.height),
+      dialogWidth: Math.round(dialogRect.width),
+      imageHeight: Math.round(imageRect?.height ?? 0),
+      imageWidth: Math.round(imageRect?.width ?? 0),
+      internalScroll: element.scrollHeight > element.clientHeight,
+    };
+  });
+
+  expect(mobileLayout.dialogHeight).toBeGreaterThan(400);
+  expect(mobileLayout.internalScroll).toBe(false);
+  expect(mobileLayout.imageWidth).toBeGreaterThanOrEqual(mobileLayout.dialogWidth - 4);
+  expect(mobileLayout.imageHeight).toBeGreaterThanOrEqual(mobileLayout.dialogHeight - 4);
 });
 
 test("visual: mobile memory sheet", async ({ page }) => {

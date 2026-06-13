@@ -5,7 +5,6 @@ import { MapContainer, TileLayer, useMap, useMapEvents, ZoomControl } from "reac
 import type { City, PlaceMapItem } from "../../api/client";
 import { SystemModal } from "../ui/SystemModal";
 import { DistanceMeasureTool } from "./DistanceMeasureTool";
-import { MapPhotoViewer } from "./MapPhotoViewer";
 import { MemorySheet } from "./MemorySheet";
 import { PhotoDetailModal } from "./PhotoDetailModal";
 import { PlaceMarker } from "./PlaceMarker";
@@ -86,12 +85,9 @@ function PlaceLayer({ places }: Props) {
   const [expandedPlaceId, setExpandedPlaceId] = useState<string | null>(null);
   const [memoryPlace, setMemoryPlace] = useState<PlaceMapItem | null>(null);
   const [visualDetail, setVisualDetail] = useState<VisualTarget | null>(null);
-  const [visualPreview, setVisualPreview] = useState<VisualTarget | null>(null);
   const [reportTarget, setReportTarget] = useState<VisualTarget | null>(null);
   const [isThanksOpen, setIsThanksOpen] = useState(false);
   const [zoom, setZoom] = useState(map.getZoom());
-  const previewPlace = visualPreview ? (places.find((place) => place.id === visualPreview.placeId) ?? null) : null;
-  const previewItem = previewPlace && visualPreview ? findPlaceFanItem(previewPlace, visualPreview) : null;
   const detailPlace = visualDetail ? (places.find((place) => place.id === visualDetail.placeId) ?? null) : null;
   const detailItem = detailPlace && visualDetail ? findPlaceFanItem(detailPlace, visualDetail) : null;
   const reportPlace = reportTarget ? (places.find((place) => place.id === reportTarget.placeId) ?? null) : null;
@@ -112,16 +108,13 @@ function PlaceLayer({ places }: Props) {
     if (memoryPlace && !places.some((place) => place.id === memoryPlace.id)) {
       setMemoryPlace(null);
     }
-    if (visualPreview && !places.some((place) => place.id === visualPreview.placeId)) {
-      setVisualPreview(null);
-    }
     if (visualDetail && !places.some((place) => place.id === visualDetail.placeId)) {
       setVisualDetail(null);
     }
     if (reportTarget && !places.some((place) => place.id === reportTarget.placeId)) {
       setReportTarget(null);
     }
-  }, [expandedPlaceId, memoryPlace, places, reportTarget, visualDetail, visualPreview]);
+  }, [expandedPlaceId, memoryPlace, places, reportTarget, visualDetail]);
 
   return (
     <>
@@ -139,8 +132,8 @@ function PlaceLayer({ places }: Props) {
           enterIndex={index}
           isEntering={shouldAnimateMarkers}
           onMemoryOpen={setMemoryPlace}
-          onVisualPreview={(nextPlace, nextItem) => {
-            setVisualPreview({ id: nextItem.id, kind: nextItem.kind, placeId: nextPlace.id });
+          onMediaOpen={(nextPlace, nextItem) => {
+            setVisualDetail({ id: nextItem.id, kind: nextItem.kind, placeId: nextPlace.id });
           }}
           onToggleFan={() => setExpandedPlaceId((currentPlaceId) => (currentPlaceId === place.id ? null : place.id))}
           zoom={zoom}
@@ -154,17 +147,6 @@ function PlaceLayer({ places }: Props) {
           setIsThanksOpen(true);
         }}
       />
-      {previewItem && previewPlace ? (
-        <MapPhotoViewer
-          item={previewItem}
-          place={previewPlace}
-          onClose={() => setVisualPreview(null)}
-          onOpenDetails={() => {
-            setVisualDetail({ id: previewItem.id, kind: previewItem.kind, placeId: previewPlace.id });
-            setVisualPreview(null);
-          }}
-        />
-      ) : null}
       {detailItem && detailPlace ? (
         <PhotoDetailModal
           item={detailItem}

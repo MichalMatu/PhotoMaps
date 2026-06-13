@@ -55,6 +55,7 @@ Stroic zachowanie mapy na aktualnej probce danych.
 - Ranking i wybor miejsc widocznych w pierwszej kolejnosci.
 - Czy miejsca z wieksza waga sa odpowiednio wybite.
 - Czy wachlarz zdjec i pamiatek jest czytelny.
+- Miniatura wachlarza otwiera bezposrednio jeden lekki modal medium z najwyzej jednym krotkim tekstem; bez posredniego podgladu tego samego zdjecia.
 - Czy pierwszy widok mapy daje efekt "chce to sprawdzic".
 - Czy potrzebne sa klastry i w jakim zakresie.
 

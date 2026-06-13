@@ -568,6 +568,23 @@ label.checkbox-field.consent-field .field-error {
   color: var(--content-media-control-hover);
 }
 
+@media (max-width: 760px) {
+  .system-modal-backdrop--media {
+    padding: var(--space-3);
+  }
+
+  .system-modal--media {
+    aspect-ratio: 4 / 5;
+    max-height: calc(100dvh - 24px);
+    max-width: calc(100vw - 24px);
+    width: calc(100vw - 24px);
+  }
+
+  .system-modal--media .system-modal-header {
+    padding: var(--space-4);
+  }
+}
+
 .system-modal.is-dragging {
   user-select: none;
 }

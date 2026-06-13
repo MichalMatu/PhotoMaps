@@ -80,7 +80,10 @@ export function SystemModal({
 
   return createPortal(
     <div
-      className={motionClassName(["system-modal-backdrop"], isExiting)}
+      className={motionClassName(
+        ["system-modal-backdrop", variant === "media" ? "system-modal-backdrop--media" : null],
+        isExiting,
+      )}
       role="presentation"
       onClick={isBusy ? undefined : requestClose}
     >

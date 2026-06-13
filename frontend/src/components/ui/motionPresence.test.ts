@@ -25,7 +25,7 @@ describe("motion presence helpers", () => {
   });
 
   it("adds the exit phase without preserving empty class values", () => {
-    expect(motionClassName(["map-photo-viewer", null, undefined, false], false)).toBe("map-photo-viewer");
-    expect(motionClassName(["map-photo-viewer", "is-active"], true)).toBe("map-photo-viewer is-active is-exiting");
+    expect(motionClassName(["system-modal", null, undefined, false], false)).toBe("system-modal");
+    expect(motionClassName(["system-modal", "is-active"], true)).toBe("system-modal is-active is-exiting");
   });
 });
