@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { MapContainer, TileLayer, useMap, useMapEvents, ZoomControl } from "react-leaflet";
 
 import type { City, PlaceMapItem } from "../../api/client";
+import { SystemModal } from "../ui/SystemModal";
 import { DistanceMeasureTool } from "./DistanceMeasureTool";
 import { MapPhotoViewer } from "./MapPhotoViewer";
 import { MemorySheet } from "./MemorySheet";
@@ -10,7 +11,6 @@ import { PhotoDetailModal } from "./PhotoDetailModal";
 import { PlaceMarker } from "./PlaceMarker";
 import { findPlaceFanItem, type PlaceMapVisualItem } from "./placePreview";
 import { ReportSheet } from "./ReportSheet";
-import { SystemModal } from "../admin/SystemModal";
 
 type Props = {
   mapCity?: City | null;

@@ -247,8 +247,13 @@
 
 .drawer-item {
   align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
   color: var(--color-text);
   display: grid;
+  font-size: 1.04rem;
+  font-weight: 500;
   gap: 22px;
   grid-template-columns: 34px minmax(0, 1fr) auto;
   min-height: 54px;
@@ -268,15 +273,6 @@
 
 .drawer-section--layers {
   padding: 10px 0;
-}
-
-.drawer-item {
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  font-size: 1.04rem;
-  font-weight: 500;
-  min-height: 54px;
 }
 
 .drawer-item:hover,

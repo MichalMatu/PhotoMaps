@@ -1,6 +1,6 @@
 # Plan
 
-PhotoMap ma techniczny szkielet MVP. Teraz priorytetem jest domkniecie pierwszej jakosciowej probki danych dla Wroclawia jako miasta startowego, uzupelnienie coverow i ocena publicznej mapy na realnych danych. Dopiero po tym stroimy Map Experience v1: rozmiary, gestosc, zoom, ranking, wachlarz podgladow, galerie i filtry kategorii. Audio, pieczatki i platnosci zostaja poza aktualnym etapem.
+PhotoMap ma techniczny szkielet MVP oraz wystarczajaca probke danych do strojenia interfejsu. Aktualnym priorytetem jest Map Experience v1: ocena i dopracowanie rozmiarow markerow, gestosci, zoomu, rankingu oraz wachlarza podgladow na istniejacym datasecie Wroclawia. Audio, pieczatki i platnosci zostaja poza aktualnym etapem.
 
 ## 1. Aktualny Stan
 
@@ -17,39 +17,37 @@ PhotoMap ma techniczny szkielet MVP. Teraz priorytetem jest domkniecie pierwszej
 
 ## 2. Najblizszy Cel
 
-Domknac pierwsza realna probke danych na Wroclawiu jako miescie startowym i ocenic mape na tresci, a nie w prozni.
+Domknac Map Experience v1 na istniejacej probce Wroclawia i ustalic zachowanie mapy przed rozszerzaniem datasetu.
 
-- 10-15 miejsc to probka do strojenia mapy.
+- 14 miejsc Wroclawia tworzy aktualna probke do strojenia mapy.
 - 30-50 miejsc to docelowy zakres MVP dla pierwszego miasta.
 - Kolejne miasta naleza do pozniejszego globalnego rollout przez content pipeline.
 
-Warunki najblizszego celu:
+Najblizsze pytania produktowe:
 
-- kazde opublikowane miejsce ma sensowny cover,
-- kilka miejsc ma 2-4 dodatkowe zdjecia,
-- miejsca maja zroznicowane wagi, zeby testowac ranking i rozmiary markerow,
-- statusy `published`/`draft` odpowiadaja realnej gotowosci,
-- po imporcie albo korektach sprawdzamy publiczna mape.
+- czy markery pozostaja czytelne przy roznych poziomach zoomu,
+- czy gestosc i nakladanie miniaturek wymagaja selekcji albo klastrow,
+- czy miejsca z wyzsza waga sa wystarczajaco wyroznione,
+- czy wachlarz zdjec i pamiatek jest czytelny,
+- czy pierwszy widok mapy prowadzi wzrok do najwazniejszych miejsc.
 
-## 3. Iteracja 1: Content Sample / Cover Pass
+## 3. Iteracja 1: Content Sample / Cover Pass - Zakonczona
 
-Zbudowac material do oceny mapy.
+Aktualny stan lokalnej bazy dla Wroclawia:
 
-- Przejrzec manifest Wroclawia.
-- Potwierdzic 10-15 miejsc jako probke do strojenia.
-- Dodac albo zaimportowac covery.
-- Kilka miejsc wzbogacic dodatkowymi zdjeciami.
-- Sprawdzic statusy `published`/`draft`.
-- Ustawic wagi miejsc tak, zeby ranking mial realny material testowy.
-- Zrobic backup przed wiekszym importem.
-- Uruchomic import, jesli zmiany ida przez manifest.
-- Sprawdzic publiczna mape i admin.
+- 14 opublikowanych miejsc,
+- komplet poprawnych coverow,
+- 2-3 zatwierdzone zdjecia na kazde miejsce,
+- zroznicowane wagi miejsc od 1.7 do 3.0,
+- 7 zatwierdzonych pamiatek przypietych do 5 miejsc,
+- 3 opublikowane trasy,
+- zgodne liczniki mediow i komplet plikow w storage.
 
-Ikony miejsc sa opcjonalna warstwa jakosciowa. Jesli zwykle zdjecie lepiej pokazuje miejsce, moze byc coverem.
+Ta probka wystarcza do technicznego strojenia mapy. Nie dodawac kolejnych dummy zdjec bez konkretnego scenariusza testowego. Docelowa jakosc redakcyjna coverow pozostaje osobnym zadaniem przed publicznym uruchomieniem miasta.
 
-## 4. Iteracja 2: Map Experience v1
+## 4. Iteracja 2: Map Experience v1 - Aktywna
 
-Stroic zachowanie mapy dopiero na realnych danych.
+Stroic zachowanie mapy na aktualnej probce danych.
 
 - Rozmiary markerow na roznych zoomach.
 - Gestosc miejsc przy oddaleniu i zblizeniu.
@@ -59,6 +57,8 @@ Stroic zachowanie mapy dopiero na realnych danych.
 - Czy wachlarz zdjec i pamiatek jest czytelny.
 - Czy pierwszy widok mapy daje efekt "chce to sprawdzic".
 - Czy potrzebne sa klastry i w jakim zakresie.
+
+Najblizszy konkretny krok: audyt gestosci i kolizji markerow na kolejnych poziomach zoomu, a nastepnie decyzja, czy wystarczy selekcja miejsc wedlug rankingu, czy potrzebne sa lekkie klastry miniaturek.
 
 Nie zmieniac fundamentu danych, jesli obecny flow wystarcza do budowania probki.
 

@@ -376,7 +376,8 @@ label.checkbox-field.consent-field .field-error {
 .guide-card-grid {
   display: grid;
   gap: var(--space-4);
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 360px));
+  justify-content: start;
 }
 
 .guide-card {
