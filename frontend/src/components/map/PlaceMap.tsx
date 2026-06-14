@@ -7,7 +7,12 @@ import { SystemModal } from "../ui/SystemModal";
 import { DistanceMeasureTool } from "./DistanceMeasureTool";
 import { MemorySheet } from "./MemorySheet";
 import { PhotoDetailModal } from "./PhotoDetailModal";
-import { PinnedMediaBoard, type PinMediaRequest, usePinnedMediaBoard } from "./PinnedMediaBoardLayer";
+import {
+  PinnedMediaBoard,
+  type PinMediaRequest,
+  type PinnedMediaPlaceProjector,
+  usePinnedMediaBoard,
+} from "./PinnedMediaBoardLayer";
 import { PlaceMarker } from "./PlaceMarker";
 import { findPlaceFanItem, type PlaceMapVisualItem } from "./placePreview";
 import { ReportSheet } from "./ReportSheet";
@@ -73,6 +78,60 @@ function MapCloseEvents({ onClose }: { onClose: () => void }) {
   useMapEvents({
     click: onClose,
   });
+
+  return null;
+}
+
+function MapProjectionTracker({
+  onProjectorChange,
+}: {
+  onProjectorChange: (projector: PinnedMediaPlaceProjector | null) => void;
+}) {
+  const map = useMap();
+  const frameIdRef = useRef<number | null>(null);
+
+  const updateProjector = useCallback(() => {
+    if (frameIdRef.current !== null) {
+      window.cancelAnimationFrame(frameIdRef.current);
+    }
+
+    frameIdRef.current = window.requestAnimationFrame(() => {
+      frameIdRef.current = null;
+      const containerRect = map.getContainer().getBoundingClientRect();
+      const nextProjector: PinnedMediaPlaceProjector = (place) => {
+        const point = map.latLngToContainerPoint([place.lat, place.lon]);
+        if (point.x < 0 || point.y < 0 || point.x > containerRect.width || point.y > containerRect.height) {
+          return null;
+        }
+
+        return {
+          x: containerRect.left + point.x,
+          y: containerRect.top + point.y,
+        };
+      };
+
+      onProjectorChange(nextProjector);
+    });
+  }, [map, onProjectorChange]);
+
+  useMapEvents({
+    move: updateProjector,
+    moveend: updateProjector,
+    resize: updateProjector,
+    zoom: updateProjector,
+    zoomend: updateProjector,
+  });
+
+  useEffect(() => {
+    updateProjector();
+
+    return () => {
+      if (frameIdRef.current !== null) {
+        window.cancelAnimationFrame(frameIdRef.current);
+      }
+      onProjectorChange(null);
+    };
+  }, [onProjectorChange, updateProjector]);
 
   return null;
 }
@@ -199,7 +258,12 @@ export function PlaceMap({
   showPinnedMedia,
 }: Props) {
   const center: [number, number] = mapCity ? [mapCity.lat, mapCity.lon] : DEFAULT_CENTER;
-  const { cards, notice, onBringToFront, onLayoutChange, onRemove, pinMedia } = usePinnedMediaBoard(pinnedMediaPlaces);
+  const { cards, notice, onBringToFront, onLayoutChange, onMediaSizeChange, onRemove, pinMedia } =
+    usePinnedMediaBoard(pinnedMediaPlaces);
+  const [projectPlacePoint, setProjectPlacePoint] = useState<PinnedMediaPlaceProjector | null>(null);
+  const handleProjectorChange = useCallback((projector: PinnedMediaPlaceProjector | null) => {
+    setProjectPlacePoint(() => projector);
+  }, []);
   const handlePinMedia = useCallback(
     (request: PinMediaRequest) => {
       const didPin = pinMedia(request);
@@ -221,6 +285,7 @@ export function PlaceMap({
         zoomControl={false}
       >
         <MapSizeUpdater />
+        <MapProjectionTracker onProjectorChange={handleProjectorChange} />
         <DistanceMeasureTool />
         <ZoomControl position="bottomright" />
         <TileLayer
@@ -235,7 +300,9 @@ export function PlaceMap({
           notice={notice}
           onBringToFront={onBringToFront}
           onLayoutChange={onLayoutChange}
+          onMediaSizeChange={onMediaSizeChange}
           onRemove={onRemove}
+          projectPlacePoint={projectPlacePoint}
         />
       ) : null}
     </>

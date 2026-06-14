@@ -138,7 +138,10 @@
     --motion-duration-fast: var(--duration-fast);
     --motion-duration-regular: var(--duration-normal);
     --motion-duration-slow: var(--duration-slow);
+    --motion-duration-flow: 1150ms;
+    --motion-duration-pulse: 1600ms;
     --motion-duration-reduced: 1ms;
+    --motion-ease-linear: linear;
     --motion-ease-standard: var(--ease-standard);
     --motion-ease-emphasised: var(--ease-emphasised);
 

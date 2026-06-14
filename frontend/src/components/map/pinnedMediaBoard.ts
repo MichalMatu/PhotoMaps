@@ -9,7 +9,6 @@ const PINNED_MEDIA_CARD_CHROME_HEIGHT = 72;
 
 const DEFAULT_ASPECT_RATIO = 16 / 10;
 const MIN_CARD_WIDTH = 180;
-const MAX_CARD_WIDTH = 360;
 
 type PinnedMediaKind = PlaceMapVisualItem["kind"];
 
@@ -34,6 +33,20 @@ export type PinnedMediaLayout = {
   x: number;
   y: number;
   zIndex: number;
+};
+
+export type PinnedMediaNaturalSize = {
+  height: number;
+  width: number;
+};
+
+export type PinnedMediaLayoutOptions = {
+  naturalSize?: PinnedMediaNaturalSize | null;
+};
+
+export type PinnedMediaPoint = {
+  x: number;
+  y: number;
 };
 
 export type StoredPinnedMediaCard = {
@@ -109,9 +122,18 @@ function cardTotalHeight(layout: Pick<PinnedMediaLayout, "height">) {
   return layout.height + PINNED_MEDIA_CARD_CHROME_HEIGHT;
 }
 
-export function clampPinnedMediaLayout(layout: PinnedMediaLayout, bounds: PinnedMediaBounds): PinnedMediaLayout {
+export function clampPinnedMediaLayout(
+  layout: PinnedMediaLayout,
+  bounds: PinnedMediaBounds,
+  options: PinnedMediaLayoutOptions = {},
+): PinnedMediaLayout {
   const aspectRatio = safeAspectRatio(layout.aspectRatio);
-  const maxWidth = Math.max(MIN_CARD_WIDTH, Math.min(MAX_CARD_WIDTH, bounds.width - PINNED_MEDIA_FRAME_MARGIN * 2));
+  const frameMaxWidth = Math.max(MIN_CARD_WIDTH, bounds.width - PINNED_MEDIA_FRAME_MARGIN * 2);
+  const naturalMaxWidth =
+    options.naturalSize && Number.isFinite(options.naturalSize.width) && options.naturalSize.width > 0
+      ? options.naturalSize.width
+      : frameMaxWidth;
+  const maxWidth = Math.min(frameMaxWidth, Math.max(1, naturalMaxWidth));
   const minWidth = Math.min(MIN_CARD_WIDTH, maxWidth);
   const maxImageHeight = Math.max(96, bounds.height - PINNED_MEDIA_FRAME_MARGIN * 2 - PINNED_MEDIA_CARD_CHROME_HEIGHT);
   let width = clamp(layout.width, minWidth, maxWidth);
@@ -144,8 +166,9 @@ export function snapPinnedMediaLayout(
   layout: PinnedMediaLayout,
   otherLayouts: PinnedMediaLayout[],
   bounds: PinnedMediaBounds,
+  options: PinnedMediaLayoutOptions = {},
 ): PinnedMediaLayout {
-  let next = clampPinnedMediaLayout(layout, bounds);
+  let next = clampPinnedMediaLayout(layout, bounds, options);
   const width = next.width;
   const totalHeight = cardTotalHeight(next);
 
@@ -171,15 +194,16 @@ export function snapPinnedMediaLayout(
     ]),
   };
 
-  return clampPinnedMediaLayout(next, bounds);
+  return clampPinnedMediaLayout(next, bounds, options);
 }
 
 export function snapPinnedMediaResizeLayout(
   layout: PinnedMediaLayout,
   otherLayouts: PinnedMediaLayout[],
   bounds: PinnedMediaBounds,
+  options: PinnedMediaLayoutOptions = {},
 ): PinnedMediaLayout {
-  const clampedLayout = clampPinnedMediaLayout(layout, bounds);
+  const clampedLayout = clampPinnedMediaLayout(layout, bounds, options);
   const aspectRatio = safeAspectRatio(clampedLayout.aspectRatio);
   const intendedWidth = clampedLayout.width;
   const rightEdgeTargets = [
@@ -203,6 +227,7 @@ export function snapPinnedMediaResizeLayout(
       intendedWidth,
       aspectRatio,
       bounds,
+      options,
     );
     if (candidate) {
       candidates.push(candidate);
@@ -218,6 +243,7 @@ export function snapPinnedMediaResizeLayout(
       intendedWidth,
       aspectRatio,
       bounds,
+      options,
     );
     if (candidate) {
       candidates.push(candidate);
@@ -346,15 +372,78 @@ export function updatePinnedMediaLayout(
   id: string,
   layout: PinnedMediaLayout,
   bounds: PinnedMediaBounds,
+  options: PinnedMediaLayoutOptions = {},
 ): StoredPinnedMediaCard[] {
   return cards.map((card) =>
     card.id === id
       ? {
           ...card,
-          layout: clampPinnedMediaLayout(layout, bounds),
+          layout: clampPinnedMediaLayout(layout, bounds, options),
         }
       : card,
   );
+}
+
+export function pinnedMediaConnectionGeometry(layout: PinnedMediaLayout, target: PinnedMediaPoint) {
+  const totalHeight = cardTotalHeight(layout);
+  const source = closestCardEdgePoint(layout, totalHeight, target);
+  const deltaX = target.x - source.x;
+  const deltaY = target.y - source.y;
+  const distance = Math.hypot(deltaX, deltaY);
+  const bend = clamp(distance * 0.18, 36, 140);
+  const direction = deltaX >= 0 ? 1 : -1;
+  const controlA = {
+    x: roundPixel(source.x + deltaX * 0.28 + bend * direction),
+    y: roundPixel(source.y + deltaY * 0.18),
+  };
+  const controlB = {
+    x: roundPixel(target.x - deltaX * 0.28 - bend * direction),
+    y: roundPixel(target.y - deltaY * 0.18),
+  };
+
+  return {
+    path: `M ${source.x} ${source.y} C ${controlA.x} ${controlA.y}, ${controlB.x} ${controlB.y}, ${roundPixel(
+      target.x,
+    )} ${roundPixel(target.y)}`,
+    source,
+    target: {
+      x: roundPixel(target.x),
+      y: roundPixel(target.y),
+    },
+  };
+}
+
+function closestCardEdgePoint(
+  layout: Pick<PinnedMediaLayout, "width" | "x" | "y">,
+  totalHeight: number,
+  target: PinnedMediaPoint,
+) {
+  const left = layout.x;
+  const right = layout.x + layout.width;
+  const top = layout.y;
+  const bottom = layout.y + totalHeight;
+  const clampedX = clamp(target.x, left, right);
+  const clampedY = clamp(target.y, top, bottom);
+
+  if (target.x < left || target.x > right || target.y < top || target.y > bottom) {
+    return {
+      x: roundPixel(clampedX),
+      y: roundPixel(clampedY),
+    };
+  }
+
+  const edgeDistances = [
+    { point: { x: left, y: clampedY }, value: Math.abs(target.x - left) },
+    { point: { x: right, y: clampedY }, value: Math.abs(right - target.x) },
+    { point: { x: clampedX, y: top }, value: Math.abs(target.y - top) },
+    { point: { x: clampedX, y: bottom }, value: Math.abs(bottom - target.y) },
+  ];
+  const closestEdge = edgeDistances.reduce((bestEdge, edge) => (edge.value < bestEdge.value ? edge : bestEdge));
+
+  return {
+    x: roundPixel(closestEdge.point.x),
+    y: roundPixel(closestEdge.point.y),
+  };
 }
 
 export function resolvePinnedMediaCards(
@@ -480,12 +569,13 @@ function snapResizeCandidate(
   intendedWidth: number,
   aspectRatio: number,
   bounds: PinnedMediaBounds,
+  options: PinnedMediaLayoutOptions,
 ) {
   if (!Number.isFinite(width) || edgeDistance > PINNED_MEDIA_SNAP_THRESHOLD) {
     return null;
   }
 
-  const candidate = clampPinnedMediaLayout(resizeFromWidth(layout, width, aspectRatio), bounds);
+  const candidate = clampPinnedMediaLayout(resizeFromWidth(layout, width, aspectRatio), bounds, options);
 
   if (candidate.x !== layout.x || candidate.y !== layout.y) {
     return null;

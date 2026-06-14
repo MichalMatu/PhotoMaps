@@ -740,6 +740,10 @@
   cursor: grabbing;
 }
 
+.pinned-media-card.has-map-link {
+  box-shadow: var(--elevation-spotlight), var(--focus-soft);
+}
+
 .pinned-media-card:focus-visible {
   outline: 0;
   box-shadow: var(--elevation-spotlight), var(--focus-soft);
@@ -747,6 +751,7 @@
 
 .pinned-media-card-image-wrap {
   background: var(--surface-media);
+  cursor: zoom-in;
   overflow: hidden;
   position: relative;
 }
@@ -847,6 +852,56 @@
   width: var(--space-3);
 }
 
+.pinned-media-link-layer {
+  height: 100vh;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+  position: fixed;
+  width: 100vw;
+}
+
+.pinned-media-link-halo,
+.pinned-media-link-core {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pinned-media-link-halo {
+  opacity: 0.7;
+  stroke: var(--surface-panel);
+  stroke-width: 9;
+}
+
+.pinned-media-link-core {
+  animation: pinned-media-link-flow var(--motion-duration-flow) var(--motion-ease-linear) infinite;
+  stroke: var(--accent-primary);
+  stroke-dasharray: 14 12;
+  stroke-width: 3;
+}
+
+.pinned-media-link-source {
+  fill: var(--surface-panel);
+  stroke: var(--accent-primary);
+  stroke-width: 2;
+}
+
+.pinned-media-link-target-ring {
+  animation: pinned-media-link-pulse var(--motion-duration-pulse) var(--motion-ease-emphasised) infinite;
+  fill: var(--accent-soft);
+  stroke: var(--accent-primary);
+  stroke-width: 2;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.pinned-media-link-target {
+  fill: var(--accent-primary);
+  stroke: var(--surface-panel);
+  stroke-width: 2;
+}
+
 .pinned-media-notice {
   background: var(--surface-contrast);
   border-radius: var(--radius-full);
@@ -862,6 +917,27 @@
   text-align: center;
   top: var(--space-6);
   transform: translateX(-50%);
+}
+
+@keyframes pinned-media-link-flow {
+  from {
+    stroke-dashoffset: 26;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes pinned-media-link-pulse {
+  0%,
+  100% {
+    opacity: 0.58;
+    transform: scale(0.82);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
 }
 
 @keyframes pinned-media-card-in {

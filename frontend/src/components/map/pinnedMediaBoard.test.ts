@@ -7,6 +7,7 @@ import {
   defaultPinnedMediaLayout,
   MAX_PINNED_MEDIA_CARDS,
   PINNED_MEDIA_STORAGE_KEY,
+  pinnedMediaConnectionGeometry,
   readPinnedMediaCards,
   resolvePinnedMediaCards,
   snapPinnedMediaLayout,
@@ -231,6 +232,60 @@ describe("pinned media board helpers", () => {
     expect(layout.x + layout.width).toBeLessThanOrEqual(988);
   });
 
+  it("allows high-resolution cards to grow beyond the old compact width cap", () => {
+    const layout = clampPinnedMediaLayout(
+      {
+        aspectRatio: 1.6,
+        height: 575,
+        width: 920,
+        x: 120,
+        y: 80,
+        zIndex: 1,
+      },
+      { height: 900, left: 0, top: 0, width: 1200 },
+      { naturalSize: { height: 1000, width: 1600 } },
+    );
+
+    expect(layout.width).toBe(920);
+    expect(layout.height).toBe(575);
+  });
+
+  it("caps resized cards at their natural media width", () => {
+    const layout = clampPinnedMediaLayout(
+      {
+        aspectRatio: 1.6,
+        height: 562.5,
+        width: 900,
+        x: 120,
+        y: 80,
+        zIndex: 1,
+      },
+      { height: 900, left: 0, top: 0, width: 1200 },
+      { naturalSize: { height: 400, width: 640 } },
+    );
+
+    expect(layout.width).toBe(640);
+    expect(layout.height).toBe(400);
+  });
+
+  it("does not upscale pinned cards above tiny natural media width", () => {
+    const layout = clampPinnedMediaLayout(
+      {
+        aspectRatio: 1.5,
+        height: 180,
+        width: 270,
+        x: 120,
+        y: 80,
+        zIndex: 1,
+      },
+      { height: 900, left: 0, top: 0, width: 1200 },
+      { naturalSize: { height: 80, width: 120 } },
+    );
+
+    expect(layout.width).toBe(120);
+    expect(layout.height).toBe(80);
+  });
+
   it("snaps lightly to map frame edges and other cards", () => {
     const bounds = { height: 900, left: 0, top: 0, width: 1200 };
     const other = {
@@ -358,6 +413,42 @@ describe("pinned media board helpers", () => {
     expect(layout.width).toBeLessThanOrEqual(320);
     expect(layout.height).toBeLessThanOrEqual(214);
     expect(layout.x).toBeGreaterThan(100);
+  });
+
+  it("builds a map connection path from the card edge to the place point", () => {
+    const geometry = pinnedMediaConnectionGeometry(
+      {
+        aspectRatio: 1.6,
+        height: 160,
+        width: 260,
+        x: 120,
+        y: 80,
+        zIndex: 1,
+      },
+      { x: 620, y: 280 },
+    );
+
+    expect(geometry.source).toEqual({ x: 380, y: 280 });
+    expect(geometry.target).toEqual({ x: 620, y: 280 });
+    expect(geometry.path).toMatch(/^M 380 280 C /);
+  });
+
+  it("anchors map connection paths to the nearest card edge when the place sits under the card", () => {
+    const geometry = pinnedMediaConnectionGeometry(
+      {
+        aspectRatio: 1.6,
+        height: 300,
+        width: 600,
+        x: 120,
+        y: 80,
+        zIndex: 1,
+      },
+      { x: 560, y: 240 },
+    );
+
+    expect(geometry.source).toEqual({ x: 720, y: 240 });
+    expect(geometry.target).toEqual({ x: 560, y: 240 });
+    expect(geometry.path).not.toContain("M 560 240 C");
   });
 
   it("persists z-order changes", () => {

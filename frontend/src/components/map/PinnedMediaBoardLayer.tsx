@@ -16,12 +16,15 @@ import {
   bringPinnedMediaCardToFront,
   clampPinnedMediaLayout,
   getPinnedMediaBounds,
+  pinnedMediaConnectionGeometry,
   readPinnedMediaCards,
   resolvePinnedMediaCards,
   safeAspectRatio,
   snapPinnedMediaLayout,
   snapPinnedMediaResizeLayout,
   type PinnedMediaLayout,
+  type PinnedMediaNaturalSize,
+  type PinnedMediaPoint,
   type RectLike,
   type ResolvedPinnedMediaCard,
   type StoredPinnedMediaCard,
@@ -38,11 +41,14 @@ export type PinMediaRequest = {
   sourceRect?: RectLike | null;
 };
 
+export type PinnedMediaPlaceProjector = (place: Pick<PlaceMapItem, "lat" | "lon">) => PinnedMediaPoint | null;
+
 type UsePinnedMediaBoardResult = {
   cards: ResolvedPinnedMediaCard[];
   notice: string | null;
   onBringToFront: (id: string) => void;
   onLayoutChange: (id: string, layout: PinnedMediaLayout) => void;
+  onMediaSizeChange: (id: string, naturalSize: PinnedMediaNaturalSize) => void;
   onRemove: (id: string) => void;
   pinMedia: (request: PinMediaRequest) => boolean;
 };
@@ -52,7 +58,9 @@ type PinnedMediaBoardProps = {
   notice: string | null;
   onBringToFront: (id: string) => void;
   onLayoutChange: (id: string, layout: PinnedMediaLayout) => void;
+  onMediaSizeChange: (id: string, naturalSize: PinnedMediaNaturalSize) => void;
   onRemove: (id: string) => void;
+  projectPlacePoint?: PinnedMediaPlaceProjector | null;
 };
 
 type InteractionState = {
@@ -66,13 +74,23 @@ type InteractionState = {
 
 export function usePinnedMediaBoard(places: PlaceMapItem[]): UsePinnedMediaBoardResult {
   const [storedCards, setStoredCards] = useState<StoredPinnedMediaCard[]>(() => readPinnedMediaCards());
+  const [mediaSizes, setMediaSizes] = useState<Record<string, PinnedMediaNaturalSize>>({});
   const [notice, setNotice] = useState<string | null>(null);
   const cardsRef = useRef(storedCards);
+  const mediaSizesRef = useRef(mediaSizes);
 
   useEffect(() => {
     cardsRef.current = storedCards;
     writePinnedMediaCards(storedCards);
   }, [storedCards]);
+
+  useEffect(() => {
+    mediaSizesRef.current = mediaSizes;
+  }, [mediaSizes]);
+
+  const layoutOptionsForCard = useCallback((cardId: string) => {
+    return { naturalSize: mediaSizesRef.current[cardId] ?? null };
+  }, []);
 
   useEffect(() => {
     if (places.length === 0) {
@@ -84,7 +102,7 @@ export function usePinnedMediaBoard(places: PlaceMapItem[]): UsePinnedMediaBoard
       const resolvedCards = resolvePinnedMediaCards(currentCards, places).map((card) =>
         toStoredCard({
           ...card,
-          layout: clampPinnedMediaLayout(card.layout, bounds),
+          layout: clampPinnedMediaLayout(card.layout, bounds, layoutOptionsForCard(card.id)),
         }),
       );
       if (storedCardListsEqual(currentCards, resolvedCards)) {
@@ -94,7 +112,7 @@ export function usePinnedMediaBoard(places: PlaceMapItem[]): UsePinnedMediaBoard
       cardsRef.current = resolvedCards;
       return resolvedCards;
     });
-  }, [places]);
+  }, [layoutOptionsForCard, places]);
 
   useEffect(() => {
     if (!notice) {
@@ -122,7 +140,7 @@ export function usePinnedMediaBoard(places: PlaceMapItem[]): UsePinnedMediaBoard
         setStoredCards((currentCards) => {
           const nextCards = currentCards.map((card) => ({
             ...card,
-            layout: clampPinnedMediaLayout(card.layout, bounds),
+            layout: clampPinnedMediaLayout(card.layout, bounds, layoutOptionsForCard(card.id)),
           }));
 
           if (storedCardListsEqual(currentCards, nextCards)) {
@@ -143,7 +161,7 @@ export function usePinnedMediaBoard(places: PlaceMapItem[]): UsePinnedMediaBoard
       }
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [layoutOptionsForCard]);
 
   const resolvedCards = useMemo(() => resolvePinnedMediaCards(storedCards, places), [places, storedCards]);
 
@@ -171,9 +189,73 @@ export function usePinnedMediaBoard(places: PlaceMapItem[]): UsePinnedMediaBoard
     return true;
   }, []);
 
-  const onLayoutChange = useCallback((id: string, layout: PinnedMediaLayout) => {
+  const onLayoutChange = useCallback(
+    (id: string, layout: PinnedMediaLayout) => {
+      setStoredCards((currentCards) => {
+        const nextCards = updatePinnedMediaLayout(
+          currentCards,
+          id,
+          layout,
+          getPinnedMediaBounds(),
+          layoutOptionsForCard(id),
+        );
+        cardsRef.current = nextCards;
+        return nextCards;
+      });
+    },
+    [layoutOptionsForCard],
+  );
+
+  const onMediaSizeChange = useCallback((id: string, naturalSize: PinnedMediaNaturalSize) => {
+    if (
+      !Number.isFinite(naturalSize.width) ||
+      !Number.isFinite(naturalSize.height) ||
+      naturalSize.width <= 0 ||
+      naturalSize.height <= 0
+    ) {
+      return;
+    }
+
+    const normalizedSize = {
+      height: Math.round(naturalSize.height),
+      width: Math.round(naturalSize.width),
+    };
+
+    setMediaSizes((currentSizes) => {
+      const currentSize = currentSizes[id] ?? null;
+      if (currentSize?.width === normalizedSize.width && currentSize.height === normalizedSize.height) {
+        return currentSizes;
+      }
+
+      mediaSizesRef.current = {
+        ...currentSizes,
+        [id]: normalizedSize,
+      };
+      return mediaSizesRef.current;
+    });
+
     setStoredCards((currentCards) => {
-      const nextCards = updatePinnedMediaLayout(currentCards, id, layout, getPinnedMediaBounds());
+      const bounds = getPinnedMediaBounds();
+      const nextCards = currentCards.map((card) =>
+        card.id === id
+          ? {
+              ...card,
+              layout: clampPinnedMediaLayout(
+                {
+                  ...card.layout,
+                  aspectRatio: safeAspectRatio(normalizedSize.width / normalizedSize.height),
+                },
+                bounds,
+                { naturalSize: normalizedSize },
+              ),
+            }
+          : card,
+      );
+
+      if (storedCardListsEqual(currentCards, nextCards)) {
+        return currentCards;
+      }
+
       cardsRef.current = nextCards;
       return nextCards;
     });
@@ -204,19 +286,35 @@ export function usePinnedMediaBoard(places: PlaceMapItem[]): UsePinnedMediaBoard
     notice,
     onBringToFront,
     onLayoutChange,
+    onMediaSizeChange,
     onRemove,
     pinMedia,
   };
 }
 
-export function PinnedMediaBoard({ cards, notice, onBringToFront, onLayoutChange, onRemove }: PinnedMediaBoardProps) {
+export function PinnedMediaBoard({
+  cards,
+  notice,
+  onBringToFront,
+  onLayoutChange,
+  onMediaSizeChange,
+  onRemove,
+  projectPlacePoint = null,
+}: PinnedMediaBoardProps) {
   const cardsRef = useRef(cards);
   const interactionRef = useRef<InteractionState | null>(null);
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
+  const [linkedCardId, setLinkedCardId] = useState<string | null>(null);
 
   useEffect(() => {
     cardsRef.current = cards;
   }, [cards]);
+
+  useEffect(() => {
+    if (linkedCardId && !cards.some((card) => card.id === linkedCardId)) {
+      setLinkedCardId(null);
+    }
+  }, [cards, linkedCardId]);
 
   useEffect(() => {
     const handlePointerMove = (event: PointerEvent) => {
@@ -295,17 +393,30 @@ export function PinnedMediaBoard({ cards, notice, onBringToFront, onLayoutChange
     },
     [onBringToFront],
   );
+  const linkedCard = linkedCardId ? (cards.find((card) => card.id === linkedCardId) ?? null) : null;
+  const linkedTarget = linkedCard && projectPlacePoint ? projectPlacePoint(linkedCard.place) : null;
+  const linkGeometry =
+    linkedCard && linkedTarget ? pinnedMediaConnectionGeometry(linkedCard.layout, linkedTarget) : null;
+  const toggleMapLink = useCallback((cardId: string) => {
+    setLinkedCardId((currentCardId) => (currentCardId === cardId ? null : cardId));
+  }, []);
 
   return (
     <div className="pinned-media-board" aria-live="polite">
+      {linkedCard && linkGeometry ? (
+        <PinnedMediaMapLink geometry={linkGeometry} zIndex={linkedCard.layout.zIndex + 1} />
+      ) : null}
       {cards.map((card) => (
         <PinnedMediaCard
           key={card.id}
           card={card}
           isActive={activeCardId === card.id}
+          isLinked={linkedCardId === card.id}
           onBringToFront={onBringToFront}
+          onMediaSizeChange={onMediaSizeChange}
           onRemove={onRemove}
           onStartInteraction={startInteraction}
+          onToggleMapLink={toggleMapLink}
         />
       ))}
       {notice ? (
@@ -320,19 +431,25 @@ export function PinnedMediaBoard({ cards, notice, onBringToFront, onLayoutChange
 function PinnedMediaCard({
   card,
   isActive,
+  isLinked,
   onBringToFront,
+  onMediaSizeChange,
   onRemove,
   onStartInteraction,
+  onToggleMapLink,
 }: {
   card: ResolvedPinnedMediaCard;
   isActive: boolean;
+  isLinked: boolean;
   onBringToFront: (id: string) => void;
+  onMediaSizeChange: (id: string, naturalSize: PinnedMediaNaturalSize) => void;
   onRemove: (id: string) => void;
   onStartInteraction: (
     card: ResolvedPinnedMediaCard,
     mode: InteractionState["mode"],
     event: ReactPointerEvent<HTMLElement>,
   ) => void;
+  onToggleMapLink: (id: string) => void;
 }) {
   const display = mapMediaDisplay(
     card.item.kind,
@@ -351,7 +468,9 @@ function PinnedMediaCard({
 
   return (
     <article
-      className={isActive ? "pinned-media-card is-active" : "pinned-media-card"}
+      className={["pinned-media-card", isActive ? "is-active" : null, isLinked ? "has-map-link" : null]
+        .filter(Boolean)
+        .join(" ")}
       style={style}
       tabIndex={0}
       aria-label={`Przypięte medium: ${card.place.title}`}
@@ -366,11 +485,27 @@ function PinnedMediaCard({
       onTouchStart={stopFloatingWindowEvent}
       onWheel={stopFloatingWindowEvent}
     >
-      <div className="pinned-media-card-image-wrap" style={{ height: `${card.layout.height}px` }}>
+      <div
+        className="pinned-media-card-image-wrap"
+        data-drag-ignore
+        style={{ height: `${card.layout.height}px` }}
+        title="Kliknij dwukrotnie, żeby pokazać miejsce na mapie"
+        onDoubleClick={(event) => {
+          event.stopPropagation();
+          onToggleMapLink(card.id);
+        }}
+      >
         <img
           className="pinned-media-card-image"
           src={mediaUrl(card.item.public_path)}
           alt={card.item.caption ?? card.place.title}
+          onLoad={(event) => {
+            const image = event.currentTarget;
+            onMediaSizeChange(card.id, {
+              height: image.naturalHeight,
+              width: image.naturalWidth,
+            });
+          }}
         />
         <button
           className="pinned-media-card-remove"
@@ -400,6 +535,24 @@ function PinnedMediaCard({
         onPointerDown={(event) => onStartInteraction(card, "resize", event)}
       />
     </article>
+  );
+}
+
+function PinnedMediaMapLink({
+  geometry,
+  zIndex,
+}: {
+  geometry: ReturnType<typeof pinnedMediaConnectionGeometry>;
+  zIndex: number;
+}) {
+  return (
+    <svg className="pinned-media-link-layer" style={{ zIndex }} aria-hidden="true" data-testid="pinned-media-map-link">
+      <path className="pinned-media-link-halo" d={geometry.path} />
+      <path className="pinned-media-link-core" d={geometry.path} />
+      <circle className="pinned-media-link-source" cx={geometry.source.x} cy={geometry.source.y} r="4" />
+      <circle className="pinned-media-link-target-ring" cx={geometry.target.x} cy={geometry.target.y} r="15" />
+      <circle className="pinned-media-link-target" cx={geometry.target.x} cy={geometry.target.y} r="5" />
+    </svg>
   );
 }
 
