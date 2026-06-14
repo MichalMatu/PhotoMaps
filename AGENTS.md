@@ -2,7 +2,7 @@
 
 ## Cel projektu
 
-PhotoMap to globalny produkt: wizualna mapa miejsc z klimatem. Uzytkownik ma wejsc na mape miasta i od razu zobaczyc atrakcyjna tablice miniaturek miejsc: zdjecia, covery, pamiatki ludzi, trasy/kolekcje i pozniej audio oraz pieczatki.
+PhotoMap to globalny produkt: wizualna mapa miejsc z klimatem. Uzytkownik ma wejsc na mape miasta i od razu zobaczyc atrakcyjna tablice miniaturek miejsc: zdjecia, covery, pamiatki ludzi i proste trasy/kolekcje.
 
 Wroclaw jest pierwszym miastem startowym i datasetem do strojenia produktu. Nie jest marka produktu ani ograniczeniem domeny. Repozytorium moze nadal nazywac sie technicznie PhotoMaps, ale w dokumentacji produktowej i UI uzywamy nazwy PhotoMap.
 
@@ -21,11 +21,10 @@ place
  ├── memories
  ├── guides / collections
  ├── reports
- ├── audio clips        pozniej
- └── stamps             pozniej
+ └── future layers      zamrozone poza aktualnym etapem
 ```
 
-Nie tworz osobnych swiatow dla zdjec, pamiatek, tras, audio, historii ani pieczatek. `City` jest kontekstem organizacyjnym, `Category` opisuje charakter miejsca, a `Photo`, `Memory`, `Guide/Route`, `Report` i przyszle `AudioClip`/`Stamp` sa przypiete do miejsca albo kolekcji miejsc.
+Nie tworz osobnych swiatow dla zdjec, pamiatek, tras, audio, historii ani pieczatek. `City` jest kontekstem organizacyjnym, `Category` opisuje charakter miejsca, a `Photo`, `Memory`, `Guide/Route` i `Report` sa przypiete do miejsca albo kolekcji miejsc. Przyszle warstwy nie sa aktywnym zakresem.
 
 Techniczne `guide` moze zostac w backendzie i API. Produktowo w UI i dokumentacji preferuj `trasa` albo `kolekcja miejsc`, zaleznie od kontekstu.
 
@@ -37,7 +36,7 @@ Publiczna mapa jest glownym produktem i ma dzialac jak zywa tablica miniaturek m
 - Publiczne markery sa coverami/miniaturami miejsc; klasyczna pinezka zostaje tylko w adminie do wyboru lokalizacji.
 - Klikniecie miejsca pokazuje wiecej, ale nie moze byc wymagane, zeby mapa robila efekt wizualny.
 - Zoom steruje gestoscia i rozmiarem miniaturek: daleko mniej elementow i klastry, blisko wiecej miejsc oraz wachlarz podgladow.
-- Warstwy mapy sa sposobem ogladania danych: polecane, galerie, pamiatki, pozniej audio i trasy.
+- Warstwy mapy sa sposobem ogladania danych: polecane, galerie, pamiatki i proste kolekcje.
 - Kategorie pochodza z admina/API; nie hardkoduj kategorii w filtrach UI.
 - `map preview` ma pozostac lekkim kontraktem: miejsce, miasto, kategorie, score/liczniki, cover i kilka kuratorowanych podgladow.
 - Nie laduj pelnych galerii ani pelnych pamiatek do pierwszego renderu mapy.
@@ -137,4 +136,4 @@ Przed edycja sciezki objetej lokalnym plikiem przeczytaj root `AGENTS.md` oraz n
 
 ## Roadmapa
 
-Biezaca roadmapa jest tylko w [PLAN.md](PLAN.md). Nie dopisuj drugiej roadmapy do tego pliku.
+Biezaca roadmapa redukcji jest tylko w [PLAN.md](PLAN.md). Nie dopisuj drugiej roadmapy do tego pliku.

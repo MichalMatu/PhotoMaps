@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`content` trzyma redakcyjne manifesty miast importowanych do PhotoMap. Wroclaw jest pierwszym miastem startowym i przykladem, ale przeplyw ma obslugiwac kolejne miasta.
+`content` trzyma redakcyjne manifesty danych importowanych do PhotoMap. Wroclaw jest pierwszym miastem startowym i przykladem; kolejne miasta sa mozliwe pozniej, ale aktualnie przeplyw ma ograniczac reczna prace przy obecnym zakresie.
 
 ## Ownership
 

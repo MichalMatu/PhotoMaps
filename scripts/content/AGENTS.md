@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`scripts/content` trzyma narzedzia importu redakcyjnych manifestow miast do PhotoMap.
+`scripts/content` trzyma narzedzia importu redakcyjnych manifestow danych do PhotoMap.
 
 ## Ownership
 
@@ -14,7 +14,7 @@
 - Klucze stabilnosci to `city.id`, `place.slug` i `guide.slug`.
 - Importer musi walidowac aktywne `category_ids` przed zapisem miejsc.
 - Import ikon ma korzystac ze wspolnego pipeline'u mediow, z publiczna kopia i miniatura.
-- Nie dodawac pobierania danych z internetu, generowania obrazow, platnosci ani audio do importera MVP.
+- Nie dodawac pobierania danych z internetu, generowania obrazow, platnosci, audio ani innych modulow spoza aktualnego zakresu mapy.
 - Przy zmianie formatu manifestu zaktualizowac testy i dokumentacje w `content`.
 
 ## Work Guidance

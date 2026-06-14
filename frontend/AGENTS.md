@@ -19,7 +19,7 @@ Frontend odpowiada za publiczna mape, panel admina, klienta API, komponenty UI, 
 - Publiczny UI i admin UI pozostaja osobnymi przeplywami.
 - Publiczna mapa ma od razu pokazywac atrakcyjne miniatury albo klastry; nie redukowac jej do pustej mapy z pinami.
 - Kategorie w filtrach i widokach mapy maja pochodzic z API, nie z hardkodowanej listy.
-- Najblizsze prace mapowe to Map Experience v1, warstwa Galerie, dynamiczne kategorie i stabilizacja lekkiego `map preview`.
+- Najblizsze prace mapowe to quality pass obecnej mapy na realnym datasecie; nie dopisuj nowych warstw ani kontraktow, jesli obecny `map preview` wystarcza.
 - Klient API nie powinien przyjmowac starych payloadow po zmianie kontraktu; migrowac aktualnych callerow i usuwac fallbacki.
 - Komponenty z kilkoma wariantami maja miec jawny tryb, np. `form-only`, `with-list`, `readonly`, zamiast kilku luznych flag boolean.
 - UI ma byc kompaktowy: bez powtorzonych tytulow, licznikow, pustych pasow i nadmiarowych opisow.

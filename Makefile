@@ -10,7 +10,7 @@ help:
 		'  make status        Pokaż PID-y, porty i stan usług.' \
 		'  make logs          Pokaż ostatnie logi backendu i frontendu.' \
 		'  make check         Uruchom pełny check projektu.' \
-		'  make api-flow      Sprawdź pełny flow MVP przez backend API.' \
+		'  make api-flow      Sprawdź pełny flow produktu przez backend API.' \
 		'  make api-contract  Sprawdź kontrakt publicznego API.' \
 		'  make smoke         Uruchom szybki smoke test backendu i frontendu.' \
 		'  make perf-smoke    Wykonaj podstawowy test wydajności endpointów.' \

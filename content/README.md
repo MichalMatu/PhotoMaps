@@ -1,6 +1,6 @@
 # Content
 
-Ten katalog trzyma redakcyjne manifesty miast importowanych do PhotoMap. Wroclaw jest pierwszym miastem startowym i przykladem struktury, ale ten sam przeplyw ma obslugiwac kolejne miasta.
+Ten katalog trzyma redakcyjne manifesty danych importowanych do PhotoMap. Wroclaw jest pierwszym miastem startowym i przykladem struktury; ten sam przeplyw moze obsluzyc kolejne miasta pozniej, ale aktualnie sluzy redukcji recznej pracy przy obecnym zakresie.
 
 Panel admina sluzy do recznych korekt, moderacji i pojedynczych zmian. Wieksze partie danych powinny powstawac przez:
 

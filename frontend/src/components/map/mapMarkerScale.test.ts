@@ -20,7 +20,7 @@ describe("getPlaceMarkerLayout", () => {
     expect(highPriority.zIndexOffset).toBeGreaterThan(normalPriority.zIndexOffset);
   });
 
-  it("keeps marker sizes inside the MVP bounds", () => {
+  it("keeps marker sizes inside the product bounds", () => {
     const smallest = getPlaceMarkerLayout({ editorialPriority: -10, zoom: 1 });
     const largest = getPlaceMarkerLayout({ editorialPriority: 99, zoom: 99 });
 

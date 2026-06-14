@@ -1,6 +1,6 @@
 # Content Pipeline
 
-Content pipeline sluzy do powtarzalnego importu miast do PhotoMap. Wroclaw jest pierwszym przykladem i miastem startowym, ale ten sam mechanizm ma obslugiwac kolejne miasta.
+Content pipeline sluzy do powtarzalnego utrzymania danych PhotoMap. Wroclaw jest pierwszym przykladem i miastem startowym; ten sam mechanizm moze obsluzyc kolejne miasta pozniej, ale aktualnie ma przede wszystkim ograniczac reczne klikanie i utrzymac porzadek w danych.
 
 Admin UI sluzy do korekt, moderacji i pojedynczych zmian. Wieksze partie danych powinny isc przez manifesty i importer.
 
@@ -12,7 +12,7 @@ Manifest miasta trzymamy w:
 content/cities/{city}/manifest.json
 ```
 
-Manifest jest roboczym zrodlem wiekszych zmian. Zawiera definicje miasta, miejsca i trasy/kolekcje miejsc. Miejsca uzywaja `category_ids`, bo jedno miejsce moze nalezec do kilku kategorii.
+Manifest jest roboczym zrodlem wiekszych zmian. Zawiera definicje miasta, miejsca i proste trasy/kolekcje miejsc. Miejsca uzywaja `category_ids`, bo jedno miejsce moze nalezec do kilku kategorii.
 
 Wroclaw jako przyklad:
 
@@ -60,7 +60,7 @@ assets/place-icons
 
 Finalne ikony powinny wspierac mape miniaturek, nie zastepowac danych miejsca. Nie generuj fikcyjnych detali udajacych dokumentalne zdjecia miejsca.
 
-## Czego Importer Nie Robi W MVP
+## Czego Importer Nie Robi
 
 - Nie pobiera danych z internetu.
 - Nie generuje obrazow.
@@ -68,6 +68,7 @@ Finalne ikony powinny wspierac mape miniaturek, nie zastepowac danych miejsca. N
 - Nie importuje audio.
 - Nie obsluguje platnosci.
 - Nie rozbudowuje kont ani uprawnien.
+- Nie jest miejscem na nowe moduly spoza aktualnego zakresu mapy.
 
 ## Weryfikacja
 

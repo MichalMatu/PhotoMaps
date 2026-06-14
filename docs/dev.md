@@ -43,7 +43,7 @@ pre-commit run --all-files
 ## Testy jakości
 
 ```bash
-make api-flow      # pełny flow MVP po backend API
+make api-flow      # pełny flow produktu po backend API
 make api-contract  # kontrakt OpenAPI dla publicznych GET endpointów
 make smoke         # live smoke backendu i frontendu na izolowanych portach
 make e2e           # Playwright smoke w przeglądarce Chromium
