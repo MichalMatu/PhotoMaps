@@ -7,6 +7,7 @@ import {
   EMPTY_MAP_LAYER_STATE,
   filterMapPlaces,
   isAllMapLayerPresetActive,
+  isMapLayerControlActive,
   toggleMapLayer,
 } from "./mapLayers";
 
@@ -43,6 +44,12 @@ function place({ id, ...overrides }: Partial<PlaceMapItem> & Pick<PlaceMapItem, 
     weight: 1,
     ...overrides,
   };
+}
+
+function activeLayerControlIds(state: Parameters<typeof isMapLayerControlActive>[0]) {
+  return (["all", "featured", "places", "memories"] as const).filter((layerId) =>
+    isMapLayerControlActive(state, layerId),
+  );
 }
 
 describe("map layer filtering", () => {
@@ -150,13 +157,43 @@ describe("map layer filtering", () => {
     ];
 
     const visiblePlaces = filterMapPlaces(places, {
-      featuredOnly: true,
+      featured: true,
       memories: true,
       places: false,
     });
 
     expect(visiblePlaces.map((item) => item.id)).toEqual(["featured-memory"]);
     expect(visiblePlaces[0].preview_items.map((item) => item.kind)).toEqual(["memory"]);
+  });
+
+  it("shows featured places as a standalone preset", () => {
+    const places = [
+      place({ id: "featured-without-memory", weight: 2.5 }),
+      place({ id: "regular" }),
+      place({
+        id: "featured-with-photo",
+        weight: 2.5,
+        preview_items: [
+          {
+            approved_at: null,
+            caption: null,
+            created_at: "2026-06-12T00:00:00",
+            id: "photo-1",
+            kind: "photo",
+            place_id: "featured-with-photo",
+            public_path: "/media/photo.jpg",
+            role: "gallery",
+            source: "editorial",
+            thumb_path: "/media/photo-thumb.jpg",
+          },
+        ],
+      }),
+    ];
+
+    const visiblePlaces = filterMapPlaces(places, toggleMapLayer(DEFAULT_MAP_LAYER_STATE, "featured"));
+
+    expect(visiblePlaces.map((item) => item.id)).toEqual(["featured-without-memory", "featured-with-photo"]);
+    expect(visiblePlaces[1].preview_items.map((item) => item.kind)).toEqual(["photo"]);
   });
 
   it("keeps the main place tile while filtering expanded content to selected layer types", () => {
@@ -203,12 +240,12 @@ describe("map layer filtering", () => {
     });
 
     const [placesOnlyPlace] = filterMapPlaces([mixedPlace], {
-      featuredOnly: false,
+      featured: false,
       memories: false,
       places: true,
     });
     const [memoryPlace] = filterMapPlaces([mixedPlace], {
-      featuredOnly: false,
+      featured: false,
       memories: true,
       places: false,
     });
@@ -226,27 +263,48 @@ describe("map layer filtering", () => {
 
     expect(isAllMapLayerPresetActive(DEFAULT_MAP_LAYER_STATE)).toBe(true);
     expect(placesOnly).toEqual({
-      featuredOnly: false,
+      featured: false,
       memories: false,
       places: true,
     });
     expect(featuredPlacesOnly).toEqual({
-      featuredOnly: true,
+      featured: true,
       memories: false,
-      places: true,
+      places: false,
     });
     expect(memoriesOnly).toEqual({
-      featuredOnly: false,
+      featured: false,
       memories: true,
       places: false,
     });
     expect(toggleMapLayer(DEFAULT_MAP_LAYER_STATE, "all")).toEqual(EMPTY_MAP_LAYER_STATE);
     expect(filterMapPlaces([place({ id: "hidden" })], EMPTY_MAP_LAYER_STATE)).toEqual([]);
     expect(toggleMapLayer(EMPTY_MAP_LAYER_STATE, "all")).toEqual(DEFAULT_MAP_LAYER_STATE);
-    expect(toggleMapLayer(placesOnly, "places")).toBe(placesOnly);
-    expect(toggleMapLayer(memoriesOnly, "memories")).toBe(memoriesOnly);
-    expect(toggleMapLayer({ featuredOnly: true, memories: true, places: false }, "all")).toEqual(
-      DEFAULT_MAP_LAYER_STATE,
-    );
+    expect(toggleMapLayer(placesOnly, "places")).toEqual(EMPTY_MAP_LAYER_STATE);
+    expect(toggleMapLayer(memoriesOnly, "memories")).toEqual(EMPTY_MAP_LAYER_STATE);
+    expect(toggleMapLayer({ featured: true, memories: true, places: false }, "all")).toEqual(DEFAULT_MAP_LAYER_STATE);
+  });
+
+  it("reports mix-and-match active layer controls while collapsing the complete trio to all", () => {
+    const placesOnly = toggleMapLayer(DEFAULT_MAP_LAYER_STATE, "places");
+    const featuredActive = toggleMapLayer(DEFAULT_MAP_LAYER_STATE, "featured");
+    const memoriesOnly = toggleMapLayer(DEFAULT_MAP_LAYER_STATE, "memories");
+    const placesMemories = toggleMapLayer(placesOnly, "memories");
+    const featuredMemories = toggleMapLayer(featuredActive, "memories");
+    const featuredActiveAgain = toggleMapLayer(featuredMemories, "memories");
+    const featuredPlaces = toggleMapLayer(featuredActiveAgain, "places");
+    const completeSelection = toggleMapLayer(featuredPlaces, "memories");
+
+    expect(activeLayerControlIds(DEFAULT_MAP_LAYER_STATE)).toEqual(["all"]);
+    expect(activeLayerControlIds(placesOnly)).toEqual(["places"]);
+    expect(activeLayerControlIds(memoriesOnly)).toEqual(["memories"]);
+    expect(activeLayerControlIds(featuredActive)).toEqual(["featured"]);
+    expect(activeLayerControlIds(placesMemories)).toEqual(["places", "memories"]);
+    expect(activeLayerControlIds(featuredMemories)).toEqual(["featured", "memories"]);
+    expect(activeLayerControlIds(featuredActiveAgain)).toEqual(["featured"]);
+    expect(activeLayerControlIds(featuredPlaces)).toEqual(["featured", "places"]);
+    expect(completeSelection).toEqual(DEFAULT_MAP_LAYER_STATE);
+    expect(activeLayerControlIds(completeSelection)).toEqual(["all"]);
+    expect(activeLayerControlIds(EMPTY_MAP_LAYER_STATE)).toEqual([]);
   });
 });

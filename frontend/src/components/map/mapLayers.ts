@@ -5,19 +5,19 @@ const FEATURED_PLACE_WEIGHT = 2.5;
 export type MapLayerControlId = "all" | "places" | "featured" | "memories";
 
 export type MapLayerState = {
-  featuredOnly: boolean;
+  featured: boolean;
   memories: boolean;
   places: boolean;
 };
 
 export const DEFAULT_MAP_LAYER_STATE: MapLayerState = {
-  featuredOnly: false,
+  featured: true,
   memories: true,
   places: true,
 };
 
 export const EMPTY_MAP_LAYER_STATE: MapLayerState = {
-  featuredOnly: false,
+  featured: false,
   memories: false,
   places: false,
 };
@@ -30,7 +30,7 @@ export const MAP_LAYER_CONTROLS: Array<{ id: MapLayerControlId; label: string }>
 ];
 
 export function isAllMapLayerPresetActive(state: MapLayerState) {
-  return state.places && state.memories && !state.featuredOnly;
+  return state.featured && state.places && state.memories;
 }
 
 function isFeaturedMapPlace(place: PlaceMapItem) {
@@ -51,24 +51,9 @@ export function toggleMapLayer(state: MapLayerState, layerId: MapLayerControlId)
     return isAllMapLayerPresetActive(state) ? EMPTY_MAP_LAYER_STATE : DEFAULT_MAP_LAYER_STATE;
   }
 
-  if (isAllMapLayerPresetActive(state) && layerId === "featured") {
-    return {
-      featuredOnly: true,
-      memories: false,
-      places: true,
-    };
-  }
-
-  if (layerId === "featured") {
-    return {
-      ...state,
-      featuredOnly: !state.featuredOnly,
-    };
-  }
-
   if (isAllMapLayerPresetActive(state)) {
     return {
-      featuredOnly: false,
+      featured: layerId === "featured",
       memories: layerId === "memories",
       places: layerId === "places",
     };
@@ -78,18 +63,40 @@ export function toggleMapLayer(state: MapLayerState, layerId: MapLayerControlId)
     ...state,
     [layerId]: !state[layerId],
   };
-  if (!nextState.places && !nextState.memories) {
-    return state;
+
+  if (isAllMapLayerPresetActive(nextState)) {
+    return DEFAULT_MAP_LAYER_STATE;
   }
+
   return nextState;
 }
 
+export function isMapLayerControlActive(state: MapLayerState, layerId: MapLayerControlId) {
+  if (layerId === "all") {
+    return isAllMapLayerPresetActive(state);
+  }
+
+  if (layerId === "featured") {
+    return !isAllMapLayerPresetActive(state) && state.featured;
+  }
+
+  if (layerId === "places") {
+    return !isAllMapLayerPresetActive(state) && state.places;
+  }
+
+  return !isAllMapLayerPresetActive(state) && state.memories;
+}
+
 function placeMatchesMapLayerState(place: PlaceMapItem, state: MapLayerState) {
-  if (state.featuredOnly && !isFeaturedMapPlace(place)) {
+  if (isAllMapLayerPresetActive(state)) {
+    return true;
+  }
+
+  if (state.featured && !isFeaturedMapPlace(place)) {
     return false;
   }
 
-  if (state.places) {
+  if (state.places || (state.featured && !state.memories)) {
     return true;
   }
 
@@ -97,7 +104,10 @@ function placeMatchesMapLayerState(place: PlaceMapItem, state: MapLayerState) {
 }
 
 function filterMapPlaceContent(place: PlaceMapItem, state: MapLayerState): PlaceMapItem {
-  if (state.places && state.memories) {
+  const includesPlaceContent = state.places || (state.featured && !state.memories);
+  const includesMemoryContent = state.memories;
+
+  if (includesPlaceContent && includesMemoryContent) {
     return place;
   }
 
@@ -105,9 +115,9 @@ function filterMapPlaceContent(place: PlaceMapItem, state: MapLayerState): Place
     ...place,
     preview_items: place.preview_items.filter((item) => {
       if (item.kind === "memory") {
-        return state.memories;
+        return includesMemoryContent;
       }
-      return state.places;
+      return includesPlaceContent;
     }),
   };
 }

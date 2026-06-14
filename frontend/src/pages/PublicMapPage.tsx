@@ -13,6 +13,7 @@ import {
   DEFAULT_MAP_LAYER_STATE,
   filterMapPlaces,
   isAllMapLayerPresetActive,
+  isMapLayerControlActive,
   MAP_LAYER_CONTROLS,
   type MapLayerControlId,
   toggleMapLayer,
@@ -39,8 +40,6 @@ export function PublicMapPage() {
   const hasActiveFilters =
     selectedCategoryIds.length > 0 || !isAllLayerActive || places.length !== visiblePlaces.length;
   const showEmptyMapState = !placesQuery.isLoading && !placesQuery.isError && visiblePlaces.length === 0;
-  const showSparseMapState =
-    !placesQuery.isLoading && !placesQuery.isError && visiblePlaces.length > 0 && visiblePlaces.length <= 2;
 
   return (
     <AppShell
@@ -58,12 +57,7 @@ export function PublicMapPage() {
       mapLayerControls={{
         items: MAP_LAYER_CONTROLS.map((layer) => ({
           ...layer,
-          active:
-            layer.id === "all"
-              ? isAllLayerActive
-              : layer.id === "featured"
-                ? mapLayerState.featuredOnly
-                : !isAllLayerActive && mapLayerState[layer.id],
+          active: isMapLayerControlActive(mapLayerState, layer.id),
           count: layerCounts[layer.id],
         })),
         onToggle: (layerId) =>
@@ -97,11 +91,6 @@ export function PublicMapPage() {
                 Wyczyść filtry
               </button>
             ) : null}
-          </div>
-        ) : null}
-        {showSparseMapState ? (
-          <div className="ui-panel map-sparse-panel" role="status">
-            <p>{visiblePlaces.length === 1 ? "1 miejsce na mapie" : `${visiblePlaces.length} miejsca na mapie`}</p>
           </div>
         ) : null}
         <div className="map-frame">

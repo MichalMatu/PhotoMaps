@@ -36,6 +36,15 @@ Zasady produktu:
 - kategorie pochodza z danych i nie powinny byc twardo wpisane w UI,
 - publiczna mapa ma zachowac efekt wizualnej tablicy nawet po optymalizacji kontraktu API.
 
+Kontrakt filtrow mapy:
+
+- `Polecane`, `Miejsca` i `Pamiatki` dzialaja jak niezalezne przelaczniki,
+- jedna albo dwie aktywne warstwy sa pokazywane dokladnie jako te wybrane kontrolki,
+- komplet trzech aktywnych warstw zwija sie wizualnie do jednej kontrolki `Wszystkie`,
+- `Wszystkie` wlaczone z dowolnego stanu pokazuje pelny widok mapy,
+- `Wszystkie` klikniete, gdy jest juz aktywne, czysci warstwy i zostawia sama mape bazowa,
+- nie pokazujemy osobnego toastu/licznika liczby miejsc po filtrze; liczby naleza do kontrolek warstw i kategorii.
+
 ## Pierwsze Miasto
 
 Pierwsze miasto ma miec tylko tyle dobrze wybranych miejsc, ile potrzeba do sprawdzenia mapy. Wroclaw jest datasetem startowym do strojenia produktu:
