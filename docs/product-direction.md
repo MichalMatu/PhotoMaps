@@ -57,6 +57,8 @@ Pierwsze miasto ma miec tylko tyle dobrze wybranych miejsc, ile potrzeba do spra
 
 Nie gonimy za liczba rekordow. Najpierw mapa ma dzialac dobrze na aktualnej probce, dopiero potem rozszerzamy dataset.
 
+Aktualna lokalna baza jest robocza i moze zawierac dummy content. Nie traktujemy jej samej jako zrodla zadan content-quality. Prace nad jakoscia danych maja sens dopiero przy realnym manifescie, realnych assetach albo konkretnym bledzie danych wskazanym przez uzytkownika.
+
 ## Kierunek Globalny
 
 PhotoMap ma technicznie wspierac kolejne miasta, ale rollout nie jest biezacym celem. Kiedy przyjdzie czas na kolejne miasto, powinno wejsc przez content pipeline:
@@ -90,4 +92,17 @@ Nie utrzymujemy osobnej listy zadan produktowych. Ten dokument jest zrodlem kier
 - jakosc danych miejsc, zdjec, pamiatek i prostych kolekcji,
 - prostote admina jako narzedzia korekt, moderacji i pojedynczych zmian.
 
-Audio, pieczatki, platnosci, konta, rozbudowane SEO i duze nowe moduly sa poza aktualnym etapem.
+## Todo
+
+To lista rzeczy odlozonych. Nie wybieramy ich jako kolejnych prac bez osobnej decyzji produktowej:
+
+- audio,
+- pieczatki,
+- platnosci,
+- konta uzytkownikow,
+- rozbudowane SEO,
+- nowe miasta jako aktywne wdrozenie,
+- duze nowe funkcje admina,
+- pelne galerie albo pelne pamiatki w pierwszym renderze mapy.
+
+Nowa praca wchodzi tylko wtedy, gdy poprawia czytelnosc mapy, pokazanie miejsca albo utrzymanie danych.
