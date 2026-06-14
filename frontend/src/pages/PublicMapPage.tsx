@@ -12,6 +12,7 @@ import {
   countMapLayerPlaces,
   DEFAULT_MAP_LAYER_STATE,
   filterMapPlaces,
+  hasAnyMapLayerActive,
   isAllMapLayerPresetActive,
   isMapLayerControlActive,
   MAP_LAYER_CONTROLS,
@@ -37,9 +38,13 @@ export function PublicMapPage() {
   const categoryFilterItems = useMemo(() => getMapCategoryFilterItems(places), [places]);
   const layerCounts = useMemo(() => countMapLayerPlaces(places), [places]);
   const isAllLayerActive = isAllMapLayerPresetActive(mapLayerState);
+  const hasAnyLayerActive = hasAnyMapLayerActive(mapLayerState);
   const hasActiveFilters =
-    selectedCategoryIds.length > 0 || !isAllLayerActive || places.length !== visiblePlaces.length;
-  const showEmptyMapState = !placesQuery.isLoading && !placesQuery.isError && visiblePlaces.length === 0;
+    selectedCategoryIds.length > 0 ||
+    (!isAllLayerActive && hasAnyLayerActive) ||
+    places.length !== visiblePlaces.length;
+  const showEmptyMapState =
+    !placesQuery.isLoading && !placesQuery.isError && hasAnyLayerActive && visiblePlaces.length === 0;
 
   return (
     <AppShell

@@ -33,6 +33,10 @@ export function isAllMapLayerPresetActive(state: MapLayerState) {
   return state.featured && state.places && state.memories;
 }
 
+export function hasAnyMapLayerActive(state: MapLayerState) {
+  return state.featured || state.places || state.memories;
+}
+
 function isFeaturedMapPlace(place: PlaceMapItem) {
   return place.weight >= FEATURED_PLACE_WEIGHT;
 }

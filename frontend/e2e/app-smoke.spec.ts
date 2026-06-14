@@ -327,11 +327,11 @@ test("admin can create category, place and guide through UI", async ({ page, req
     })
     .toEqual({ placeTitles: [editedPlaceTitle], status: "published" });
 
-  await guideRow.getByRole("button", { name: "Usuń trwale" }).click();
+  await guideRow.locator(".guide-row-summary .guide-actions .ui-button--danger").click();
   const deleteGuideDialog = page.getByRole("dialog", { name: "Usunąć trasę?" });
   await expect(deleteGuideDialog).toBeVisible();
   await expect(deleteGuideDialog).toContainText("Same miejsca zostaną w bazie.");
-  await deleteGuideDialog.getByRole("button", { name: "Usuń trwale" }).click();
+  await deleteGuideDialog.getByRole("button", { name: "Usuń" }).click();
   await expect(deleteGuideDialog).toBeHidden();
   await expect(guideRow).toBeHidden();
   const deletedGuideResponse = await request.get(`${API_URL}/api/guides/${guideSlug}`);
@@ -479,7 +479,7 @@ test("visitor can report a photo and admin can inspect, close and delete the rep
 
   const deleteDialog = page.getByRole("dialog", { name: "Usunąć zgłoszenie?" });
   await expect(deleteDialog).toBeVisible();
-  await deleteDialog.getByRole("button", { name: "Usuń trwale" }).click();
+  await deleteDialog.getByRole("button", { name: "Usuń" }).click();
   await expect(deleteDialog).toBeHidden();
   await expect(closedReport).toBeHidden();
 });

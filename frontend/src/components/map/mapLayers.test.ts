@@ -6,6 +6,7 @@ import {
   DEFAULT_MAP_LAYER_STATE,
   EMPTY_MAP_LAYER_STATE,
   filterMapPlaces,
+  hasAnyMapLayerActive,
   isAllMapLayerPresetActive,
   isMapLayerControlActive,
   toggleMapLayer,
@@ -283,6 +284,14 @@ describe("map layer filtering", () => {
     expect(toggleMapLayer(placesOnly, "places")).toEqual(EMPTY_MAP_LAYER_STATE);
     expect(toggleMapLayer(memoriesOnly, "memories")).toEqual(EMPTY_MAP_LAYER_STATE);
     expect(toggleMapLayer({ featured: true, memories: true, places: false }, "all")).toEqual(DEFAULT_MAP_LAYER_STATE);
+  });
+
+  it("identifies the clean base-map state separately from active layer filters", () => {
+    expect(hasAnyMapLayerActive(DEFAULT_MAP_LAYER_STATE)).toBe(true);
+    expect(hasAnyMapLayerActive({ featured: true, memories: false, places: false })).toBe(true);
+    expect(hasAnyMapLayerActive({ featured: false, memories: false, places: true })).toBe(true);
+    expect(hasAnyMapLayerActive({ featured: false, memories: true, places: false })).toBe(true);
+    expect(hasAnyMapLayerActive(EMPTY_MAP_LAYER_STATE)).toBe(false);
   });
 
   it("reports mix-and-match active layer controls while collapsing the complete trio to all", () => {
