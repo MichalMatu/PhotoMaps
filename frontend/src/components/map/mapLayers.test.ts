@@ -257,7 +257,7 @@ describe("map layer filtering", () => {
     expect(memoryPlace.preview_items.map((item) => item.kind)).toEqual(["memory"]);
   });
 
-  it("toggles the all preset to a clean map while individual layers remain non-empty", () => {
+  it("toggles the active all preset to a clean map and restores all from there", () => {
     const placesOnly = toggleMapLayer(DEFAULT_MAP_LAYER_STATE, "places");
     const featuredPlacesOnly = toggleMapLayer(DEFAULT_MAP_LAYER_STATE, "featured");
     const memoriesOnly = toggleMapLayer(DEFAULT_MAP_LAYER_STATE, "memories");
@@ -281,9 +281,35 @@ describe("map layer filtering", () => {
     expect(toggleMapLayer(DEFAULT_MAP_LAYER_STATE, "all")).toEqual(EMPTY_MAP_LAYER_STATE);
     expect(filterMapPlaces([place({ id: "hidden" })], EMPTY_MAP_LAYER_STATE)).toEqual([]);
     expect(toggleMapLayer(EMPTY_MAP_LAYER_STATE, "all")).toEqual(DEFAULT_MAP_LAYER_STATE);
-    expect(toggleMapLayer(placesOnly, "places")).toEqual(EMPTY_MAP_LAYER_STATE);
-    expect(toggleMapLayer(memoriesOnly, "memories")).toEqual(EMPTY_MAP_LAYER_STATE);
     expect(toggleMapLayer({ featured: true, memories: true, places: false }, "all")).toEqual(DEFAULT_MAP_LAYER_STATE);
+  });
+
+  it("returns to all when the last individual layer is turned off", () => {
+    const placesOnly = toggleMapLayer(DEFAULT_MAP_LAYER_STATE, "places");
+    const featuredOnly = toggleMapLayer(DEFAULT_MAP_LAYER_STATE, "featured");
+    const memoriesOnly = toggleMapLayer(DEFAULT_MAP_LAYER_STATE, "memories");
+
+    expect(toggleMapLayer(placesOnly, "places")).toEqual(DEFAULT_MAP_LAYER_STATE);
+    expect(toggleMapLayer(featuredOnly, "featured")).toEqual(DEFAULT_MAP_LAYER_STATE);
+    expect(toggleMapLayer(memoriesOnly, "memories")).toEqual(DEFAULT_MAP_LAYER_STATE);
+  });
+
+  it("turns on individual layers from the clean map state", () => {
+    expect(toggleMapLayer(EMPTY_MAP_LAYER_STATE, "places")).toEqual({
+      featured: false,
+      memories: false,
+      places: true,
+    });
+    expect(toggleMapLayer(EMPTY_MAP_LAYER_STATE, "featured")).toEqual({
+      featured: true,
+      memories: false,
+      places: false,
+    });
+    expect(toggleMapLayer(EMPTY_MAP_LAYER_STATE, "memories")).toEqual({
+      featured: false,
+      memories: true,
+      places: false,
+    });
   });
 
   it("identifies the clean base-map state separately from active layer filters", () => {

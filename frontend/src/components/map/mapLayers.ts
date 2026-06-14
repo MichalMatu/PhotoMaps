@@ -68,6 +68,10 @@ export function toggleMapLayer(state: MapLayerState, layerId: MapLayerControlId)
     [layerId]: !state[layerId],
   };
 
+  if (!hasAnyMapLayerActive(nextState)) {
+    return DEFAULT_MAP_LAYER_STATE;
+  }
+
   if (isAllMapLayerPresetActive(nextState)) {
     return DEFAULT_MAP_LAYER_STATE;
   }
