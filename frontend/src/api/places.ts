@@ -23,6 +23,13 @@ export function updatePlace(placeId: string, payload: PlacePayload): Promise<Pla
   });
 }
 
+export function updatePlaceCover(placeId: string, coverPhotoId: string | null): Promise<Place> {
+  return request<Place>(`/api/admin/places/${placeId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ cover_photo_id: coverPhotoId }),
+  });
+}
+
 export function archivePlace(placeId: string): Promise<Place> {
   return request<Place>(`/api/admin/places/${placeId}`, {
     method: "DELETE",

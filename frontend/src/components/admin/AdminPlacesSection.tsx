@@ -3,6 +3,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 
 import type { Category, City, Place } from "../../api/client";
 import { polishCountLabel } from "../ui/polishCountLabel";
+import { getPlaceCompleteness } from "./placeCompleteness";
 
 type Props = {
   categories: Category[];
@@ -104,14 +105,14 @@ export function AdminPlacesSection({
             <span className="table-cell table-cell--start" role="columnheader">
               Status
             </span>
-            <span className="table-cell" role="columnheader">
-              Miasto
-            </span>
             <span className="table-cell table-cell--start" role="columnheader">
               Kategoria
             </span>
             <span className="table-cell" role="columnheader">
               Priorytet
+            </span>
+            <span className="table-cell" role="columnheader">
+              Kompletność
             </span>
             <span className="table-cell table-cell--actions" role="columnheader">
               Akcje
@@ -144,49 +145,67 @@ export function AdminPlacesSection({
                 </div>
                 {isExpanded ? (
                   <div className="place-city-group" id={cityGroupPlacesId} role="rowgroup">
-                    {cityGroup.places.map((place) => (
-                      <div
-                        className={editingPlaceId === place.id ? "table-row is-selected" : "table-row"}
-                        role="row"
-                        key={place.id}
-                      >
-                        <span className="table-cell table-cell--title" role="cell" data-label="Nazwa">
-                          {place.title}
-                        </span>
-                        <span className="table-cell" role="cell" data-label="Status">
-                          <span className={`ui-status ui-status--${place.status}`}>{place.status}</span>
-                        </span>
-                        <span className="table-cell" role="cell" data-label="Miasto">
-                          {cityGroup.cityName}
-                        </span>
-                        <span className="table-cell table-cell--categories" role="cell" data-label="Kategoria">
-                          {place.category_ids.length
-                            ? place.category_ids
-                                .map((categoryId) => categoryById.get(categoryId)?.label ?? categoryId)
-                                .join(", ")
-                            : "-"}
-                        </span>
-                        <span className="table-cell" role="cell" data-label="Priorytet">
-                          {place.weight.toFixed(1)}
-                        </span>
-                        <div className="table-cell table-cell--actions table-actions" role="cell">
-                          <button type="button" onClick={() => onEdit(place)}>
-                            Edytuj
-                          </button>
-                          <button
-                            className="ui-button ui-button--secondary"
-                            type="button"
-                            disabled={place.status === "archived"}
-                            onClick={() => onArchive(place)}
-                          >
-                            Archiwizuj
-                          </button>
-                          <button className="ui-button ui-button--danger" type="button" onClick={() => onDelete(place)}>
-                            Usuń trwale
-                          </button>
+                    {cityGroup.places.map((place) => {
+                      const completeness = getPlaceCompleteness(place);
+                      const completenessText = `${completeness.passedCount}/${completeness.totalCount}`;
+                      const completenessDetails = completeness.isReady
+                        ? "Komplet"
+                        : `Brak: ${completeness.missingLabels.join(", ")}`;
+
+                      return (
+                        <div
+                          className={editingPlaceId === place.id ? "table-row is-selected" : "table-row"}
+                          role="row"
+                          key={place.id}
+                        >
+                          <span className="table-cell table-cell--title" role="cell" data-label="Nazwa">
+                            {place.title}
+                          </span>
+                          <span className="table-cell" role="cell" data-label="Status">
+                            <span className={`ui-status ui-status--${place.status}`}>{place.status}</span>
+                          </span>
+                          <span className="table-cell table-cell--categories" role="cell" data-label="Kategoria">
+                            {place.category_ids.length
+                              ? place.category_ids
+                                  .map((categoryId) => categoryById.get(categoryId)?.label ?? categoryId)
+                                  .join(", ")
+                              : "-"}
+                          </span>
+                          <span className="table-cell" role="cell" data-label="Priorytet">
+                            {place.weight.toFixed(1)}
+                          </span>
+                          <span className="table-cell table-cell--completeness" role="cell" data-label="Kompletność">
+                            <span
+                              className={completeness.isReady ? "place-completeness is-ready" : "place-completeness"}
+                              title={completenessDetails}
+                            >
+                              {completenessText}
+                            </span>
+                            <span className="place-completeness-details">{completenessDetails}</span>
+                          </span>
+                          <div className="table-cell table-cell--actions table-actions" role="cell">
+                            <button type="button" onClick={() => onEdit(place)}>
+                              Edytuj
+                            </button>
+                            <button
+                              className="ui-button ui-button--secondary"
+                              type="button"
+                              disabled={place.status === "archived"}
+                              onClick={() => onArchive(place)}
+                            >
+                              Archiwizuj
+                            </button>
+                            <button
+                              className="ui-button ui-button--danger"
+                              type="button"
+                              onClick={() => onDelete(place)}
+                            >
+                              Usuń trwale
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : null}
               </Fragment>

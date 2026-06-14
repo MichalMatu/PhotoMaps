@@ -1,6 +1,6 @@
 import { FormEvent, useMemo, useState } from "react";
 
-import { deleteAdminPhoto, mediaUrl, setCoverPhoto, type Photo, type Place } from "../../api/client";
+import { deleteAdminPhoto, mediaUrl, setCoverPhoto, type Photo, type Place, updatePlaceCover } from "../../api/client";
 import { uploadAndApproveAdminPlacePhoto } from "./adminPhotoUpload";
 import { ADMIN_MEDIA_STATUS_LABELS, PHOTO_CAPTION_MAX_LENGTH } from "./adminMediaUi";
 import { canSubmitPhotoUpload } from "./photoUploadState";
@@ -25,6 +25,10 @@ export function PlacePhotoPanel({ onChanged, photos, place }: Props) {
   const sortedPhotos = useMemo(
     () => sortPlacePhotosForPanel(photos, place.cover_photo_id),
     [photos, place.cover_photo_id],
+  );
+  const coverPhoto = useMemo(
+    () => sortedPhotos.find((photo) => photo.id === place.cover_photo_id) ?? null,
+    [place.cover_photo_id, sortedPhotos],
   );
   const canUpload = canSubmitPhotoUpload({ file, isUploading, placeId: place.id });
 
@@ -66,6 +70,19 @@ export function PlacePhotoPanel({ onChanged, photos, place }: Props) {
     }
   }
 
+  async function handleClearCover() {
+    setErrorMessage(null);
+    setIsSettingCover(true);
+    try {
+      await updatePlaceCover(place.id, null);
+      await onChanged();
+    } catch (reason) {
+      setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się zdjąć zdjęcia głównego.");
+    } finally {
+      setIsSettingCover(false);
+    }
+  }
+
   async function handleConfirmDelete() {
     if (!photoToDelete) {
       return;
@@ -88,8 +105,32 @@ export function PlacePhotoPanel({ onChanged, photos, place }: Props) {
   return (
     <section className="place-photo-panel">
       <div className="place-photo-panel-header">
-        <strong className="place-photo-panel-title">Zdjęcia miejsca</strong>
-        <span className="place-photo-panel-count">{photos.length === 1 ? "1 zdjęcie" : `${photos.length} zdjęć`}</span>
+        <div className="place-photo-panel-heading">
+          <strong className="place-photo-panel-title">Zdjęcia miejsca</strong>
+          <span className="place-photo-panel-count">
+            {photos.length === 1 ? "1 zdjęcie" : `${photos.length} zdjęć`}
+          </span>
+        </div>
+        {coverPhoto ? (
+          <div className="place-cover-summary">
+            <img
+              className="place-cover-summary-image"
+              alt={coverPhoto.caption ?? place.title}
+              decoding="async"
+              loading="lazy"
+              src={mediaUrl(coverPhoto.thumb_path)}
+            />
+            <span className="place-cover-summary-label">Główne</span>
+            <button
+              className="ui-button ui-button--ghost"
+              disabled={isSettingCover}
+              type="button"
+              onClick={handleClearCover}
+            >
+              Zdejmij
+            </button>
+          </div>
+        ) : null}
       </div>
 
       <form className="ui-form place-photo-upload" onSubmit={handleUpload}>
@@ -144,6 +185,16 @@ export function PlacePhotoPanel({ onChanged, photos, place }: Props) {
                       onClick={() => handleSetCover(photo)}
                     >
                       Ustaw jako główne
+                    </button>
+                  ) : null}
+                  {isCover ? (
+                    <button
+                      className="ui-button ui-button--ghost"
+                      disabled={isSettingCover}
+                      type="button"
+                      onClick={handleClearCover}
+                    >
+                      Zdejmij główne
                     </button>
                   ) : null}
                   <button className="ui-button ui-button--danger" type="button" onClick={() => setPhotoToDelete(photo)}>

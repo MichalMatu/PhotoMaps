@@ -92,6 +92,77 @@ def test_admin_can_list_and_archive_places(client_session) -> None:
     assert session.get(Place, place.id) is not None
 
 
+def test_admin_place_cover_update_accepts_clear_and_validates_photo(client_session) -> None:
+    client, session = client_session
+    place = Place(city_id="wroclaw", slug="cover-place", title="Cover", lat=51.12, lon=17.04, status="draft")
+    other_place = Place(
+        city_id="wroclaw", slug="other-cover-place", title="Other", lat=51.13, lon=17.05, status="draft"
+    )
+    session.add(place)
+    session.add(other_place)
+    session.commit()
+    session.refresh(place)
+    session.refresh(other_place)
+    approved_photo = Photo(
+        place_id=place.id,
+        original_path="photos/approved-original.jpg",
+        public_path="/media/photos/approved.jpg",
+        thumb_path="/media/photos/approved-thumb.jpg",
+        status="approved",
+    )
+    pending_photo = Photo(
+        place_id=place.id,
+        original_path="photos/pending-original.jpg",
+        public_path="/media/photos/pending.jpg",
+        thumb_path="/media/photos/pending-thumb.jpg",
+        status="pending",
+    )
+    other_photo = Photo(
+        place_id=other_place.id,
+        original_path="photos/other-original.jpg",
+        public_path="/media/photos/other.jpg",
+        thumb_path="/media/photos/other-thumb.jpg",
+        status="approved",
+    )
+    session.add(approved_photo)
+    session.add(pending_photo)
+    session.add(other_photo)
+    session.commit()
+    session.refresh(approved_photo)
+    session.refresh(pending_photo)
+    session.refresh(other_photo)
+
+    pending_response = client.patch(
+        f"/api/admin/places/{place.id}",
+        headers=ADMIN_HEADERS,
+        json={"cover_photo_id": pending_photo.id},
+    )
+    other_place_response = client.patch(
+        f"/api/admin/places/{place.id}",
+        headers=ADMIN_HEADERS,
+        json={"cover_photo_id": other_photo.id},
+    )
+    set_response = client.patch(
+        f"/api/admin/places/{place.id}",
+        headers=ADMIN_HEADERS,
+        json={"cover_photo_id": approved_photo.id},
+    )
+    clear_response = client.patch(
+        f"/api/admin/places/{place.id}",
+        headers=ADMIN_HEADERS,
+        json={"cover_photo_id": None},
+    )
+    session.refresh(place)
+
+    assert pending_response.status_code == 422
+    assert other_place_response.status_code == 422
+    assert set_response.status_code == 200
+    assert set_response.json()["cover_photo_id"] == approved_photo.id
+    assert clear_response.status_code == 200
+    assert clear_response.json()["cover_photo_id"] is None
+    assert place.cover_photo_id is None
+
+
 def test_admin_can_permanently_delete_place_with_related_content(client_session, tmp_path) -> None:
     client, session = client_session
     category = Category(id="coffee", label="Kawa", status="active")

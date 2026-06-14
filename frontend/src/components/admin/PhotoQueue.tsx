@@ -8,6 +8,7 @@ import {
   type Photo,
   type PhotoStatus,
   type Place,
+  updatePlaceCover,
   updateAdminPhoto,
 } from "../../api/client";
 import { AdminMediaAlbums } from "./AdminMediaAlbums";
@@ -69,6 +70,15 @@ export function PhotoQueue({
       await onReviewed();
     } catch (reason) {
       setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się ustawić zdjęcia głównego.");
+    }
+  }
+
+  async function handleClearCover(photo: Photo) {
+    try {
+      await updatePlaceCover(photo.place_id, null);
+      await onReviewed();
+    } catch (reason) {
+      setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się zdjąć zdjęcia głównego.");
     }
   }
 
@@ -150,6 +160,7 @@ export function PhotoQueue({
               }}
               onCaptionDraftChange={setCaptionDraft}
               onDelete={setPhotoToDelete}
+              onClearCover={handleClearCover}
               onReview={handleReview}
               onSaveCaption={handleSaveCaption}
               onSetCover={handleSetCover}

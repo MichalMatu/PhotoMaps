@@ -7,8 +7,8 @@
   display: grid;
   gap: var(--space-3);
   grid-template-columns:
-    minmax(180px, 1.1fr) minmax(86px, 0.35fr) minmax(100px, 0.45fr) minmax(160px, 0.8fr)
-    minmax(68px, 0.2fr) minmax(276px, 0.9fr);
+    minmax(180px, 1.1fr) minmax(86px, 0.35fr) minmax(170px, 0.8fr) minmax(68px, 0.2fr)
+    minmax(120px, 0.42fr) minmax(276px, 0.9fr);
   min-height: 54px;
   padding: var(--space-3) var(--space-4);
 }
@@ -104,6 +104,40 @@
   white-space: normal;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+}
+
+.table-cell--completeness {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.place-completeness {
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-muted-strong);
+  font-size: var(--text-caption);
+  font-weight: 750;
+  line-height: 1;
+  padding: var(--space-1) var(--space-2);
+  white-space: nowrap;
+}
+
+.place-completeness.is-ready {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.place-completeness-details {
+  color: var(--color-muted-strong);
+  font-size: var(--text-caption);
+  line-height: 1.2;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .table-row.is-selected {
@@ -222,6 +256,16 @@
     display: grid;
     grid-column: 1 / -1;
     -webkit-line-clamp: initial;
+  }
+
+  .table-row:not(.table-head) .table-cell--completeness {
+    align-items: start;
+    display: grid;
+    justify-items: start;
+  }
+
+  .table-row:not(.table-head) .place-completeness-details {
+    white-space: normal;
   }
 
   .table-row:not(.table-head) .table-cell--actions {

@@ -11,6 +11,7 @@ type Props = {
   isSavingCaption: boolean;
   onCancelCaptionEdit: () => void;
   onCaptionDraftChange: (value: string) => void;
+  onClearCover: (photo: Photo) => void;
   onDelete: (photo: Photo) => void;
   onReview: (photoId: string, status: "approved" | "rejected") => void;
   onSaveCaption: (event: FormEvent<HTMLFormElement>, photoId: string) => void;
@@ -26,6 +27,7 @@ export function PhotoQueueItem({
   isSavingCaption,
   onCancelCaptionEdit,
   onCaptionDraftChange,
+  onClearCover,
   onDelete,
   onReview,
   onSaveCaption,
@@ -96,6 +98,11 @@ export function PhotoQueueItem({
               {photo.status === "approved" && !isCover ? (
                 <button className="ui-button ui-button--ghost" type="button" onClick={() => onSetCover(photo)}>
                   Ustaw jako główne
+                </button>
+              ) : null}
+              {isCover ? (
+                <button className="ui-button ui-button--ghost" type="button" onClick={() => onClearCover(photo)}>
+                  Zdejmij główne
                 </button>
               ) : null}
               <button className="ui-button ui-button--danger" type="button" onClick={() => onDelete(photo)}>

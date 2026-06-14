@@ -5,6 +5,7 @@ from sqlmodel import Session, select
 
 from app.api.admin_auth import require_admin_token
 from app.db.session import get_session
+from app.models.photo import Photo
 from app.models.place import Place
 from app.schemas.place import PlaceCreate, PlaceRead, PlaceUpdate
 from app.serializers.place import place_to_read
@@ -14,6 +15,17 @@ from app.services.place_taxonomy import category_ids_by_place_id, replace_place_
 from app.services.places import ensure_place_status, ensure_slug_available
 
 router = APIRouter(prefix="/api/admin/places", tags=["admin places"], dependencies=[Depends(require_admin_token)])
+
+
+def ensure_cover_photo(session: Session, place_id: str, cover_photo_id: str | None) -> None:
+    if cover_photo_id is None:
+        return
+
+    photo = session.get(Photo, cover_photo_id)
+    if photo is None or photo.place_id != place_id:
+        raise HTTPException(status_code=422, detail="Cover photo must belong to place")
+    if photo.status != "approved":
+        raise HTTPException(status_code=422, detail="Cover photo must be approved")
 
 
 @router.get("", response_model=list[PlaceRead])
@@ -55,6 +67,8 @@ def update_place(
         ensure_slug_available(session, data["slug"], place.id)
     if "city_id" in data and data["city_id"] is not None:
         ensure_active_city(session, data["city_id"])
+    if "cover_photo_id" in data:
+        ensure_cover_photo(session, place.id, data["cover_photo_id"])
 
     category_ids = data.pop("category_ids", None)
 

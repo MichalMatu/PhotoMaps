@@ -1,5 +1,26 @@
 import { type ReactNode, useState } from "react";
-import { BookOpen, Layers, MapPinned, Menu, MessageSquare, Sparkles, X, type LucideIcon } from "lucide-react";
+import {
+  Binoculars,
+  BookOpen,
+  BrushCleaning,
+  CloudRain,
+  Coffee,
+  Coins,
+  Heart,
+  Landmark,
+  Layers,
+  MapPinned,
+  Menu,
+  MessageSquare,
+  Moon,
+  Palette,
+  Sandwich,
+  Sparkles,
+  Tags,
+  Utensils,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 
 import { APP_NAME } from "../../config/app";
 
@@ -22,6 +43,18 @@ type Props = {
     }>;
     onToggle: (layerId: string) => void;
   };
+  mapCategoryControls?: {
+    items: Array<{
+      active: boolean;
+      count: number;
+      icon: string;
+      id: string;
+      label: string;
+    }>;
+    onClear: () => void;
+    onToggle: (categoryId: string) => void;
+    selectedCount: number;
+  };
 };
 
 const primaryItems = [
@@ -36,13 +69,32 @@ const mapLayerIcons: Record<string, LucideIcon> = {
   memories: MessageSquare,
 };
 
-export function AppShell({ activeSection, adminAction, children, mapLayerControls }: Props) {
+const mapCategoryIcons: Record<string, LucideIcon> = {
+  binoculars: Binoculars,
+  "cloud-rain": CloudRain,
+  coffee: Coffee,
+  coins: Coins,
+  heart: Heart,
+  landmark: Landmark,
+  moon: Moon,
+  palette: Palette,
+  sandwich: Sandwich,
+  sparkles: Sparkles,
+  utensils: Utensils,
+};
+
+const MAX_RAIL_CATEGORY_BUTTONS = 6;
+
+export function AppShell({ activeSection, adminAction, children, mapCategoryControls, mapLayerControls }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const railItems = primaryItems.filter((item) => item.section !== activeSection);
   const handleAdminAction = () => {
     setIsMenuOpen(false);
     adminAction?.onClick();
   };
+  const categoryItems = mapCategoryControls?.items ?? [];
+  const shouldShowRailCategoryIcons = categoryItems.length > 0 && categoryItems.length <= MAX_RAIL_CATEGORY_BUTTONS;
+  const shouldShowCategoryMenuButton = categoryItems.length > MAX_RAIL_CATEGORY_BUTTONS;
 
   return (
     <div className="app-shell">
@@ -79,6 +131,43 @@ export function AppShell({ activeSection, adminAction, children, mapLayerControl
                 </button>
               );
             })}
+          </nav>
+        ) : null}
+
+        {activeSection === "map" && mapCategoryControls && categoryItems.length > 0 ? (
+          <nav className="rail-category-nav" aria-label="Kategorie mapy">
+            {shouldShowRailCategoryIcons
+              ? categoryItems.map((item) => {
+                  const CategoryIcon = mapCategoryIcons[item.icon];
+                  return (
+                    <button
+                      className={item.active ? "rail-category-button is-active" : "rail-category-button"}
+                      type="button"
+                      key={item.id}
+                      aria-label={`${item.label}: ${item.count}`}
+                      aria-pressed={item.active}
+                      title={`${item.label} (${item.count})`}
+                      onClick={() => mapCategoryControls.onToggle(item.id)}
+                    >
+                      <CategoryIcon aria-hidden="true" size={22} />
+                    </button>
+                  );
+                })
+              : null}
+            {shouldShowCategoryMenuButton ? (
+              <button
+                className={
+                  mapCategoryControls.selectedCount > 0 ? "rail-category-button is-active" : "rail-category-button"
+                }
+                type="button"
+                aria-label="Otwórz kategorie mapy"
+                title="Kategorie"
+                onClick={() => setIsMenuOpen(true)}
+              >
+                <Tags aria-hidden="true" size={22} />
+                <strong>{mapCategoryControls.selectedCount || categoryItems.length}</strong>
+              </button>
+            ) : null}
           </nav>
         ) : null}
 
@@ -161,6 +250,41 @@ export function AppShell({ activeSection, adminAction, children, mapLayerControl
                 </button>
               );
             })}
+          </nav>
+        ) : null}
+
+        {activeSection === "map" && mapCategoryControls && categoryItems.length > 0 ? (
+          <nav className="drawer-section drawer-section--categories" aria-label="Kategorie mapy">
+            <div className="drawer-category-grid">
+              {categoryItems.map((item) => {
+                const CategoryIcon = mapCategoryIcons[item.icon];
+                return (
+                  <button
+                    className={item.active ? "drawer-category-button is-active" : "drawer-category-button"}
+                    type="button"
+                    key={item.id}
+                    aria-label={`${item.label}: ${item.count}`}
+                    aria-pressed={item.active}
+                    title={`${item.label} (${item.count})`}
+                    onClick={() => mapCategoryControls.onToggle(item.id)}
+                  >
+                    <CategoryIcon aria-hidden="true" size={24} />
+                    <strong>{item.count}</strong>
+                  </button>
+                );
+              })}
+              {mapCategoryControls.selectedCount > 0 ? (
+                <button
+                  className="drawer-category-button drawer-category-button--clear"
+                  type="button"
+                  aria-label="Wyczyść kategorie"
+                  title="Wyczyść kategorie"
+                  onClick={mapCategoryControls.onClear}
+                >
+                  <BrushCleaning aria-hidden="true" size={24} />
+                </button>
+              ) : null}
+            </div>
           </nav>
         ) : null}
 
