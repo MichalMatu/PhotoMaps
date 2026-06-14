@@ -2,6 +2,7 @@ import { Fragment, useMemo, useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
 import type { Category, City, Place } from "../../api/client";
+import { polishCountLabel } from "../ui/polishCountLabel";
 
 type Props = {
   categories: Category[];
@@ -13,6 +14,14 @@ type Props = {
   onEdit: (place: Place) => void;
   places: Place[];
 };
+
+function placeCountLabel(count: number) {
+  return polishCountLabel(count, {
+    few: "miejsca",
+    many: "miejsc",
+    one: "miejsce",
+  });
+}
 
 export function AdminPlacesSection({
   categories,
@@ -111,11 +120,6 @@ export function AdminPlacesSection({
           {placeCityGroups.map((cityGroup) => {
             const isExpanded = expandedCityIds.has(cityGroup.cityId);
             const cityGroupPlacesId = `place-city-group-${cityGroup.cityId}`;
-            const cityGroupStatusCounts = {
-              archived: cityGroup.places.filter((place) => place.status === "archived").length,
-              draft: cityGroup.places.filter((place) => place.status === "draft").length,
-              published: cityGroup.places.filter((place) => place.status === "published").length,
-            };
 
             return (
               <Fragment key={cityGroup.cityId}>
@@ -135,11 +139,7 @@ export function AdminPlacesSection({
                       )}
                       <span className="place-city-title">{cityGroup.cityName}</span>
                     </span>
-                    <span className="place-city-count">{cityGroup.places.length} miejsc</span>
-                    <span className="place-city-statuses">
-                      {cityGroupStatusCounts.published} opublikowane / {cityGroupStatusCounts.draft} szkice /{" "}
-                      {cityGroupStatusCounts.archived} archiwalne
-                    </span>
+                    <span className="place-city-count">{placeCountLabel(cityGroup.places.length)}</span>
                   </button>
                 </div>
                 {isExpanded ? (
