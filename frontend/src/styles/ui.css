@@ -445,6 +445,7 @@ label.checkbox-field.consent-field .field-error {
 }
 
 .content-panel {
+  align-content: start;
   display: grid;
   gap: var(--space-5);
   margin: 0 auto;
