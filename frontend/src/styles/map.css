@@ -751,7 +751,7 @@
 
 .pinned-media-card-image-wrap {
   background: var(--surface-media);
-  cursor: zoom-in;
+  cursor: inherit;
   overflow: hidden;
   position: relative;
 }

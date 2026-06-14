@@ -372,6 +372,60 @@ test("visual: mobile photo detail fills the modal without internal scrolling", a
   expect(mobileLayout.imageHeight).toBeGreaterThanOrEqual(mobileLayout.dialogHeight - 4);
 });
 
+test("pinned media card image area drags and still toggles map link", async ({ page }) => {
+  await page.setViewportSize({ height: 820, width: 1280 });
+  await page.addInitScript(() => window.localStorage.removeItem("photomap:pinned-media-board:v1"));
+  await mockSharedApi(page);
+  await page.goto("/");
+  await clickMapMarker(page, places[0].title);
+  await clickMapMarker(page, rynekCover.caption);
+
+  const detailDialog = page.getByRole("dialog", { name: places[0].title });
+  await expect(detailDialog).toBeVisible();
+  await detailDialog.getByRole("button", { name: "Przypnij zdjęcie" }).click();
+  await expect(detailDialog).toBeHidden();
+
+  const card = page.getByTestId("pinned-media-card");
+  const imageWrap = card.locator(".pinned-media-card-image-wrap");
+  await expect(card).toBeVisible();
+  await expect(page.getByTestId("pinned-media-map-link")).toHaveCount(0);
+
+  const initialCardBox = await card.boundingBox();
+  const imageBox = await imageWrap.boundingBox();
+  expect(initialCardBox).not.toBeNull();
+  expect(imageBox).not.toBeNull();
+
+  const imageCenter = {
+    x: imageBox!.x + imageBox!.width / 2,
+    y: imageBox!.y + imageBox!.height / 2,
+  };
+  await page.mouse.move(imageCenter.x, imageCenter.y);
+  await page.mouse.down();
+  await page.mouse.move(imageCenter.x - 140, imageCenter.y + 80, { steps: 6 });
+  await page.mouse.up();
+
+  await expect
+    .poll(async () => {
+      const draggedBox = await card.boundingBox();
+      return draggedBox ? Math.round(initialCardBox!.x - draggedBox.x) : 0;
+    })
+    .toBeGreaterThan(40);
+
+  const draggedImageBox = await imageWrap.boundingBox();
+  expect(draggedImageBox).not.toBeNull();
+  await page.mouse.dblclick(
+    draggedImageBox!.x + draggedImageBox!.width / 2,
+    draggedImageBox!.y + draggedImageBox!.height / 2,
+  );
+  await expect(page.getByTestId("pinned-media-map-link")).toHaveCount(1);
+
+  await page.mouse.dblclick(
+    draggedImageBox!.x + draggedImageBox!.width / 2,
+    draggedImageBox!.y + draggedImageBox!.height / 2,
+  );
+  await expect(page.getByTestId("pinned-media-map-link")).toHaveCount(0);
+});
+
 test("visual: mobile memory sheet", async ({ page }) => {
   await page.setViewportSize({ height: 780, width: 390 });
   await mockSharedApi(page);

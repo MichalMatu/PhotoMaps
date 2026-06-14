@@ -65,6 +65,8 @@ type PinnedMediaBoardProps = {
 
 type InteractionState = {
   cardId: string;
+  captureTarget: HTMLElement;
+  hasPointerCapture: boolean;
   mode: "drag" | "resize";
   pointerId: number;
   startClientX: number;
@@ -324,6 +326,10 @@ export function PinnedMediaBoard({
       }
 
       event.preventDefault();
+      if (!interaction.hasPointerCapture) {
+        interaction.captureTarget.setPointerCapture(interaction.pointerId);
+        interaction.hasPointerCapture = true;
+      }
       const currentCards = cardsRef.current;
       const currentCard = currentCards.find((card) => card.id === interaction.cardId);
       const zIndex = currentCard?.layout.zIndex ?? interaction.startLayout.zIndex;
@@ -355,6 +361,9 @@ export function PinnedMediaBoard({
         return;
       }
 
+      if (interaction.hasPointerCapture && interaction.captureTarget.hasPointerCapture(interaction.pointerId)) {
+        interaction.captureTarget.releasePointerCapture(interaction.pointerId);
+      }
       interactionRef.current = null;
       setActiveCardId(null);
     };
@@ -382,14 +391,18 @@ export function PinnedMediaBoard({
       setActiveCardId(card.id);
       interactionRef.current = {
         cardId: card.id,
+        captureTarget: event.currentTarget,
+        hasPointerCapture: mode === "resize",
         mode,
         pointerId: event.pointerId,
         startClientX: event.clientX,
         startClientY: event.clientY,
         startLayout: card.layout,
       };
-      event.currentTarget.setPointerCapture(event.pointerId);
-      event.preventDefault();
+      if (mode === "resize") {
+        event.currentTarget.setPointerCapture(event.pointerId);
+        event.preventDefault();
+      }
     },
     [onBringToFront],
   );
@@ -487,7 +500,6 @@ function PinnedMediaCard({
     >
       <div
         className="pinned-media-card-image-wrap"
-        data-drag-ignore
         style={{ height: `${card.layout.height}px` }}
         title="Kliknij dwukrotnie, żeby pokazać miejsce na mapie"
         onDoubleClick={(event) => {
