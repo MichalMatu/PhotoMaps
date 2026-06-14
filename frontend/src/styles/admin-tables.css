@@ -33,7 +33,9 @@
   color: var(--color-text);
   display: grid;
   gap: var(--space-3);
-  grid-template-columns: 24px minmax(160px, 1fr) auto auto;
+  grid-template-columns:
+    minmax(180px, 1.1fr) minmax(86px, 0.35fr) minmax(100px, 0.45fr) minmax(160px, 0.8fr)
+    minmax(68px, 0.2fr) minmax(276px, 0.9fr);
   justify-items: start;
   min-height: 52px;
   padding: 0 var(--space-4);
@@ -44,6 +46,14 @@
 .place-city-toggle:hover {
   background: var(--color-accent-soft);
   color: var(--color-accent);
+}
+
+.place-city-label {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--space-3);
+  grid-column: 1 / 5;
+  min-width: 0;
 }
 
 .place-city-title {
@@ -66,7 +76,14 @@
   background: var(--color-surface-strong);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
+  grid-column: 5;
+  justify-self: start;
   padding: 4px 9px;
+}
+
+.place-city-statuses {
+  grid-column: 6;
+  justify-self: start;
 }
 
 .place-city-group {
@@ -168,9 +185,14 @@
 
   .place-city-toggle {
     border-radius: 0;
-    grid-template-columns: 24px minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     min-height: 54px;
     padding: 0 var(--space-4);
+  }
+
+  .place-city-label,
+  .place-city-count {
+    grid-column: auto;
   }
 
   .place-city-statuses {
@@ -239,11 +261,12 @@
   }
 
   .place-city-toggle {
-    grid-template-columns: 24px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .place-city-count {
-    grid-column: 2;
+    grid-column: auto;
+    justify-self: start;
   }
 
   .table-actions button {

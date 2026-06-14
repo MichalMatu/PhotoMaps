@@ -127,12 +127,14 @@ export function AdminPlacesSection({
                     aria-expanded={isExpanded}
                     onClick={() => toggleCity(cityGroup.cityId)}
                   >
-                    {isExpanded ? (
-                      <ChevronDown aria-hidden="true" size={18} />
-                    ) : (
-                      <ChevronRight aria-hidden="true" size={18} />
-                    )}
-                    <span className="place-city-title">{cityGroup.cityName}</span>
+                    <span className="place-city-label">
+                      {isExpanded ? (
+                        <ChevronDown aria-hidden="true" size={18} />
+                      ) : (
+                        <ChevronRight aria-hidden="true" size={18} />
+                      )}
+                      <span className="place-city-title">{cityGroup.cityName}</span>
+                    </span>
                     <span className="place-city-count">{cityGroup.places.length} miejsc</span>
                     <span className="place-city-statuses">
                       {cityGroupStatusCounts.published} opublikowane / {cityGroupStatusCounts.draft} szkice /{" "}
