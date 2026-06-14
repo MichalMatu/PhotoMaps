@@ -100,19 +100,14 @@ function placeMatchesMapLayerState(place: PlaceMapItem, state: MapLayerState) {
     return true;
   }
 
-  if (state.featured && !isFeaturedMapPlace(place)) {
-    return false;
-  }
+  const includesPlaceContent = state.places || (state.featured && isFeaturedMapPlace(place));
+  const includesMemoryContent = state.memories && placeHasMemories(place);
 
-  if (state.places || (state.featured && !state.memories)) {
-    return true;
-  }
-
-  return state.memories && placeHasMemories(place);
+  return includesPlaceContent || includesMemoryContent;
 }
 
 function filterMapPlaceContent(place: PlaceMapItem, state: MapLayerState): PlaceMapItem {
-  const includesPlaceContent = state.places || (state.featured && !state.memories);
+  const includesPlaceContent = state.places || (state.featured && isFeaturedMapPlace(place));
   const includesMemoryContent = state.memories;
 
   if (includesPlaceContent && includesMemoryContent) {

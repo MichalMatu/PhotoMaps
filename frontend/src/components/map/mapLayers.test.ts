@@ -104,7 +104,7 @@ describe("map layer filtering", () => {
     });
   });
 
-  it("combines the featured place filter with memory-only content", () => {
+  it("adds featured places and memory places when both layers are active", () => {
     const places = [
       place({
         id: "featured-memory",
@@ -155,6 +155,23 @@ describe("map layer filtering", () => {
           },
         ],
       }),
+      place({
+        id: "regular-photo",
+        preview_items: [
+          {
+            approved_at: null,
+            caption: null,
+            created_at: "2026-06-12T00:00:00",
+            id: "photo-2",
+            kind: "photo",
+            place_id: "regular-photo",
+            public_path: "/media/photo-2.jpg",
+            role: "gallery",
+            source: "editorial",
+            thumb_path: "/media/photo-2-thumb.jpg",
+          },
+        ],
+      }),
     ];
 
     const visiblePlaces = filterMapPlaces(places, {
@@ -163,8 +180,43 @@ describe("map layer filtering", () => {
       places: false,
     });
 
-    expect(visiblePlaces.map((item) => item.id)).toEqual(["featured-memory"]);
-    expect(visiblePlaces[0].preview_items.map((item) => item.kind)).toEqual(["memory"]);
+    expect(visiblePlaces.map((item) => item.id)).toEqual(["featured-memory", "regular-memory"]);
+    expect(visiblePlaces[0].preview_items.map((item) => item.kind)).toEqual(["photo", "memory"]);
+    expect(visiblePlaces[1].preview_items.map((item) => item.kind)).toEqual(["memory"]);
+  });
+
+  it("keeps places additive when featured and places are both selected", () => {
+    const places = [
+      place({ id: "featured", weight: 2.5 }),
+      place({ id: "regular" }),
+      place({
+        id: "regular-memory",
+        memory_count: 1,
+        preview_items: [
+          {
+            approved_at: null,
+            caption: "Byłem tutaj",
+            created_at: "2026-06-12T00:00:00",
+            id: "memory-1",
+            kind: "memory",
+            place_id: "regular-memory",
+            public_path: "/media/memory.jpg",
+            role: null,
+            source: null,
+            thumb_path: "/media/memory-thumb.jpg",
+          },
+        ],
+      }),
+    ];
+
+    const visiblePlaces = filterMapPlaces(places, {
+      featured: true,
+      memories: false,
+      places: true,
+    });
+
+    expect(visiblePlaces.map((item) => item.id)).toEqual(["featured", "regular", "regular-memory"]);
+    expect(visiblePlaces[2].preview_items).toEqual([]);
   });
 
   it("shows featured places as a standalone preset", () => {
