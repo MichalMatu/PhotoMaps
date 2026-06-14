@@ -10,6 +10,7 @@ import {
   readPinnedMediaCards,
   resolvePinnedMediaCards,
   snapPinnedMediaLayout,
+  snapPinnedMediaResizeLayout,
   type StoredPinnedMediaCard,
   upsertPinnedMediaCard,
   writePinnedMediaCards,
@@ -255,6 +256,90 @@ describe("pinned media board helpers", () => {
         bounds,
       ),
     ).toMatchObject({ x: 400, y: 12 });
+  });
+
+  it("snaps resized card bottom edge without moving its top-left corner", () => {
+    const bounds = { height: 900, left: 0, top: 0, width: 1200 };
+    const other = {
+      aspectRatio: 1.6,
+      height: 200,
+      width: 320,
+      x: 500,
+      y: 100,
+      zIndex: 1,
+    };
+    const layout = snapPinnedMediaResizeLayout(
+      {
+        aspectRatio: 1.6,
+        height: 194,
+        width: 310,
+        x: 100,
+        y: 100,
+        zIndex: 2,
+      },
+      [other],
+      bounds,
+    );
+
+    expect(layout.x).toBe(100);
+    expect(layout.y).toBe(100);
+    expect(layout.y + layout.height + 72).toBe(other.y + other.height + 72);
+  });
+
+  it("uses bottom edge distance for resize snapping on wide media", () => {
+    const bounds = { height: 900, left: 0, top: 0, width: 1200 };
+    const other = {
+      aspectRatio: 1.6,
+      height: 150,
+      width: 240,
+      x: 500,
+      y: 100,
+      zIndex: 1,
+    };
+    const layout = snapPinnedMediaResizeLayout(
+      {
+        aspectRatio: 2.4,
+        height: 143,
+        width: 343,
+        x: 100,
+        y: 100,
+        zIndex: 2,
+      },
+      [other],
+      bounds,
+    );
+
+    expect(layout.x).toBe(100);
+    expect(layout.y).toBe(100);
+    expect(layout.y + layout.height + 72).toBe(other.y + other.height + 72);
+  });
+
+  it("snaps resized card right edge without moving its top-left corner", () => {
+    const bounds = { height: 900, left: 0, top: 0, width: 1200 };
+    const other = {
+      aspectRatio: 1.6,
+      height: 160,
+      width: 240,
+      x: 400,
+      y: 320,
+      zIndex: 1,
+    };
+    const layout = snapPinnedMediaResizeLayout(
+      {
+        aspectRatio: 1.6,
+        height: 184,
+        width: 294,
+        x: 100,
+        y: 100,
+        zIndex: 2,
+      },
+      [other],
+      bounds,
+    );
+
+    expect(layout.x).toBe(100);
+    expect(layout.y).toBe(100);
+    expect(layout.x + layout.width).toBe(other.x);
   });
 
   it("creates a compact default card inside the map frame instead of keeping the large modal size", () => {

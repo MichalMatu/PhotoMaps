@@ -20,6 +20,7 @@ import {
   resolvePinnedMediaCards,
   safeAspectRatio,
   snapPinnedMediaLayout,
+  snapPinnedMediaResizeLayout,
   type PinnedMediaLayout,
   type RectLike,
   type ResolvedPinnedMediaCard,
@@ -242,7 +243,12 @@ export function PinnedMediaBoard({ cards, notice, onBringToFront, onLayoutChange
             }
           : resizeLayout(interaction.startLayout, deltaX, deltaY, zIndex);
 
-      onLayoutChange(interaction.cardId, snapPinnedMediaLayout(nextLayout, otherLayouts, bounds));
+      onLayoutChange(
+        interaction.cardId,
+        interaction.mode === "resize"
+          ? snapPinnedMediaResizeLayout(nextLayout, otherLayouts, bounds)
+          : snapPinnedMediaLayout(nextLayout, otherLayouts, bounds),
+      );
     };
 
     const handlePointerEnd = (event: PointerEvent) => {

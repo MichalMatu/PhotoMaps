@@ -174,6 +174,67 @@ export function snapPinnedMediaLayout(
   return clampPinnedMediaLayout(next, bounds);
 }
 
+export function snapPinnedMediaResizeLayout(
+  layout: PinnedMediaLayout,
+  otherLayouts: PinnedMediaLayout[],
+  bounds: PinnedMediaBounds,
+): PinnedMediaLayout {
+  const clampedLayout = clampPinnedMediaLayout(layout, bounds);
+  const aspectRatio = safeAspectRatio(clampedLayout.aspectRatio);
+  const intendedWidth = clampedLayout.width;
+  const rightEdgeTargets = [
+    bounds.left + bounds.width - PINNED_MEDIA_FRAME_MARGIN,
+    ...otherLayouts.flatMap((other) => [other.x, other.x + other.width]),
+  ];
+  const bottomEdgeTargets = [
+    bounds.top + bounds.height - PINNED_MEDIA_FRAME_MARGIN,
+    ...otherLayouts.flatMap((other) => {
+      const otherTotalHeight = cardTotalHeight(other);
+      return [other.y, other.y + otherTotalHeight];
+    }),
+  ];
+  const candidates: PinnedMediaLayout[] = [];
+
+  for (const target of rightEdgeTargets) {
+    const candidate = snapResizeCandidate(
+      target - clampedLayout.x,
+      Math.abs(clampedLayout.x + clampedLayout.width - target),
+      clampedLayout,
+      intendedWidth,
+      aspectRatio,
+      bounds,
+    );
+    if (candidate) {
+      candidates.push(candidate);
+    }
+  }
+
+  for (const target of bottomEdgeTargets) {
+    const imageHeight = target - clampedLayout.y - PINNED_MEDIA_CARD_CHROME_HEIGHT;
+    const candidate = snapResizeCandidate(
+      imageHeight * aspectRatio,
+      Math.abs(clampedLayout.y + cardTotalHeight(clampedLayout) - target),
+      clampedLayout,
+      intendedWidth,
+      aspectRatio,
+      bounds,
+    );
+    if (candidate) {
+      candidates.push(candidate);
+    }
+  }
+
+  if (candidates.length === 0) {
+    return clampedLayout;
+  }
+
+  return candidates.reduce((bestCandidate, candidate) =>
+    Math.abs(candidate.width - intendedWidth) < Math.abs(bestCandidate.width - intendedWidth)
+      ? candidate
+      : bestCandidate,
+  );
+}
+
 export function defaultPinnedMediaLayout({
   aspectRatio,
   bounds,
@@ -401,6 +462,36 @@ function nextZIndex(cards: StoredPinnedMediaCard[]) {
 
 function normalizeZIndex(value: number) {
   return Math.max(1, Math.round(Number.isFinite(value) ? value : 1));
+}
+
+function resizeFromWidth(layout: PinnedMediaLayout, width: number, aspectRatio: number): PinnedMediaLayout {
+  return {
+    ...layout,
+    aspectRatio,
+    height: roundPixel(width / aspectRatio),
+    width: roundPixel(width),
+  };
+}
+
+function snapResizeCandidate(
+  width: number,
+  edgeDistance: number,
+  layout: PinnedMediaLayout,
+  intendedWidth: number,
+  aspectRatio: number,
+  bounds: PinnedMediaBounds,
+) {
+  if (!Number.isFinite(width) || edgeDistance > PINNED_MEDIA_SNAP_THRESHOLD) {
+    return null;
+  }
+
+  const candidate = clampPinnedMediaLayout(resizeFromWidth(layout, width, aspectRatio), bounds);
+
+  if (candidate.x !== layout.x || candidate.y !== layout.y) {
+    return null;
+  }
+
+  return candidate;
 }
 
 function snapToTargets(value: number, targets: number[]) {
