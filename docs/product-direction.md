@@ -82,6 +82,12 @@ W UI i dokumentacji produktowej preferujemy proste slowa:
 
 Techniczne `guide` moze zostac w backendzie. Produktowo mowimy `trasa` albo `kolekcja miejsc`, zaleznie od kontekstu.
 
-## Redukcja Zakresu
+## Aktualny Nacisk
 
-Audio, pieczatki, platnosci, konta, rozbudowane SEO i duze nowe moduly sa poza aktualnym etapem. Obecny nacisk jest w [PLAN.md](../PLAN.md): mniej zakresu, mocniejsza mapa, prostszy kontrakt i latwiejsze utrzymanie danych.
+Nie utrzymujemy osobnej listy zadan produktowych. Ten dokument jest zrodlem kierunku, a nowe prace powinny wzmacniac jeden z trzech obszarow:
+
+- czytelnosc i atrakcyjnosc publicznej mapy na realnych danych,
+- jakosc danych miejsc, zdjec, pamiatek i prostych kolekcji,
+- prostote admina jako narzedzia korekt, moderacji i pojedynczych zmian.
+
+Audio, pieczatki, platnosci, konta, rozbudowane SEO i duze nowe moduly sa poza aktualnym etapem.

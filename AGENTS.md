@@ -134,6 +134,6 @@ Przed edycja sciezki objetej lokalnym plikiem przeczytaj root `AGENTS.md` oraz n
 - `assets/place-icons/AGENTS.md` - cykl zycia redakcyjnych ikon miejsc.
 - `scripts/content/AGENTS.md` - importer manifestow i jego kontrakt idempotencji.
 
-## Roadmapa
+## Kierunek Produktu
 
-Biezaca roadmapa redukcji jest tylko w [PLAN.md](PLAN.md). Nie dopisuj drugiej roadmapy do tego pliku.
+Biezacy kierunek produktu jest w [docs/product-direction.md](docs/product-direction.md). Nie dopisuj osobnych roadmap, list zadan ani rownoleglych planow produktu; jesli kierunek sie zmienia, aktualizuj ten dokument i powiazane lokalne kontrakty.

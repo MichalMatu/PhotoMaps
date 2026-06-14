@@ -21,7 +21,7 @@ Publiczna mapa jest glownym produktem: wizualna tablica miniaturek miejsc, warst
 - Publicznie renderuj tylko opublikowane miejsca oraz zatwierdzone media i pamiatki.
 - Klikniecie miniatury wachlarza otwiera bezposrednio jeden modal medium. Nie tworz posredniego viewera, ktory tylko powtarza to samo zdjecie.
 - Modal medium pokazuje jeden kompaktowy blok tekstu na obrazie: podpis zdjecia z opisem miejsca albo dane pamiatki. Akcje edycji i zgloszenia pozostaja kompaktowe.
-- Najblizszy zakres mapy to quality pass obecnego pierwszego widoku na realnym datasecie; naprawiaj tylko realne problemy z czytelnoscia, kolizjami, kadrowaniem albo pustym stanem.
+- Zmiany pierwszego widoku mapy powinny wynikac z realnych problemow z czytelnoscia, kolizjami, kadrowaniem albo pustym stanem.
 
 ## Work Guidance
 

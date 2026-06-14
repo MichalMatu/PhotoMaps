@@ -6,7 +6,6 @@ Glownym bytem systemu jest `place`. Zdjecia, pamiatki, kolekcje i zgloszenia sa 
 
 ## Dokumenty
 
-- [Plan redukcji](PLAN.md)
 - [Kierunek produktu](docs/product-direction.md)
 - [Content pipeline](docs/content-pipeline.md)
 - [Prompt miniatur miejsc](docs/image_generation/place-thumbnails.md)
