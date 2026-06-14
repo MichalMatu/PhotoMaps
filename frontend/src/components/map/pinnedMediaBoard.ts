@@ -384,9 +384,8 @@ export function updatePinnedMediaLayout(
   );
 }
 
-export function pinnedMediaConnectionGeometry(layout: PinnedMediaLayout, target: PinnedMediaPoint) {
-  const totalHeight = cardTotalHeight(layout);
-  const source = closestCardEdgePoint(layout, totalHeight, target);
+export function pinnedMediaConnectionGeometry(frame: RectLike, target: PinnedMediaPoint) {
+  const source = closestCardEdgePoint(frame, target);
   const deltaX = target.x - source.x;
   const deltaY = target.y - source.y;
   const distance = Math.hypot(deltaX, deltaY);
@@ -413,15 +412,11 @@ export function pinnedMediaConnectionGeometry(layout: PinnedMediaLayout, target:
   };
 }
 
-function closestCardEdgePoint(
-  layout: Pick<PinnedMediaLayout, "width" | "x" | "y">,
-  totalHeight: number,
-  target: PinnedMediaPoint,
-) {
-  const left = layout.x;
-  const right = layout.x + layout.width;
-  const top = layout.y;
-  const bottom = layout.y + totalHeight;
+function closestCardEdgePoint(frame: RectLike, target: PinnedMediaPoint) {
+  const left = frame.left;
+  const right = frame.left + frame.width;
+  const top = frame.top;
+  const bottom = frame.top + frame.height;
   const clampedX = clamp(target.x, left, right);
   const clampedY = clamp(target.y, top, bottom);
 

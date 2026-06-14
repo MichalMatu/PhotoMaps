@@ -2,8 +2,10 @@ import { X } from "lucide-react";
 import {
   type CSSProperties,
   type PointerEvent as ReactPointerEvent,
+  type RefCallback,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -304,13 +306,58 @@ export function PinnedMediaBoard({
   projectPlacePoint = null,
 }: PinnedMediaBoardProps) {
   const cardsRef = useRef(cards);
+  const cardElementsRef = useRef(new Map<string, HTMLElement>());
   const interactionRef = useRef<InteractionState | null>(null);
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
+  const [cardRects, setCardRects] = useState<Record<string, RectLike>>({});
   const [linkedCardId, setLinkedCardId] = useState<string | null>(null);
 
-  useEffect(() => {
+  const measureCardRects = useCallback(() => {
+    const nextRects: Record<string, RectLike> = {};
+
+    for (const card of cardsRef.current) {
+      const element = cardElementsRef.current.get(card.id);
+      if (!element) {
+        continue;
+      }
+
+      const rect = element.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) {
+        continue;
+      }
+
+      nextRects[card.id] = {
+        height: Math.round(rect.height),
+        left: Math.round(rect.left),
+        top: Math.round(rect.top),
+        width: Math.round(rect.width),
+      };
+    }
+
+    setCardRects((currentRects) => (rectRecordsEqual(currentRects, nextRects) ? currentRects : nextRects));
+  }, []);
+
+  const setCardElement = useCallback((cardId: string, element: HTMLElement | null) => {
+    if (element) {
+      cardElementsRef.current.set(cardId, element);
+      return;
+    }
+
+    cardElementsRef.current.delete(cardId);
+  }, []);
+
+  useLayoutEffect(() => {
     cardsRef.current = cards;
-  }, [cards]);
+    measureCardRects();
+  }, [cards, measureCardRects]);
+
+  useEffect(() => {
+    window.addEventListener("resize", measureCardRects);
+
+    return () => {
+      window.removeEventListener("resize", measureCardRects);
+    };
+  }, [measureCardRects]);
 
   useEffect(() => {
     if (linkedCardId && !cards.some((card) => card.id === linkedCardId)) {
@@ -408,8 +455,9 @@ export function PinnedMediaBoard({
   );
   const linkedCard = linkedCardId ? (cards.find((card) => card.id === linkedCardId) ?? null) : null;
   const linkedTarget = linkedCard && projectPlacePoint ? projectPlacePoint(linkedCard.place) : null;
+  const linkedFrame = linkedCard ? (cardRects[linkedCard.id] ?? null) : null;
   const linkGeometry =
-    linkedCard && linkedTarget ? pinnedMediaConnectionGeometry(linkedCard.layout, linkedTarget) : null;
+    linkedCard && linkedTarget && linkedFrame ? pinnedMediaConnectionGeometry(linkedFrame, linkedTarget) : null;
   const toggleMapLink = useCallback((cardId: string) => {
     setLinkedCardId((currentCardId) => (currentCardId === cardId ? null : cardId));
   }, []);
@@ -423,6 +471,7 @@ export function PinnedMediaBoard({
         <PinnedMediaCard
           key={card.id}
           card={card}
+          cardRef={(element) => setCardElement(card.id, element)}
           isActive={activeCardId === card.id}
           isLinked={linkedCardId === card.id}
           onBringToFront={onBringToFront}
@@ -443,6 +492,7 @@ export function PinnedMediaBoard({
 
 function PinnedMediaCard({
   card,
+  cardRef,
   isActive,
   isLinked,
   onBringToFront,
@@ -452,6 +502,7 @@ function PinnedMediaCard({
   onToggleMapLink,
 }: {
   card: ResolvedPinnedMediaCard;
+  cardRef: RefCallback<HTMLElement>;
   isActive: boolean;
   isLinked: boolean;
   onBringToFront: (id: string) => void;
@@ -484,6 +535,7 @@ function PinnedMediaCard({
       className={["pinned-media-card", isActive ? "is-active" : null, isLinked ? "has-map-link" : null]
         .filter(Boolean)
         .join(" ")}
+      ref={cardRef}
       style={style}
       tabIndex={0}
       aria-label={`Przypięte medium: ${card.place.title}`}
@@ -595,5 +647,9 @@ function toStoredCard(card: ResolvedPinnedMediaCard): StoredPinnedMediaCard {
 }
 
 function storedCardListsEqual(first: StoredPinnedMediaCard[], second: StoredPinnedMediaCard[]) {
+  return JSON.stringify(first) === JSON.stringify(second);
+}
+
+function rectRecordsEqual(first: Record<string, RectLike>, second: Record<string, RectLike>) {
   return JSON.stringify(first) === JSON.stringify(second);
 }

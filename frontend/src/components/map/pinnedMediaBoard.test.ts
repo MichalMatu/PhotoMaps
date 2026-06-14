@@ -418,12 +418,10 @@ describe("pinned media board helpers", () => {
   it("builds a map connection path from the card edge to the place point", () => {
     const geometry = pinnedMediaConnectionGeometry(
       {
-        aspectRatio: 1.6,
-        height: 160,
+        height: 232,
+        left: 120,
+        top: 80,
         width: 260,
-        x: 120,
-        y: 80,
-        zIndex: 1,
       },
       { x: 620, y: 280 },
     );
@@ -436,12 +434,10 @@ describe("pinned media board helpers", () => {
   it("anchors map connection paths to the nearest card edge when the place sits under the card", () => {
     const geometry = pinnedMediaConnectionGeometry(
       {
-        aspectRatio: 1.6,
-        height: 300,
+        height: 372,
+        left: 120,
+        top: 80,
         width: 600,
-        x: 120,
-        y: 80,
-        zIndex: 1,
       },
       { x: 560, y: 240 },
     );
@@ -449,6 +445,21 @@ describe("pinned media board helpers", () => {
     expect(geometry.source).toEqual({ x: 720, y: 240 });
     expect(geometry.target).toEqual({ x: 560, y: 240 });
     expect(geometry.path).not.toContain("M 560 240 C");
+  });
+
+  it("uses the measured card frame for lower corner map links", () => {
+    const geometry = pinnedMediaConnectionGeometry(
+      {
+        height: 408,
+        left: 90,
+        top: 78,
+        width: 486,
+      },
+      { x: 760, y: 540 },
+    );
+
+    expect(geometry.source).toEqual({ x: 576, y: 486 });
+    expect(geometry.path).toMatch(/^M 576 486 C /);
   });
 
   it("persists z-order changes", () => {
