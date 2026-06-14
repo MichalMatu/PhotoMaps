@@ -1,8 +1,4 @@
 .place-table {
-  background: var(--material-regular);
-  backdrop-filter: var(--blur-glass);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
   overflow: hidden;
 }
 
@@ -36,7 +32,7 @@
   border-radius: 0;
   color: var(--color-text);
   display: grid;
-  gap: 10px;
+  gap: var(--space-3);
   grid-template-columns: 24px minmax(160px, 1fr) auto auto;
   justify-items: start;
   min-height: 52px;
@@ -61,7 +57,7 @@
 .place-city-count,
 .place-city-statuses {
   color: var(--color-muted-strong);
-  font-size: 0.78rem;
+  font-size: var(--text-caption);
   font-weight: 650;
   white-space: nowrap;
 }
@@ -130,7 +126,7 @@
 .table-head {
   background: transparent;
   color: var(--color-muted);
-  font-size: 0.74rem;
+  font-size: var(--text-micro);
   font-weight: 600;
   min-height: 42px;
 }
@@ -196,14 +192,14 @@
     white-space: normal;
   }
 
-  .table-row:not(.table-head) .status-badge {
+  .table-row:not(.table-head) .ui-status {
     justify-self: start;
   }
 
   .table-row:not(.table-head) .table-cell::before {
     color: var(--color-muted);
     content: attr(data-label);
-    font-size: 0.72rem;
+    font-size: var(--text-micro);
     font-weight: 650;
     line-height: 1;
   }

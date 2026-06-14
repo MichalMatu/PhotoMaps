@@ -47,7 +47,9 @@ export function PublicMapPage() {
       <main className="page-shell map-page">
         {placesQuery.isLoading || placesQuery.isError ? (
           <div
-            className={placesQuery.isError ? "map-status-panel map-status-panel--error" : "map-status-panel"}
+            className={
+              placesQuery.isError ? "ui-panel map-status-panel map-status-panel--error" : "ui-panel map-status-panel"
+            }
             role="status"
           >
             {placesQuery.isLoading ? <p>Ładowanie mapy...</p> : null}

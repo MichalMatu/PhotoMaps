@@ -39,7 +39,7 @@ export function GuideFormModal({
       onClose={onClose}
       onConfirm={onConfirm}
     >
-      <div className="guide-form guide-form--modal">
+      <div className="ui-form guide-form guide-form--modal">
         <label>
           Tytuł
           <input value={title} onChange={(event) => onTitleChange(event.target.value)} required />

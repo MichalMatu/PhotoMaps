@@ -118,7 +118,7 @@ export function MemoryPanel({ claimToken, mode = "with-list", onUploaded, placeI
       {visibility.showExistingMemories ? (
         <div className="memory-list">
           {memoriesQuery.data?.map((memory) => (
-            <article className="memory-card" key={memory.id}>
+            <article className="ui-card memory-card" key={memory.id}>
               <MediaImage
                 alt={memory.caption}
                 className="memory-card-media"
@@ -135,7 +135,7 @@ export function MemoryPanel({ claimToken, mode = "with-list", onUploaded, placeI
           ))}
         </div>
       ) : null}
-      <form className="photo-upload" noValidate onSubmit={handleSubmit}>
+      <form className="ui-form photo-upload" noValidate onSubmit={handleSubmit}>
         <label>
           Zdjęcie pamiątki
           <input

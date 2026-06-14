@@ -12,8 +12,8 @@
 }
 
 .guide-toolbar button {
-  min-height: 36px;
-  padding-inline: 14px;
+  min-height: var(--control-height-compact);
+  padding-inline: var(--space-4);
 }
 
 .guide-list {
@@ -22,9 +22,6 @@
 }
 
 .guide-row {
-  background: var(--material-regular);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
   overflow: hidden;
 }
 
@@ -55,7 +52,7 @@
 
 .guide-row-slug {
   color: var(--color-muted);
-  font-size: 0.78rem;
+  font-size: var(--text-caption);
   margin-top: 3px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -83,7 +80,6 @@
 
 .guide-place-form {
   align-items: end;
-  display: grid;
   gap: var(--space-3);
   grid-template-columns: minmax(220px, 1fr) auto;
 }
@@ -91,31 +87,6 @@
 .guide-form,
 .guide-place-form {
   min-width: 0;
-}
-
-.guide-form label,
-.guide-place-form label {
-  color: var(--color-muted-strong);
-  display: grid;
-  font-size: 0.82rem;
-  font-weight: 650;
-  gap: var(--space-2);
-  min-width: 0;
-}
-
-.guide-form input,
-.guide-form select,
-.guide-form textarea,
-.guide-place-form input,
-.guide-place-form select {
-  background: var(--color-surface-strong);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  color: var(--color-text);
-  min-height: 40px;
-  min-width: 0;
-  padding: 8px 10px;
-  width: 100%;
 }
 
 .guide-form textarea {
@@ -144,10 +115,10 @@
   border-radius: var(--radius-control);
   color: var(--color-text);
   display: grid;
-  gap: 6px;
+  gap: var(--space-2);
   grid-template-columns: auto minmax(0, 1fr) auto;
   min-width: 0;
-  padding: 9px 10px;
+  padding: var(--space-2) var(--space-3);
 }
 
 .guide-place-choice input {
@@ -163,7 +134,7 @@
 
 .guide-place-choice-status {
   color: var(--color-muted);
-  font-size: 0.72rem;
+  font-size: var(--text-micro);
 }
 
 .guide-place-list {
@@ -181,7 +152,7 @@
   gap: var(--space-3);
   grid-template-columns: minmax(0, 1fr) auto;
   min-width: 0;
-  padding: 10px 12px;
+  padding: var(--space-3);
 }
 
 .guide-place-row-copy {
@@ -209,7 +180,7 @@
 
 .guide-place-row-status {
   color: var(--color-muted);
-  font-size: 0.78rem;
+  font-size: var(--text-caption);
   margin-top: 2px;
 }
 

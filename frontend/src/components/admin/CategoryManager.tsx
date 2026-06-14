@@ -26,7 +26,7 @@ export function CategoryManager({ categories, onChanged, places }: Props) {
         </button>
       </div>
 
-      <div className="category-list" role="table">
+      <div className="ui-table-panel category-list" role="table">
         <div className="category-row category-head" role="row">
           <span className="category-cell" role="columnheader">
             Nazwa
@@ -57,7 +57,7 @@ export function CategoryManager({ categories, onChanged, places }: Props) {
               <span className="category-id">{category.id}</span>
             </div>
             <span className="category-cell" role="cell" data-label="Status">
-              <span className={`status-badge status-badge--${category.status}`}>{category.status}</span>
+              <span className={`ui-status ui-status--${category.status}`}>{category.status}</span>
             </span>
             <span className="category-cell" role="cell" data-label="Kolejność">
               {category.sort_order}
@@ -70,7 +70,7 @@ export function CategoryManager({ categories, onChanged, places }: Props) {
                 Edytuj
               </button>
               <button
-                className="secondary-button"
+                className="ui-button ui-button--secondary"
                 type="button"
                 disabled={category.status === "archived"}
                 onClick={() => categoryActions.setCategoryAction({ category, type: "archive" })}
@@ -78,7 +78,7 @@ export function CategoryManager({ categories, onChanged, places }: Props) {
                 Archiwizuj
               </button>
               <button
-                className="danger-button"
+                className="ui-button ui-button--danger"
                 type="button"
                 onClick={() => categoryActions.setCategoryAction({ category, type: "delete" })}
               >
@@ -88,7 +88,7 @@ export function CategoryManager({ categories, onChanged, places }: Props) {
           </div>
         ))}
         {categories.length === 0 ? (
-          <p className="notice">Brak kategorii. Dodaj pierwszą kategorię przyciskiem powyżej.</p>
+          <p className="ui-empty">Brak kategorii. Dodaj pierwszą kategorię przyciskiem powyżej.</p>
         ) : null}
       </div>
 

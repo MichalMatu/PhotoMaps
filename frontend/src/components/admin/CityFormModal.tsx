@@ -83,7 +83,7 @@ export function CityFormModal({
       onClose={onClose}
       onConfirm={onConfirm}
     >
-      <div className="city-form city-form--modal">
+      <div className="ui-form city-form city-form--modal">
         <label>
           ID
           <input

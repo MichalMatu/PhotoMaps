@@ -197,7 +197,7 @@ export function AdminPlacesPage() {
             <PlaceForm
               categories={categories}
               cities={cities}
-              className="admin-form place-form place-form--modal"
+              className="ui-form admin-form place-form place-form--modal"
               place={editingPlace}
               onCancel={closePlaceModal}
               onSubmit={submitPlace}

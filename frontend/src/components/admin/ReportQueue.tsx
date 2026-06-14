@@ -116,11 +116,11 @@ export function ReportQueue({ onChanged, onStatusFilterChange, reports, statusCo
           </div>
         </div>
         {reports.length > 0 ? (
-          <div className="report-list" role="list">
+          <div className="ui-table-panel report-list" role="list">
             {reports.map((report) => (
               <article className="report-item" key={report.id} role="listitem">
                 <div className="report-item-body">
-                  <span className={`report-status status-badge status-badge--${report.status}`}>
+                  <span className={`report-status ui-status ui-status--${report.status}`}>
                     {REPORT_STATUS_LABELS[report.status]}
                   </span>
                   <strong className="report-reason">{reportReasonLabel(report.reason)}</strong>
@@ -130,7 +130,11 @@ export function ReportQueue({ onChanged, onStatusFilterChange, reports, statusCo
                   </span>
                 </div>
                 <div className="report-actions review-actions">
-                  <button className="secondary-button" type="button" onClick={() => setSelectedReport(report)}>
+                  <button
+                    className="ui-button ui-button--secondary"
+                    type="button"
+                    onClick={() => setSelectedReport(report)}
+                  >
                     Otwórz
                   </button>
                   {report.status !== "closed" ? (
@@ -138,11 +142,19 @@ export function ReportQueue({ onChanged, onStatusFilterChange, reports, statusCo
                       Zamknij zgłoszenie
                     </button>
                   ) : (
-                    <button className="secondary-button" type="button" onClick={() => handleStatus(report, "open")}>
+                    <button
+                      className="ui-button ui-button--secondary"
+                      type="button"
+                      onClick={() => handleStatus(report, "open")}
+                    >
                       Przywróć
                     </button>
                   )}
-                  <button className="danger-button" type="button" onClick={() => requestDeleteReport(report)}>
+                  <button
+                    className="ui-button ui-button--danger"
+                    type="button"
+                    onClick={() => requestDeleteReport(report)}
+                  >
                     Usuń
                   </button>
                 </div>
@@ -150,7 +162,7 @@ export function ReportQueue({ onChanged, onStatusFilterChange, reports, statusCo
             ))}
           </div>
         ) : (
-          <p className="report-empty-state">Brak zgłoszeń dla wybranego statusu.</p>
+          <p className="ui-empty report-empty-state">Brak zgłoszeń dla wybranego statusu.</p>
         )}
       </div>
       {selectedReport ? (
@@ -182,7 +194,7 @@ export function ReportQueue({ onChanged, onStatusFilterChange, reports, statusCo
             </div>
           </dl>
           <div className="report-detail-actions">
-            <button className="ghost-button" type="button" onClick={() => setSelectedReport(null)}>
+            <button className="ui-button ui-button--ghost" type="button" onClick={() => setSelectedReport(null)}>
               Gotowe
             </button>
             {selectedReport.status !== "closed" ? (
@@ -190,11 +202,19 @@ export function ReportQueue({ onChanged, onStatusFilterChange, reports, statusCo
                 Zamknij zgłoszenie
               </button>
             ) : (
-              <button className="secondary-button" type="button" onClick={() => handleStatus(selectedReport, "open")}>
+              <button
+                className="ui-button ui-button--secondary"
+                type="button"
+                onClick={() => handleStatus(selectedReport, "open")}
+              >
                 Przywróć
               </button>
             )}
-            <button className="danger-button" type="button" onClick={() => requestDeleteReport(selectedReport)}>
+            <button
+              className="ui-button ui-button--danger"
+              type="button"
+              onClick={() => requestDeleteReport(selectedReport)}
+            >
               Usuń
             </button>
           </div>

@@ -1,5 +1,5 @@
 .photo-queue {
-  margin-top: 28px;
+  margin-top: var(--space-7);
 }
 
 .photo-queue-toolbar {
@@ -12,17 +12,13 @@
 }
 
 .photo-add-button {
-  min-height: 36px;
-  padding-inline: 14px;
+  min-height: var(--control-height-compact);
+  padding-inline: var(--space-4);
   white-space: nowrap;
 }
 
 .admin-photo-upload {
   align-items: end;
-  background: var(--material-regular);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
-  display: grid;
   gap: var(--space-3);
   grid-template-columns: minmax(180px, 1.1fr) minmax(180px, 1fr) minmax(160px, 1fr) auto;
   margin-bottom: var(--space-4);
@@ -31,32 +27,10 @@
 
 .admin-photo-upload--modal {
   align-items: stretch;
-  background: transparent;
-  border: 0;
   gap: var(--space-3);
   grid-template-columns: 1fr;
   margin: 0;
   padding: 0;
-}
-
-.admin-photo-upload label {
-  color: var(--color-muted-strong);
-  display: grid;
-  font-size: 0.82rem;
-  font-weight: 650;
-  gap: var(--space-2);
-  min-width: 0;
-}
-
-.admin-photo-upload input,
-.admin-photo-upload select {
-  background: var(--color-surface-soft);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  min-height: 38px;
-  min-width: 0;
-  padding: 8px 10px;
-  width: 100%;
 }
 
 .place-photo-panel {
@@ -80,37 +54,17 @@
 
 .place-photo-panel-count {
   color: var(--color-muted);
-  font-size: 0.82rem;
+  font-size: var(--text-button);
 }
 
 .place-photo-upload {
   align-items: end;
-  display: grid;
   gap: var(--space-3);
   grid-template-columns: minmax(160px, 1fr) minmax(160px, 1fr) auto;
 }
 
-.place-photo-upload label {
-  color: var(--color-muted-strong);
-  display: grid;
-  font-size: 0.82rem;
-  font-weight: 650;
-  gap: var(--space-2);
-  min-width: 0;
-}
-
-.place-photo-upload input {
-  background: var(--color-surface-strong);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  min-height: 38px;
-  min-width: 0;
-  padding: 8px 10px;
-  width: 100%;
-}
-
 .place-photo-upload button {
-  min-height: 38px;
+  min-height: var(--control-height-compact);
   white-space: nowrap;
 }
 
@@ -121,12 +75,7 @@
 }
 
 .place-photo-card {
-  background: var(--color-surface-soft);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
   display: grid;
-  min-width: 0;
-  overflow: hidden;
 }
 
 .place-photo-card-image {
@@ -140,12 +89,12 @@
   display: grid;
   gap: var(--space-2);
   min-width: 0;
-  padding: 10px;
+  padding: var(--space-3);
 }
 
 .place-photo-card-caption {
   color: var(--color-text);
-  font-size: 0.86rem;
+  font-size: var(--text-body-small);
   font-weight: 650;
   margin: 0;
   overflow-wrap: anywhere;
@@ -163,9 +112,9 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
   color: var(--color-muted-strong);
-  font-size: 0.9rem;
-  min-height: 36px;
-  padding: 0 12px;
+  font-size: var(--text-body-small);
+  min-height: var(--control-height-compact);
+  padding: 0 var(--space-3);
   white-space: nowrap;
 }
 
@@ -180,9 +129,9 @@
   background: var(--color-accent-soft);
   border-radius: var(--radius-full);
   display: inline-block;
-  margin-left: 6px;
+  margin-left: var(--space-2);
   min-width: 22px;
-  padding: 2px 6px;
+  padding: 2px var(--space-2);
 }
 
 .status-tab.is-active .status-tab-count,
@@ -196,9 +145,6 @@
 }
 
 .admin-media-album {
-  background: var(--material-regular);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
   overflow: hidden;
 }
 
@@ -229,12 +175,12 @@
 
 .admin-media-album-meta {
   display: grid;
-  gap: 3px;
+  gap: var(--space-1);
   min-width: 0;
 }
 
 .admin-media-album-title {
-  font-size: 1rem;
+  font-size: var(--text-subtitle);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -242,7 +188,7 @@
 
 .admin-media-album-category {
   color: var(--color-muted-strong);
-  font-size: 0.78rem;
+  font-size: var(--text-caption);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -253,7 +199,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
   color: var(--color-muted-strong);
-  padding: 5px 10px;
+  padding: var(--space-1) var(--space-3);
   white-space: nowrap;
 }
 
@@ -265,16 +211,11 @@
   display: grid;
   gap: var(--space-3);
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  padding: 12px;
+  padding: var(--space-3);
 }
 
 .admin-media-item {
-  background: var(--color-surface-soft);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
   display: grid;
-  min-width: 0;
-  overflow: hidden;
 }
 
 .admin-media-item-image {
@@ -288,7 +229,7 @@
   display: grid;
   gap: var(--space-3);
   min-width: 0;
-  padding: 12px;
+  padding: var(--space-3);
 }
 
 .photo-meta-row {
@@ -313,39 +254,14 @@
 
 .admin-media-author {
   color: var(--color-muted);
-  font-size: 0.78rem;
+  font-size: var(--text-caption);
   overflow-wrap: anywhere;
 }
 
 .admin-media-link-button {
   justify-self: start;
   min-height: 30px;
-  padding-inline: 10px;
-}
-
-.admin-media-edit-form {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.admin-media-edit-form label {
-  color: var(--color-muted-strong);
-  display: grid;
-  font-size: 0.78rem;
-  font-weight: 650;
-  gap: var(--space-2);
-}
-
-.admin-media-edit-form input,
-.admin-media-edit-form textarea {
-  background: var(--color-surface-strong);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  color: var(--color-text);
-  min-height: 36px;
-  min-width: 0;
-  padding: 8px 10px;
-  width: 100%;
+  padding-inline: var(--space-3);
 }
 
 .admin-media-edit-form textarea {
@@ -368,8 +284,8 @@
 
 .review-actions button {
   flex: 0 1 auto;
-  min-height: 34px;
-  padding-inline: 14px;
+  min-height: var(--control-height-small);
+  padding-inline: var(--space-4);
   white-space: nowrap;
 }
 

@@ -143,12 +143,12 @@ export function SystemModal({
         {showActions ? (
           <div className="system-modal-actions">
             {onConfirm ? (
-              <button className="ghost-button" type="button" disabled={isBusy} onClick={requestClose}>
+              <button className="ui-button ui-button--ghost" type="button" disabled={isBusy} onClick={requestClose}>
                 {cancelLabel}
               </button>
             ) : null}
             <button
-              className={tone === "danger" || tone === "error" ? "danger-button" : undefined}
+              className={tone === "danger" || tone === "error" ? "ui-button ui-button--danger" : undefined}
               type="button"
               disabled={isBusy || confirmDisabled}
               onClick={onConfirm ?? requestClose}

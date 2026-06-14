@@ -46,7 +46,7 @@ export function MemoryQueueItem({
   onStartMemoryEdit,
 }: Props) {
   return (
-    <article className="admin-media-item">
+    <article className="ui-card admin-media-item">
       <img
         className="admin-media-item-image"
         alt={memory.caption}
@@ -56,12 +56,10 @@ export function MemoryQueueItem({
       />
       <div className="admin-media-item-body">
         <div className="photo-meta-row">
-          <span className={`status-badge status-badge--${memory.status}`}>
-            {ADMIN_MEDIA_STATUS_LABELS[memory.status]}
-          </span>
+          <span className={`ui-status ui-status--${memory.status}`}>{ADMIN_MEDIA_STATUS_LABELS[memory.status]}</span>
         </div>
         {isEditing ? (
-          <form className="admin-media-edit-form" onSubmit={(event) => onSaveMemory(event, memory.id)}>
+          <form className="ui-form admin-media-edit-form" onSubmit={(event) => onSaveMemory(event, memory.id)}>
             <label>
               Podpis
               <input
@@ -102,7 +100,7 @@ export function MemoryQueueItem({
               <button type="submit" disabled={isSavingMemory}>
                 {isSavingMemory ? "Zapisywanie..." : "Zapisz"}
               </button>
-              <button className="ghost-button" type="button" onClick={onCancelMemoryEdit}>
+              <button className="ui-button ui-button--ghost" type="button" onClick={onCancelMemoryEdit}>
                 Anuluj
               </button>
             </div>
@@ -116,7 +114,7 @@ export function MemoryQueueItem({
               {memory.author_city ? `, ${memory.author_city}` : ""}
             </span>
             <button
-              className="ghost-button admin-media-link-button"
+              className="ui-button ui-button--ghost admin-media-link-button"
               type="button"
               onClick={() => onStartMemoryEdit(memory)}
             >
@@ -131,11 +129,15 @@ export function MemoryQueueItem({
             </button>
           ) : null}
           {memory.status !== "rejected" ? (
-            <button className="secondary-button" type="button" onClick={() => onReview(memory.id, "rejected")}>
+            <button
+              className="ui-button ui-button--secondary"
+              type="button"
+              onClick={() => onReview(memory.id, "rejected")}
+            >
               {memory.status === "approved" ? "Ukryj" : "Odrzuć"}
             </button>
           ) : null}
-          <button className="danger-button" type="button" onClick={() => onDelete(memory)}>
+          <button className="ui-button ui-button--danger" type="button" onClick={() => onDelete(memory)}>
             Usuń trwale
           </button>
         </div>

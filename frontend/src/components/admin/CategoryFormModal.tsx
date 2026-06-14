@@ -49,7 +49,7 @@ export function CategoryFormModal({
       onClose={onClose}
       onConfirm={onConfirm}
     >
-      <div className="category-form category-form--modal">
+      <div className="ui-form category-form category-form--modal">
         <label>
           ID
           <input

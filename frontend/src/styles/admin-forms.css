@@ -1,55 +1,12 @@
 .admin-form {
-  display: grid;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .admin-editor h2 {
-  font-size: 1.35rem;
+  font-size: var(--text-title);
   font-weight: 650;
   line-height: 1.12;
-  margin-bottom: 18px;
-}
-
-.admin-form label {
-  color: var(--color-muted-strong);
-  display: grid;
-  font-size: 0.92rem;
-  font-weight: 500;
-  gap: 6px;
-  min-width: 0;
-}
-
-.admin-form input,
-.admin-form select,
-.admin-form textarea {
-  background: var(--color-surface-strong);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  min-height: 40px;
-  min-width: 0;
-  padding: 9px 11px;
-  width: 100%;
-}
-
-.admin-form input:focus,
-.admin-form select:focus,
-.admin-form textarea:focus,
-.admin-access-form input:focus,
-.category-form input:focus,
-.category-form select:focus,
-.admin-photo-upload input:focus,
-.admin-photo-upload select:focus,
-.admin-media-edit-form input:focus,
-.admin-media-edit-form textarea:focus,
-.guide-form input:focus,
-.guide-form select:focus,
-.guide-form textarea:focus,
-.guide-place-form input:focus,
-.guide-place-form select:focus,
-.photo-upload input:focus {
-  border-color: var(--color-accent);
-  box-shadow: var(--focus-soft);
-  outline: none;
+  margin-bottom: var(--space-5);
 }
 
 .admin-form textarea {
@@ -57,7 +14,7 @@
 }
 
 .place-form--modal {
-  gap: 10px;
+  gap: var(--space-3);
 }
 
 .place-form--modal .location-picker-map {
@@ -69,21 +26,9 @@
   min-height: 72px;
 }
 
-.ghost-button {
-  background: transparent;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  color: var(--color-muted-strong);
-}
-
-.ghost-button:hover {
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
-}
-
 .field-row {
   display: grid;
-  gap: 18px;
+  gap: var(--space-5);
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -98,24 +43,25 @@
   min-height: auto;
 }
 
-.category-checkboxes {
+.category-checkboxes,
+.cover-photo-fieldset {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-panel);
   margin: 0;
-  padding: 10px 12px 12px;
+  padding: var(--space-3) var(--space-3) var(--space-4);
 }
 
 .category-checkboxes legend,
 .cover-photo-fieldset legend {
   color: var(--color-muted-strong);
-  font-size: 0.86rem;
-  font-weight: 600;
-  padding: 0 4px;
+  font-size: var(--text-body-small);
+  font-weight: 650;
+  padding: 0 var(--space-1);
 }
 
 .category-checkbox-grid {
   display: grid;
-  gap: 8px 12px;
+  gap: var(--space-2) var(--space-3);
   grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
 }
 
@@ -123,7 +69,7 @@
   align-items: center;
   display: flex;
   flex-direction: row;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .category-checkbox-grid input {
@@ -131,25 +77,18 @@
   width: auto;
 }
 
-.cover-photo-fieldset {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
-  margin: 0;
-  padding: 10px 12px 12px;
-}
-
 .cover-photo-grid {
   display: grid;
-  gap: 10px;
+  gap: var(--space-3);
   grid-template-columns: minmax(180px, 1fr) minmax(160px, 1fr);
 }
 
 .location-field {
   color: var(--color-muted-strong);
   display: grid;
-  font-size: 0.92rem;
-  font-weight: 500;
-  gap: 6px;
+  font-size: var(--text-button);
+  font-weight: 600;
+  gap: var(--space-2);
   min-width: 0;
 }
 
@@ -176,14 +115,14 @@
   background: var(--color-surface-soft);
   border-top: 1px solid var(--color-border);
   display: flex;
-  gap: 10px;
+  gap: var(--space-3);
   justify-content: space-between;
-  padding: 8px 10px;
+  padding: var(--space-2) var(--space-3);
 }
 
 .location-readout {
   color: var(--color-muted);
-  font-size: 0.8rem;
+  font-size: var(--text-caption);
   font-weight: 500;
   margin: 0;
 }
@@ -195,9 +134,9 @@
   color: var(--content-secondary);
   display: inline-flex;
   flex: 0 0 auto;
-  gap: 7px;
-  min-height: 34px;
-  padding: 0 12px;
+  gap: var(--space-2);
+  min-height: var(--control-height-small);
+  padding: 0 var(--space-3);
 }
 
 .location-expand-button:hover {
@@ -207,12 +146,12 @@
 
 .location-modal-body {
   display: grid;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .location-modal-readout {
   color: var(--color-muted);
-  font-size: 0.82rem;
+  font-size: var(--text-button);
   font-weight: 500;
   margin: 0;
 }
@@ -228,7 +167,7 @@
 .location-modal-footer {
   align-items: stretch;
   display: flex;
-  gap: 12px;
+  gap: var(--space-3);
   justify-content: space-between;
 }
 
@@ -245,11 +184,11 @@
   border-radius: var(--radius-control);
   color: var(--color-muted-strong);
   flex: 1 1 auto;
-  font-size: 0.88rem;
+  font-size: var(--text-body-small);
   line-height: 1.35;
   margin: 0;
   min-width: 0;
-  padding: 10px 12px;
+  padding: var(--space-3);
 }
 
 .location-lookup-error {
@@ -259,7 +198,7 @@
 
 .location-lookup-result {
   display: grid;
-  gap: 3px;
+  gap: var(--space-1);
 }
 
 .location-lookup-result strong {
@@ -275,7 +214,7 @@
 }
 
 .location-lookup-result p {
-  font-size: 0.82rem;
+  font-size: var(--text-button);
 }
 
 @media (max-width: 720px) {
@@ -294,7 +233,7 @@
   align-items: center;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 
 .section-heading span {
@@ -302,5 +241,5 @@
   border-radius: var(--radius-full);
   color: var(--color-accent);
   font-weight: 600;
-  padding: 4px 10px;
+  padding: var(--space-1) var(--space-3);
 }

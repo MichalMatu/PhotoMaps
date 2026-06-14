@@ -39,22 +39,26 @@ export function GuideManager({ guides, places, onChanged }: Props) {
         {guides.map((guide) => {
           const isExpanded = guideActions.selectedGuideId === guide.id;
           return (
-            <article className={isExpanded ? "guide-row is-expanded" : "guide-row"} key={guide.id}>
+            <article className={isExpanded ? "ui-panel guide-row is-expanded" : "ui-panel guide-row"} key={guide.id}>
               <div className="guide-row-summary">
                 <div className="guide-row-copy">
                   <strong className="guide-row-title">{guide.title}</strong>
                   <span className="guide-row-slug">{guide.slug}</span>
                 </div>
-                <span className={`guide-row-status status-badge status-badge--${guide.status}`}>{guide.status}</span>
+                <span className={`guide-row-status ui-status ui-status--${guide.status}`}>{guide.status}</span>
                 <div className="guide-actions">
-                  <button className="secondary-button" type="button" onClick={() => guideActions.toggleGuide(guide.id)}>
+                  <button
+                    className="ui-button ui-button--secondary"
+                    type="button"
+                    onClick={() => guideActions.toggleGuide(guide.id)}
+                  >
                     {isExpanded ? "Zwiń miejsca" : "Miejsca"}
                   </button>
                   <button type="button" onClick={() => guideActions.openEditGuideModal(guide)}>
                     Edytuj
                   </button>
                   <button
-                    className="danger-button"
+                    className="ui-button ui-button--danger"
                     type="button"
                     onClick={() => guideActions.requestDeleteGuide(guide)}
                   >
@@ -81,7 +85,7 @@ export function GuideManager({ guides, places, onChanged }: Props) {
             </article>
           );
         })}
-        {guides.length === 0 ? <p className="notice">Brak tras. Dodaj pierwszą trasę przyciskiem powyżej.</p> : null}
+        {guides.length === 0 ? <p className="ui-empty">Brak tras. Dodaj pierwszą trasę przyciskiem powyżej.</p> : null}
       </div>
 
       {guideActions.isGuideModalOpen ? (

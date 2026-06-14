@@ -30,6 +30,14 @@ Frontend odpowiada za publiczna mape, panel admina, klienta API, komponenty UI, 
 - Logike payloadow, filtrowania i transformacji danych trzymaj w helperach albo `src/api`, jesli jest testowalna poza UI.
 - Wspolne zachowanie modali, sheetow i paneli lokuj w `components/ui` tylko wtedy, gdy rzeczywiscie jest wspolne.
 - Przy zmianach CSS sprawdz, czy reguly nie tworza globalnych efektow ubocznych w adminie albo mapie.
+- `src/design/tokens.css` jest zrodlem prawdy dla kolorow, powierzchni, borderow, cieni, radiusow, typografii, motion i podstawowego spacingu.
+- Nie dodawaj nowych raw kolorow poza `tokens.css`; komponenty i style maja uzywac `--surface-*`, `--content-*`, `--border-*`, `--accent-*` albo semantycznych tokenow statusu.
+- Nowe karty i panele zaczynaj od `ui-card`, `ui-panel` albo `ui-table-panel`; lokalna klasa komponentu powinna dopisywac tylko layout, rozmiary mediow albo specyficzny stan.
+- Nowe przyciski wariantowe uzywaja `ui-button` z wariantem `ui-button--primary`, `ui-button--secondary`, `ui-button--ghost` albo `ui-button--danger`; zwykly `<button>` zostaje tylko dla domyslnej akcji primary.
+- Statusy i badge uzywaja `ui-status ui-status--{status}`; nie tworz lokalnych palet statusow.
+- Formularze opieraj na `ui-form`, a lokalny CSS dodawaj tylko dla wyjatkowego ukladu pol, fieldsetu, mapy albo uploadu.
+- Empty, loading i error states powinny uzywac `ui-empty`, `ui-help` albo `ui-error`, chyba ze komponent ma naprawde unikalny kontekst wizualny.
+- Lokalny CSS jest dopuszczalny tylko dla unikalnego layoutu komponentu; nie powtarzaj w nim bazowego background/border/radius/shadow/padding kart i paneli.
 - Nie pokazuj technicznych pol backendu w UI, jesli root `AGENTS.md` wskazuje etykiety domenowe.
 - Po zmianach wizualnych sprawdz uklad na desktopie i mobilnie, zwlaszcza tekst w przyciskach, modalach i sheetach.
 

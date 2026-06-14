@@ -14,15 +14,66 @@ TOKEN_FILE = ROOT_DIR / "frontend" / "src" / "design" / "tokens.css"
 RULES = {
     "important": "Avoid new !important declarations.",
     "raw-color": "Use color/surface/content/border tokens outside tokens.css.",
+    "raw-font-size": "Use text scale tokens instead of local font-size values.",
     "raw-shadow": "Use elevation/shadow tokens instead of local box-shadow values.",
     "raw-radius": "Use radius tokens for component corners.",
     "raw-motion": "Use motion duration/easing tokens for component animation and transition values.",
 }
 
-BASELINE: dict[str, dict[str, int]] = {}
+BASELINE: dict[str, dict[str, int]] = {
+    "frontend/src/styles/admin-tables.css": {
+        "raw-font-size": 1,
+    },
+    "frontend/src/styles/base.css": {
+        "raw-font-size": 1,
+    },
+    "frontend/src/styles/layout.css": {
+        "raw-font-size": 14,
+    },
+    "frontend/src/styles/map-tools.css": {
+        "raw-font-size": 5,
+    },
+    "frontend/src/styles/map.css": {
+        "raw-font-size": 1,
+    },
+    "frontend/src/styles/responsive.css": {
+        "raw-font-size": 2,
+    },
+    "frontend/src/styles/ui.css": {
+        "raw-font-size": 2,
+    },
+}
 
 COLOR_RE = re.compile(r"(#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\()")
 TIME_RE = re.compile(r"\b\d+(?:\.\d+)?m?s\b")
+SPACING_LENGTH_RE = re.compile(r"\b\d+(?:\.\d+)?(?:px|rem|em|vh|vw|dvh|dvw|%)\b")
+SPACING_PROPERTIES = {
+    "gap",
+    "row-gap",
+    "column-gap",
+    "margin",
+    "margin-block",
+    "margin-block-end",
+    "margin-block-start",
+    "margin-bottom",
+    "margin-inline",
+    "margin-inline-end",
+    "margin-inline-start",
+    "margin-left",
+    "margin-right",
+    "margin-top",
+    "padding",
+    "padding-block",
+    "padding-block-end",
+    "padding-block-start",
+    "padding-bottom",
+    "padding-inline",
+    "padding-inline-end",
+    "padding-inline-start",
+    "padding-left",
+    "padding-right",
+    "padding-top",
+}
 
 
 @dataclass(frozen=True)
@@ -59,6 +110,17 @@ def has_raw_shadow(line: str) -> bool:
     return not (value.startswith("var(") or value == "none")
 
 
+def has_raw_font_size(line: str) -> bool:
+    if "font-size:" not in line:
+        return False
+
+    value = line.split("font-size:", 1)[1].strip().rstrip(";")
+    if value.startswith("var("):
+        return False
+
+    return value not in {"inherit", "initial", "unset"}
+
+
 def has_raw_radius(line: str) -> bool:
     if "border-radius:" not in line:
         return False
@@ -81,6 +143,22 @@ def has_raw_motion(line: str) -> bool:
         return False
 
     return ("var(" not in stripped) and (bool(TIME_RE.search(stripped)) or "cubic-bezier(" in stripped)
+
+
+def has_raw_spacing(line: str) -> bool:
+    if ":" not in line:
+        return False
+
+    property_name, value = line.split(":", 1)
+    property_name = property_name.strip()
+    if property_name not in SPACING_PROPERTIES:
+        return False
+
+    value = value.strip().rstrip(";")
+    if "var(" in value:
+        return False
+
+    return bool(SPACING_LENGTH_RE.search(value))
 
 
 def is_reduced_motion_reset(path_label: str, line: str) -> bool:
@@ -116,6 +194,9 @@ def scan_file(path: Path) -> list[Finding]:
         if not token_file and COLOR_RE.search(line):
             findings.append(Finding(path_label, "raw-color", line_number, line))
 
+        if not token_file and has_raw_font_size(line):
+            findings.append(Finding(path_label, "raw-font-size", line_number, line))
+
         if not token_file and has_raw_shadow(line):
             findings.append(Finding(path_label, "raw-shadow", line_number, line))
 
@@ -132,6 +213,19 @@ def scan() -> list[Finding]:
     findings: list[Finding] = []
     for path in css_files():
         findings.extend(scan_file(path))
+    return findings
+
+
+def scan_spacing() -> list[Finding]:
+    findings: list[Finding] = []
+    for path in css_files():
+        if is_token_file(path):
+            continue
+        path_label = relative_path(path)
+        for line_number, raw_line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+            line = raw_line.strip()
+            if line and has_raw_spacing(line):
+                findings.append(Finding(path_label, "raw-spacing", line_number, line))
     return findings
 
 
@@ -164,10 +258,34 @@ def print_new_findings(findings: list[Finding], counts: Counter[tuple[str, str]]
             return
 
 
+def print_spacing_report(findings: list[Finding]) -> None:
+    counts = count_findings(findings)
+    if not findings:
+        print("No raw spacing values found.")
+        return
+
+    print("Raw spacing report (non-blocking):")
+    for path, rule in sorted(counts):
+        if rule == "raw-spacing":
+            print(f"- {path}: {counts[(path, rule)]}")
+
+    print()
+    print("Examples:")
+    for finding in findings[:40]:
+        print(f"- {finding.path}:{finding.line_number} {finding.line}")
+    if len(findings) > 40:
+        print("- ...")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Block new untokenized CSS values.")
     parser.add_argument("--print-baseline", action="store_true", help="Print the current CSS debt baseline.")
+    parser.add_argument("--print-spacing-report", action="store_true", help="Print non-blocking raw spacing findings.")
     args = parser.parse_args()
+
+    if args.print_spacing_report:
+        print_spacing_report(scan_spacing())
+        return 0
 
     findings = scan()
     counts = count_findings(findings)

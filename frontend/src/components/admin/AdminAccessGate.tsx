@@ -24,9 +24,9 @@ export function AdminAccessGate({ message, onUnlocked }: Props) {
 
   return (
     <section className="admin-access-panel">
-      <div className="admin-access-card">
+      <div className="ui-panel admin-access-card">
         {message ? <p className="admin-access-message">{message}</p> : null}
-        <form className="admin-access-form" onSubmit={handleSubmit}>
+        <form className="ui-form admin-access-form" onSubmit={handleSubmit}>
           <div className="admin-access-token-row">
             <div className="admin-access-icon" aria-hidden="true">
               <LockKeyhole size={26} />

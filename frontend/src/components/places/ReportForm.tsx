@@ -43,7 +43,7 @@ export function ReportForm({ showHeading = true, targetId, targetType }: Props) 
   }
 
   return (
-    <form className="report-form" onSubmit={handleSubmit}>
+    <form className="ui-form report-form" onSubmit={handleSubmit}>
       {showHeading ? (
         <div className="section-heading compact-heading">
           <h3>Zgłoś problem</h3>

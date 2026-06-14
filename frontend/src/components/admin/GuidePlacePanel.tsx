@@ -36,7 +36,7 @@ export function GuidePlacePanel({
 
   return (
     <div className="guide-detail-panel">
-      <form className="guide-place-form" onSubmit={onAddPlaces}>
+      <form className="ui-form guide-place-form" onSubmit={onAddPlaces}>
         <label className="guide-place-search">
           Znajdź miejsce
           <input type="search" value={placeQuery} onChange={(event) => onPlaceQueryChange(event.target.value)} />
@@ -57,14 +57,14 @@ export function GuidePlacePanel({
             <small className="guide-place-choice-status">{place.status}</small>
           </label>
         ))}
-        {availablePlaces.length === 0 ? <p className="notice">Brak opublikowanych miejsc do dodania.</p> : null}
+        {availablePlaces.length === 0 ? <p className="ui-empty">Brak opublikowanych miejsc do dodania.</p> : null}
         {availablePlaces.length > 0 && selectablePlaces.length === 0 ? (
-          <p className="notice">Brak pasujących miejsc do dodania.</p>
+          <p className="ui-empty">Brak pasujących miejsc do dodania.</p>
         ) : null}
       </div>
       <div className="guide-place-list">
-        {isLoading ? <p className="notice">Ładowanie miejsc trasy.</p> : null}
-        {!isLoading && guidePlaces.length === 0 ? <p className="notice">Ta trasa nie ma jeszcze miejsc.</p> : null}
+        {isLoading ? <p className="ui-empty">Ładowanie miejsc trasy.</p> : null}
+        {!isLoading && guidePlaces.length === 0 ? <p className="ui-empty">Ta trasa nie ma jeszcze miejsc.</p> : null}
         {!isLoading
           ? guidePlaces.map((place, index) => (
               <div className="guide-place-row" key={place.id}>
@@ -74,7 +74,7 @@ export function GuidePlacePanel({
                 </div>
                 <div className="guide-place-row-actions">
                   <button
-                    className="ghost-button"
+                    className="ui-button ui-button--ghost"
                     type="button"
                     disabled={index === 0}
                     onClick={() => onMovePlace(place.id, "up")}
@@ -82,14 +82,18 @@ export function GuidePlacePanel({
                     Góra
                   </button>
                   <button
-                    className="ghost-button"
+                    className="ui-button ui-button--ghost"
                     type="button"
                     disabled={index === guidePlaces.length - 1}
                     onClick={() => onMovePlace(place.id, "down")}
                   >
                     Dół
                   </button>
-                  <button className="secondary-button" type="button" onClick={() => onRemovePlace(place.id)}>
+                  <button
+                    className="ui-button ui-button--secondary"
+                    type="button"
+                    onClick={() => onRemovePlace(place.id)}
+                  >
                     Usuń
                   </button>
                 </div>

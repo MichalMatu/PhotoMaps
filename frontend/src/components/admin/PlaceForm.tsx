@@ -35,7 +35,7 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-export function PlaceForm({ categories, cities, className = "admin-form", onCancel, onSubmit, place }: Props) {
+export function PlaceForm({ categories, cities, className = "ui-form admin-form", onCancel, onSubmit, place }: Props) {
   const [title, setTitle] = useState("");
   const [cityId, setCityId] = useState("");
   const [categoryIds, setCategoryIds] = useState<string[]>([]);
@@ -234,7 +234,7 @@ export function PlaceForm({ categories, cities, className = "admin-form", onCanc
         {isSaving ? "Zapisywanie..." : place ? "Zapisz zmiany" : "Dodaj miejsce"}
       </button>
       {onCancel ? (
-        <button className="ghost-button" type="button" onClick={onCancel}>
+        <button className="ui-button ui-button--ghost" type="button" onClick={onCancel}>
           {place ? "Anuluj edycję" : "Anuluj"}
         </button>
       ) : null}

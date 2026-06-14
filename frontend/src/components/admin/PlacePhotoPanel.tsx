@@ -92,7 +92,7 @@ export function PlacePhotoPanel({ onChanged, photos, place }: Props) {
         <span className="place-photo-panel-count">{photos.length === 1 ? "1 zdjęcie" : `${photos.length} zdjęć`}</span>
       </div>
 
-      <form className="place-photo-upload" onSubmit={handleUpload}>
+      <form className="ui-form place-photo-upload" onSubmit={handleUpload}>
         <label>
           Plik
           <input
@@ -119,7 +119,7 @@ export function PlacePhotoPanel({ onChanged, photos, place }: Props) {
         {sortedPhotos.map((photo) => {
           const isCover = place.cover_photo_id === photo.id;
           return (
-            <article className="place-photo-card" key={photo.id}>
+            <article className="ui-card place-photo-card" key={photo.id}>
               <img
                 className="place-photo-card-image"
                 alt={photo.caption ?? place.title}
@@ -129,16 +129,16 @@ export function PlacePhotoPanel({ onChanged, photos, place }: Props) {
               />
               <div className="place-photo-card-body">
                 <div className="photo-meta-row">
-                  <span className={`status-badge status-badge--${photo.status}`}>
+                  <span className={`ui-status ui-status--${photo.status}`}>
                     {ADMIN_MEDIA_STATUS_LABELS[photo.status]}
                   </span>
-                  {isCover ? <span className="status-badge status-badge--cover">główne</span> : null}
+                  {isCover ? <span className="ui-status ui-status--cover">główne</span> : null}
                 </div>
                 <p className="place-photo-card-caption">{photo.caption ?? "Brak podpisu"}</p>
                 <div className="review-actions">
                   {photo.status === "approved" && !isCover ? (
                     <button
-                      className="ghost-button"
+                      className="ui-button ui-button--ghost"
                       disabled={isSettingCover}
                       type="button"
                       onClick={() => handleSetCover(photo)}
@@ -146,7 +146,7 @@ export function PlacePhotoPanel({ onChanged, photos, place }: Props) {
                       Ustaw jako główne
                     </button>
                   ) : null}
-                  <button className="danger-button" type="button" onClick={() => setPhotoToDelete(photo)}>
+                  <button className="ui-button ui-button--danger" type="button" onClick={() => setPhotoToDelete(photo)}>
                     Usuń
                   </button>
                 </div>
@@ -154,7 +154,7 @@ export function PlacePhotoPanel({ onChanged, photos, place }: Props) {
             </article>
           );
         })}
-        {photos.length === 0 ? <p className="notice">Brak zdjęć dla tego miejsca.</p> : null}
+        {photos.length === 0 ? <p className="ui-empty">Brak zdjęć dla tego miejsca.</p> : null}
       </div>
 
       {photoToDelete ? (

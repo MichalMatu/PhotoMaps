@@ -21,7 +21,7 @@ export function AdminMediaAlbums<TItem extends AdminMediaItem>({
   renderItem,
 }: Props<TItem>) {
   if (groups.length === 0) {
-    return <p className="notice">{emptyMessage}</p>;
+    return <p className="ui-empty">{emptyMessage}</p>;
   }
 
   return (
@@ -29,7 +29,10 @@ export function AdminMediaAlbums<TItem extends AdminMediaItem>({
       {groups.map((group) => {
         const isExpanded = expandedPlaceId === group.placeId;
         return (
-          <section className={isExpanded ? "admin-media-album is-open" : "admin-media-album"} key={group.placeId}>
+          <section
+            className={isExpanded ? "ui-panel admin-media-album is-open" : "ui-panel admin-media-album"}
+            key={group.placeId}
+          >
             <button
               aria-expanded={isExpanded}
               className="admin-media-album-summary"

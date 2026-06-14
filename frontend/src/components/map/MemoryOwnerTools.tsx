@@ -29,7 +29,7 @@ export function MemoryOwnerTools({ tools }: Props) {
           onClose={tools.handleToggleOwnerTools}
         >
           {!tools.isClaimVerified ? (
-            <form className="memory-owner-form" noValidate onSubmit={tools.handleVerifyClaim}>
+            <form className="ui-form memory-owner-form" noValidate onSubmit={tools.handleVerifyClaim}>
               <label>
                 Token pamiątki
                 <input
@@ -51,7 +51,7 @@ export function MemoryOwnerTools({ tools }: Props) {
               </button>
             </form>
           ) : (
-            <form className="memory-owner-form" noValidate onSubmit={tools.handleUpdateMemory}>
+            <form className="ui-form memory-owner-form" noValidate onSubmit={tools.handleUpdateMemory}>
               <label>
                 Podpis
                 <input
@@ -122,7 +122,7 @@ export function MemoryOwnerTools({ tools }: Props) {
                   {tools.isOwnerSaving ? "Zapisywanie..." : "Zapisz zmiany"}
                 </button>
                 <button
-                  className="danger-button"
+                  className="ui-button ui-button--danger"
                   type="button"
                   disabled={tools.isOwnerSaving}
                   onClick={tools.handleDeleteMemory}

@@ -36,7 +36,7 @@ export function PhotoQueueItem({
   const isCover = group.place?.cover_photo_id === photo.id;
 
   return (
-    <article className="admin-media-item">
+    <article className="ui-card admin-media-item">
       <img
         className="admin-media-item-image"
         alt={photo.caption ?? group.title}
@@ -46,13 +46,11 @@ export function PhotoQueueItem({
       />
       <div className="admin-media-item-body">
         <div className="photo-meta-row">
-          <span className={`status-badge status-badge--${photo.status}`}>
-            {ADMIN_MEDIA_STATUS_LABELS[photo.status]}
-          </span>
-          {isCover ? <span className="status-badge status-badge--cover">główne</span> : null}
+          <span className={`ui-status ui-status--${photo.status}`}>{ADMIN_MEDIA_STATUS_LABELS[photo.status]}</span>
+          {isCover ? <span className="ui-status ui-status--cover">główne</span> : null}
         </div>
         {isEditing ? (
-          <form className="admin-media-edit-form" onSubmit={(event) => onSaveCaption(event, photo.id)}>
+          <form className="ui-form admin-media-edit-form" onSubmit={(event) => onSaveCaption(event, photo.id)}>
             <label>
               Podpis
               <input
@@ -65,7 +63,7 @@ export function PhotoQueueItem({
               <button type="submit" disabled={isSavingCaption}>
                 {isSavingCaption ? "Zapisywanie..." : "Zapisz"}
               </button>
-              <button className="ghost-button" type="button" onClick={onCancelCaptionEdit}>
+              <button className="ui-button ui-button--ghost" type="button" onClick={onCancelCaptionEdit}>
                 Anuluj
               </button>
             </div>
@@ -74,7 +72,7 @@ export function PhotoQueueItem({
           <>
             <p className="admin-media-caption">{photo.caption ?? "Brak podpisu"}</p>
             <button
-              className="ghost-button admin-media-link-button"
+              className="ui-button ui-button--ghost admin-media-link-button"
               type="button"
               onClick={() => onStartCaptionEdit(photo)}
             >
@@ -89,16 +87,20 @@ export function PhotoQueueItem({
             </button>
           ) : null}
           {photo.status !== "rejected" ? (
-            <button className="secondary-button" type="button" onClick={() => onReview(photo.id, "rejected")}>
+            <button
+              className="ui-button ui-button--secondary"
+              type="button"
+              onClick={() => onReview(photo.id, "rejected")}
+            >
               {photo.status === "approved" ? "Ukryj" : "Odrzuć"}
             </button>
           ) : null}
           {photo.status === "approved" && !isCover ? (
-            <button className="ghost-button" type="button" onClick={() => onSetCover(photo)}>
+            <button className="ui-button ui-button--ghost" type="button" onClick={() => onSetCover(photo)}>
               Ustaw jako główne
             </button>
           ) : null}
-          <button className="danger-button" type="button" onClick={() => onDelete(photo)}>
+          <button className="ui-button ui-button--danger" type="button" onClick={() => onDelete(photo)}>
             Usuń trwale
           </button>
         </div>

@@ -27,7 +27,7 @@ export function AdminCitiesSection({ cities, onChanged, places }: Props) {
           </button>
         </div>
 
-        <div className="city-list" role="table">
+        <div className="ui-table-panel city-list" role="table">
           <div className="city-row city-head" role="row">
             <span className="city-cell" role="columnheader">
               Nazwa
@@ -59,7 +59,7 @@ export function AdminCitiesSection({ cities, onChanged, places }: Props) {
                 <span className="city-id">{city.id}</span>
               </div>
               <span className="city-cell" role="cell" data-label="Status">
-                <span className={`status-badge status-badge--${city.status}`}>{city.status}</span>
+                <span className={`ui-status ui-status--${city.status}`}>{city.status}</span>
               </span>
               <span className="city-cell" role="cell" data-label="Centrum">
                 {city.lat.toFixed(4)}, {city.lon.toFixed(4)}
@@ -75,7 +75,7 @@ export function AdminCitiesSection({ cities, onChanged, places }: Props) {
                   Edytuj
                 </button>
                 <button
-                  className="secondary-button"
+                  className="ui-button ui-button--secondary"
                   type="button"
                   disabled={city.status === "archived"}
                   onClick={() => cityActions.setCityAction({ city, type: "archive" })}
@@ -83,7 +83,7 @@ export function AdminCitiesSection({ cities, onChanged, places }: Props) {
                   Archiwizuj
                 </button>
                 <button
-                  className="danger-button"
+                  className="ui-button ui-button--danger"
                   type="button"
                   onClick={() => cityActions.setCityAction({ city, type: "delete" })}
                 >
@@ -93,7 +93,7 @@ export function AdminCitiesSection({ cities, onChanged, places }: Props) {
             </div>
           ))}
           {cities.length === 0 ? (
-            <p className="notice">Brak miast. Dodaj pierwsze miasto przyciskiem powyżej.</p>
+            <p className="ui-empty">Brak miast. Dodaj pierwsze miasto przyciskiem powyżej.</p>
           ) : null}
         </div>
       </div>

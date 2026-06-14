@@ -114,6 +114,15 @@
   border: 0;
 }
 
+.measure-path {
+  stroke: var(--content-primary);
+}
+
+.measure-point {
+  fill: var(--content-primary);
+  stroke: var(--content-primary);
+}
+
 .measure-segment-label span {
   background: var(--color-surface-strong);
   backdrop-filter: var(--blur-glass);

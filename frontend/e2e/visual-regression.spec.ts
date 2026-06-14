@@ -387,6 +387,7 @@ test("visual: guides list and detail", async ({ page }) => {
   await mockSharedApi(page);
   await page.goto("/guides");
   await expect(page.locator(".guide-card")).toHaveCount(3);
+  await expect(page.locator(".guide-card.ui-card")).toHaveCount(3);
   expect((await guideCardRows(page)).map((row) => row.count)).toEqual([3]);
 
   await page.setViewportSize({ height: 820, width: 1920 });
@@ -402,6 +403,7 @@ test("visual: guides list and detail", async ({ page }) => {
   await page.setViewportSize({ height: 820, width: 1280 });
   await page.goto("/guides/wizualny-spacer");
   await expect(page.locator(".guide-place-card")).toHaveCount(2);
+  await expect(page.locator(".guide-place-card.ui-card")).toHaveCount(2);
   await expect(page).toHaveScreenshot("guide-detail-desktop.png", SNAPSHOT_OPTIONS);
 });
 
@@ -418,6 +420,7 @@ test("visual: admin place table", async ({ page }) => {
   const cityToggle = page.locator(".place-city-toggle").filter({ hasText: city.name });
   await cityToggle.click();
   await expect(cityToggle).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator(".place-table.ui-table-panel")).toBeVisible();
   await expect(page.locator(".place-city-group .table-row")).toHaveCount(2);
   await expect(page).toHaveScreenshot("admin-place-table-desktop.png", SNAPSHOT_OPTIONS);
 });

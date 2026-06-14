@@ -87,7 +87,7 @@ export function AdminPlacesSection({
       </div>
 
       <div className="admin-list">
-        <div className="place-table" role="table">
+        <div className="ui-table-panel place-table" role="table">
           <div className="table-row table-head" role="row">
             <span className="table-cell" role="columnheader">
               Nazwa
@@ -152,7 +152,7 @@ export function AdminPlacesSection({
                           {place.title}
                         </span>
                         <span className="table-cell" role="cell" data-label="Status">
-                          <span className={`status-badge status-badge--${place.status}`}>{place.status}</span>
+                          <span className={`ui-status ui-status--${place.status}`}>{place.status}</span>
                         </span>
                         <span className="table-cell" role="cell" data-label="Miasto">
                           {cityGroup.cityName}
@@ -172,14 +172,14 @@ export function AdminPlacesSection({
                             Edytuj
                           </button>
                           <button
-                            className="secondary-button"
+                            className="ui-button ui-button--secondary"
                             type="button"
                             disabled={place.status === "archived"}
                             onClick={() => onArchive(place)}
                           >
                             Archiwizuj
                           </button>
-                          <button className="danger-button" type="button" onClick={() => onDelete(place)}>
+                          <button className="ui-button ui-button--danger" type="button" onClick={() => onDelete(place)}>
                             Usuń trwale
                           </button>
                         </div>
@@ -190,7 +190,7 @@ export function AdminPlacesSection({
               </Fragment>
             );
           })}
-          {places.length === 0 ? <p className="notice">Brak miejsc w bazie.</p> : null}
+          {places.length === 0 ? <p className="ui-empty">Brak miejsc w bazie.</p> : null}
         </div>
       </div>
     </section>

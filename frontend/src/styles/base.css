@@ -32,14 +32,18 @@ textarea {
 }
 
 button {
+  align-items: center;
   border: 0;
   border-radius: var(--radius-control);
   background: var(--color-accent);
   color: var(--content-on-accent);
   cursor: pointer;
+  display: inline-flex;
+  font-size: var(--text-button);
   font-weight: 600;
+  justify-content: center;
   min-height: var(--control-height-comfortable);
-  padding: 0 18px;
+  padding: 0 var(--space-4);
   transition:
     background-color var(--motion-duration-fast) var(--motion-ease-standard),
     border-color var(--motion-duration-fast) var(--motion-ease-standard),

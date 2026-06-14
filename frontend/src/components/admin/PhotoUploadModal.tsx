@@ -40,7 +40,7 @@ export function PhotoUploadModal({
       onClose={onClose}
       onConfirm={onConfirm}
     >
-      <div className="admin-photo-upload admin-photo-upload--modal">
+      <div className="ui-form admin-photo-upload admin-photo-upload--modal">
         <label>
           Miejsce
           <select value={placeId} onChange={(event) => onPlaceChange(event.target.value)} required>

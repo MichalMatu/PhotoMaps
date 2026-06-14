@@ -23,29 +23,13 @@
 }
 
 .city-form label {
-  color: var(--color-muted-strong);
-  display: grid;
-  font-size: 0.82rem;
-  font-weight: 500;
-  gap: var(--space-2);
-  min-width: 0;
-}
-
-.city-form input,
-.city-form select {
-  background: var(--color-surface-soft);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  min-height: 40px;
-  min-width: 0;
-  padding: 8px 10px;
-  width: 100%;
+  font-size: var(--text-button);
 }
 
 .city-location-field {
   color: var(--color-muted-strong);
   display: grid;
-  font-size: 0.82rem;
+  font-size: var(--text-button);
   font-weight: 500;
   gap: var(--space-2);
   grid-column: 1 / -1;
@@ -58,10 +42,6 @@
 }
 
 .city-list {
-  background: var(--material-regular);
-  backdrop-filter: var(--blur-glass);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
   overflow: hidden;
 }
 
@@ -112,18 +92,18 @@
 
 .city-id {
   color: var(--color-muted);
-  font-size: 0.78rem;
+  font-size: var(--text-caption);
   margin-top: 3px;
 }
 
 .city-head {
   color: var(--color-muted);
-  font-size: 0.74rem;
+  font-size: var(--text-micro);
   font-weight: 650;
   min-height: 42px;
 }
 
-.city-row:not(.city-head) .status-badge {
+.city-row:not(.city-head) .ui-status {
   justify-self: start;
 }
 
@@ -183,7 +163,7 @@
   .city-row:not(.city-head) .city-cell::before {
     color: var(--color-muted);
     content: attr(data-label);
-    font-size: 0.72rem;
+    font-size: var(--text-micro);
     font-weight: 650;
     line-height: 1;
   }

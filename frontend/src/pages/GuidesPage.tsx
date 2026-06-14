@@ -112,7 +112,7 @@ function GuideCover({ guide }: { guide: Guide }) {
 
 function GuidePlaceCard({ place }: { place: GuidePlacePreview }) {
   return (
-    <article className="guide-place-card">
+    <article className="ui-card guide-place-card">
       {place.cover_photo ? (
         <MediaImage
           alt={place.title}
@@ -171,10 +171,10 @@ export function GuidesPage() {
               <h1>Trasy</h1>
               <span className="guide-page-count">{guideCountLabel(guidesQuery.data?.length ?? 0)}</span>
             </div>
-            {guidesQuery.isLoading ? <p className="notice">Ładowanie tras...</p> : null}
+            {guidesQuery.isLoading ? <p className="ui-empty">Ładowanie tras...</p> : null}
             <div className="guide-card-grid" style={guideGrid.gridStyle}>
               {guides.map((guide) => (
-                <a className="guide-card" href={`/guides/${guide.slug}`} key={guide.id}>
+                <a className="ui-card guide-card" href={`/guides/${guide.slug}`} key={guide.id}>
                   <GuideCover guide={guide} />
                   <span className="guide-card-count">{placeCountLabel(guide.place_count)}</span>
                   <span className="guide-card-copy">
@@ -187,7 +187,7 @@ export function GuidesPage() {
           </section>
         ) : (
           <section className="content-panel guide-detail-view">
-            {guideQuery.isLoading ? <p className="notice">Ładowanie trasy...</p> : null}
+            {guideQuery.isLoading ? <p className="ui-empty">Ładowanie trasy...</p> : null}
             {guideQuery.data ? (
               <>
                 <a className="ghost-link" href="/guides">
