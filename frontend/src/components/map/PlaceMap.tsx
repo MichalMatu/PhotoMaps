@@ -1,5 +1,5 @@
 import "leaflet/dist/leaflet.css";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MapContainer, TileLayer, useMap, useMapEvents, ZoomControl } from "react-leaflet";
 
 import type { City, PlaceMapItem } from "../../api/client";
@@ -14,7 +14,10 @@ import { ReportSheet } from "./ReportSheet";
 
 type Props = {
   mapCity?: City | null;
-  places: PlaceMapItem[];
+  markerPlaces: PlaceMapItem[];
+  onPinnedMediaVisibleChange: (isVisible: boolean) => void;
+  pinnedMediaPlaces: PlaceMapItem[];
+  showPinnedMedia: boolean;
 };
 
 type VisualTarget = {
@@ -188,9 +191,24 @@ function PlaceLayer({ onPinMedia, places }: PlaceLayerProps) {
   );
 }
 
-export function PlaceMap({ mapCity = null, places }: Props) {
+export function PlaceMap({
+  mapCity = null,
+  markerPlaces,
+  onPinnedMediaVisibleChange,
+  pinnedMediaPlaces,
+  showPinnedMedia,
+}: Props) {
   const center: [number, number] = mapCity ? [mapCity.lat, mapCity.lon] : DEFAULT_CENTER;
-  const pinnedMediaBoard = usePinnedMediaBoard(places);
+  const { cards, notice, onBringToFront, onLayoutChange, onRemove, pinMedia } = usePinnedMediaBoard(pinnedMediaPlaces);
+  const handlePinMedia = useCallback(
+    (request: PinMediaRequest) => {
+      const didPin = pinMedia(request);
+      onPinnedMediaVisibleChange(true);
+
+      return didPin;
+    },
+    [onPinnedMediaVisibleChange, pinMedia],
+  );
 
   return (
     <>
@@ -209,15 +227,17 @@ export function PlaceMap({ mapCity = null, places }: Props) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <PlaceLayer places={places} onPinMedia={pinnedMediaBoard.pinMedia} />
+        <PlaceLayer places={markerPlaces} onPinMedia={handlePinMedia} />
       </MapContainer>
-      <PinnedMediaBoard
-        cards={pinnedMediaBoard.cards}
-        notice={pinnedMediaBoard.notice}
-        onBringToFront={pinnedMediaBoard.onBringToFront}
-        onLayoutChange={pinnedMediaBoard.onLayoutChange}
-        onRemove={pinnedMediaBoard.onRemove}
-      />
+      {showPinnedMedia ? (
+        <PinnedMediaBoard
+          cards={cards}
+          notice={notice}
+          onBringToFront={onBringToFront}
+          onLayoutChange={onLayoutChange}
+          onRemove={onRemove}
+        />
+      ) : null}
     </>
   );
 }

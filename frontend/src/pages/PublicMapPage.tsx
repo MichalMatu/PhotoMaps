@@ -23,6 +23,7 @@ import { PlaceMap } from "../components/map/PlaceMap";
 
 export function PublicMapPage() {
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+  const [isPinnedMediaVisible, setIsPinnedMediaVisible] = useState(true);
   const [mapLayerState, setMapLayerState] = useState(DEFAULT_MAP_LAYER_STATE);
   const placesQuery = useQuery({
     queryKey: ["places-map"],
@@ -68,6 +69,11 @@ export function PublicMapPage() {
         onToggle: (layerId) =>
           setMapLayerState((currentState) => toggleMapLayer(currentState, layerId as MapLayerControlId)),
       }}
+      mapPinnedMediaControl={{
+        active: isPinnedMediaVisible,
+        label: "Przypięte",
+        onToggle: () => setIsPinnedMediaVisible((currentValue) => !currentValue),
+      }}
     >
       <main className="page-shell map-page">
         {placesQuery.isLoading || placesQuery.isError ? (
@@ -99,7 +105,13 @@ export function PublicMapPage() {
           </div>
         ) : null}
         <div className="map-frame">
-          <PlaceMap mapCity={places[0]?.city ?? null} places={visiblePlaces} />
+          <PlaceMap
+            mapCity={places[0]?.city ?? null}
+            markerPlaces={visiblePlaces}
+            onPinnedMediaVisibleChange={setIsPinnedMediaVisible}
+            pinnedMediaPlaces={places}
+            showPinnedMedia={isPinnedMediaVisible}
+          />
         </div>
       </main>
     </AppShell>

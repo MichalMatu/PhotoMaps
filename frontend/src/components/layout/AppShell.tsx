@@ -7,6 +7,7 @@ import {
   Coffee,
   Coins,
   Heart,
+  Images,
   Landmark,
   Layers,
   MapPinned,
@@ -42,6 +43,11 @@ type Props = {
       label: string;
     }>;
     onToggle: (layerId: string) => void;
+  };
+  mapPinnedMediaControl?: {
+    active: boolean;
+    label: string;
+    onToggle: () => void;
   };
   mapCategoryControls?: {
     items: Array<{
@@ -85,7 +91,14 @@ const mapCategoryIcons: Record<string, LucideIcon> = {
 
 const MAX_RAIL_CATEGORY_BUTTONS = 6;
 
-export function AppShell({ activeSection, adminAction, children, mapCategoryControls, mapLayerControls }: Props) {
+export function AppShell({
+  activeSection,
+  adminAction,
+  children,
+  mapCategoryControls,
+  mapLayerControls,
+  mapPinnedMediaControl,
+}: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const railItems = primaryItems.filter((item) => item.section !== activeSection);
   const handleAdminAction = () => {
@@ -131,6 +144,21 @@ export function AppShell({ activeSection, adminAction, children, mapCategoryCont
                 </button>
               );
             })}
+          </nav>
+        ) : null}
+
+        {activeSection === "map" && mapPinnedMediaControl ? (
+          <nav className="rail-layer-nav" aria-label="Nakładki mapy">
+            <button
+              className={mapPinnedMediaControl.active ? "rail-layer-button is-active" : "rail-layer-button"}
+              type="button"
+              aria-pressed={mapPinnedMediaControl.active}
+              title={mapPinnedMediaControl.label}
+              onClick={mapPinnedMediaControl.onToggle}
+            >
+              <Images aria-hidden="true" size={22} />
+              <span>{mapPinnedMediaControl.label}</span>
+            </button>
           </nav>
         ) : null}
 
@@ -250,6 +278,23 @@ export function AppShell({ activeSection, adminAction, children, mapCategoryCont
                 </button>
               );
             })}
+          </nav>
+        ) : null}
+
+        {activeSection === "map" && mapPinnedMediaControl ? (
+          <nav className="drawer-section drawer-section--layers" aria-label="Nakładki mapy">
+            <button
+              className={mapPinnedMediaControl.active ? "drawer-item is-active" : "drawer-item"}
+              type="button"
+              aria-pressed={mapPinnedMediaControl.active}
+              onClick={() => {
+                mapPinnedMediaControl.onToggle();
+                setIsMenuOpen(false);
+              }}
+            >
+              <Images aria-hidden="true" size={24} />
+              <span>{mapPinnedMediaControl.label}</span>
+            </button>
           </nav>
         ) : null}
 
