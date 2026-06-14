@@ -117,7 +117,11 @@
   width: 100%;
 }
 
-.rail-layer-button:hover,
+.rail-layer-button:hover {
+  background: var(--surface-inset);
+  color: var(--content-secondary);
+}
+
 .rail-layer-button.is-active {
   background: var(--color-accent-soft);
   color: var(--color-accent);
@@ -350,7 +354,11 @@
   color: var(--color-muted);
 }
 
-.drawer-item:hover,
+.drawer-item:hover {
+  background: var(--surface-inset);
+  color: var(--content-secondary);
+}
+
 .drawer-item.is-active {
   background: var(--color-accent-soft);
   color: var(--color-accent);

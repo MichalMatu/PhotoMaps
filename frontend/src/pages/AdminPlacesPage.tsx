@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { AdminCategoriesSection } from "../components/admin/AdminCategoriesSection";
 import { AdminCitiesSection } from "../components/admin/AdminCitiesSection";
 import { AdminGuidesSection } from "../components/admin/AdminGuidesSection";
@@ -15,8 +17,18 @@ import { useAdminPanelData } from "../components/admin/useAdminPanelData";
 import { useAdminPlaceManagement } from "../components/admin/useAdminPlaceManagement";
 import { useAdminSectionState } from "../components/admin/useAdminSectionState";
 import { ErrorModal } from "../components/ui/ErrorModal";
+import { polishCountLabel } from "../components/ui/polishCountLabel";
+
+function photoCountLabel(count: number) {
+  return polishCountLabel(count, {
+    few: "zdjęcia",
+    many: "zdjęć",
+    one: "zdjęcie",
+  });
+}
 
 export function AdminPlacesPage() {
+  const [photoPreviewPlaceId, setPhotoPreviewPlaceId] = useState<string | null>(null);
   const {
     accessMessage,
     adminToken,
@@ -80,14 +92,37 @@ export function AdminPlacesPage() {
     submitPlace,
   } = useAdminPlaceManagement({
     isSessionActive: Boolean(adminToken),
-    onPhotosChanged: refreshPhotos,
+    onPhotosChanged: refreshPhotosAndPlaces,
     onPlacesChanged: refreshPlaces,
   });
   const editingPlaceView = editingPlace ? (places.find((place) => place.id === editingPlace.id) ?? editingPlace) : null;
   const editingPlacePhotos = editingPlaceView ? photos.filter((photo) => photo.place_id === editingPlaceView.id) : [];
+  const photoPreviewPlace = photoPreviewPlaceId
+    ? (places.find((place) => place.id === photoPreviewPlaceId) ??
+      (editingPlace?.id === photoPreviewPlaceId ? editingPlace : null))
+    : null;
+  const photoPreviewPhotos = photoPreviewPlace ? photos.filter((photo) => photo.place_id === photoPreviewPlace.id) : [];
+
+  async function refreshPhotosAndPlaces() {
+    await refreshPhotos();
+  }
 
   async function refreshCategoriesAndPlaces() {
     await Promise.all([refreshCategories(), refreshPlaces()]);
+  }
+
+  function closePlaceEditor() {
+    setPhotoPreviewPlaceId(null);
+    closePlaceModal();
+  }
+
+  async function handleSubmitPlace(payload: Parameters<typeof submitPlace>[0]) {
+    await submitPlace(payload);
+    setPhotoPreviewPlaceId(null);
+  }
+
+  function openPhotoPreview(place: { id: string }) {
+    setPhotoPreviewPlaceId(place.id);
   }
 
   if (!adminToken) {
@@ -134,9 +169,19 @@ export function AdminPlacesPage() {
               editingPlaceId={editingPlace?.id ?? null}
               places={places}
               onArchive={requestArchivePlace}
-              onCreate={openCreatePlaceModal}
-              onDelete={requestDeletePlace}
-              onEdit={openEditPlaceModal}
+              onCreate={() => {
+                setPhotoPreviewPlaceId(null);
+                openCreatePlaceModal();
+              }}
+              onDelete={(place) => {
+                setPhotoPreviewPlaceId(null);
+                requestDeletePlace(place);
+              }}
+              onEdit={(place) => {
+                setPhotoPreviewPlaceId(null);
+                openEditPlaceModal(place);
+              }}
+              onPhotos={openPhotoPreview}
             />
           ) : null}
 
@@ -155,7 +200,7 @@ export function AdminPlacesPage() {
               places={places}
               statusCounts={photoStatusCounts}
               statusFilter={photoStatusFilter}
-              onReviewed={refreshPhotos}
+              onReviewed={refreshPhotosAndPlaces}
               onStatusFilterChange={setPhotoStatusFilter}
             />
           ) : null}
@@ -192,19 +237,36 @@ export function AdminPlacesPage() {
             showActions={false}
             size="wide"
             title={editingPlace ? "Edytuj miejsce" : "Dodaj miejsce"}
-            onClose={closePlaceModal}
+            onClose={closePlaceEditor}
           >
             <PlaceForm
               categories={categories}
               cities={cities}
               className="ui-form admin-form place-form place-form--modal"
               place={editingPlace}
-              onCancel={closePlaceModal}
-              onSubmit={submitPlace}
+              secondaryAction={
+                editingPlaceView
+                  ? {
+                      detail: photoCountLabel(editingPlacePhotos.length),
+                      label: "Zdjęcia miejsca",
+                      onClick: () => openPhotoPreview(editingPlaceView),
+                    }
+                  : undefined
+              }
+              onCancel={closePlaceEditor}
+              onSubmit={handleSubmitPlace}
             />
-            {editingPlaceView ? (
-              <PlacePhotoPanel photos={editingPlacePhotos} place={editingPlaceView} onChanged={refreshPhotos} />
-            ) : null}
+          </SystemModal>
+        ) : null}
+        {photoPreviewPlace ? (
+          <SystemModal
+            eyebrow="Miejsca"
+            showActions={false}
+            size="wide"
+            title="Szybki podgląd zdjęć"
+            onClose={() => setPhotoPreviewPlaceId(null)}
+          >
+            <PlacePhotoPanel photos={photoPreviewPhotos} place={photoPreviewPlace} onChanged={refreshPhotosAndPlaces} />
           </SystemModal>
         ) : null}
         {placeToArchive ? (
@@ -220,7 +282,7 @@ export function AdminPlacesPage() {
         ) : null}
         {placeToDelete ? (
           <SystemModal
-            confirmLabel="Usuń trwale"
+            confirmLabel="Usuń"
             isBusy={isDeleting}
             message={`Miejsce "${placeToDelete.title}" zostanie trwale usunięte razem ze zdjęciami, pamiątkami, przypisaniami do tras i zgłoszeniami. Tej operacji nie da się cofnąć.`}
             title="Usunąć miejsce trwale?"

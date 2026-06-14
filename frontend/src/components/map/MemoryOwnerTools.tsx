@@ -127,7 +127,7 @@ export function MemoryOwnerTools({ tools }: Props) {
                   disabled={tools.isOwnerSaving}
                   onClick={tools.handleDeleteMemory}
                 >
-                  Usuń trwale
+                  Usuń
                 </button>
               </div>
             </form>

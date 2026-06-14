@@ -27,6 +27,7 @@ type Props = {
 
 let nextModalStackId = 1;
 const modalStack: number[] = [];
+const MODAL_BASE_Z_INDEX = 11000;
 
 export function SystemModal({
   cancelLabel = "Anuluj",
@@ -85,6 +86,7 @@ export function SystemModal({
         isExiting,
       )}
       role="presentation"
+      style={{ zIndex: MODAL_BASE_Z_INDEX + modalStackId }}
       onClick={isBusy ? undefined : requestClose}
     >
       <div

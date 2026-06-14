@@ -138,7 +138,7 @@ export function MemoryQueueItem({
             </button>
           ) : null}
           <button className="ui-button ui-button--danger" type="button" onClick={() => onDelete(memory)}>
-            Usuń trwale
+            Usuń
           </button>
         </div>
       </div>

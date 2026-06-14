@@ -165,7 +165,7 @@ export function MemoryQueue({
       </div>
       {memoryToDelete ? (
         <SystemModal
-          confirmLabel="Usuń trwale"
+          confirmLabel="Usuń"
           isBusy={isDeleting}
           message="Pamiątka zostanie usunięta z bazy, publicznego pliku, miniatury i prywatnego oryginału. Tej operacji nie da się cofnąć."
           title="Usunąć pamiątkę?"

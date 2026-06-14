@@ -1,6 +1,7 @@
 import { FormEvent, useMemo, useState } from "react";
 
 import { deleteAdminPhoto, mediaUrl, setCoverPhoto, type Photo, type Place, updatePlaceCover } from "../../api/client";
+import { polishCountLabel } from "../ui/polishCountLabel";
 import { uploadAndApproveAdminPlacePhoto } from "./adminPhotoUpload";
 import { ADMIN_MEDIA_STATUS_LABELS, PHOTO_CAPTION_MAX_LENGTH } from "./adminMediaUi";
 import { canSubmitPhotoUpload } from "./photoUploadState";
@@ -25,10 +26,6 @@ export function PlacePhotoPanel({ onChanged, photos, place }: Props) {
   const sortedPhotos = useMemo(
     () => sortPlacePhotosForPanel(photos, place.cover_photo_id),
     [photos, place.cover_photo_id],
-  );
-  const coverPhoto = useMemo(
-    () => sortedPhotos.find((photo) => photo.id === place.cover_photo_id) ?? null,
-    [place.cover_photo_id, sortedPhotos],
   );
   const canUpload = canSubmitPhotoUpload({ file, isUploading, placeId: place.id });
 
@@ -108,29 +105,9 @@ export function PlacePhotoPanel({ onChanged, photos, place }: Props) {
         <div className="place-photo-panel-heading">
           <strong className="place-photo-panel-title">Zdjęcia miejsca</strong>
           <span className="place-photo-panel-count">
-            {photos.length === 1 ? "1 zdjęcie" : `${photos.length} zdjęć`}
+            {polishCountLabel(photos.length, { few: "zdjęcia", many: "zdjęć", one: "zdjęcie" })}
           </span>
         </div>
-        {coverPhoto ? (
-          <div className="place-cover-summary">
-            <img
-              className="place-cover-summary-image"
-              alt={coverPhoto.caption ?? place.title}
-              decoding="async"
-              loading="lazy"
-              src={mediaUrl(coverPhoto.thumb_path)}
-            />
-            <span className="place-cover-summary-label">Główne</span>
-            <button
-              className="ui-button ui-button--ghost"
-              disabled={isSettingCover}
-              type="button"
-              onClick={handleClearCover}
-            >
-              Zdejmij
-            </button>
-          </div>
-        ) : null}
       </div>
 
       <form className="ui-form place-photo-upload" onSubmit={handleUpload}>
@@ -160,23 +137,23 @@ export function PlacePhotoPanel({ onChanged, photos, place }: Props) {
         {sortedPhotos.map((photo) => {
           const isCover = place.cover_photo_id === photo.id;
           return (
-            <article className="ui-card place-photo-card" key={photo.id}>
+            <article className="ui-card admin-media-item" key={photo.id}>
               <img
-                className="place-photo-card-image"
+                className="admin-media-item-image"
                 alt={photo.caption ?? place.title}
                 decoding="async"
                 loading="lazy"
                 src={mediaUrl(photo.thumb_path)}
               />
-              <div className="place-photo-card-body">
+              <div className="admin-media-item-body">
                 <div className="photo-meta-row">
                   <span className={`ui-status ui-status--${photo.status}`}>
                     {ADMIN_MEDIA_STATUS_LABELS[photo.status]}
                   </span>
                   {isCover ? <span className="ui-status ui-status--cover">główne</span> : null}
                 </div>
-                <p className="place-photo-card-caption">{photo.caption ?? "Brak podpisu"}</p>
-                <div className="review-actions">
+                <p className="admin-media-caption">{photo.caption ?? "Brak podpisu"}</p>
+                <div className="admin-media-card-actions">
                   {photo.status === "approved" && !isCover ? (
                     <button
                       className="ui-button ui-button--ghost"
@@ -210,7 +187,7 @@ export function PlacePhotoPanel({ onChanged, photos, place }: Props) {
 
       {photoToDelete ? (
         <SystemModal
-          confirmLabel="Usuń trwale"
+          confirmLabel="Usuń"
           isBusy={isDeleting}
           message="Zdjęcie zostanie usunięte z bazy i plików. Tej operacji nie da się cofnąć."
           title="Usunąć zdjęcie?"

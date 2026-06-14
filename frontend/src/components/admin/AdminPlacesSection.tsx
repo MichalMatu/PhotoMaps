@@ -1,5 +1,5 @@
 import { Fragment, useMemo, useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Images } from "lucide-react";
 
 import type { Category, City, Place } from "../../api/client";
 import { polishCountLabel } from "../ui/polishCountLabel";
@@ -13,6 +13,7 @@ type Props = {
   onCreate: () => void;
   onDelete: (place: Place) => void;
   onEdit: (place: Place) => void;
+  onPhotos: (place: Place) => void;
   places: Place[];
 };
 
@@ -32,6 +33,7 @@ export function AdminPlacesSection({
   onCreate,
   onDelete,
   onEdit,
+  onPhotos,
   places,
 }: Props) {
   const [expandedCityIds, setExpandedCityIds] = useState<Set<string>>(() => new Set());
@@ -184,6 +186,15 @@ export function AdminPlacesSection({
                             <span className="place-completeness-details">{completenessDetails}</span>
                           </span>
                           <div className="table-cell table-cell--actions table-actions" role="cell">
+                            <button
+                              className="ui-button ui-button--ghost table-icon-action"
+                              type="button"
+                              aria-label={`Zdjęcia miejsca ${place.title}`}
+                              title="Zdjęcia miejsca"
+                              onClick={() => onPhotos(place)}
+                            >
+                              <Images aria-hidden="true" size={18} />
+                            </button>
                             <button type="button" onClick={() => onEdit(place)}>
                               Edytuj
                             </button>
@@ -200,7 +211,7 @@ export function AdminPlacesSection({
                               type="button"
                               onClick={() => onDelete(place)}
                             >
-                              Usuń trwale
+                              Usuń
                             </button>
                           </div>
                         </div>

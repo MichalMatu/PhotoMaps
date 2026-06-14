@@ -62,7 +62,7 @@ export function GuideManager({ guides, places, onChanged }: Props) {
                     type="button"
                     onClick={() => guideActions.requestDeleteGuide(guide)}
                   >
-                    Usuń trwale
+                    Usuń
                   </button>
                 </div>
               </div>
@@ -105,7 +105,7 @@ export function GuideManager({ guides, places, onChanged }: Props) {
       ) : null}
       {guideActions.guideToDelete ? (
         <SystemModal
-          confirmLabel="Usuń trwale"
+          confirmLabel="Usuń"
           isBusy={guideActions.isDeletingGuide}
           message={`Trasa "${guideActions.guideToDelete.title}" zostanie trwale usunięta razem z przypięciami miejsc i zgłoszeniami dotyczącymi tej trasy. Same miejsca zostaną w bazie.`}
           title="Usunąć trasę?"

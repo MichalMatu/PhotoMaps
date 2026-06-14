@@ -16,6 +16,11 @@ type Props = {
   cities: City[];
   className?: string;
   place?: Place | null;
+  secondaryAction?: {
+    detail?: string;
+    label: string;
+    onClick: () => void;
+  };
   onCancel?: () => void;
   onSubmit: (payload: PlaceFormPayload) => Promise<void>;
 };
@@ -35,7 +40,15 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-export function PlaceForm({ categories, cities, className = "ui-form admin-form", onCancel, onSubmit, place }: Props) {
+export function PlaceForm({
+  categories,
+  cities,
+  className = "ui-form admin-form",
+  onCancel,
+  onSubmit,
+  place,
+  secondaryAction,
+}: Props) {
   const [title, setTitle] = useState("");
   const [cityId, setCityId] = useState("");
   const [categoryIds, setCategoryIds] = useState<string[]>([]);
@@ -59,6 +72,7 @@ export function PlaceForm({ categories, cities, className = "ui-form admin-form"
     [categories, place?.category_ids],
   );
   const defaultCityId = availableCities[0]?.id ?? "";
+  const selectedCityName = availableCities.find((city) => city.id === cityId)?.name ?? cityId;
 
   useEffect(() => {
     if (!place) {
@@ -169,7 +183,7 @@ export function PlaceForm({ categories, cities, className = "ui-form admin-form"
 
       <div className="location-field">
         <span>Lokalizacja</span>
-        <LocationPicker position={location} onChange={setLocation} />
+        <LocationPicker mode="modal-only" previewLabel={selectedCityName} position={location} onChange={setLocation} />
       </div>
 
       <label>
@@ -230,14 +244,22 @@ export function PlaceForm({ categories, cities, className = "ui-form admin-form"
         </fieldset>
       ) : null}
 
-      <button type="submit" disabled={!cityId || !generatedSlug || isSaving}>
-        {isSaving ? "Zapisywanie..." : place ? "Zapisz zmiany" : "Dodaj miejsce"}
-      </button>
-      {onCancel ? (
-        <button className="ui-button ui-button--ghost" type="button" onClick={onCancel}>
-          {place ? "Anuluj edycję" : "Anuluj"}
+      <div className="place-form-actions">
+        <button type="submit" disabled={!cityId || !generatedSlug || isSaving}>
+          {isSaving ? "Zapisywanie..." : place ? "Zapisz zmiany" : "Dodaj miejsce"}
         </button>
-      ) : null}
+        {onCancel ? (
+          <button className="ui-button ui-button--ghost" type="button" onClick={onCancel}>
+            {place ? "Anuluj edycję" : "Anuluj"}
+          </button>
+        ) : null}
+        {secondaryAction ? (
+          <button className="ui-button ui-button--secondary" type="button" onClick={secondaryAction.onClick}>
+            <span>{secondaryAction.label}</span>
+            {secondaryAction.detail ? <span className="place-form-action-detail">{secondaryAction.detail}</span> : null}
+          </button>
+        ) : null}
+      </div>
     </form>
   );
 }

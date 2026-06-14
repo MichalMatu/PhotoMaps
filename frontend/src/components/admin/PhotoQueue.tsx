@@ -171,7 +171,7 @@ export function PhotoQueue({
       </div>
       {photoToDelete ? (
         <SystemModal
-          confirmLabel="Usuń trwale"
+          confirmLabel="Usuń"
           isBusy={isDeleting}
           message={`Zdjęcie zostanie usunięte z bazy, publicznego pliku, miniatury i prywatnego oryginału. Tej operacji nie da się cofnąć.`}
           title="Usunąć zdjęcie?"

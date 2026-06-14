@@ -164,6 +164,13 @@
   white-space: nowrap;
 }
 
+.table-actions .table-icon-action {
+  flex: 0 0 var(--control-height-small);
+  min-width: var(--control-height-small);
+  padding: 0;
+  width: var(--control-height-small);
+}
+
 .table-head {
   background: transparent;
   color: var(--color-muted);

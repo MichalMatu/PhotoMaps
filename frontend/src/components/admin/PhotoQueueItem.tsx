@@ -106,7 +106,7 @@ export function PhotoQueueItem({
                 </button>
               ) : null}
               <button className="ui-button ui-button--danger" type="button" onClick={() => onDelete(photo)}>
-                Usuń trwale
+                Usuń
               </button>
             </div>
           </>

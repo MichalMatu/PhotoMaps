@@ -34,11 +34,8 @@
 }
 
 .place-photo-panel {
-  border-top: 1px solid var(--color-border);
   display: grid;
   gap: var(--space-3);
-  margin-top: var(--space-4);
-  padding-top: var(--space-4);
 }
 
 .place-photo-panel-header {
@@ -64,32 +61,6 @@
   font-size: var(--text-button);
 }
 
-.place-cover-summary {
-  align-items: center;
-  display: flex;
-  gap: var(--space-2);
-  min-width: 0;
-}
-
-.place-cover-summary-image {
-  aspect-ratio: 1;
-  background: var(--color-page);
-  border-radius: var(--radius-control);
-  object-fit: cover;
-  width: 34px;
-}
-
-.place-cover-summary-label {
-  color: var(--color-muted-strong);
-  font-size: var(--text-caption);
-  font-weight: 700;
-}
-
-.place-cover-summary button {
-  min-height: var(--control-height-small);
-  padding-inline: var(--space-3);
-}
-
 .place-photo-upload {
   align-items: end;
   gap: var(--space-3);
@@ -104,33 +75,7 @@
 .place-photo-strip {
   display: grid;
   gap: var(--space-3);
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-}
-
-.place-photo-card {
-  display: grid;
-}
-
-.place-photo-card-image {
-  aspect-ratio: 4 / 3;
-  background: var(--color-page);
-  object-fit: cover;
-  width: 100%;
-}
-
-.place-photo-card-body {
-  display: grid;
-  gap: var(--space-2);
-  min-width: 0;
-  padding: var(--space-3);
-}
-
-.place-photo-card-caption {
-  color: var(--color-text);
-  font-size: var(--text-body-small);
-  font-weight: 650;
-  margin: 0;
-  overflow-wrap: anywhere;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
 }
 
 .status-tabs {
@@ -381,11 +326,6 @@
     align-items: start;
     display: grid;
     gap: var(--space-1);
-  }
-
-  .place-cover-summary {
-    justify-content: space-between;
-    width: 100%;
   }
 
   .place-photo-strip {

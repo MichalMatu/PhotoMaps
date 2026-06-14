@@ -87,7 +87,7 @@ export function AdminCitiesSection({ cities, onChanged, places }: Props) {
                   type="button"
                   onClick={() => cityActions.setCityAction({ city, type: "delete" })}
                 >
-                  Usuń trwale
+                  Usuń
                 </button>
               </div>
             </div>
@@ -124,7 +124,7 @@ export function AdminCitiesSection({ cities, onChanged, places }: Props) {
 
       {cityActions.cityAction ? (
         <SystemModal
-          confirmLabel={cityActions.cityAction.type === "archive" ? "Archiwizuj" : "Usuń trwale"}
+          confirmLabel={cityActions.cityAction.type === "archive" ? "Archiwizuj" : "Usuń"}
           isBusy={cityActions.isProcessingAction}
           message={
             cityActions.cityAction.type === "archive"

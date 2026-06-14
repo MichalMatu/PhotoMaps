@@ -17,8 +17,10 @@ type Props = {
   position: Position;
   defaultZoom?: number;
   largeZoom?: number;
+  mode?: "inline-map" | "modal-only";
   modalEyebrow?: string;
   modalTitle?: string;
+  previewLabel?: string;
   lookupErrorMessage?: string;
 };
 
@@ -29,6 +31,19 @@ type LookupState =
   | { status: "error"; message: string };
 
 type ReverseLookupResult = {
+  address?: {
+    city?: string;
+    city_district?: string;
+    footway?: string;
+    house_number?: string;
+    municipality?: string;
+    neighbourhood?: string;
+    pedestrian?: string;
+    road?: string;
+    suburb?: string;
+    town?: string;
+    village?: string;
+  };
   category?: string;
   display_name?: string;
   name?: string;
@@ -51,6 +66,44 @@ function roundedPosition(lat: number, lon: number): Position {
 
 function getPositionLabel(position: Position) {
   return `${position.lat.toFixed(6)}, ${position.lon.toFixed(6)}`;
+}
+
+function firstDisplayNamePart(displayName?: string) {
+  return displayName?.split(",")[0]?.trim() || null;
+}
+
+function getLookupLocality(result: ReverseLookupResult) {
+  return (
+    result.address?.city ??
+    result.address?.town ??
+    result.address?.village ??
+    result.address?.municipality ??
+    result.address?.city_district ??
+    result.address?.suburb ??
+    null
+  );
+}
+
+function getLookupStreet(result: ReverseLookupResult) {
+  const street =
+    result.address?.road ?? result.address?.pedestrian ?? result.address?.footway ?? result.address?.neighbourhood;
+  return [street, result.address?.house_number].filter(Boolean).join(" ") || null;
+}
+
+function getLookupPreview(lookup: LookupState) {
+  if (lookup.status !== "success") {
+    return null;
+  }
+
+  const title = lookup.result.name || firstDisplayNamePart(lookup.result.display_name) || "Miejsce z mapy";
+  const locality = getLookupLocality(lookup.result);
+  const details = [lookup.result.category, lookup.result.type].filter(Boolean).join(" / ");
+  const street = getLookupStreet(lookup.result);
+
+  return {
+    details: [details, street].filter(Boolean).join(" · "),
+    title: [title, locality].filter(Boolean).join(" · "),
+  };
 }
 
 async function reverseLookup(position: Position): Promise<ReverseLookupResult> {
@@ -155,6 +208,29 @@ function ReverseLookupSummary({ lookup }: { lookup: LookupState }) {
   );
 }
 
+function LocationReadout({
+  lookup,
+  position,
+  previewLabel,
+}: {
+  lookup: LookupState;
+  position: Position;
+  previewLabel?: string;
+}) {
+  const lookupPreview = getLookupPreview(lookup);
+  const title = lookupPreview?.title ?? previewLabel ?? "Pozycja";
+  const details = lookupPreview?.details;
+  const positionLabel = getPositionLabel(position);
+
+  return (
+    <div className="location-readout">
+      <strong>{title}</strong>
+      {details ? <span>{details}</span> : null}
+      <small>{positionLabel}</small>
+    </div>
+  );
+}
+
 type LargeLocationPickerModalProps = Props & {
   lookup: LookupState;
   onClose: () => void;
@@ -193,10 +269,12 @@ export function LocationPicker({
   defaultZoom = 15,
   largeZoom,
   lookupErrorMessage = "Nie udało się sprawdzić miejsca pod pinezką.",
+  mode = "inline-map",
   modalEyebrow,
   modalTitle,
   onChange,
   position,
+  previewLabel,
 }: Props) {
   const [isLargeMapOpen, setIsLargeMapOpen] = useState(false);
   const [lookup, setLookup] = useState<LookupState>({ status: "idle" });
@@ -218,12 +296,14 @@ export function LocationPicker({
   };
 
   return (
-    <div className="location-picker">
-      <div className="location-picker-map">
-        <LocationMap position={position} onChange={handleChange} zoom={defaultZoom} />
-      </div>
+    <div className={mode === "modal-only" ? "location-picker location-picker--modal-only" : "location-picker"}>
+      {mode === "inline-map" ? (
+        <div className="location-picker-map">
+          <LocationMap position={position} onChange={handleChange} zoom={defaultZoom} />
+        </div>
+      ) : null}
       <div className="location-picker-footer">
-        <p className="location-readout">{getPositionLabel(position)}</p>
+        <LocationReadout lookup={lookup} position={position} previewLabel={previewLabel} />
         <button className="location-expand-button" type="button" onClick={() => setIsLargeMapOpen(true)}>
           <Maximize2 aria-hidden="true" size={16} />
           Duża mapa

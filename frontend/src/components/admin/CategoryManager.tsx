@@ -82,7 +82,7 @@ export function CategoryManager({ categories, onChanged, places }: Props) {
                 type="button"
                 onClick={() => categoryActions.setCategoryAction({ category, type: "delete" })}
               >
-                Usuń trwale
+                Usuń
               </button>
             </div>
           </div>
@@ -115,7 +115,7 @@ export function CategoryManager({ categories, onChanged, places }: Props) {
 
       {categoryActions.categoryAction ? (
         <SystemModal
-          confirmLabel={categoryActions.categoryAction.type === "archive" ? "Archiwizuj" : "Usuń trwale"}
+          confirmLabel={categoryActions.categoryAction.type === "archive" ? "Archiwizuj" : "Usuń"}
           isBusy={categoryActions.isProcessingAction}
           message={
             categoryActions.categoryAction.type === "archive"

@@ -222,7 +222,7 @@ export function ReportQueue({ onChanged, onStatusFilterChange, reports, statusCo
       ) : null}
       {reportToDelete ? (
         <SystemModal
-          confirmLabel="Usuń trwale"
+          confirmLabel="Usuń"
           isBusy={isDeleting}
           message={`Zgłoszenie "${reportReasonLabel(reportToDelete.reason)}" zostanie trwale usunięte. Tej operacji nie da się cofnąć.`}
           title="Usunąć zgłoszenie?"
