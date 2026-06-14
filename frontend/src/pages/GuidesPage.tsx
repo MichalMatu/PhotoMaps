@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { getGuide, getGuides, mediaUrl, type Guide, type GuidePlacePreview } from "../api/client";
@@ -26,6 +26,69 @@ function placeCountLabel(count: number) {
     many: "miejsc",
     one: "miejsce",
   });
+}
+
+const GUIDE_CARD_MAX_WIDTH = 420;
+const GUIDE_CARD_GAP = 16;
+
+function guideGridColumnLimit(availableWidth: number) {
+  if (availableWidth >= 2520) return 6;
+  if (availableWidth >= 2160) return 5;
+  if (availableWidth >= 1480) return 4;
+  if (availableWidth >= 900) return 3;
+  if (availableWidth >= 600) return 2;
+  return 1;
+}
+
+function guideGridColumns(availableWidth: number, cardCount: number) {
+  if (cardCount < 1) return 1;
+  return Math.min(cardCount, guideGridColumnLimit(availableWidth));
+}
+
+function guideGridMaxWidth(columnCount: number) {
+  return columnCount * GUIDE_CARD_MAX_WIDTH + Math.max(0, columnCount - 1) * GUIDE_CARD_GAP;
+}
+
+function contentWidth(element: HTMLElement) {
+  const style = window.getComputedStyle(element);
+  const horizontalPadding = Number.parseFloat(style.paddingLeft) + Number.parseFloat(style.paddingRight);
+  return element.getBoundingClientRect().width - horizontalPadding;
+}
+
+function useGuideGrid(cardCount: number) {
+  const containerRef = useRef<HTMLElement | null>(null);
+  const [columnCount, setColumnCount] = useState(1);
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    if (!container) return undefined;
+
+    const updateColumnCount = () => {
+      const nextColumnCount = guideGridColumns(contentWidth(container), cardCount);
+      setColumnCount((currentColumnCount) =>
+        currentColumnCount === nextColumnCount ? currentColumnCount : nextColumnCount,
+      );
+    };
+
+    updateColumnCount();
+
+    const resizeObserver = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(() => updateColumnCount());
+    resizeObserver?.observe(container);
+    window.addEventListener("resize", updateColumnCount);
+
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", updateColumnCount);
+    };
+  }, [cardCount]);
+
+  return {
+    containerRef,
+    gridStyle: {
+      "--guide-grid-columns": columnCount,
+      "--guide-grid-max-width": `${guideGridMaxWidth(columnCount)}px`,
+    } as CSSProperties,
+  };
 }
 
 function guideCoverAlt(guide: Guide) {
@@ -82,6 +145,8 @@ export function GuidesPage() {
     enabled: slug !== null,
   });
   const errorKey = slug === null ? "guides" : `guide:${slug}`;
+  const guides = guidesQuery.data ?? [];
+  const guideGrid = useGuideGrid(guides.length);
   const activeError =
     guidesQuery.isError && slug === null
       ? {
@@ -101,14 +166,14 @@ export function GuidesPage() {
     <AppShell activeSection="guides">
       <main className="page-shell guide-page">
         {slug === null ? (
-          <section className="content-panel">
+          <section className="content-panel guide-list-view" ref={guideGrid.containerRef}>
             <div className="guide-page-heading">
               <h1>Trasy</h1>
               <span className="guide-page-count">{guideCountLabel(guidesQuery.data?.length ?? 0)}</span>
             </div>
             {guidesQuery.isLoading ? <p className="notice">Ładowanie tras...</p> : null}
-            <div className="guide-card-grid">
-              {guidesQuery.data?.map((guide) => (
+            <div className="guide-card-grid" style={guideGrid.gridStyle}>
+              {guides.map((guide) => (
                 <a className="guide-card" href={`/guides/${guide.slug}`} key={guide.id}>
                   <GuideCover guide={guide} />
                   <span className="guide-card-count">{placeCountLabel(guide.place_count)}</span>

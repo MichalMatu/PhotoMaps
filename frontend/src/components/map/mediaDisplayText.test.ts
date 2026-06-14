@@ -1,25 +1,58 @@
 import { describe, expect, it } from "vitest";
 
-import { mapMediaDescription } from "./mediaDisplayText";
+import { mapMediaDisplay } from "./mediaDisplayText";
 
-describe("mapMediaDescription", () => {
-  it("uses the caption for an editorial photo", () => {
-    expect(mapMediaDescription("photo", "Widok od strony rynku")).toBe("Widok od strony rynku");
+describe("mapMediaDisplay", () => {
+  it("uses a photo caption with the place description", () => {
+    expect(
+      mapMediaDisplay(
+        "photo",
+        "Widok od strony rynku",
+        "Historyczne centrum z ratuszem i bocznymi przejściami.",
+        "Najlepsze kadry są obok placu.",
+      ),
+    ).toEqual({
+      body: "Historyczne centrum z ratuszem i bocznymi przejściami.",
+      meta: null,
+      title: "Widok od strony rynku",
+    });
   });
 
-  it("prefers memory text over the memory caption", () => {
-    expect(mapMediaDescription("memory", "Wieczorne światło", "Krótki spacer po pracy.")).toBe(
-      "Krótki spacer po pracy.",
-    );
+  it("falls back from a technical photo caption to the place description", () => {
+    expect(mapMediaDisplay("photo", "Dummy zdjęcie: IMG_1234.jpg", "Opis miejsca.", "Komentarz lokalny.")).toEqual({
+      body: "Opis miejsca.",
+      meta: null,
+      title: null,
+    });
   });
 
-  it("falls back to the memory caption and removes source file references", () => {
-    expect(mapMediaDescription("memory", "Wieczorne światło", "Plik źródłowy: IMG_1234.jpg.")).toBe(
-      "Wieczorne światło",
-    );
+  it("uses memory caption, text and author metadata", () => {
+    expect(
+      mapMediaDisplay("memory", "Wieczorne światło", null, null, {
+        author_city: "Wrocław",
+        author_name: "Marta",
+        caption: "Wieczorne światło",
+        memory_text: "Krótki spacer po pracy.",
+      }),
+    ).toEqual({
+      body: "Krótki spacer po pracy.",
+      meta: "Marta, Wrocław",
+      title: "Wieczorne światło",
+    });
   });
 
-  it("does not expose technical dummy file captions", () => {
-    expect(mapMediaDescription("photo", "Dummy zdjęcie: IMG_1234.jpg")).toBeNull();
+  it("removes source file references from memory text and keeps the memory caption", () => {
+    expect(
+      mapMediaDisplay("memory", "Wieczorne światło", null, null, {
+        author_city: null,
+        author_name: null,
+        caption: "Wieczorne światło",
+        memory_text: "Plik źródłowy: IMG_1234.jpg.",
+      }),
+    ).toEqual({
+      body: null,
+      meta: null,
+      title: "Wieczorne światło",
+    });
   });
 });

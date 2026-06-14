@@ -600,8 +600,10 @@
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-media-glass-note);
   color: var(--content-on-media-glass);
+  display: grid;
   font-size: var(--text-label);
   font-weight: 760;
+  gap: 3px;
   line-height: 1.25;
   margin: 0;
   max-width: min(54vw, 620px);
@@ -610,9 +612,31 @@
   padding: 9px 13px;
   text-shadow: var(--shadow-media-glass-note-text);
   width: fit-content;
+}
+
+.photo-detail-text-title,
+.photo-detail-text-body,
+.photo-detail-text-meta {
   display: -webkit-box;
+  overflow: hidden;
   -webkit-box-orient: vertical;
+}
+
+.photo-detail-text-title {
+  color: var(--content-on-media);
+  font-weight: 820;
+  -webkit-line-clamp: 1;
+}
+
+.photo-detail-text-body {
   -webkit-line-clamp: 3;
+}
+
+.photo-detail-text-meta {
+  color: var(--content-on-media-muted);
+  font-size: 0.72rem;
+  font-weight: 720;
+  -webkit-line-clamp: 1;
 }
 
 .photo-detail-report-link {

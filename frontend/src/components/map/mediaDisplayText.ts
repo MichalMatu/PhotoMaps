@@ -3,6 +3,19 @@ const SOURCE_FILE_REFERENCE_PATTERN = /(?:^|\s+)Plik źródłowy:\s*[\w .()[\]-]
 const SOURCE_FILE_CAPTION_PATTERN =
   /^(?:Dummy (?:zdjęcie|pamiątka):\s*)?[\w .()[\]-]+\.(?:jpe?g|png|webp|heic|heif)$/iu;
 
+type MemoryDisplaySource = {
+  author_city: string | null;
+  author_name: string | null;
+  caption: string | null;
+  memory_text: string;
+};
+
+export type MapMediaDisplay = {
+  body: string | null;
+  meta: string | null;
+  title: string | null;
+};
+
 function mapMediaCaption(caption: string | null | undefined): string | null {
   const normalizedCaption = caption?.trim() ?? "";
   return normalizedCaption && !SOURCE_FILE_CAPTION_PATTERN.test(normalizedCaption) ? normalizedCaption : null;
@@ -15,15 +28,41 @@ function mapMemoryText(memoryText: string): string {
     .trim();
 }
 
-export function mapMediaDescription(
-  kind: "memory" | "photo",
-  caption: string | null | undefined,
-  memoryText = "",
-): string | null {
-  const displayCaption = mapMediaCaption(caption);
-  if (kind === "photo") {
-    return displayCaption;
+function mapPlaceDescription(description: string | null | undefined, localComment: string | null | undefined) {
+  return description?.trim() || localComment?.trim() || null;
+}
+
+function mapMemoryMeta(memory: MemoryDisplaySource | null | undefined) {
+  if (!memory) {
+    return null;
   }
 
-  return mapMemoryText(memoryText) || displayCaption;
+  const authorParts = [memory.author_name?.trim(), memory.author_city?.trim()].filter(Boolean);
+  return authorParts.length > 0 ? authorParts.join(", ") : null;
+}
+
+export function mapMediaDisplay(
+  kind: "memory" | "photo",
+  caption: string | null | undefined,
+  placeDescription?: string | null,
+  placeLocalComment?: string | null,
+  memory?: MemoryDisplaySource | null,
+): MapMediaDisplay {
+  const displayCaption = mapMediaCaption(caption);
+  if (kind === "photo") {
+    const displayBody = mapPlaceDescription(placeDescription, placeLocalComment);
+    return {
+      body: displayBody && displayBody !== displayCaption ? displayBody : null,
+      meta: null,
+      title: displayCaption,
+    };
+  }
+
+  const memoryCaption = mapMediaCaption(memory?.caption ?? caption);
+  const memoryBody = memory ? mapMemoryText(memory.memory_text) : null;
+  return {
+    body: memoryBody && memoryBody !== memoryCaption ? memoryBody : null,
+    meta: mapMemoryMeta(memory),
+    title: memoryCaption,
+  };
 }

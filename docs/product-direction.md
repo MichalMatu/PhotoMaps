@@ -31,7 +31,7 @@ Zasady produktu:
 - zwykle pinezki nie sa domyslnym jezykiem publicznej mapy,
 - zoom zmienia gestosc i rozmiar elementow,
 - klikniecie miniatury w wachlarzu otwiera bezposrednio jeden lekki widok medium; nie dodajemy posredniego podgladu tego samego zdjecia,
-- widok medium eksponuje obraz, nazwe miejsca i najwyzej jeden krotki tekst: podpis zdjecia albo tresc pamiatki,
+- widok medium eksponuje obraz, nazwe miejsca i jeden kompaktowy blok tekstu: podpis zdjecia z opisem miejsca albo dane pamiatki,
 - akcje pomocnicze, takie jak edycja pamiatki i zgloszenie problemu, pozostaja male i drugoplanowe,
 - zewnetrzne materialy maja byc pozniej osobnymi, strukturalnymi linkami przypietymi do miejsca, a nie tekstem w podpisie zdjecia,
 - warstwy pomagaja ogladac dane: polecane, galerie, pamiatki, pozniej audio i trasy,

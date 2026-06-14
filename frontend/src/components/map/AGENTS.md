@@ -20,7 +20,7 @@ Publiczna mapa jest glownym produktem: wizualna tablica miniaturek miejsc, warst
 - Warstwy mapy sa sposobem ogladania danych; kategorie i filtry maja byc dynamiczne z API.
 - Publicznie renderuj tylko opublikowane miejsca oraz zatwierdzone media i pamiatki.
 - Klikniecie miniatury wachlarza otwiera bezposrednio jeden modal medium. Nie tworz posredniego viewera, ktory tylko powtarza to samo zdjecie.
-- Modal medium pokazuje najwyzej jeden krotki tekst na obrazie: tresc pamiatki albo podpis zdjecia. Akcje edycji i zgloszenia pozostaja kompaktowe.
+- Modal medium pokazuje jeden kompaktowy blok tekstu na obrazie: podpis zdjecia z opisem miejsca albo dane pamiatki. Akcje edycji i zgloszenia pozostaja kompaktowe.
 - Najblizszy zakres mapy to Map Experience v1, Galerie, dynamiczne kategorie i stabilizacja preview bez utraty wizualnego pierwszego widoku.
 
 ## Work Guidance

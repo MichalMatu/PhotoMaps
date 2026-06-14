@@ -4,7 +4,7 @@ import { getPlaceMemory, mediaUrl, type PlaceMapItem } from "../../api/client";
 import { ErrorModal } from "../ui/ErrorModal";
 import { MediaImage } from "../ui/MediaImage";
 import { SystemModal } from "../ui/SystemModal";
-import { mapMediaDescription } from "./mediaDisplayText";
+import { mapMediaDisplay } from "./mediaDisplayText";
 import { MemoryOwnerTools } from "./MemoryOwnerTools";
 import type { PlaceMapVisualItem } from "./placePreview";
 import { useMemoryOwnerTools } from "./useMemoryOwnerTools";
@@ -28,7 +28,8 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
     onDeleted: onClose,
     placeId: place.id,
   });
-  const displayText = mapMediaDescription(item.kind, item.caption, memorySource?.memory_text);
+  const display = mapMediaDisplay(item.kind, item.caption, place.description, place.local_comment, memorySource);
+  const hasDisplayText = Boolean(display.title || display.body || display.meta);
   const modalEyebrow = place.categories[0]?.label ?? "Miejsce";
 
   return (
@@ -40,7 +41,7 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
       variant="media"
       onClose={onClose}
     >
-      <div className={displayText ? "photo-detail-content has-copy" : "photo-detail-content"}>
+      <div className={hasDisplayText ? "photo-detail-content has-copy" : "photo-detail-content"}>
         <MediaImage
           alt={item.caption ?? place.title}
           className="photo-detail-image-wrap"
@@ -52,7 +53,13 @@ export function PhotoDetailModal({ item, onClose, onReport, place }: Props) {
 
         <div className="photo-detail-overlay">
           <div className="photo-detail-copy">
-            {displayText ? <div className="photo-detail-text">{displayText}</div> : null}
+            {hasDisplayText ? (
+              <div className="photo-detail-text">
+                {display.title ? <span className="photo-detail-text-title">{display.title}</span> : null}
+                {display.body ? <span className="photo-detail-text-body">{display.body}</span> : null}
+                {display.meta ? <span className="photo-detail-text-meta">{display.meta}</span> : null}
+              </div>
+            ) : null}
           </div>
           <div className="photo-detail-actions">
             {memorySource ? <MemoryOwnerTools tools={memoryOwnerTools} /> : null}

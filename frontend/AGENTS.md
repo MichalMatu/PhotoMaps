@@ -23,6 +23,7 @@ Frontend odpowiada za publiczna mape, panel admina, klienta API, komponenty UI, 
 - Klient API nie powinien przyjmowac starych payloadow po zmianie kontraktu; migrowac aktualnych callerow i usuwac fallbacki.
 - Komponenty z kilkoma wariantami maja miec jawny tryb, np. `form-only`, `with-list`, `readonly`, zamiast kilku luznych flag boolean.
 - UI ma byc kompaktowy: bez powtorzonych tytulow, licznikow, pustych pasow i nadmiarowych opisow.
+- Listy i siatki projektuj responsywnie: grupa moze byc centrowana, ale elementy w niepelnym rzedzie powinny startowac od lewej w obrebie tej grupy; unikaj ukladow zakodowanych tylko pod aktualna liczbe rekordow.
 
 ## Work Guidance
 

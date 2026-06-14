@@ -54,6 +54,22 @@ function photo(id: string, placeId: string, caption: string) {
 const rynekCover = photo("visual-rynek-cover", "visual-rynek", "Rynek od strony przejścia");
 const rynekSide = photo("visual-rynek-side", "visual-rynek", "Detal kamienic");
 const nadodrzeCover = photo("visual-nadodrze-cover", "visual-nadodrze", "Szyldy Nadodrza");
+const rynekMemory = {
+  approved_at: NOW,
+  author_city: "Wrocław",
+  author_name: "Marta",
+  caption: "Wieczorne światło",
+  consent_confirmed: true,
+  created_at: NOW,
+  id: "visual-rynek-memory",
+  memory_text: "Krótki spacer po pracy.",
+  paid: false,
+  place_id: "visual-rynek",
+  public_path: "/media/visual/visual-rynek-memory.svg",
+  share_slug: "visual-memory",
+  status: "approved",
+  thumb_path: "/media/visual/visual-rynek-memory-thumb.svg",
+};
 
 const places = [
   {
@@ -74,23 +90,7 @@ const places = [
     preview_items: [
       { ...rynekCover, kind: "photo" },
       { ...rynekSide, kind: "photo" },
-      {
-        approved_at: NOW,
-        author_city: "Wrocław",
-        author_name: "Marta",
-        caption: "Wieczorne światło",
-        consent_confirmed: true,
-        created_at: NOW,
-        id: "visual-rynek-memory",
-        kind: "memory",
-        memory_text: "Krótki spacer po pracy.",
-        paid: false,
-        place_id: "visual-rynek",
-        public_path: "/media/visual/visual-rynek-memory.svg",
-        share_slug: "visual-memory",
-        status: "approved",
-        thumb_path: "/media/visual/visual-rynek-memory-thumb.svg",
-      },
+      { ...rynekMemory, kind: "memory" },
     ],
     score: 8,
     slug: "visual-rynek",
@@ -124,6 +124,31 @@ const places = [
   },
 ];
 
+const guidePreviewPlaces = [
+  {
+    cover_photo: rynekCover,
+    description: places[0].description,
+    id: places[0].id,
+    local_comment: places[0].local_comment,
+    memory_count: places[0].memory_count,
+    photo_count: places[0].photo_count,
+    slug: places[0].slug,
+    status: places[0].status,
+    title: places[0].title,
+  },
+  {
+    cover_photo: nadodrzeCover,
+    description: places[1].description,
+    id: places[1].id,
+    local_comment: places[1].local_comment,
+    memory_count: places[1].memory_count,
+    photo_count: places[1].photo_count,
+    slug: places[1].slug,
+    status: places[1].status,
+    title: places[1].title,
+  },
+];
+
 const guides = [
   {
     cover_photo: rynekCover,
@@ -131,33 +156,34 @@ const guides = [
     description: "Krótka trasa przez centrum i boczne przejścia z dobrymi kadrami.",
     id: "visual-guide",
     place_count: 2,
-    preview_places: [
-      {
-        cover_photo: rynekCover,
-        description: places[0].description,
-        id: places[0].id,
-        local_comment: places[0].local_comment,
-        memory_count: places[0].memory_count,
-        photo_count: places[0].photo_count,
-        slug: places[0].slug,
-        status: places[0].status,
-        title: places[0].title,
-      },
-      {
-        cover_photo: nadodrzeCover,
-        description: places[1].description,
-        id: places[1].id,
-        local_comment: places[1].local_comment,
-        memory_count: places[1].memory_count,
-        photo_count: places[1].photo_count,
-        slug: places[1].slug,
-        status: places[1].status,
-        title: places[1].title,
-      },
-    ],
+    preview_places: guidePreviewPlaces,
     slug: "wizualny-spacer",
     status: "published",
     title: "Wizualny spacer po centrum",
+    updated_at: NOW,
+  },
+  {
+    cover_photo: nadodrzeCover,
+    created_at: NOW,
+    description: "Miejsca, gdzie woda, mosty i panoramy robią najwięcej pracy w kadrze.",
+    id: "visual-guide-river",
+    place_count: 2,
+    preview_places: [...guidePreviewPlaces].reverse(),
+    slug: "kadry-nad-odra",
+    status: "published",
+    title: "Kadry nad Odrą",
+    updated_at: NOW,
+  },
+  {
+    cover_photo: rynekSide,
+    created_at: NOW,
+    description: "Zestaw ciaśniejszych przejść, szyldów i detali do sprawdzania miejskiego rytmu.",
+    id: "visual-guide-details",
+    place_count: 2,
+    preview_places: guidePreviewPlaces,
+    slug: "detale-i-przejscia",
+    status: "published",
+    title: "Detale i przejścia",
     updated_at: NOW,
   },
 ];
@@ -166,6 +192,16 @@ const guideDetail = {
   ...guides[0],
   places: guides[0].preview_places,
 };
+
+const wideGuideList = Array.from({ length: 6 }, (_, index) => {
+  const guide = guides[index % guides.length];
+  return {
+    ...guide,
+    id: `${guide.id}-${index}`,
+    slug: `${guide.slug}-${index}`,
+    title: `${guide.title} ${index + 1}`,
+  };
+});
 
 function imageSvg(url: string) {
   const isSecondary = url.includes("nadodrze") || url.includes("side");
@@ -188,7 +224,7 @@ function tileSvg() {
   </svg>`;
 }
 
-async function mockSharedApi(page: Page, mapPlaces = places) {
+async function mockSharedApi(page: Page, mapPlaces = places, guideList = guides) {
   await page.route("https://*.tile.openstreetmap.org/**", (route) =>
     route.fulfill({ body: tileSvg(), contentType: "image/svg+xml" }),
   );
@@ -196,9 +232,12 @@ async function mockSharedApi(page: Page, mapPlaces = places) {
     route.fulfill({ body: imageSvg(route.request().url()), contentType: "image/svg+xml" }),
   );
   await page.route(`${API_URL}/api/places/map`, (route) => route.fulfill({ json: mapPlaces }));
+  await page.route(`${API_URL}/api/places/${places[0].id}/memories/${rynekMemory.id}`, (route) =>
+    route.fulfill({ json: rynekMemory }),
+  );
   await page.route(`${API_URL}/api/categories`, (route) => route.fulfill({ json: categories }));
   await page.route(`${API_URL}/api/cities`, (route) => route.fulfill({ json: [city] }));
-  await page.route(`${API_URL}/api/guides`, (route) => route.fulfill({ json: guides }));
+  await page.route(`${API_URL}/api/guides`, (route) => route.fulfill({ json: guideList }));
   await page.route(`${API_URL}/api/guides/wizualny-spacer`, (route) => route.fulfill({ json: guideDetail }));
 }
 
@@ -221,6 +260,37 @@ async function clickMapMarker(page: Page, title: string) {
   await marker.evaluate((element) => {
     element.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
   });
+}
+
+async function guideCardRows(page: Page) {
+  const cardPositions = await page.locator(".guide-card").evaluateAll((elements) =>
+    elements.map((element) => {
+      const rect = element.getBoundingClientRect();
+      return {
+        left: Math.round(rect.left),
+        right: Math.round(rect.right),
+        top: Math.round(rect.top),
+      };
+    }),
+  );
+
+  return [
+    ...cardPositions
+      .reduce((rows, position) => {
+        const row = rows.get(position.top) ?? {
+          count: 0,
+          left: Number.POSITIVE_INFINITY,
+          right: 0,
+        };
+        rows.set(position.top, {
+          count: row.count + 1,
+          left: Math.min(row.left, position.left),
+          right: Math.max(row.right, position.right),
+        });
+        return rows;
+      }, new Map<number, { count: number; left: number; right: number }>())
+      .values(),
+  ];
 }
 
 test("visual: empty desktop map", async ({ page }) => {
@@ -246,6 +316,7 @@ test("visual: map markers, fan and photo detail", async ({ page }) => {
   const detailDialog = page.getByRole("dialog", { name: places[0].title });
   await expect(detailDialog).toBeVisible();
   await expect(detailDialog.getByText(rynekCover.caption)).toBeVisible();
+  await expect(detailDialog.getByText(places[0].description)).toBeVisible();
   await expect(page.locator(".map-photo-viewer")).toHaveCount(0);
 
   const desktopLayout = await detailDialog.evaluate((element) => {
@@ -265,6 +336,13 @@ test("visual: map markers, fan and photo detail", async ({ page }) => {
   expect(desktopLayout.textBlocks).toBe(1);
   expect(desktopLayout.imageWidth).toBeGreaterThanOrEqual(desktopLayout.dialogWidth - 4);
   expect(desktopLayout.imageHeight).toBeGreaterThanOrEqual(desktopLayout.dialogHeight - 4);
+
+  await page.keyboard.press("Escape");
+  await expect(detailDialog).toBeHidden();
+  await clickMapMarker(page, rynekMemory.caption);
+  await expect(detailDialog.getByText(rynekMemory.caption)).toBeVisible();
+  await expect(detailDialog.getByText(rynekMemory.memory_text)).toBeVisible();
+  await expect(detailDialog.getByText(`${rynekMemory.author_name}, ${rynekMemory.author_city}`)).toBeVisible();
 });
 
 test("visual: mobile photo detail fills the modal without internal scrolling", async ({ page }) => {
@@ -308,9 +386,20 @@ test("visual: guides list and detail", async ({ page }) => {
   await page.setViewportSize({ height: 820, width: 1280 });
   await mockSharedApi(page);
   await page.goto("/guides");
-  await expect(page.locator(".guide-card")).toBeVisible();
-  await expect(page).toHaveScreenshot("guides-list-desktop.png", SNAPSHOT_OPTIONS);
+  await expect(page.locator(".guide-card")).toHaveCount(3);
+  expect((await guideCardRows(page)).map((row) => row.count)).toEqual([3]);
 
+  await page.setViewportSize({ height: 820, width: 1920 });
+  await page.unroute(`${API_URL}/api/guides`);
+  await page.route(`${API_URL}/api/guides`, (route) => route.fulfill({ json: wideGuideList }));
+  await page.goto("/guides");
+  await expect(page.locator(".guide-card")).toHaveCount(6);
+  const wideRows = await guideCardRows(page);
+  expect(wideRows.map((row) => row.count)).toEqual([4, 2]);
+  expect(Math.abs(wideRows[1].left - wideRows[0].left)).toBeLessThanOrEqual(1);
+  expect(wideRows[1].right).toBeLessThan(wideRows[0].right);
+
+  await page.setViewportSize({ height: 820, width: 1280 });
   await page.goto("/guides/wizualny-spacer");
   await expect(page.locator(".guide-place-card")).toHaveCount(2);
   await expect(page).toHaveScreenshot("guide-detail-desktop.png", SNAPSHOT_OPTIONS);
