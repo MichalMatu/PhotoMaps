@@ -484,6 +484,98 @@ test("visitor can report a photo and admin can inspect, close and delete the rep
   await expect(closedReport).toBeHidden();
 });
 
+test("pinned media cards stay attached to the map and below navigation chrome", async ({ page, request }) => {
+  const suffix = `${Date.now()}-${test.info().workerIndex}`;
+  const photoCaption = `Zdjęcie przypięte ${suffix}`;
+  const category = await createCategory(request, suffix);
+  const place = await createPlace(request, category.id, suffix, {
+    lat: 51.101,
+    lon: 17.055,
+    title: `E2E przypięcie ${suffix}`,
+  });
+  await uploadApprovedPhoto(request, place.id, photoCaption);
+
+  await page.goto("/");
+  await page.evaluate(() => {
+    localStorage.removeItem("photomap:pinned-media-board:v3");
+  });
+  await page.reload();
+  await expect(page.locator(".map-frame")).toBeVisible();
+  await clickMapMarker(page, place.title);
+  await clickMapMarker(page, photoCaption);
+
+  const detailDialog = page.getByRole("dialog", { name: place.title });
+  await expect(detailDialog).toBeVisible();
+  await detailDialog.getByRole("button", { name: "Przypnij zdjęcie" }).click();
+
+  const pinnedCard = page.locator('[data-testid="pinned-media-card"]').first();
+  await expect(pinnedCard).toBeVisible();
+  await expect(page.locator(".system-modal-backdrop")).toHaveCount(0);
+
+  const initialCardBox = await pinnedCard.boundingBox();
+  expect(initialCardBox).not.toBeNull();
+  const initialLayerState = await page.evaluate(() => {
+    const card = document.querySelector('[data-testid="pinned-media-card"]');
+    const pane = document.querySelector(".pinned-media-pane");
+    const rail = document.querySelector(".side-rail");
+    const storage = JSON.parse(localStorage.getItem("photomap:pinned-media-board:v3") ?? "{}") as {
+      cards?: Array<{ layout?: Record<string, unknown> }>;
+      version?: number;
+    };
+
+    return {
+      cardParentPane: Boolean(card?.closest(".pinned-media-pane")),
+      cardPosition: card ? getComputedStyle(card).position : null,
+      hasZoomAnimatedClass: card?.classList.contains("leaflet-zoom-animated") ?? false,
+      layoutKeys: Object.keys(storage.cards?.[0]?.layout ?? {}).sort(),
+      paneZ: pane ? Number(getComputedStyle(pane).zIndex) : null,
+      railZ: rail ? Number(getComputedStyle(rail).zIndex) : null,
+      version: storage.version ?? null,
+    };
+  });
+
+  expect(initialLayerState).toMatchObject({
+    cardParentPane: true,
+    cardPosition: "absolute",
+    hasZoomAnimatedClass: true,
+    layoutKeys: ["aspectRatio", "height", "position", "width", "zIndex"],
+    version: 3,
+  });
+  expect(initialLayerState.paneZ).not.toBeNull();
+  expect(initialLayerState.railZ).not.toBeNull();
+  expect(initialLayerState.paneZ).toBeLessThan(initialLayerState.railZ as number);
+
+  await page.mouse.move(720, 430);
+  await page.mouse.down();
+  await page.mouse.move(900, 430, { steps: 8 });
+  await page.mouse.up();
+  await page.waitForTimeout(250);
+  const pannedCardBox = await pinnedCard.boundingBox();
+  expect(pannedCardBox).not.toBeNull();
+  expect(Math.abs((pannedCardBox?.x ?? 0) - (initialCardBox?.x ?? 0))).toBeGreaterThan(24);
+
+  await page.locator(".leaflet-control-zoom-in").click();
+  await page.waitForTimeout(350);
+  const zoomedCardBox = await pinnedCard.boundingBox();
+  expect(zoomedCardBox).not.toBeNull();
+  expect(Math.abs((zoomedCardBox?.x ?? 0) - (pannedCardBox?.x ?? 0))).toBeGreaterThan(1);
+
+  await page.getByRole("button", { name: "Otwórz menu" }).click();
+  await expect(page.locator(".side-drawer.is-open")).toBeVisible();
+  const drawerLayerState = await page.evaluate(() => {
+    const pane = document.querySelector(".pinned-media-pane");
+    const drawer = document.querySelector(".side-drawer");
+
+    return {
+      drawerZ: drawer ? Number(getComputedStyle(drawer).zIndex) : null,
+      paneZ: pane ? Number(getComputedStyle(pane).zIndex) : null,
+    };
+  });
+  expect(drawerLayerState.paneZ).not.toBeNull();
+  expect(drawerLayerState.drawerZ).not.toBeNull();
+  expect(drawerLayerState.paneZ).toBeLessThan(drawerLayerState.drawerZ as number);
+});
+
 test("map motion states animate media modal and sheets", async ({ page, request }) => {
   const suffix = `${Date.now()}-${test.info().workerIndex}`;
   const photoCaption = `Zdjęcie motion ${suffix}`;

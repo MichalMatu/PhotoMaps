@@ -710,11 +710,18 @@
   text-decoration: none;
 }
 
-.pinned-media-board {
-  inset: 0;
+.place-map .pinned-media-pane {
   pointer-events: none;
-  position: fixed;
-  z-index: 10500;
+  z-index: 850;
+}
+
+.pinned-media-board {
+  height: 0;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  width: 0;
 }
 
 .pinned-media-card {
@@ -727,10 +734,12 @@
   color: var(--content-primary);
   cursor: grab;
   display: grid;
+  left: 0;
   max-width: calc(100vw - var(--space-6));
   overflow: hidden;
   pointer-events: auto;
-  position: fixed;
+  position: absolute;
+  top: 0;
   touch-action: none;
   user-select: none;
 }
@@ -867,11 +876,9 @@
 @keyframes pinned-media-card-in {
   from {
     opacity: 0;
-    transform: translateY(var(--space-2)) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 

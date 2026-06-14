@@ -188,29 +188,19 @@ function PlaceLayer({ onPinMedia, places }: PlaceLayerProps) {
   );
 }
 
-export function PlaceMap({ mapCity = null, places }: Props) {
-  const center: [number, number] = mapCity ? [mapCity.lat, mapCity.lon] : DEFAULT_CENTER;
+function PlaceMapContent({ places }: Pick<Props, "places">) {
   const pinnedMediaBoard = usePinnedMediaBoard(places);
 
   return (
     <>
-      <MapContainer
-        center={center}
-        zoom={mapCity?.default_zoom ?? 13}
-        className="place-map"
-        key={mapCity?.id ?? "default"}
-        scrollWheelZoom
-        zoomControl={false}
-      >
-        <MapSizeUpdater />
-        <DistanceMeasureTool />
-        <ZoomControl position="bottomright" />
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <PlaceLayer places={places} onPinMedia={pinnedMediaBoard.pinMedia} />
-      </MapContainer>
+      <MapSizeUpdater />
+      <DistanceMeasureTool />
+      <ZoomControl position="bottomright" />
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      <PlaceLayer places={places} onPinMedia={pinnedMediaBoard.pinMedia} />
       <PinnedMediaBoard
         cards={pinnedMediaBoard.cards}
         notice={pinnedMediaBoard.notice}
@@ -219,5 +209,22 @@ export function PlaceMap({ mapCity = null, places }: Props) {
         onRemove={pinnedMediaBoard.onRemove}
       />
     </>
+  );
+}
+
+export function PlaceMap({ mapCity = null, places }: Props) {
+  const center: [number, number] = mapCity ? [mapCity.lat, mapCity.lon] : DEFAULT_CENTER;
+
+  return (
+    <MapContainer
+      center={center}
+      zoom={mapCity?.default_zoom ?? 13}
+      className="place-map"
+      key={mapCity?.id ?? "default"}
+      scrollWheelZoom
+      zoomControl={false}
+    >
+      <PlaceMapContent places={places} />
+    </MapContainer>
   );
 }
