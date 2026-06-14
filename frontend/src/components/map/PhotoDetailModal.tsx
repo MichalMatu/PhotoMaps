@@ -8,7 +8,7 @@ import { MediaImage } from "../ui/MediaImage";
 import { SystemModal } from "../ui/SystemModal";
 import { mapMediaDisplay } from "./mediaDisplayText";
 import { MemoryOwnerTools } from "./MemoryOwnerTools";
-import type { RectLike } from "./pinnedMediaBoard";
+import type { RectLike } from "./pinnedMediaBoardTypes";
 import type { PlaceMapVisualItem } from "./placePreview";
 import { useMemoryOwnerTools } from "./useMemoryOwnerTools";
 

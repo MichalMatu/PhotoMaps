@@ -7,14 +7,10 @@ import { SystemModal } from "../ui/SystemModal";
 import { DistanceMeasureTool } from "./DistanceMeasureTool";
 import { MemorySheet } from "./MemorySheet";
 import { PhotoDetailModal } from "./PhotoDetailModal";
-import {
-  PinnedMediaBoard,
-  type PinMediaRequest,
-  type PinnedMediaPlaceProjector,
-  usePinnedMediaBoard,
-} from "./PinnedMediaBoardLayer";
+import { PinnedMediaBoard, type PinnedMediaPlaceProjector } from "./PinnedMediaBoard";
 import { PlaceMarker } from "./PlaceMarker";
 import { findPlaceFanItem, type PlaceMapVisualItem } from "./placePreview";
+import { type PinMediaRequest, usePinnedMediaBoard } from "./usePinnedMediaBoard";
 import { ReportSheet } from "./ReportSheet";
 
 type Props = {

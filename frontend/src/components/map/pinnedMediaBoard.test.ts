@@ -1,21 +1,16 @@
 import { describe, expect, it } from "vitest";
 
 import type { Category, Photo, PlaceMapItem, PlaceMapPreviewItem } from "../../api/client";
+import { bringPinnedMediaCardToFront, resolvePinnedMediaCards, upsertPinnedMediaCard } from "./pinnedMediaBoardCards";
 import {
-  bringPinnedMediaCardToFront,
   clampPinnedMediaLayout,
   defaultPinnedMediaLayout,
-  MAX_PINNED_MEDIA_CARDS,
-  PINNED_MEDIA_STORAGE_KEY,
-  pinnedMediaConnectionGeometry,
-  readPinnedMediaCards,
-  resolvePinnedMediaCards,
   snapPinnedMediaLayout,
   snapPinnedMediaResizeLayout,
-  type StoredPinnedMediaCard,
-  upsertPinnedMediaCard,
-  writePinnedMediaCards,
-} from "./pinnedMediaBoard";
+} from "./pinnedMediaBoardLayout";
+import { pinnedMediaConnectionGeometry } from "./pinnedMediaBoardLinkGeometry";
+import { PINNED_MEDIA_STORAGE_KEY, readPinnedMediaCards, writePinnedMediaCards } from "./pinnedMediaBoardStorage";
+import { MAX_PINNED_MEDIA_CARDS, type StoredPinnedMediaCard } from "./pinnedMediaBoardTypes";
 
 class MemoryStorage implements Pick<Storage, "getItem" | "removeItem" | "setItem"> {
   private values = new Map<string, string>();
