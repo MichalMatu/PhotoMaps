@@ -3,15 +3,13 @@ import { describe, expect, it } from "vitest";
 import type { Category, Photo, PlaceMapItem, PlaceMapPreviewItem } from "../../api/client";
 import {
   bringPinnedMediaCardToFront,
-  clampPinnedMediaScreenLayout,
-  defaultPinnedMediaScreenLayout,
-  mapPositionLayoutFromScreen,
+  clampPinnedMediaLayout,
+  defaultPinnedMediaLayout,
+  MAX_PINNED_MEDIA_CARDS,
   PINNED_MEDIA_STORAGE_KEY,
   readPinnedMediaCards,
   resolvePinnedMediaCards,
-  screenLayoutFromMapPosition,
-  snapPinnedMediaScreenLayout,
-  type ProjectedPinnedMediaCard,
+  snapPinnedMediaLayout,
   type StoredPinnedMediaCard,
   upsertPinnedMediaCard,
   writePinnedMediaCards,
@@ -33,9 +31,6 @@ class MemoryStorage implements Pick<Storage, "getItem" | "removeItem" | "setItem
   }
 }
 
-const anchor = { lat: 51.1, lng: 17.03 };
-const positionPoint = { x: 520, y: 300 };
-
 function storedCard(index: number, overrides: Partial<StoredPinnedMediaCard> = {}): StoredPinnedMediaCard {
   return {
     createdAt: 1_000 + index,
@@ -45,37 +40,13 @@ function storedCard(index: number, overrides: Partial<StoredPinnedMediaCard> = {
     layout: {
       aspectRatio: 1.6,
       height: 150,
-      position: {
-        lat: anchor.lat + index * 0.001,
-        lng: anchor.lng + index * 0.001,
-      },
       width: 240,
+      x: 24 + index,
+      y: 36 + index,
       zIndex: index,
     },
     placeId: "place-1",
     ...overrides,
-  };
-}
-
-function projectedCard(index: number): ProjectedPinnedMediaCard {
-  const card = storedCard(index);
-  const sourcePhoto = photo("photo-1");
-
-  return {
-    ...card,
-    item: {
-      approved_at: sourcePhoto.approved_at,
-      caption: sourcePhoto.caption,
-      created_at: sourcePhoto.created_at,
-      id: sourcePhoto.id,
-      kind: "photo",
-      public_path: sourcePhoto.public_path,
-      source: sourcePhoto,
-      thumb_path: sourcePhoto.thumb_path,
-    },
-    layerLayout: screenLayoutFromMapPosition(card.layout, positionPoint),
-    place: place(),
-    screenLayout: screenLayoutFromMapPosition(card.layout, positionPoint),
   };
 }
 
@@ -141,9 +112,9 @@ function place(): PlaceMapItem {
     created_at: "2026-06-10T00:00:00",
     description: "Opis miejsca",
     id: "place-1",
-    lat: anchor.lat,
+    lat: 51.1,
     local_comment: null,
-    lon: anchor.lng,
+    lon: 17.03,
     memory_count: 1,
     photo_count: 2,
     preview_items: [{ ...photo("photo-2"), kind: "photo" as const }, memory("memory-1")],
@@ -157,49 +128,40 @@ function place(): PlaceMapItem {
 }
 
 describe("pinned media board helpers", () => {
-  it("stores and reads versioned map-anchored localStorage state", () => {
+  it("stores and reads versioned localStorage state", () => {
     const storage = new MemoryStorage();
     const cards = [storedCard(1)];
 
     writePinnedMediaCards(cards, storage);
 
-    expect(JSON.parse(storage.getItem(PINNED_MEDIA_STORAGE_KEY) ?? "{}")).toMatchObject({ version: 3 });
+    expect(JSON.parse(storage.getItem(PINNED_MEDIA_STORAGE_KEY) ?? "{}")).toMatchObject({ version: 1 });
     expect(readPinnedMediaCards(storage)).toEqual(cards);
   });
 
-  it("allows more than eight map-positioned cards", () => {
-    const cards = Array.from({ length: 12 }, (_, index) => storedCard(index + 1));
-    const projectedCards = cards.map((card, index) => ({
-      ...projectedCard(index + 1),
-      ...card,
-      screenLayout: screenLayoutFromMapPosition(card.layout, positionPoint),
-    }));
+  it("limits pinned cards to eight without removing older cards", () => {
+    const cards = Array.from({ length: MAX_PINNED_MEDIA_CARDS }, (_, index) => storedCard(index + 1));
     const result = upsertPinnedMediaCard(
       cards,
-      projectedCards,
       {
-        itemId: "photo-13",
+        itemId: "photo-9",
         kind: "photo",
         placeId: "place-1",
-        screenToMapPosition: () => anchor,
       },
       { height: 800, width: 1200 },
     );
 
-    expect(result.status).toBe("added");
-    expect(result.cards).toHaveLength(13);
+    expect(result.status).toBe("limit");
+    expect(result.cards).toEqual(cards);
   });
 
   it("does not create duplicate cards and brings an existing card to front", () => {
     const cards = [storedCard(1), storedCard(2)];
     const result = upsertPinnedMediaCard(
       cards,
-      [projectedCard(1), projectedCard(2)],
       {
         itemId: "photo-1",
         kind: "photo",
         placeId: "place-1",
-        screenToMapPosition: () => anchor,
       },
       { height: 800, width: 1200 },
     );
@@ -233,8 +195,8 @@ describe("pinned media board helpers", () => {
     ]);
   });
 
-  it("keeps dragged screen layouts inside the viewport", () => {
-    const layout = clampPinnedMediaScreenLayout(
+  it("keeps cards inside the viewport", () => {
+    const layout = clampPinnedMediaLayout(
       {
         aspectRatio: 1.6,
         height: 600,
@@ -251,7 +213,7 @@ describe("pinned media board helpers", () => {
     expect(layout.y + layout.height + 72).toBeLessThanOrEqual(628);
   });
 
-  it("snaps screen layouts lightly to viewport edges and other cards", () => {
+  it("snaps lightly to viewport edges and other cards", () => {
     const viewport = { height: 900, width: 1200 };
     const other = {
       aspectRatio: 1.6,
@@ -263,7 +225,7 @@ describe("pinned media board helpers", () => {
     };
 
     expect(
-      snapPinnedMediaScreenLayout(
+      snapPinnedMediaLayout(
         {
           aspectRatio: 1.6,
           height: 112.5,
@@ -279,7 +241,7 @@ describe("pinned media board helpers", () => {
   });
 
   it("creates a compact default card instead of keeping the large modal size", () => {
-    const layout = defaultPinnedMediaScreenLayout({
+    const layout = defaultPinnedMediaLayout({
       aspectRatio: 1.5,
       existingCards: [],
       sourceRect: {
@@ -294,38 +256,6 @@ describe("pinned media board helpers", () => {
     expect(layout.width).toBeLessThanOrEqual(320);
     expect(layout.height).toBeLessThanOrEqual(214);
     expect(layout.x).toBeGreaterThan(100);
-  });
-
-  it("projects stored map positions into screen coordinates", () => {
-    const card = storedCard(1);
-
-    expect(screenLayoutFromMapPosition(card.layout, positionPoint)).toMatchObject({
-      x: positionPoint.x,
-      y: positionPoint.y,
-    });
-  });
-
-  it("stores dragged screen coordinates as a map position", () => {
-    const card = storedCard(1);
-    const nextLayout = mapPositionLayoutFromScreen(
-      card.layout,
-      {
-        aspectRatio: 1.5,
-        height: 120,
-        width: 180,
-        x: 640,
-        y: 380,
-        zIndex: 7,
-      },
-      (point) => ({ lat: point.y / 10, lng: point.x / 10 }),
-    );
-
-    expect(nextLayout).toMatchObject({
-      height: 120,
-      position: { lat: 38, lng: 64 },
-      width: 180,
-      zIndex: 7,
-    });
   });
 
   it("persists z-order changes", () => {

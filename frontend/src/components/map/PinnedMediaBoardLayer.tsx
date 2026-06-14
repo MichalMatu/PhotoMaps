@@ -8,27 +8,19 @@ import {
   useRef,
   useState,
 } from "react";
-import { createPortal } from "react-dom";
-import { useMap } from "react-leaflet";
-import type { LatLng, Map as LeafletMap, ZoomAnimEvent } from "leaflet";
 
 import { mediaUrl, type PlaceMapItem } from "../../api/client";
 import { isInteractiveDragTarget, stopFloatingWindowEvent } from "../ui/useDraggableWindow";
 import { mapMediaDisplay } from "./mediaDisplayText";
 import {
   bringPinnedMediaCardToFront,
-  clampPinnedMediaScreenLayout,
+  clampPinnedMediaLayout,
   getViewportSize,
-  mapPositionLayoutFromScreen,
-  type MapAnchor,
-  type PinnedMediaScreenLayout,
-  type PointLike,
-  type ProjectedPinnedMediaCard,
   readPinnedMediaCards,
   resolvePinnedMediaCards,
   safeAspectRatio,
-  screenLayoutFromMapPosition,
-  snapPinnedMediaScreenLayout,
+  snapPinnedMediaLayout,
+  type PinnedMediaLayout,
   type RectLike,
   type ResolvedPinnedMediaCard,
   type StoredPinnedMediaCard,
@@ -46,19 +38,19 @@ export type PinMediaRequest = {
 };
 
 type UsePinnedMediaBoardResult = {
-  cards: ProjectedPinnedMediaCard[];
+  cards: ResolvedPinnedMediaCard[];
   notice: string | null;
   onBringToFront: (id: string) => void;
-  onLayoutChange: (id: string, screenLayout: PinnedMediaScreenLayout) => void;
+  onLayoutChange: (id: string, layout: PinnedMediaLayout) => void;
   onRemove: (id: string) => void;
   pinMedia: (request: PinMediaRequest) => boolean;
 };
 
 type PinnedMediaBoardProps = {
-  cards: ProjectedPinnedMediaCard[];
+  cards: ResolvedPinnedMediaCard[];
   notice: string | null;
   onBringToFront: (id: string) => void;
-  onLayoutChange: (id: string, screenLayout: PinnedMediaScreenLayout) => void;
+  onLayoutChange: (id: string, layout: PinnedMediaLayout) => void;
   onRemove: (id: string) => void;
 };
 
@@ -68,19 +60,12 @@ type InteractionState = {
   pointerId: number;
   startClientX: number;
   startClientY: number;
-  startLayout: PinnedMediaScreenLayout;
+  startLayout: PinnedMediaLayout;
 };
 
-const PINNED_MEDIA_PANE_NAME = "pinned-media-pane";
-
-type ZoomProjection = Pick<ZoomAnimEvent, "center" | "zoom">;
-
 export function usePinnedMediaBoard(places: PlaceMapItem[]): UsePinnedMediaBoardResult {
-  const map = useMap();
   const [storedCards, setStoredCards] = useState<StoredPinnedMediaCard[]>(() => readPinnedMediaCards());
   const [notice, setNotice] = useState<string | null>(null);
-  const [mapRevision, setMapRevision] = useState(0);
-  const [zoomProjection, setZoomProjection] = useState<ZoomProjection | null>(null);
   const cardsRef = useRef(storedCards);
 
   useEffect(() => {
@@ -119,37 +104,6 @@ export function usePinnedMediaBoard(places: PlaceMapItem[]): UsePinnedMediaBoard
   useEffect(() => {
     let frameId: number | null = null;
 
-    const scheduleProjectionUpdate = () => {
-      if (frameId !== null) {
-        window.cancelAnimationFrame(frameId);
-      }
-
-      frameId = window.requestAnimationFrame(() => {
-        frameId = null;
-        setZoomProjection(null);
-        setMapRevision((revision) => revision + 1);
-      });
-    };
-
-    const handleZoomAnimation = (event: ZoomAnimEvent) => {
-      setZoomProjection({ center: event.center, zoom: event.zoom });
-    };
-
-    map.on("zoomanim", handleZoomAnimation);
-    map.on("moveend zoomend resize", scheduleProjectionUpdate);
-
-    return () => {
-      if (frameId !== null) {
-        window.cancelAnimationFrame(frameId);
-      }
-      map.off("zoomanim", handleZoomAnimation);
-      map.off("moveend zoomend resize", scheduleProjectionUpdate);
-    };
-  }, [map]);
-
-  useEffect(() => {
-    let frameId: number | null = null;
-
     const handleResize = () => {
       if (frameId !== null) {
         window.cancelAnimationFrame(frameId);
@@ -159,17 +113,10 @@ export function usePinnedMediaBoard(places: PlaceMapItem[]): UsePinnedMediaBoard
         frameId = null;
         const viewport = getViewportSize();
         setStoredCards((currentCards) => {
-          const nextCards = currentCards.map((card) => {
-            const projectedLayout = projectPinnedMediaLayouts(map, card.layout, null);
-            const clampedScreenLayout = clampPinnedMediaScreenLayout(projectedLayout.screenLayout, viewport);
-
-            return {
-              ...card,
-              layout: mapPositionLayoutFromScreen(card.layout, clampedScreenLayout, (point) =>
-                projectScreenPointToMapPosition(map, point),
-              ),
-            };
-          });
+          const nextCards = currentCards.map((card) => ({
+            ...card,
+            layout: clampPinnedMediaLayout(card.layout, viewport),
+          }));
 
           if (storedCardListsEqual(currentCards, nextCards)) {
             return currentCards;
@@ -189,50 +136,41 @@ export function usePinnedMediaBoard(places: PlaceMapItem[]): UsePinnedMediaBoard
       }
       window.removeEventListener("resize", handleResize);
     };
-  }, [map]);
+  }, []);
 
   const resolvedCards = useMemo(() => resolvePinnedMediaCards(storedCards, places), [places, storedCards]);
-  const projectedCards = useMemo(() => {
-    void mapRevision;
-    return resolvedCards.map((card) => projectPinnedMediaCard(map, card, zoomProjection));
-  }, [map, mapRevision, resolvedCards, zoomProjection]);
 
-  const pinMedia = useCallback(
-    (request: PinMediaRequest) => {
-      const result = upsertPinnedMediaCard(
-        cardsRef.current,
-        resolvePinnedMediaCards(cardsRef.current, places).map((card) => projectPinnedMediaCard(map, card, null)),
-        {
-          aspectRatio: request.aspectRatio,
-          itemId: request.item.id,
-          kind: request.item.kind,
-          placeId: request.place.id,
-          screenToMapPosition: (point) => projectScreenPointToMapPosition(map, point),
-          sourceRect: request.sourceRect,
-        },
-        getViewportSize(),
-      );
+  const pinMedia = useCallback((request: PinMediaRequest) => {
+    const result = upsertPinnedMediaCard(
+      cardsRef.current,
+      {
+        aspectRatio: request.aspectRatio,
+        itemId: request.item.id,
+        kind: request.item.kind,
+        placeId: request.place.id,
+        sourceRect: request.sourceRect,
+      },
+      getViewportSize(),
+    );
 
-      cardsRef.current = result.cards;
-      setStoredCards(result.cards);
-      setNotice(null);
-      return true;
-    },
-    [map, places],
-  );
+    if (result.status === "limit") {
+      setNotice("Limit 8 przypiętych zdjęć.");
+      return false;
+    }
 
-  const onLayoutChange = useCallback(
-    (id: string, screenLayout: PinnedMediaScreenLayout) => {
-      setStoredCards((currentCards) => {
-        const nextCards = updatePinnedMediaLayout(currentCards, id, screenLayout, (point) =>
-          projectScreenPointToMapPosition(map, point),
-        );
-        cardsRef.current = nextCards;
-        return nextCards;
-      });
-    },
-    [map],
-  );
+    cardsRef.current = result.cards;
+    setStoredCards(result.cards);
+    setNotice(null);
+    return true;
+  }, []);
+
+  const onLayoutChange = useCallback((id: string, layout: PinnedMediaLayout) => {
+    setStoredCards((currentCards) => {
+      const nextCards = updatePinnedMediaLayout(currentCards, id, layout, getViewportSize());
+      cardsRef.current = nextCards;
+      return nextCards;
+    });
+  }, []);
 
   const onBringToFront = useCallback((id: string) => {
     setStoredCards((currentCards) => {
@@ -255,7 +193,7 @@ export function usePinnedMediaBoard(places: PlaceMapItem[]): UsePinnedMediaBoard
   }, []);
 
   return {
-    cards: projectedCards,
+    cards: resolvedCards,
     notice,
     onBringToFront,
     onLayoutChange,
@@ -265,8 +203,6 @@ export function usePinnedMediaBoard(places: PlaceMapItem[]): UsePinnedMediaBoard
 }
 
 export function PinnedMediaBoard({ cards, notice, onBringToFront, onLayoutChange, onRemove }: PinnedMediaBoardProps) {
-  const map = useMap();
-  const paneRoot = usePinnedMediaPane(map);
   const cardsRef = useRef(cards);
   const interactionRef = useRef<InteractionState | null>(null);
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
@@ -285,10 +221,8 @@ export function PinnedMediaBoard({ cards, notice, onBringToFront, onLayoutChange
       event.preventDefault();
       const currentCards = cardsRef.current;
       const currentCard = currentCards.find((card) => card.id === interaction.cardId);
-      const zIndex = currentCard?.screenLayout.zIndex ?? interaction.startLayout.zIndex;
-      const otherLayouts = currentCards
-        .filter((card) => card.id !== interaction.cardId)
-        .map((card) => card.screenLayout);
+      const zIndex = currentCard?.layout.zIndex ?? interaction.startLayout.zIndex;
+      const otherLayouts = currentCards.filter((card) => card.id !== interaction.cardId).map((card) => card.layout);
       const deltaX = event.clientX - interaction.startClientX;
       const deltaY = event.clientY - interaction.startClientY;
       const viewport = getViewportSize();
@@ -302,7 +236,7 @@ export function PinnedMediaBoard({ cards, notice, onBringToFront, onLayoutChange
             }
           : resizeLayout(interaction.startLayout, deltaX, deltaY, zIndex);
 
-      onLayoutChange(interaction.cardId, snapPinnedMediaScreenLayout(nextLayout, otherLayouts, viewport));
+      onLayoutChange(interaction.cardId, snapPinnedMediaLayout(nextLayout, otherLayouts, viewport));
     };
 
     const handlePointerEnd = (event: PointerEvent) => {
@@ -327,7 +261,7 @@ export function PinnedMediaBoard({ cards, notice, onBringToFront, onLayoutChange
   }, [onLayoutChange]);
 
   const startInteraction = useCallback(
-    (card: ProjectedPinnedMediaCard, mode: InteractionState["mode"], event: ReactPointerEvent<HTMLElement>) => {
+    (card: ResolvedPinnedMediaCard, mode: InteractionState["mode"], event: ReactPointerEvent<HTMLElement>) => {
       event.stopPropagation();
 
       if (event.button !== 0 || (mode === "drag" && isInteractiveDragTarget(event.target))) {
@@ -342,7 +276,7 @@ export function PinnedMediaBoard({ cards, notice, onBringToFront, onLayoutChange
         pointerId: event.pointerId,
         startClientX: event.clientX,
         startClientY: event.clientY,
-        startLayout: card.screenLayout,
+        startLayout: card.layout,
       };
       event.currentTarget.setPointerCapture(event.pointerId);
       event.preventDefault();
@@ -350,7 +284,7 @@ export function PinnedMediaBoard({ cards, notice, onBringToFront, onLayoutChange
     [onBringToFront],
   );
 
-  const board = (
+  return (
     <div className="pinned-media-board" aria-live="polite">
       {cards.map((card) => (
         <PinnedMediaCard
@@ -369,8 +303,6 @@ export function PinnedMediaBoard({ cards, notice, onBringToFront, onLayoutChange
       ) : null}
     </div>
   );
-
-  return paneRoot ? createPortal(board, paneRoot) : null;
 }
 
 function PinnedMediaCard({
@@ -380,12 +312,12 @@ function PinnedMediaCard({
   onRemove,
   onStartInteraction,
 }: {
-  card: ProjectedPinnedMediaCard;
+  card: ResolvedPinnedMediaCard;
   isActive: boolean;
   onBringToFront: (id: string) => void;
   onRemove: (id: string) => void;
   onStartInteraction: (
-    card: ProjectedPinnedMediaCard,
+    card: ResolvedPinnedMediaCard,
     mode: InteractionState["mode"],
     event: ReactPointerEvent<HTMLElement>,
   ) => void;
@@ -399,16 +331,15 @@ function PinnedMediaCard({
   );
   const categoryLabel = card.place.categories[0]?.label ?? (card.item.kind === "memory" ? "Pamiątka" : "Zdjęcie");
   const style = {
-    transform: `translate3d(${card.layerLayout.x}px, ${card.layerLayout.y}px, 0)`,
-    width: `${card.layerLayout.width}px`,
-    zIndex: card.screenLayout.zIndex,
+    left: `${card.layout.x}px`,
+    top: `${card.layout.y}px`,
+    width: `${card.layout.width}px`,
+    zIndex: card.layout.zIndex,
   } satisfies CSSProperties;
 
   return (
     <article
-      className={
-        isActive ? "pinned-media-card leaflet-zoom-animated is-active" : "pinned-media-card leaflet-zoom-animated"
-      }
+      className={isActive ? "pinned-media-card is-active" : "pinned-media-card"}
       style={style}
       tabIndex={0}
       aria-label={`Przypięte medium: ${card.place.title}`}
@@ -423,7 +354,7 @@ function PinnedMediaCard({
       onTouchStart={stopFloatingWindowEvent}
       onWheel={stopFloatingWindowEvent}
     >
-      <div className="pinned-media-card-image-wrap" style={{ height: `${card.layerLayout.height}px` }}>
+      <div className="pinned-media-card-image-wrap" style={{ height: `${card.layout.height}px` }}>
         <img
           className="pinned-media-card-image"
           src={mediaUrl(card.item.public_path)}
@@ -460,12 +391,7 @@ function PinnedMediaCard({
   );
 }
 
-function resizeLayout(
-  layout: PinnedMediaScreenLayout,
-  deltaX: number,
-  deltaY: number,
-  zIndex: number,
-): PinnedMediaScreenLayout {
+function resizeLayout(layout: PinnedMediaLayout, deltaX: number, deltaY: number, zIndex: number): PinnedMediaLayout {
   const aspectRatio = safeAspectRatio(layout.aspectRatio);
   const widthFromPointerX = layout.width + deltaX;
   const widthFromPointerY = (layout.height + deltaY) * aspectRatio;
@@ -494,101 +420,3 @@ function toStoredCard(card: ResolvedPinnedMediaCard): StoredPinnedMediaCard {
 function storedCardListsEqual(first: StoredPinnedMediaCard[], second: StoredPinnedMediaCard[]) {
   return JSON.stringify(first) === JSON.stringify(second);
 }
-
-function usePinnedMediaPane(map: LeafletMap) {
-  const [paneRoot, setPaneRoot] = useState<HTMLElement | null>(null);
-
-  useEffect(() => {
-    const existingPane = map.getPane(PINNED_MEDIA_PANE_NAME);
-    const pane = existingPane ?? map.createPane(PINNED_MEDIA_PANE_NAME);
-    pane.classList.add("pinned-media-pane");
-    setPaneRoot(pane);
-
-    return () => {
-      setPaneRoot(null);
-    };
-  }, [map]);
-
-  return paneRoot;
-}
-
-function projectPinnedMediaCard(
-  map: LeafletMap,
-  card: ResolvedPinnedMediaCard,
-  zoomProjection: ZoomProjection | null,
-): ProjectedPinnedMediaCard {
-  const { layerLayout, screenLayout } = projectPinnedMediaLayouts(map, card.layout, zoomProjection);
-
-  return {
-    ...card,
-    layerLayout,
-    screenLayout,
-  };
-}
-
-function projectPinnedMediaLayouts(
-  map: LeafletMap,
-  layout: StoredPinnedMediaCard["layout"],
-  zoomProjection: ZoomProjection | null,
-) {
-  const layerLayout = screenLayoutFromMapPosition(
-    layout,
-    projectMapPositionLayer(map, layout.position, zoomProjection),
-  );
-  const screenPoint = projectLayerPointToScreen(map, {
-    x: layerLayout.x,
-    y: layerLayout.y,
-  });
-
-  return {
-    layerLayout,
-    screenLayout: {
-      ...layerLayout,
-      x: screenPoint.x,
-      y: screenPoint.y,
-    },
-  };
-}
-
-function projectMapPositionLayer(
-  map: LeafletMap,
-  position: MapAnchor,
-  zoomProjection: ZoomProjection | null,
-): PointLike {
-  const layerPoint = zoomProjection
-    ? (map as LeafletMapWithNewLayerPoint)._latLngToNewLayerPoint(
-        [position.lat, position.lng],
-        zoomProjection.zoom,
-        zoomProjection.center,
-      )
-    : map.latLngToLayerPoint([position.lat, position.lng]);
-
-  return {
-    x: layerPoint.x,
-    y: layerPoint.y,
-  };
-}
-
-function projectLayerPointToScreen(map: LeafletMap, point: PointLike): PointLike {
-  const containerPoint = map.layerPointToContainerPoint([point.x, point.y]);
-  const containerRect = map.getContainer().getBoundingClientRect();
-
-  return {
-    x: containerRect.left + containerPoint.x,
-    y: containerRect.top + containerPoint.y,
-  };
-}
-
-function projectScreenPointToMapPosition(map: LeafletMap, point: PointLike): MapAnchor {
-  const containerRect = map.getContainer().getBoundingClientRect();
-  const latLng = map.containerPointToLatLng([point.x - containerRect.left, point.y - containerRect.top]);
-
-  return {
-    lat: latLng.lat,
-    lng: latLng.lng,
-  };
-}
-
-type LeafletMapWithNewLayerPoint = LeafletMap & {
-  _latLngToNewLayerPoint: (latLng: [number, number], zoom: number, center: LatLng) => PointLike;
-};
