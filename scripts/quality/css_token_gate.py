@@ -15,6 +15,7 @@ RULES = {
     "important": "Avoid new !important declarations.",
     "raw-color": "Use color/surface/content/border tokens outside tokens.css.",
     "raw-font-size": "Use text scale tokens instead of local font-size values.",
+    "raw-spacing": "Use spacing tokens instead of local margin, padding, and gap values.",
     "raw-shadow": "Use elevation/shadow tokens instead of local box-shadow values.",
     "raw-radius": "Use radius tokens for component corners.",
     "raw-motion": "Use motion duration/easing tokens for component animation and transition values.",
@@ -23,24 +24,45 @@ RULES = {
 BASELINE: dict[str, dict[str, int]] = {
     "frontend/src/styles/admin-tables.css": {
         "raw-font-size": 1,
+        "raw-spacing": 1,
+    },
+    "frontend/src/styles/admin-categories.css": {
+        "raw-spacing": 2,
+    },
+    "frontend/src/styles/admin-cities.css": {
+        "raw-spacing": 2,
+    },
+    "frontend/src/styles/admin-guides.css": {
+        "raw-spacing": 2,
+    },
+    "frontend/src/styles/admin-photos.css": {
+        "raw-spacing": 1,
+    },
+    "frontend/src/styles/admin.css": {
+        "raw-spacing": 2,
     },
     "frontend/src/styles/base.css": {
         "raw-font-size": 1,
     },
     "frontend/src/styles/layout.css": {
         "raw-font-size": 14,
+        "raw-spacing": 21,
     },
     "frontend/src/styles/map-tools.css": {
         "raw-font-size": 5,
+        "raw-spacing": 11,
     },
     "frontend/src/styles/map.css": {
         "raw-font-size": 1,
+        "raw-spacing": 3,
     },
     "frontend/src/styles/responsive.css": {
         "raw-font-size": 2,
+        "raw-spacing": 5,
     },
     "frontend/src/styles/ui.css": {
         "raw-font-size": 2,
+        "raw-spacing": 7,
     },
 }
 
@@ -155,8 +177,6 @@ def has_raw_spacing(line: str) -> bool:
         return False
 
     value = value.strip().rstrip(";")
-    if "var(" in value:
-        return False
 
     return bool(SPACING_LENGTH_RE.search(value))
 
@@ -196,6 +216,9 @@ def scan_file(path: Path) -> list[Finding]:
 
         if not token_file and has_raw_font_size(line):
             findings.append(Finding(path_label, "raw-font-size", line_number, line))
+
+        if not token_file and has_raw_spacing(line):
+            findings.append(Finding(path_label, "raw-spacing", line_number, line))
 
         if not token_file and has_raw_shadow(line):
             findings.append(Finding(path_label, "raw-shadow", line_number, line))
@@ -264,7 +287,7 @@ def print_spacing_report(findings: list[Finding]) -> None:
         print("No raw spacing values found.")
         return
 
-    print("Raw spacing report (non-blocking):")
+    print("Raw spacing report (baseline-enforced by default gate):")
     for path, rule in sorted(counts):
         if rule == "raw-spacing":
             print(f"- {path}: {counts[(path, rule)]}")
@@ -280,7 +303,11 @@ def print_spacing_report(findings: list[Finding]) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Block new untokenized CSS values.")
     parser.add_argument("--print-baseline", action="store_true", help="Print the current CSS debt baseline.")
-    parser.add_argument("--print-spacing-report", action="store_true", help="Print non-blocking raw spacing findings.")
+    parser.add_argument(
+        "--print-spacing-report",
+        action="store_true",
+        help="Print raw spacing findings tracked by baseline.",
+    )
     args = parser.parse_args()
 
     if args.print_spacing_report:

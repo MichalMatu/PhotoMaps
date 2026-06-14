@@ -32,6 +32,7 @@ Frontend odpowiada za publiczna mape, panel admina, klienta API, komponenty UI, 
 - Przy zmianach CSS sprawdz, czy reguly nie tworza globalnych efektow ubocznych w adminie albo mapie.
 - `src/design/tokens.css` jest zrodlem prawdy dla kolorow, powierzchni, borderow, cieni, radiusow, typografii, motion i podstawowego spacingu.
 - Nie dodawaj nowych raw kolorow poza `tokens.css`; komponenty i style maja uzywac `--surface-*`, `--content-*`, `--border-*`, `--accent-*` albo semantycznych tokenow statusu.
+- Nie dodawaj nowych raw spacingow w CSS; margin, padding i gap powinny uzywac `--space-*`, a wyjatki wymagaja swiadomej aktualizacji baseline w `scripts/quality/css_token_gate.py`.
 - Nowe karty i panele zaczynaj od `ui-card`, `ui-panel` albo `ui-table-panel`; lokalna klasa komponentu powinna dopisywac tylko layout, rozmiary mediow albo specyficzny stan.
 - Nowe przyciski wariantowe uzywaja `ui-button` z wariantem `ui-button--primary`, `ui-button--secondary`, `ui-button--ghost` albo `ui-button--danger`; zwykly `<button>` zostaje tylko dla domyslnej akcji primary.
 - Statusy i badge uzywaja `ui-status ui-status--{status}`; nie tworz lokalnych palet statusow.
