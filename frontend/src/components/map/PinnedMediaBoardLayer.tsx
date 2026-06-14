@@ -15,7 +15,7 @@ import { mapMediaDisplay } from "./mediaDisplayText";
 import {
   bringPinnedMediaCardToFront,
   clampPinnedMediaLayout,
-  getViewportSize,
+  getPinnedMediaBounds,
   readPinnedMediaCards,
   resolvePinnedMediaCards,
   safeAspectRatio,
@@ -79,7 +79,13 @@ export function usePinnedMediaBoard(places: PlaceMapItem[]): UsePinnedMediaBoard
     }
 
     setStoredCards((currentCards) => {
-      const resolvedCards = resolvePinnedMediaCards(currentCards, places).map(toStoredCard);
+      const bounds = getPinnedMediaBounds();
+      const resolvedCards = resolvePinnedMediaCards(currentCards, places).map((card) =>
+        toStoredCard({
+          ...card,
+          layout: clampPinnedMediaLayout(card.layout, bounds),
+        }),
+      );
       if (storedCardListsEqual(currentCards, resolvedCards)) {
         return currentCards;
       }
@@ -111,11 +117,11 @@ export function usePinnedMediaBoard(places: PlaceMapItem[]): UsePinnedMediaBoard
 
       frameId = window.requestAnimationFrame(() => {
         frameId = null;
-        const viewport = getViewportSize();
+        const bounds = getPinnedMediaBounds();
         setStoredCards((currentCards) => {
           const nextCards = currentCards.map((card) => ({
             ...card,
-            layout: clampPinnedMediaLayout(card.layout, viewport),
+            layout: clampPinnedMediaLayout(card.layout, bounds),
           }));
 
           if (storedCardListsEqual(currentCards, nextCards)) {
@@ -150,7 +156,7 @@ export function usePinnedMediaBoard(places: PlaceMapItem[]): UsePinnedMediaBoard
         placeId: request.place.id,
         sourceRect: request.sourceRect,
       },
-      getViewportSize(),
+      getPinnedMediaBounds(),
     );
 
     if (result.status === "limit") {
@@ -166,7 +172,7 @@ export function usePinnedMediaBoard(places: PlaceMapItem[]): UsePinnedMediaBoard
 
   const onLayoutChange = useCallback((id: string, layout: PinnedMediaLayout) => {
     setStoredCards((currentCards) => {
-      const nextCards = updatePinnedMediaLayout(currentCards, id, layout, getViewportSize());
+      const nextCards = updatePinnedMediaLayout(currentCards, id, layout, getPinnedMediaBounds());
       cardsRef.current = nextCards;
       return nextCards;
     });
@@ -225,7 +231,7 @@ export function PinnedMediaBoard({ cards, notice, onBringToFront, onLayoutChange
       const otherLayouts = currentCards.filter((card) => card.id !== interaction.cardId).map((card) => card.layout);
       const deltaX = event.clientX - interaction.startClientX;
       const deltaY = event.clientY - interaction.startClientY;
-      const viewport = getViewportSize();
+      const bounds = getPinnedMediaBounds();
       const nextLayout =
         interaction.mode === "drag"
           ? {
@@ -236,7 +242,7 @@ export function PinnedMediaBoard({ cards, notice, onBringToFront, onLayoutChange
             }
           : resizeLayout(interaction.startLayout, deltaX, deltaY, zIndex);
 
-      onLayoutChange(interaction.cardId, snapPinnedMediaLayout(nextLayout, otherLayouts, viewport));
+      onLayoutChange(interaction.cardId, snapPinnedMediaLayout(nextLayout, otherLayouts, bounds));
     };
 
     const handlePointerEnd = (event: PointerEvent) => {

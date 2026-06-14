@@ -147,7 +147,7 @@ describe("pinned media board helpers", () => {
         kind: "photo",
         placeId: "place-1",
       },
-      { height: 800, width: 1200 },
+      { height: 800, left: 0, top: 0, width: 1200 },
     );
 
     expect(result.status).toBe("limit");
@@ -163,7 +163,7 @@ describe("pinned media board helpers", () => {
         kind: "photo",
         placeId: "place-1",
       },
-      { height: 800, width: 1200 },
+      { height: 800, left: 0, top: 0, width: 1200 },
     );
 
     expect(result.status).toBe("updated");
@@ -195,7 +195,7 @@ describe("pinned media board helpers", () => {
     ]);
   });
 
-  it("keeps cards inside the viewport", () => {
+  it("keeps cards inside the map frame bounds", () => {
     const layout = clampPinnedMediaLayout(
       {
         aspectRatio: 1.6,
@@ -205,7 +205,7 @@ describe("pinned media board helpers", () => {
         y: 900,
         zIndex: 1,
       },
-      { height: 640, width: 360 },
+      { height: 640, left: 0, top: 0, width: 360 },
     );
 
     expect(layout.width).toBeLessThanOrEqual(336);
@@ -213,8 +213,25 @@ describe("pinned media board helpers", () => {
     expect(layout.y + layout.height + 72).toBeLessThanOrEqual(628);
   });
 
-  it("snaps lightly to viewport edges and other cards", () => {
-    const viewport = { height: 900, width: 1200 };
+  it("keeps cards inside offset map frame bounds", () => {
+    const layout = clampPinnedMediaLayout(
+      {
+        aspectRatio: 1.6,
+        height: 150,
+        width: 240,
+        x: 24,
+        y: 36,
+        zIndex: 1,
+      },
+      { height: 640, left: 88, top: 0, width: 912 },
+    );
+
+    expect(layout.x).toBeGreaterThanOrEqual(100);
+    expect(layout.x + layout.width).toBeLessThanOrEqual(988);
+  });
+
+  it("snaps lightly to map frame edges and other cards", () => {
+    const bounds = { height: 900, left: 0, top: 0, width: 1200 };
     const other = {
       aspectRatio: 1.6,
       height: 125,
@@ -235,14 +252,15 @@ describe("pinned media board helpers", () => {
           zIndex: 2,
         },
         [other],
-        viewport,
+        bounds,
       ),
     ).toMatchObject({ x: 400, y: 12 });
   });
 
-  it("creates a compact default card instead of keeping the large modal size", () => {
+  it("creates a compact default card inside the map frame instead of keeping the large modal size", () => {
     const layout = defaultPinnedMediaLayout({
       aspectRatio: 1.5,
+      bounds: { height: 900, left: 88, top: 0, width: 1352 },
       existingCards: [],
       sourceRect: {
         height: 700,
@@ -250,7 +268,6 @@ describe("pinned media board helpers", () => {
         top: 80,
         width: 1100,
       },
-      viewport: { height: 900, width: 1440 },
     });
 
     expect(layout.width).toBeLessThanOrEqual(320);

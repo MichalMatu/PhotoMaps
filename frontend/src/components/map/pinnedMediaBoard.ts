@@ -3,7 +3,7 @@ import { findPlaceFanItem, type PlaceMapVisualItem } from "./placePreview";
 
 export const PINNED_MEDIA_STORAGE_KEY = "photomap:pinned-media-board:v1";
 export const MAX_PINNED_MEDIA_CARDS = 8;
-const PINNED_MEDIA_VIEWPORT_MARGIN = 12;
+const PINNED_MEDIA_FRAME_MARGIN = 12;
 const PINNED_MEDIA_SNAP_THRESHOLD = 12;
 const PINNED_MEDIA_CARD_CHROME_HEIGHT = 72;
 
@@ -13,8 +13,10 @@ const MAX_CARD_WIDTH = 360;
 
 type PinnedMediaKind = PlaceMapVisualItem["kind"];
 
-export type ViewportSize = {
+export type PinnedMediaBounds = {
   height: number;
+  left: number;
+  top: number;
   width: number;
 };
 
@@ -71,14 +73,27 @@ function pinnedMediaCardId(placeId: string, kind: PinnedMediaKind, itemId: strin
   return `${placeId}:${kind}:${itemId}`;
 }
 
-export function getViewportSize(): ViewportSize {
+export function getPinnedMediaBounds(): PinnedMediaBounds {
   if (typeof window === "undefined") {
-    return { height: 768, width: 1024 };
+    return { height: 768, left: 0, top: 0, width: 1024 };
   }
 
+  const mapFrameRect = document.querySelector<HTMLElement>(".map-frame")?.getBoundingClientRect() ?? null;
+  const bounds =
+    mapFrameRect && mapFrameRect.width > 0 && mapFrameRect.height > 0
+      ? mapFrameRect
+      : {
+          height: window.innerHeight,
+          left: 0,
+          top: 0,
+          width: window.innerWidth,
+        };
+
   return {
-    height: window.innerHeight,
-    width: window.innerWidth,
+    height: roundPixel(bounds.height),
+    left: roundPixel(bounds.left),
+    top: roundPixel(bounds.top),
+    width: roundPixel(bounds.width),
   };
 }
 
@@ -94,17 +109,11 @@ function cardTotalHeight(layout: Pick<PinnedMediaLayout, "height">) {
   return layout.height + PINNED_MEDIA_CARD_CHROME_HEIGHT;
 }
 
-export function clampPinnedMediaLayout(layout: PinnedMediaLayout, viewport: ViewportSize): PinnedMediaLayout {
+export function clampPinnedMediaLayout(layout: PinnedMediaLayout, bounds: PinnedMediaBounds): PinnedMediaLayout {
   const aspectRatio = safeAspectRatio(layout.aspectRatio);
-  const maxWidth = Math.max(
-    MIN_CARD_WIDTH,
-    Math.min(MAX_CARD_WIDTH, viewport.width - PINNED_MEDIA_VIEWPORT_MARGIN * 2),
-  );
+  const maxWidth = Math.max(MIN_CARD_WIDTH, Math.min(MAX_CARD_WIDTH, bounds.width - PINNED_MEDIA_FRAME_MARGIN * 2));
   const minWidth = Math.min(MIN_CARD_WIDTH, maxWidth);
-  const maxImageHeight = Math.max(
-    96,
-    viewport.height - PINNED_MEDIA_VIEWPORT_MARGIN * 2 - PINNED_MEDIA_CARD_CHROME_HEIGHT,
-  );
+  const maxImageHeight = Math.max(96, bounds.height - PINNED_MEDIA_FRAME_MARGIN * 2 - PINNED_MEDIA_CARD_CHROME_HEIGHT);
   let width = clamp(layout.width, minWidth, maxWidth);
   let height = width / aspectRatio;
 
@@ -113,18 +122,20 @@ export function clampPinnedMediaLayout(layout: PinnedMediaLayout, viewport: View
     width = height * aspectRatio;
   }
 
-  const maxX = Math.max(PINNED_MEDIA_VIEWPORT_MARGIN, viewport.width - width - PINNED_MEDIA_VIEWPORT_MARGIN);
+  const minX = bounds.left + PINNED_MEDIA_FRAME_MARGIN;
+  const minY = bounds.top + PINNED_MEDIA_FRAME_MARGIN;
+  const maxX = Math.max(minX, bounds.left + bounds.width - width - PINNED_MEDIA_FRAME_MARGIN);
   const maxY = Math.max(
-    PINNED_MEDIA_VIEWPORT_MARGIN,
-    viewport.height - height - PINNED_MEDIA_CARD_CHROME_HEIGHT - PINNED_MEDIA_VIEWPORT_MARGIN,
+    minY,
+    bounds.top + bounds.height - height - PINNED_MEDIA_CARD_CHROME_HEIGHT - PINNED_MEDIA_FRAME_MARGIN,
   );
 
   return {
     aspectRatio,
     height: roundPixel(height),
     width: roundPixel(width),
-    x: roundPixel(clamp(layout.x, PINNED_MEDIA_VIEWPORT_MARGIN, maxX)),
-    y: roundPixel(clamp(layout.y, PINNED_MEDIA_VIEWPORT_MARGIN, maxY)),
+    x: roundPixel(clamp(layout.x, minX, maxX)),
+    y: roundPixel(clamp(layout.y, minY, maxY)),
     zIndex: normalizeZIndex(layout.zIndex),
   };
 }
@@ -132,17 +143,17 @@ export function clampPinnedMediaLayout(layout: PinnedMediaLayout, viewport: View
 export function snapPinnedMediaLayout(
   layout: PinnedMediaLayout,
   otherLayouts: PinnedMediaLayout[],
-  viewport: ViewportSize,
+  bounds: PinnedMediaBounds,
 ): PinnedMediaLayout {
-  let next = clampPinnedMediaLayout(layout, viewport);
+  let next = clampPinnedMediaLayout(layout, bounds);
   const width = next.width;
   const totalHeight = cardTotalHeight(next);
 
   next = {
     ...next,
     x: snapToTargets(next.x, [
-      PINNED_MEDIA_VIEWPORT_MARGIN,
-      viewport.width - width - PINNED_MEDIA_VIEWPORT_MARGIN,
+      bounds.left + PINNED_MEDIA_FRAME_MARGIN,
+      bounds.left + bounds.width - width - PINNED_MEDIA_FRAME_MARGIN,
       ...otherLayouts.flatMap((other) => [
         other.x,
         other.x + other.width,
@@ -151,8 +162,8 @@ export function snapPinnedMediaLayout(
       ]),
     ]),
     y: snapToTargets(next.y, [
-      PINNED_MEDIA_VIEWPORT_MARGIN,
-      viewport.height - totalHeight - PINNED_MEDIA_VIEWPORT_MARGIN,
+      bounds.top + PINNED_MEDIA_FRAME_MARGIN,
+      bounds.top + bounds.height - totalHeight - PINNED_MEDIA_FRAME_MARGIN,
       ...otherLayouts.flatMap((other) => {
         const otherTotalHeight = cardTotalHeight(other);
         return [other.y, other.y + otherTotalHeight, other.y + otherTotalHeight - totalHeight, other.y - totalHeight];
@@ -160,37 +171,37 @@ export function snapPinnedMediaLayout(
     ]),
   };
 
-  return clampPinnedMediaLayout(next, viewport);
+  return clampPinnedMediaLayout(next, bounds);
 }
 
 export function defaultPinnedMediaLayout({
   aspectRatio,
+  bounds,
   existingCards,
   sourceRect = null,
-  viewport,
 }: {
   aspectRatio?: number | null;
+  bounds: PinnedMediaBounds;
   existingCards: StoredPinnedMediaCard[];
   sourceRect?: RectLike | null;
-  viewport: ViewportSize;
 }): PinnedMediaLayout {
   const normalizedAspectRatio = safeAspectRatio(aspectRatio);
   const defaultWidth =
-    viewport.width <= 640
-      ? clamp(Math.round(viewport.width * 0.58), MIN_CARD_WIDTH, 260)
-      : clamp(Math.round(viewport.width * 0.18), 220, 320);
+    bounds.width <= 640
+      ? clamp(Math.round(bounds.width * 0.58), MIN_CARD_WIDTH, 260)
+      : clamp(Math.round(bounds.width * 0.18), 220, 320);
   const baseLayout = clampPinnedMediaLayout(
     {
       aspectRatio: normalizedAspectRatio,
       height: defaultWidth / normalizedAspectRatio,
       width: defaultWidth,
       x: sourceRect
-        ? sourceRect.left + sourceRect.width - defaultWidth - PINNED_MEDIA_VIEWPORT_MARGIN * 2
-        : viewport.width - defaultWidth - PINNED_MEDIA_VIEWPORT_MARGIN * 2,
-      y: sourceRect ? sourceRect.top + PINNED_MEDIA_CARD_CHROME_HEIGHT : PINNED_MEDIA_VIEWPORT_MARGIN * 5,
+        ? sourceRect.left + sourceRect.width - defaultWidth - PINNED_MEDIA_FRAME_MARGIN * 2
+        : bounds.left + bounds.width - defaultWidth - PINNED_MEDIA_FRAME_MARGIN * 2,
+      y: sourceRect ? sourceRect.top + PINNED_MEDIA_CARD_CHROME_HEIGHT : bounds.top + PINNED_MEDIA_FRAME_MARGIN * 5,
       zIndex: nextZIndex(existingCards),
     },
-    viewport,
+    bounds,
   );
   const existingLayouts = existingCards.map((card) => card.layout);
 
@@ -198,11 +209,11 @@ export function defaultPinnedMediaLayout({
     const candidate = snapPinnedMediaLayout(
       {
         ...baseLayout,
-        x: baseLayout.x - index * PINNED_MEDIA_VIEWPORT_MARGIN,
-        y: baseLayout.y + index * PINNED_MEDIA_VIEWPORT_MARGIN,
+        x: baseLayout.x - index * PINNED_MEDIA_FRAME_MARGIN,
+        y: baseLayout.y + index * PINNED_MEDIA_FRAME_MARGIN,
       },
       existingLayouts,
-      viewport,
+      bounds,
     );
 
     if (!existingLayouts.some((layout) => layoutsOverlap(candidate, layout))) {
@@ -216,7 +227,7 @@ export function defaultPinnedMediaLayout({
 export function upsertPinnedMediaCard(
   cards: StoredPinnedMediaCard[],
   draft: PinDraft,
-  viewport: ViewportSize,
+  bounds: PinnedMediaBounds,
 ): PinResult {
   const id = pinnedMediaCardId(draft.placeId, draft.kind, draft.itemId);
   const currentCard = cards.find((card) => card.id === id);
@@ -242,9 +253,9 @@ export function upsertPinnedMediaCard(
         kind: draft.kind,
         layout: defaultPinnedMediaLayout({
           aspectRatio: draft.aspectRatio,
+          bounds,
           existingCards: cards,
           sourceRect: draft.sourceRect,
-          viewport,
         }),
         placeId: draft.placeId,
       },
@@ -273,13 +284,13 @@ export function updatePinnedMediaLayout(
   cards: StoredPinnedMediaCard[],
   id: string,
   layout: PinnedMediaLayout,
-  viewport: ViewportSize,
+  bounds: PinnedMediaBounds,
 ): StoredPinnedMediaCard[] {
   return cards.map((card) =>
     card.id === id
       ? {
           ...card,
-          layout: clampPinnedMediaLayout(layout, viewport),
+          layout: clampPinnedMediaLayout(layout, bounds),
         }
       : card,
   );
