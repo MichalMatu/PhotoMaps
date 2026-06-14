@@ -71,39 +71,39 @@ export function PhotoQueueItem({
         ) : (
           <>
             <p className="admin-media-caption">{photo.caption ?? "Brak podpisu"}</p>
-            <button
-              className="ui-button ui-button--ghost admin-media-link-button"
-              type="button"
-              onClick={() => onStartCaptionEdit(photo)}
-            >
-              Edytuj podpis
-            </button>
+            <div className="admin-media-card-actions">
+              <button
+                className="ui-button ui-button--ghost admin-media-link-button"
+                type="button"
+                onClick={() => onStartCaptionEdit(photo)}
+              >
+                Edytuj podpis
+              </button>
+              {photo.status !== "approved" ? (
+                <button type="button" onClick={() => onReview(photo.id, "approved")}>
+                  {photo.status === "rejected" ? "Przywróć" : "Zatwierdź"}
+                </button>
+              ) : null}
+              {photo.status !== "rejected" ? (
+                <button
+                  className="ui-button ui-button--secondary"
+                  type="button"
+                  onClick={() => onReview(photo.id, "rejected")}
+                >
+                  {photo.status === "approved" ? "Ukryj" : "Odrzuć"}
+                </button>
+              ) : null}
+              {photo.status === "approved" && !isCover ? (
+                <button className="ui-button ui-button--ghost" type="button" onClick={() => onSetCover(photo)}>
+                  Ustaw jako główne
+                </button>
+              ) : null}
+              <button className="ui-button ui-button--danger" type="button" onClick={() => onDelete(photo)}>
+                Usuń trwale
+              </button>
+            </div>
           </>
         )}
-        <div className="review-actions">
-          {photo.status !== "approved" ? (
-            <button type="button" onClick={() => onReview(photo.id, "approved")}>
-              {photo.status === "rejected" ? "Przywróć" : "Zatwierdź"}
-            </button>
-          ) : null}
-          {photo.status !== "rejected" ? (
-            <button
-              className="ui-button ui-button--secondary"
-              type="button"
-              onClick={() => onReview(photo.id, "rejected")}
-            >
-              {photo.status === "approved" ? "Ukryj" : "Odrzuć"}
-            </button>
-          ) : null}
-          {photo.status === "approved" && !isCover ? (
-            <button className="ui-button ui-button--ghost" type="button" onClick={() => onSetCover(photo)}>
-              Ustaw jako główne
-            </button>
-          ) : null}
-          <button className="ui-button ui-button--danger" type="button" onClick={() => onDelete(photo)}>
-            Usuń trwale
-          </button>
-        </div>
       </div>
     </article>
   );

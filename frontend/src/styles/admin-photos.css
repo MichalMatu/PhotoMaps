@@ -210,12 +210,14 @@
 .admin-media-gallery {
   display: grid;
   gap: var(--space-3);
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 420px));
+  justify-content: start;
   padding: var(--space-3);
 }
 
 .admin-media-item {
   display: grid;
+  grid-template-rows: auto 1fr;
 }
 
 .admin-media-item-image {
@@ -226,6 +228,7 @@
 }
 
 .admin-media-item-body {
+  align-content: start;
   display: grid;
   gap: var(--space-3);
   min-width: 0;
@@ -287,6 +290,20 @@
   min-height: var(--control-height-small);
   padding-inline: var(--space-4);
   white-space: nowrap;
+}
+
+.admin-media-card-actions {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+  margin-top: auto;
+}
+
+.admin-media-card-actions button {
+  min-height: var(--control-height-compact);
+  padding-inline: var(--space-3);
+  white-space: normal;
+  width: 100%;
 }
 
 @media (max-width: 900px) {
