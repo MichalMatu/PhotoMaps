@@ -707,6 +707,7 @@ label.checkbox-field.consent-field .field-error {
   text-shadow: var(--shadow-media-header-text);
 }
 
+.system-modal--media .system-modal-icon-action,
 .system-modal--media .system-modal-drag-handle,
 .system-modal--media .system-modal-close {
   background: var(--surface-media-control);
@@ -714,6 +715,7 @@ label.checkbox-field.consent-field .field-error {
   color: var(--content-media-control);
 }
 
+.system-modal--media .system-modal-icon-action:hover,
 .system-modal--media .system-modal-drag-handle:hover,
 .system-modal--media .system-modal-close:hover:not(:disabled) {
   background: var(--surface-media-control-hover);
@@ -759,26 +761,40 @@ label.checkbox-field.consent-field .field-error {
   gap: var(--space-2);
 }
 
+.system-modal-icon-action,
 .system-modal-drag-handle {
   align-items: center;
   background: var(--surface-inset);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-full);
   color: var(--content-secondary);
-  cursor: grab;
   display: flex;
   height: 36px;
   justify-content: center;
   min-height: 0;
   padding: 0;
-  touch-action: none;
-  user-select: none;
   width: 36px;
+}
+
+.system-modal-icon-action {
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.system-modal-icon-action:hover {
+  background: var(--accent-soft);
+  color: var(--accent-primary);
 }
 
 .system-modal-drag-handle:hover {
   background: var(--accent-soft);
   color: var(--accent-primary);
+}
+
+.system-modal-drag-handle {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
 }
 
 .system-modal.is-dragging .system-modal-drag-handle {

@@ -14,6 +14,7 @@ type Props = {
   confirmLabel?: string;
   details?: string | null;
   eyebrow?: string;
+  headerActions?: ReactNode;
   isBusy?: boolean;
   message?: string;
   onClose: () => void;
@@ -36,6 +37,7 @@ export function SystemModal({
   confirmLabel = "OK",
   details = null,
   eyebrow = "Komunikat systemowy",
+  headerActions = null,
   isBusy = false,
   message = "",
   onClose,
@@ -120,6 +122,7 @@ export function SystemModal({
             <h2 id={titleId}>{title}</h2>
           </div>
           <div className="system-modal-header-actions">
+            {headerActions}
             <div
               className="system-modal-drag-handle"
               aria-label="Przesuń modal"

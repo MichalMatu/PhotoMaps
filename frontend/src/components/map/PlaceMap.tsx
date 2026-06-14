@@ -7,6 +7,7 @@ import { SystemModal } from "../ui/SystemModal";
 import { DistanceMeasureTool } from "./DistanceMeasureTool";
 import { MemorySheet } from "./MemorySheet";
 import { PhotoDetailModal } from "./PhotoDetailModal";
+import { PinnedMediaBoard, type PinMediaRequest, usePinnedMediaBoard } from "./PinnedMediaBoardLayer";
 import { PlaceMarker } from "./PlaceMarker";
 import { findPlaceFanItem, type PlaceMapVisualItem } from "./placePreview";
 import { ReportSheet } from "./ReportSheet";
@@ -20,6 +21,11 @@ type VisualTarget = {
   id: string;
   kind: PlaceMapVisualItem["kind"];
   placeId: string;
+};
+
+type PlaceLayerProps = {
+  onPinMedia: (request: PinMediaRequest) => boolean;
+  places: PlaceMapItem[];
 };
 
 const DEFAULT_CENTER: [number, number] = [51.1079, 17.0385];
@@ -68,7 +74,7 @@ function MapCloseEvents({ onClose }: { onClose: () => void }) {
   return null;
 }
 
-function PlaceLayer({ places }: Props) {
+function PlaceLayer({ onPinMedia, places }: PlaceLayerProps) {
   const map = useMap();
   const placesMotionSignature = useMemo(
     () =>
@@ -151,6 +157,14 @@ function PlaceLayer({ places }: Props) {
         <PhotoDetailModal
           item={detailItem}
           place={detailPlace}
+          onPin={(pinRequest) => {
+            const didPin = onPinMedia({ item: detailItem, place: detailPlace, ...pinRequest });
+            if (didPin) {
+              setVisualDetail(null);
+            }
+
+            return didPin;
+          }}
           onReport={() => setReportTarget({ id: detailItem.id, kind: detailItem.kind, placeId: detailPlace.id })}
           onClose={() => {
             setVisualDetail(null);
@@ -176,24 +190,34 @@ function PlaceLayer({ places }: Props) {
 
 export function PlaceMap({ mapCity = null, places }: Props) {
   const center: [number, number] = mapCity ? [mapCity.lat, mapCity.lon] : DEFAULT_CENTER;
+  const pinnedMediaBoard = usePinnedMediaBoard(places);
 
   return (
-    <MapContainer
-      center={center}
-      zoom={mapCity?.default_zoom ?? 13}
-      className="place-map"
-      key={mapCity?.id ?? "default"}
-      scrollWheelZoom
-      zoomControl={false}
-    >
-      <MapSizeUpdater />
-      <DistanceMeasureTool />
-      <ZoomControl position="bottomright" />
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    <>
+      <MapContainer
+        center={center}
+        zoom={mapCity?.default_zoom ?? 13}
+        className="place-map"
+        key={mapCity?.id ?? "default"}
+        scrollWheelZoom
+        zoomControl={false}
+      >
+        <MapSizeUpdater />
+        <DistanceMeasureTool />
+        <ZoomControl position="bottomright" />
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <PlaceLayer places={places} onPinMedia={pinnedMediaBoard.pinMedia} />
+      </MapContainer>
+      <PinnedMediaBoard
+        cards={pinnedMediaBoard.cards}
+        notice={pinnedMediaBoard.notice}
+        onBringToFront={pinnedMediaBoard.onBringToFront}
+        onLayoutChange={pinnedMediaBoard.onLayoutChange}
+        onRemove={pinnedMediaBoard.onRemove}
       />
-      <PlaceLayer places={places} />
-    </MapContainer>
+    </>
   );
 }
