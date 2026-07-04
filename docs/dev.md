@@ -40,6 +40,29 @@ pre-commit run --all-files
 
 `make check` uruchamia backend Ruff format/lint, testy z coverage, diagnostykę schematu bazy, opcjonalny `shellcheck` dla skryptów oraz frontend format/lint/knip/test/build.
 
+## Workflow Git
+
+`main` jest stabilnym kanałem kodu gotowego do wystawienia. Zwykłą pracę prowadź na krótkich branchach tematycznych, a do `main` przenoś tylko zamknięte etapy po testach.
+
+Początek pracy:
+
+```bash
+git switch main
+git pull --ff-only
+git switch -c work/nazwa-zmiany
+```
+
+Zamknięcie etapu na branchu:
+
+```bash
+make check
+git add .
+git commit -m "Opis gotowego etapu"
+git push -u origin work/nazwa-zmiany
+```
+
+Jeśli branch ma trafić do `main`, najpierw upewnij się, że jest po aktualnym `main` i przeszedł check. Merge albo fast-forward do `main` wykonuj dopiero po świadomej decyzji, że ten etap jest wersją gotową do publikacji.
+
 ## Testy jakości
 
 ```bash

@@ -207,6 +207,11 @@ Pracuj etapami, ale kazdy etap ma zostawic repozytorium w domknietym stanie:
 
 Repozytorium ma jeden kod i dwa tryby uruchomienia: lokalny dev oraz publiczny runtime, ktory moze dzialac na Raspberry Pi 5. To nie sa osobne linie kompatybilnosci.
 
+- `main` traktuj jako stabilna wersje kodu gotowa do wystawienia. Nie prowadz zwyklej pracy bezposrednio na `main`, chyba ze uzytkownik wyraznie prosi o hotfix albo publikacje gotowego etapu.
+- Nowa prace zaczynaj na tematycznym branchu z aktualnego `main`, np. `work/admin-ui-cleanup`, `work/place-collections` albo `fix/moderation-counts`. Unikaj jednego stalego brancha `dev`, ktory miesza kilka tematow.
+- Gotowy etap na branchu roboczym ma miec adekwatna weryfikacje, commit i push tego brancha. Do `main` przenos tylko wersje uznane za gotowe po testach i swiadomej decyzji o publikacji.
+- Jesli zaczynasz zadanie i jestes na `main`, a zmiana nie jest trywialna, najpierw utworz branch roboczy. Jesli worktree jest brudny, nie przelaczaj ani nie pulluj bez sprawdzenia statusu i ustalenia, co z lokalnymi zmianami.
+
 - Na poczatku pracy na dowolnym komputerze sprawdz stan i pobierz zmiany bez tworzenia merge commita:
 
 ```bash
@@ -220,7 +225,7 @@ git pull --ff-only
 ./scripts/check.sh
 git add .
 git commit -m "..."
-git push
+git push -u origin <branch>
 ```
 
 - Jesli `git push` zostanie odrzucony, bo drugi komputer wypchnal nowsze commity, najpierw zsynchronizuj historie przez rebase, potem powtorz weryfikacje i push:
