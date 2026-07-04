@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "trzebnica",
+    "name": "Trzebnica",
+    "lat": 51.3095347,
+    "lon": 17.0670118,
+    "default_zoom": 13,
+    "sort_order": 540,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "bazylika-trzebnica",
+      "title": "Bazylika św. Jadwigi w Trzebnicy",
+      "description": "Sanktuarium i bazylika w Trzebnicy, jedno z najważniejszych miejsc sakralnych Dolnego Śląska.",
+      "local_comment": "Cover powinien pokazać fasadę albo wnętrze z czytelną skalą. To punkt pielgrzymkowy i architektoniczny, nie tylko lokalny kościół.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Sanktuarium północnego Dolnego Śląska"
+        },
+        {
+          "type": "paragraph",
+          "text": "Bazylika w Trzebnicy wzmacnia mapę o jeden z kluczowych punktów sakralnych regionu. Dobrze domyka trasę na północ od Wrocławia i dodaje miejsce o długiej historii oraz mocnej architekturze."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 51.3095347,
+      "lon": 17.0670118,
+      "weight": 4.2,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "zagorze-slaskie",
+    "name": "Zagórze Śląskie",
+    "lat": 50.7542326,
+    "lon": 16.4049248,
+    "default_zoom": 13,
+    "sort_order": 260,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zamek-grodno",
+      "title": "Zamek Grodno",
+      "description": "Zamek nad Jeziorem Bystrzyckim i Doliną Bystrzycy, z mocnym połączeniem murów, lasu i widoków.",
+      "local_comment": "Najlepsze ujęcia pokazują zamek jako część krajobrazu: las, skałę, jezioro i podejście. Same mury bez kontekstu tracą dużo klimatu.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Zamek nad doliną"
+        },
+        {
+          "type": "paragraph",
+          "text": "Grodno jest ważnym uzupełnieniem dolnośląskich zamków, bo nie działa tylko architekturą. Jego siła jest w położeniu: nad wodą, lasem i stromym podejściem."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.7493775,
+      "lon": 16.4104756,
+      "weight": 4.3,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

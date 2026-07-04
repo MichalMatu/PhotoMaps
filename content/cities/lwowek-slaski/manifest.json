@@ -1,0 +1,56 @@
+{
+  "city": {
+    "id": "lwowek-slaski",
+    "name": "Lwówek Śląski",
+    "lat": 51.1108921,
+    "lon": 15.5851502,
+    "default_zoom": 13,
+    "sort_order": 570,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "rynek-lwowek-slaski",
+      "title": "Rynek w Lwówku Śląskim",
+      "description": "Historyczny rynek jednego z najstarszych miast regionu, z ratuszem i zachowaną miejską skalą Pogórza.",
+      "local_comment": "Najlepszy cover powinien pokazać ratusz i pierzeje, bez przypadkowego parkingowego chaosu. To ma być mocny punkt miejski zachodu regionu.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Stare miasto zachodniego Dolnego Śląska"
+        },
+        {
+          "type": "paragraph",
+          "text": "Rynek w Lwówku Śląskim wzmacnia zachodnią część mapy o klasyczny miejski punkt. Dobrze łączy się z zamkami, mostami i mniejszymi miejscowościami Pogórza Izerskiego."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 51.1108921,
+      "lon": 15.5851502,
+      "weight": 3.8,
+      "status": "published"
+    },
+    {
+      "slug": "szwajcaria-lwowecka",
+      "title": "Szwajcaria Lwówecka",
+      "description": "Malowniczy zespół piaskowcowych skał i punktów widokowych tuż przy Lwówku Śląskim.",
+      "local_comment": "Galeria musi pokazać formacje skalne i perspektywę z punktów widokowych. Nie brać przypadkowych zdjęć lasu bez czytelnej skały.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Skalny kontrapunkt dla miasta"
+        },
+        {
+          "type": "paragraph",
+          "text": "Szwajcaria Lwówecka dodaje do Lwówka naturalną warstwę krajobrazową. To szybki przeskok z rynku i ratusza w piaskowcowe formy, widoki i spacerowy rytm Pogórza."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 51.1014,
+      "lon": 15.59404,
+      "weight": 4.0,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

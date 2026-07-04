@@ -1,0 +1,56 @@
+{
+  "city": {
+    "id": "glogow",
+    "name": "Głogów",
+    "lat": 51.6672511,
+    "lon": 16.0908097,
+    "default_zoom": 13,
+    "sort_order": 550,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zamek-ksiazat-glogowskich",
+      "title": "Zamek Książąt Głogowskich",
+      "description": "Zamek nad Odrą w Głogowie, jeden z najważniejszych punktów historycznego centrum miasta.",
+      "local_comment": "Cover powinien pokazać zamek i relację z Odrą albo miejskim otoczeniem. To główny punkt wejścia w Głogów na mapie.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Zamek nad Odrą"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zamek Książąt Głogowskich pozwala pokazać Głogów jako ważne miasto historyczne zachodniej części regionu. Na mapie buduje punkt nad Odrą i naturalnie łączy się z kolegiatą oraz odbudowanym centrum."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 51.6672511,
+      "lon": 16.0908097,
+      "weight": 4.0,
+      "status": "published"
+    },
+    {
+      "slug": "kolegiata-glogow",
+      "title": "Kolegiata w Głogowie",
+      "description": "Odbudowana kolegiata na Ostrowie Tumskim w Głogowie, widoczny symbol historii miasta nad Odrą.",
+      "local_comment": "Najlepsze będą kadry z bryłą świątyni, rzeką albo panoramą Ostrowa Tumskiego. Nie łączyć zdjęć z zamkiem w tej samej galerii.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Ostrów Tumski w Głogowie"
+        },
+        {
+          "type": "paragraph",
+          "text": "Kolegiata w Głogowie jest osobnym punktem wobec zamku, bo opowiada inną część miasta: odbudowę, sakralną skalę i widok z wyspy. Dzięki temu użytkownik na mapie widzi dwa czytelne miejsca, a nie jeden niejasny skrót."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 51.6705053,
+      "lon": 16.0937488,
+      "weight": 3.9,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

@@ -1,0 +1,56 @@
+{
+  "city": {
+    "id": "jedlina-zdroj",
+    "name": "Jedlina-Zdrój",
+    "lat": 50.7204,
+    "lon": 16.3464,
+    "default_zoom": 12,
+    "sort_order": 640,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "palac-jedlinka",
+      "title": "Pałac Jedlinka",
+      "description": "Pałac u podnóża Gór Sowich, znany z historii, zabudowań folwarcznych i bliskości tras w rejonie Jedliny-Zdroju.",
+      "local_comment": "Najlepsze kadry powinny pokazać front, dziedziniec, park i relację z otoczeniem. Nie budować galerii z samych detali wnętrz.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Pałac na wejściu w Góry Sowie"
+        },
+        {
+          "type": "paragraph",
+          "text": "Pałac Jedlinka łączy pałacową architekturę z górskim sąsiedztwem i historią regionu. Dobrze uzupełnia podziemne miejsca Riese, bo pokazuje bardziej cywilną, rezydencjonalną warstwę tej części Dolnego Śląska."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.7133,
+      "lon": 16.3586,
+      "weight": 4.0,
+      "status": "published"
+    },
+    {
+      "slug": "wieza-borowa",
+      "title": "Wieża widokowa na Borowej",
+      "description": "Stalowa wieża na najwyższym szczycie Gór Wałbrzyskich, z panoramą Wałbrzycha, Gór Sowich i Sudetów.",
+      "local_comment": "Galeria powinna mieć co najmniej jedno mocne ujęcie samej wieży i osobne kadry panoram. Nie powielać pięciu podobnych zdjęć schodów.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Panorama nad Wałbrzychem"
+        },
+        {
+          "type": "paragraph",
+          "text": "Borowa dodaje do mapy nowoczesny punkt widokowy blisko Wałbrzycha. Jej wartością jest połączenie krótkiej górskiej trasy, wyraźnej konstrukcji i szerokiego widoku na kilka pasm Sudetów."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.723,
+      "lon": 16.304611,
+      "weight": 3.9,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

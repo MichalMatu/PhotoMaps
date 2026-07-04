@@ -1,0 +1,64 @@
+{
+  "city": {
+    "id": "walbrzych",
+    "name": "Wałbrzych",
+    "lat": 50.8422,
+    "lon": 16.2924,
+    "default_zoom": 13,
+    "sort_order": 20,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zamek-ksiaz",
+      "title": "Zamek Książ",
+      "description": "Jeden z najbardziej rozpoznawalnych zamków Dolnego Śląska, położony nad wąwozem Pełcznicy i otoczony tarasami oraz parkiem.",
+      "local_comment": "Najmocniej działa jako szeroki kadr: bryła zamku, zieleń i urwisty kontekst są ważniejsze niż samo wejście główne.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Dolnośląski zamek pierwszego wyboru"
+        },
+        {
+          "type": "paragraph",
+          "text": "Książ od razu tłumaczy skalę Dolnego Śląska: arystokratyczna architektura, górski krajobraz, tarasy i długie osie spacerowe spotykają się w jednym punkcie."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie warto czytać go nie tylko jako zabytek, ale też jako cel na pół dnia: z widokami, ogrodami i trasami po okolicy."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.8422,
+      "lon": 16.2924,
+      "weight": 5.0,
+      "status": "published"
+    },
+    {
+      "slug": "stara-kopalnia-walbrzych",
+      "title": "Stara Kopalnia w Wałbrzychu",
+      "description": "Dawna kopalnia węgla zamieniona w centrum nauki, sztuki i historii przemysłu, z wieżami, maszynami i podziemną trasą.",
+      "local_comment": "Galeria powinna mieszać architekturę przemysłową, detale maszyn i wnętrza. Same szerokie kadry dziedzińca nie oddają energii tego miejsca.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Industrialny Wałbrzych w jednym miejscu"
+        },
+        {
+          "type": "paragraph",
+          "text": "Stara Kopalnia pokazuje Dolny Śląsk od strony pracy, techniki i przemysłowej skali. To dobre uzupełnienie zamków oraz gór, bo buduje zupełnie inny typ pamięci z regionu."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie powinna działać przez kontrast: cegła, stal, wieże szybowe, urządzenia i surowe przestrzenie tworzą mocny, czytelny zestaw kadrów."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.7723905,
+      "lon": 16.2614471,
+      "weight": 4.5,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

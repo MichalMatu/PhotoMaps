@@ -1,0 +1,39 @@
+{
+  "city": {
+    "id": "swidnica",
+    "name": "Świdnica",
+    "lat": 50.8431,
+    "lon": 16.4877,
+    "default_zoom": 14,
+    "sort_order": 40,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "kosciol-pokoju-swidnica",
+      "title": "Kościół Pokoju w Świdnicy",
+      "description": "Drewniany kościół UNESCO z niezwykle bogatym wnętrzem, jednym z najmocniejszych zabytków sakralnych regionu.",
+      "local_comment": "Nie zatrzymuj się na zewnętrznej bryle. Najważniejszy jest kontrast: skromniejsza forma z zewnątrz i bardzo gęste, teatralne wnętrze.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Ciche UNESCO z ogromnym wnętrzem"
+        },
+        {
+          "type": "paragraph",
+          "text": "Kościół Pokoju w Świdnicy zaskakuje skalą po wejściu do środka. Drewniana konstrukcja, empory, malowidła i ornamenty robią wrażenie zupełnie inne niż klasyczne kamienne katedry."
+        },
+        {
+          "type": "paragraph",
+          "text": "To dobry punkt dla osób, które lubią miejsca spokojniejsze, ale bardzo mocne wizualnie i historycznie."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.8431,
+      "lon": 16.4877,
+      "weight": 4.8,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

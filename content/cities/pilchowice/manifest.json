@@ -1,0 +1,56 @@
+{
+  "city": {
+    "id": "pilchowice",
+    "name": "Pilchowice",
+    "lat": 50.9637743,
+    "lon": 15.6451895,
+    "default_zoom": 13,
+    "sort_order": 590,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "most-pilchowicki",
+      "title": "Most kolejowy nad Jeziorem Pilchowickim",
+      "description": "Malowniczy most kolejowy nad Jeziorem Pilchowickim, jeden z najbardziej filmowych obiektów infrastruktury w regionie.",
+      "local_comment": "Cover musi pokazać most nad wodą i skalę konstrukcji. Nie mieszać zdjęć zapory, bo to osobny obiekt na mapie.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Kolej nad wodą"
+        },
+        {
+          "type": "paragraph",
+          "text": "Most Pilchowicki dodaje do mapy techniczny, krajobrazowy punkt zachodniej części regionu. Jest atrakcyjny wizualnie nie tylko jako zabytek infrastruktury, ale też jako widok nad jeziorem."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.9650266,
+      "lon": 15.6582352,
+      "weight": 4.1,
+      "status": "published"
+    },
+    {
+      "slug": "zapora-pilchowicka",
+      "title": "Zapora Pilchowicka",
+      "description": "Kamienna zapora na Bobrze tworząca Jezioro Pilchowickie, efektowny punkt inżynierii i krajobrazu.",
+      "local_comment": "Zdjęcia powinny pokazać łuk zapory, wodę i wysokość. To obiekt inny niż most, więc musi mieć własną galerię.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Kamienna tama na Bobrze"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zapora Pilchowicka jest jednym z najmocniejszych obiektów hydrotechnicznych Dolnego Śląska. Razem z mostem tworzy świetny zestaw widokowy, ale jako miejsce ma własną skalę i własny rytm zwiedzania."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.9637743,
+      "lon": 15.6451895,
+      "weight": 4.0,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "legnica",
+    "name": "Legnica",
+    "lat": 51.2081617,
+    "lon": 16.1603187,
+    "default_zoom": 13,
+    "sort_order": 320,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zamek-piastowski-legnica",
+      "title": "Zamek Piastowski w Legnicy",
+      "description": "Historyczny zamek w centrum Legnicy, ważny punkt piastowskiej warstwy miasta.",
+      "local_comment": "Najlepiej pokazać go w relacji z centrum: mury, wieże i miejskie otoczenie. Sam detal elewacji może być zbyt mało czytelny jako cover.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Piastowski znak dużego miasta regionu"
+        },
+        {
+          "type": "paragraph",
+          "text": "Legnica potrzebuje na mapie mocnego punktu startowego, a zamek dobrze pełni tę rolę. Łączy historię miasta z widoczną bryłą w centrum, którą łatwo rozpoznać podczas spaceru."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 51.2110717,
+      "lon": 16.1618131,
+      "weight": 3.9,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

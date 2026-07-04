@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "klodzko",
+    "name": "Kłodzko",
+    "lat": 50.4337118,
+    "lon": 16.6422465,
+    "default_zoom": 13,
+    "sort_order": 160,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "twierdza-klodzko",
+      "title": "Twierdza Kłodzko",
+      "description": "Rozległa twierdza górująca nad Kłodzkiem, z podziemnymi trasami, murami i widokiem na miasto.",
+      "local_comment": "Najlepszy materiał to miks: panorama z murów, surowe przejścia podziemne i perspektywa twierdzy nad starą zabudową.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Miasto czytane z fortyfikacji"
+        },
+        {
+          "type": "paragraph",
+          "text": "Twierdza Kłodzko jest miejscem, które porządkuje odbiór całego miasta. Z góry widać układ ulic i krajobraz Kotliny Kłodzkiej, a wewnątrz pojawia się ciężar historii militarnej."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.4403206,
+      "lon": 16.6527629,
+      "weight": 4.5,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

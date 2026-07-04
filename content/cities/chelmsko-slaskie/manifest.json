@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "chelmsko-slaskie",
+    "name": "Chełmsko Śląskie",
+    "lat": 50.666083,
+    "lon": 16.0725027,
+    "default_zoom": 13,
+    "sort_order": 600,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "domy-tkaczy-chelmsko-slaskie",
+      "title": "Domy Tkaczy w Chełmsku Śląskim",
+      "description": "Zespół drewnianych domów tkaczy zwany Dwunastoma Apostołami, jeden z najbardziej charakterystycznych punktów miasteczka.",
+      "local_comment": "Cover powinien pokazać rytm drewnianych domów i ulicy. To świetny punkt o rzemieślniczej skali, inny niż zamki i pałace.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Drewniany rytm dawnego rzemiosła"
+        },
+        {
+          "type": "paragraph",
+          "text": "Domy Tkaczy w Chełmsku Śląskim wprowadzają do mapy warstwę rzemieślniczą i małomiasteczkową. To miejsce jest czytelne wizualnie, a jednocześnie pokazuje codzienną historię regionu."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.666083,
+      "lon": 16.0725027,
+      "weight": 3.9,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

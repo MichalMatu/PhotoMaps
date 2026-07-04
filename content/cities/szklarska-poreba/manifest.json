@@ -1,0 +1,56 @@
+{
+  "city": {
+    "id": "szklarska-poreba",
+    "name": "Szklarska Poręba",
+    "lat": 50.8268011,
+    "lon": 15.5221261,
+    "default_zoom": 12,
+    "sort_order": 150,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "wodospad-kamienczyka",
+      "title": "Wodospad Kamieńczyka",
+      "description": "Najwyższy wodospad polskich Karkonoszy, ukryty w wąwozie przy popularnych szlakach ze Szklarskiej Poręby.",
+      "local_comment": "Warto szukać pionowych kadrów i mgły wodnej. Zimą albo po opadach miejsce ma zupełnie inny charakter niż w suchy dzień.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Pionowy akcent Karkonoszy"
+        },
+        {
+          "type": "paragraph",
+          "text": "Kamieńczyk jest prosty do rozpoznania na zdjęciach: ciemny wąwóz, spadająca woda i poczucie chłodu. To jedna z tych atrakcji, które dobrze czytają się nawet jako mała miniatura na mapie."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.8135624,
+      "lon": 15.496672,
+      "weight": 4.6,
+      "status": "published"
+    },
+    {
+      "slug": "sniezne-kotly",
+      "title": "Śnieżne Kotły",
+      "description": "Surowe kotły polodowcowe w Karkonoszach, z jednymi z najbardziej dramatycznych panoram w regionie.",
+      "local_comment": "Najmocniejsze są szerokie kadry grani i ścian kotłów. Przy zmiennej pogodzie miejsce potrafi wyglądać monumentalnie i bardzo surowo.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Karkonosze w wielkiej skali"
+        },
+        {
+          "type": "paragraph",
+          "text": "Śnieżne Kotły dodają do mapy górski dramat: ekspozycję, wiatr, rozległy widok i skalne ściany. To dobry kontrast dla wodospadów i miejskich atrakcji Szklarskiej Poręby."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.7784465,
+      "lon": 15.5609623,
+      "weight": 4.7,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

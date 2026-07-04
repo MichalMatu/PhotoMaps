@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "olesnica",
+    "name": "Oleśnica",
+    "lat": 51.208968,
+    "lon": 17.3762631,
+    "default_zoom": 13,
+    "sort_order": 490,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zamek-ksiazat-olesnickich",
+      "title": "Zamek Książąt Oleśnickich",
+      "description": "Renesansowy zamek w centrum Oleśnicy, jeden z najważniejszych zabytków miasta.",
+      "local_comment": "Zdjęcia powinny pokazać dziedziniec, wieżę i miejski kontekst. To dobry wschodni punkt mapy poza Wrocławiem.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Zamek w środku miasta"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zamek Książąt Oleśnickich dodaje do mapy atrakcyjny punkt na wschód od Wrocławia. Łączy miejską dostępność z wyraźną formą rezydencjonalną i pomaga lepiej pokryć północno-wschodnią część regionu."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 51.208968,
+      "lon": 17.3762631,
+      "weight": 4.1,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

@@ -1,0 +1,39 @@
+{
+  "city": {
+    "id": "srebrna-gora",
+    "name": "Srebrna Góra",
+    "lat": 50.574,
+    "lon": 16.654,
+    "default_zoom": 13,
+    "sort_order": 70,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "twierdza-srebrna-gora",
+      "title": "Twierdza Srebrna Góra",
+      "description": "Potężna górska twierdza z donżonem, fortami i szerokim widokiem na Sudety.",
+      "local_comment": "Szukaj kadrów z geometrią murów i pustą przestrzenią wokół. Skala fortyfikacji jest tu ważniejsza niż pojedynczy detal.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Forteca, którą czuć w nogach"
+        },
+        {
+          "type": "paragraph",
+          "text": "Twierdza Srebrna Góra jest atrakcją przestrzenną: trzeba wejść pod górę, przejść przez mury i dopiero wtedy zobaczyć, jak duży był to system obronny."
+        },
+        {
+          "type": "paragraph",
+          "text": "To miejsce dobrze działa dla osób, które lubią połączenie historii, surowej architektury i widoków."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.574,
+      "lon": 16.654,
+      "weight": 4.4,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

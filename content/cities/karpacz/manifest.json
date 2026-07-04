@@ -1,0 +1,102 @@
+{
+  "city": {
+    "id": "karpacz",
+    "name": "Karpacz",
+    "lat": 50.7359,
+    "lon": 15.7397,
+    "default_zoom": 12,
+    "sort_order": 30,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "sniezka",
+      "title": "Śnieżka",
+      "description": "Najwyższy szczyt Karkonoszy i Sudetów, z charakterystycznym obserwatorium i szerokimi widokami na polsko-czeskie pogranicze.",
+      "local_comment": "Najlepszy efekt robi zmienne światło: mgła, wiatr, ostre słońce i widok z grani potrafią całkowicie zmienić odbiór tego samego miejsca.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Najbardziej rozpoznawalny szczyt regionu"
+        },
+        {
+          "type": "paragraph",
+          "text": "Śnieżka jest prostym symbolem Karkonoszy, ale nie jest tylko punktem na liście. Działa jako doświadczenie trasy: podejście, wiatr, schroniska, zmiany pogody i finałowy widok z grani."
+        },
+        {
+          "type": "paragraph",
+          "text": "Zdjęcia powinny pokazywać zarówno sam szczyt, jak i drogę do niego, bo to właśnie rytm dojścia buduje pamięć z tego miejsca."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.7359,
+      "lon": 15.7397,
+      "weight": 4.9,
+      "status": "published"
+    },
+    {
+      "slug": "swiatynia-wang",
+      "title": "Świątynia Wang",
+      "description": "Drewniany kościół przeniesiony z Norwegii, jeden z najbardziej charakterystycznych punktów Karpacza Górnego.",
+      "local_comment": "Najlepiej działa w kadrze z zielenią i górskim tłem; warto szukać bocznych ujęć, które pokazują detale drewna zamiast tylko frontu.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Norweska architektura pod Karkonoszami"
+        },
+        {
+          "type": "paragraph",
+          "text": "Świątynia Wang jest jednym z tych miejsc, które natychmiast odróżniają Karpacz od typowego górskiego kurortu. Drewniana bryła, detale konstrukcji i położenie przy szlakach tworzą mocny punkt startowy do dalszego spaceru."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.7773866,
+      "lon": 15.7241515,
+      "weight": 4.7,
+      "status": "published"
+    },
+    {
+      "slug": "maly-staw-samotnia",
+      "title": "Mały Staw i Samotnia",
+      "description": "Karkonoski kocioł z Małym Stawem i schroniskiem Samotnia, jedno z najbardziej nastrojowych miejsc w okolicy Karpacza.",
+      "local_comment": "Najmocniejsze kadry są szerokie: schronisko, woda, ściany kotła i zmienna pogoda. To miejsce bardzo zyskuje przy miękkim świetle.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Karkonosze w spokojniejszym tempie"
+        },
+        {
+          "type": "paragraph",
+          "text": "Mały Staw i Samotnia pokazują górski charakter Karpacza bez miejskiego szumu. To dobry kontrapunkt dla Śnieżki: mniej symbolu, więcej krajobrazu, ciszy i poczucia dojścia do miejsca."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.7490439,
+      "lon": 15.7027131,
+      "weight": 4.6,
+      "status": "published"
+    },
+    {
+      "slug": "strzecha-akademicka",
+      "title": "Schronisko Strzecha Akademicka",
+      "description": "Jedno z najstarszych schronisk w Karkonoszach, położone na trasie między Karpaczem, Samotnią i Śnieżką.",
+      "local_comment": "To miejsce powinno mieć kadry z bryłą schroniska, szlakiem i górskim kontekstem. Nie dublować za mocno ujęć Małego Stawu.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Schronisko w rytmie karkonoskiego szlaku"
+        },
+        {
+          "type": "paragraph",
+          "text": "Strzecha Akademicka dodaje do Karpacza kolejny punkt, który nie jest tylko celem, ale częścią przejścia przez góry. Dobrze łączy się z Samotnią, Śnieżką i zimowym charakterem Karkonoszy."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.750787,
+      "lon": 15.7083198,
+      "weight": 4.1,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

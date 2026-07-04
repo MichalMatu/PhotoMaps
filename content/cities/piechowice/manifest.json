@@ -1,0 +1,77 @@
+{
+  "city": {
+    "id": "piechowice",
+    "name": "Piechowice",
+    "lat": 50.8494747,
+    "lon": 15.5976047,
+    "default_zoom": 12,
+    "sort_order": 290,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "wodospad-szklarki",
+      "title": "Wodospad Szklarki",
+      "description": "Malowniczy wodospad w Karkonoszach, łatwiej dostępny i bardziej kameralny niż Kamieńczyk.",
+      "local_comment": "Dobrze działa w miękkim świetle, z zielenią i ruchem wody. Nie duplikować kadrowo Kamieńczyka: tutaj ważniejsza jest nastrojowość niż skala.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Karkonoski klasyk w spokojniejszej skali"
+        },
+        {
+          "type": "paragraph",
+          "text": "Szklarka jest idealnym uzupełnieniem wodospadu Kamieńczyka. Pokazuje podobny typ atrakcji, ale w bardziej miękkiej, spacerowej formie."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.829593,
+      "lon": 15.5548695,
+      "weight": 4.3,
+      "status": "published"
+    },
+    {
+      "slug": "huta-julia",
+      "title": "Huta Julia",
+      "description": "Huta szkła kryształowego w Piechowicach, łącząca rzemiosło, pokaz produkcji i lokalną tradycję szkła.",
+      "local_comment": "Najlepsze zdjęcia powinny pokazać ogień, szkło, ręce przy pracy i gotowe detale. Sama fasada nie wystarczy dla tego miejsca.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Rzemiosło w Karkonoszach"
+        },
+        {
+          "type": "paragraph",
+          "text": "Huta Julia dodaje do górskiej części mapy miejsce, które nie jest szlakiem ani punktem widokowym. To doświadczenie procesu, materiału i tradycji, które dobrze różnicuje regionalną ofertę."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.8507775,
+      "lon": 15.5894591,
+      "weight": 3.8,
+      "status": "published"
+    },
+    {
+      "slug": "palac-pakoszow",
+      "title": "Pałac Pakoszów",
+      "description": "Barokowy pałac w Piechowicach, położony w dolinie między Jelenią Górą a Karkonoszami.",
+      "local_comment": "W galerii ważna jest relacja pałacu z ogrodem i krajobrazem. Unikać samych zdjęć hotelowych detali bez charakteru miejsca.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Pałacowy punkt u stóp Karkonoszy"
+        },
+        {
+          "type": "paragraph",
+          "text": "Pałac Pakoszów wzmacnia pałacową warstwę Kotliny Jeleniogórskiej, ale w spokojniejszej skali niż największe rezydencje. Dobrze działa jako elegancki, zielony przystanek między miastem a górami."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.8566314,
+      "lon": 15.6270335,
+      "weight": 3.8,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

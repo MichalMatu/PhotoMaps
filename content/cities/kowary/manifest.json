@@ -1,0 +1,56 @@
+{
+  "city": {
+    "id": "kowary",
+    "name": "Kowary",
+    "lat": 50.7939,
+    "lon": 15.835,
+    "default_zoom": 13,
+    "sort_order": 410,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "park-miniatur-kowary",
+      "title": "Park Miniatur Zabytków Dolnego Śląska",
+      "description": "Park miniatur w Kowarach pokazujący najważniejsze zabytki regionu w jednej spacerowej kolekcji.",
+      "local_comment": "To miejsce musi mieć zdjęcia czytelne mimo małej skali: miniatury, ludzie dla proporcji i rozpoznawalne dolnośląskie obiekty.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Dolny Śląsk w pomniejszeniu"
+        },
+        {
+          "type": "paragraph",
+          "text": "Park Miniatur w Kowarach działa jak przegląd regionu w jednym miejscu. Dobrze pomaga użytkownikowi zrozumieć, ile warstw architektury i historii mieści Dolny Śląsk."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.7985728,
+      "lon": 15.8339387,
+      "weight": 3.9,
+      "status": "published"
+    },
+    {
+      "slug": "sztolnie-kowary",
+      "title": "Sztolnie Kowary",
+      "description": "Podziemna trasa turystyczna w dawnych wyrobiskach górniczych Kowar, łącząca historię uranu i górniczy klimat.",
+      "local_comment": "Cover powinien od razu komunikować podziemia: wejście, tunel, światło i fakturę skały. Unikać zbyt ciemnych kadrów bez kontekstu.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Górnicza warstwa Karkonoszy"
+        },
+        {
+          "type": "paragraph",
+          "text": "Sztolnie Kowary dodają do mapy mocny kontrast wobec pałaców i punktów widokowych. To atrakcja bardziej surowa, podziemna i oparta na doświadczeniu wejścia w dawny krajobraz pracy."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.7635054,
+      "lon": 15.8457183,
+      "weight": 4.0,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

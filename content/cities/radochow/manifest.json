@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "radochow",
+    "name": "Radochów",
+    "lat": 50.3497257,
+    "lon": 16.8294883,
+    "default_zoom": 13,
+    "sort_order": 340,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "jaskinia-radochowska",
+      "title": "Jaskinia Radochowska",
+      "description": "Naturalna jaskinia w okolicy Lądka-Zdroju, bardziej kameralna i surowa niż duże trasy pokazowe.",
+      "local_comment": "To miejsce powinno mieć zdjęcia z odpowiedzialnym światłem: skała, wejście, przejścia i skala człowieka, bez przesadnego efektu grozy.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Kameralna jaskinia zamiast wielkiej ekspozycji"
+        },
+        {
+          "type": "paragraph",
+          "text": "Jaskinia Radochowska uzupełnia Jaskinię Niedźwiedzią o bardziej surowy, terenowy wariant podziemnego doświadczenia. To dobre miejsce dla osób, które chcą poczuć naturalną przestrzeń, a nie tylko obejrzeć ekspozycję."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.358885,
+      "lon": 16.8178031,
+      "weight": 3.7,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

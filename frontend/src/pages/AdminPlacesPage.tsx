@@ -1,0 +1,306 @@
+import { useState } from "react";
+
+import { AdminGuidesSection } from "../components/admin/AdminGuidesSection";
+import { AppShell } from "../components/layout/AppShell";
+import { AdminAccessGate } from "../components/admin/AdminAccessGate";
+import { AdminConfigurationSection } from "../components/admin/AdminConfigurationSection";
+import { AdminModerationSection } from "../components/admin/AdminModerationSection";
+import { AdminPlacesModalLayer } from "../components/admin/AdminPlacesModalLayer";
+import { AdminPlacesSection } from "../components/admin/AdminPlacesSection";
+import { AdminSectionTabs } from "../components/admin/AdminSectionTabs";
+import { useCityActions } from "../components/admin/useCityActions";
+import { useAdminPanelData } from "../components/admin/useAdminPanelData";
+import { useAdminPlaceManagement } from "../components/admin/useAdminPlaceManagement";
+import { useAdminRefreshGraph } from "../components/admin/useAdminRefreshGraph";
+import { useAdminSectionState } from "../components/admin/useAdminSectionState";
+
+export function AdminPlacesPage() {
+  const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
+  const [photoPreviewPlaceId, setPhotoPreviewPlaceId] = useState<string | null>(null);
+  const [publicPreviewPlaceId, setPublicPreviewPlaceId] = useState<string | null>(null);
+  const {
+    accessMessage,
+    adminToken,
+    appConfig,
+    categories,
+    cities,
+    clearLoadError,
+    clearSession,
+    guides,
+    hasMoreMemories,
+    hasMorePhotos,
+    hasMoreReports,
+    isLoadingMoreMemories,
+    isLoadingMorePhotos,
+    isLoadingMoreReports,
+    loadMoreMemories,
+    loadMorePhotos,
+    loadMoreReports,
+    loadError,
+    mapPlaces,
+    memories,
+    moderationCounts,
+    photos,
+    places,
+    refreshCities,
+    refreshCategories,
+    refreshGuides,
+    refreshMapPlaces,
+    refreshMemories,
+    refreshPhotos,
+    refreshModerationCounts,
+    refreshPlaces,
+    refreshReports,
+    reports,
+    replaceAppConfig,
+    setAdminToken,
+  } = useAdminPanelData();
+  const {
+    activeModerationSection,
+    activeModerationFilterCount,
+    activeSection,
+    memoryStatusCounts,
+    memoryStatusFilter,
+    moderationFilters,
+    photoStatusCounts,
+    photoStatusFilter,
+    reportStatusCounts,
+    reportStatusFilter,
+    setActiveModerationSection,
+    setActiveSection,
+    setMemoryStatusFilter,
+    setModerationFilters,
+    setPhotoStatusFilter,
+    setReportStatusFilter,
+    visibleMemories,
+    visiblePhotos,
+    visibleReports,
+  } = useAdminSectionState({
+    memories,
+    moderationCounts,
+    photos,
+    reports,
+  });
+  const refreshGraph = useAdminRefreshGraph({
+    activeSection,
+    adminToken,
+    appConfig,
+    refreshCategories,
+    refreshMapPlaces,
+    refreshMemories,
+    refreshModerationCounts,
+    refreshPhotos,
+    refreshPlaces,
+    refreshReports,
+  });
+  const placeManagement = useAdminPlaceManagement({
+    isSessionActive: Boolean(adminToken),
+    onPhotosChanged: () => refreshGraph.refreshPhotosPlacesAndPublicPreview(photoStatusFilter),
+    onPlacesChanged: refreshGraph.refreshPlacesAndPublicPreview,
+  });
+  const cityActions = useCityActions({ cities, mapFallback: appConfig?.map ?? null, onChanged: refreshCities, places });
+
+  function handlePhotoStatusFilterChange(status: typeof photoStatusFilter) {
+    setPhotoStatusFilter(status);
+    refreshPhotos(status).catch(() => undefined);
+  }
+
+  function handleMemoryStatusFilterChange(status: typeof memoryStatusFilter) {
+    setMemoryStatusFilter(status);
+    refreshMemories(status).catch(() => undefined);
+  }
+
+  function handleReportStatusFilterChange(status: typeof reportStatusFilter) {
+    setReportStatusFilter(status);
+    refreshReports(status).catch(() => undefined);
+  }
+
+  if (!adminToken) {
+    return (
+      <AppShell activeSection="admin">
+        <main className="page-shell admin-page">
+          <AdminAccessGate
+            message={accessMessage}
+            onUnlocked={(token) => {
+              placeManagement.clearOperationError();
+              setAdminToken(token);
+            }}
+          />
+        </main>
+      </AppShell>
+    );
+  }
+
+  if (!appConfig) {
+    return (
+      <AppShell
+        activeSection="admin"
+        adminAction={{ label: "Zmień token admina", onClick: clearSession, shortLabel: "A" }}
+      >
+        <main className="page-shell admin-page">
+          <section className="ui-panel admin-load-panel" role="status">
+            <p>Ładowanie konfiguracji panelu...</p>
+          </section>
+          {loadError ? (
+            <AdminPlacesModalLayer
+              appConfig={null}
+              categories={categories}
+              cities={cities}
+              cityActions={cityActions}
+              isCategoryManagerOpen={false}
+              loadError={loadError}
+              mapPlaces={mapPlaces}
+              photoPreviewPlaceId={null}
+              placeManagement={placeManagement}
+              places={places}
+              publicPreviewPlaceId={null}
+              onCategoryManagerClose={() => setIsCategoryManagerOpen(false)}
+              onCategoryManagerOpen={() => setIsCategoryManagerOpen(true)}
+              onClearLoadError={clearLoadError}
+              onPhotoPreviewPlaceIdChange={setPhotoPreviewPlaceId}
+              onPublicPreviewPlaceIdChange={setPublicPreviewPlaceId}
+              onRefreshCategories={refreshCategories}
+              onRefreshPhotosAndPlaces={() => refreshGraph.refreshPhotosAndPlaces(photoStatusFilter)}
+            />
+          ) : null}
+        </main>
+      </AppShell>
+    );
+  }
+
+  return (
+    <AppShell
+      activeSection="admin"
+      adminAction={{ label: "Zmień token admina", onClick: clearSession, shortLabel: "A" }}
+    >
+      <main className="page-shell admin-page">
+        <section className="admin-workspace">
+          <AdminSectionTabs
+            activeSection={activeSection}
+            counts={{
+              configuration: appConfig.place_custom_fields.length,
+              guides: guides.length,
+              moderation: photoStatusCounts.pending + memoryStatusCounts.pending + reportStatusCounts.open,
+              places: places.length,
+            }}
+            onChange={setActiveSection}
+          />
+
+          {activeSection === "places" ? (
+            <AdminPlacesSection
+              categories={categories}
+              cities={cities}
+              editingPlaceId={placeManagement.editingPlace?.id ?? null}
+              places={places}
+              mapPlaces={mapPlaces}
+              onArchive={placeManagement.requestArchivePlace}
+              onArchiveCity={(city) => cityActions.setCityAction({ city, type: "archive" })}
+              onCreate={() => {
+                setPhotoPreviewPlaceId(null);
+                setPublicPreviewPlaceId(null);
+                placeManagement.openCreatePlaceModal();
+              }}
+              onCreateCity={cityActions.openCreateCityModal}
+              onDelete={(place) => {
+                setPhotoPreviewPlaceId(null);
+                setPublicPreviewPlaceId(null);
+                placeManagement.requestDeletePlace(place);
+              }}
+              onDeleteCity={(city) => cityActions.setCityAction({ city, type: "delete" })}
+              onEdit={(place) => {
+                setPhotoPreviewPlaceId(null);
+                setPublicPreviewPlaceId(null);
+                placeManagement.openEditPlaceModal(place);
+              }}
+              onEditCity={cityActions.openEditCityModal}
+              onManageCategories={() => setIsCategoryManagerOpen(true)}
+              onPhotos={(place) => {
+                setPublicPreviewPlaceId(null);
+                setPhotoPreviewPlaceId(place.id);
+              }}
+              onPublicPreview={(place) => {
+                setPhotoPreviewPlaceId(null);
+                setPublicPreviewPlaceId(place.id);
+              }}
+            />
+          ) : null}
+
+          {activeSection === "moderation" ? (
+            <AdminModerationSection
+              activeSection={activeModerationSection}
+              categories={categories}
+              cities={cities}
+              activeModerationFilterCount={activeModerationFilterCount}
+              memories={visibleMemories}
+              memoryStatusCounts={memoryStatusCounts}
+              memoryStatusFilter={memoryStatusFilter}
+              moderationFilters={moderationFilters}
+              hasMoreMemories={hasMoreMemories}
+              hasMorePhotos={hasMorePhotos}
+              hasMoreReports={hasMoreReports}
+              isLoadingMoreMemories={isLoadingMoreMemories}
+              isLoadingMorePhotos={isLoadingMorePhotos}
+              isLoadingMoreReports={isLoadingMoreReports}
+              onLoadMoreMemories={() => loadMoreMemories(memoryStatusFilter)}
+              onLoadMorePhotos={() => loadMorePhotos(photoStatusFilter)}
+              onLoadMoreReports={() => loadMoreReports(reportStatusFilter)}
+              photos={visiblePhotos}
+              photoStatusCounts={photoStatusCounts}
+              photoStatusFilter={photoStatusFilter}
+              places={places}
+              reports={visibleReports}
+              reportStatusCounts={reportStatusCounts}
+              reportStatusFilter={reportStatusFilter}
+              onMemoryReviewed={() => refreshGraph.refreshMemoriesAndPlaces(memoryStatusFilter)}
+              onMemoryStatusFilterChange={handleMemoryStatusFilterChange}
+              onModerationFiltersChange={setModerationFilters}
+              onPhotoReviewed={() => refreshGraph.refreshPhotosAndPlaces(photoStatusFilter)}
+              onPhotoStatusFilterChange={handlePhotoStatusFilterChange}
+              onReportChanged={() => refreshGraph.refreshReportsAndModerationCounts(reportStatusFilter)}
+              onReportStatusFilterChange={handleReportStatusFilterChange}
+              onSectionChange={setActiveModerationSection}
+            />
+          ) : null}
+
+          {activeSection === "guides" ? (
+            <AdminGuidesSection cities={cities} guides={guides} places={places} onChanged={refreshGuides} />
+          ) : null}
+
+          {activeSection === "configuration" ? (
+            <AdminConfigurationSection
+              appConfig={appConfig}
+              onPlacesChanged={refreshPlaces}
+              onSaved={replaceAppConfig}
+            />
+          ) : null}
+        </section>
+        <AdminPlacesModalLayer
+          appConfig={appConfig}
+          categories={categories}
+          cities={cities}
+          cityActions={cityActions}
+          isCategoryManagerOpen={isCategoryManagerOpen}
+          loadError={loadError}
+          mapPlaces={mapPlaces}
+          photoPreviewPlaceId={photoPreviewPlaceId}
+          placeManagement={placeManagement}
+          places={places}
+          publicPreviewPlaceId={publicPreviewPlaceId}
+          onCategoryManagerClose={() => setIsCategoryManagerOpen(false)}
+          onCategoryManagerOpen={() => setIsCategoryManagerOpen(true)}
+          onClearLoadError={clearLoadError}
+          onPhotoPreviewPlaceIdChange={(placeId) => {
+            setPublicPreviewPlaceId(null);
+            setPhotoPreviewPlaceId(placeId);
+          }}
+          onPublicPreviewPlaceIdChange={(placeId) => {
+            setPhotoPreviewPlaceId(null);
+            setPublicPreviewPlaceId(placeId);
+          }}
+          onRefreshCategories={refreshGraph.refreshCategoriesAndPublicPreview}
+          onRefreshPhotosAndPlaces={() => refreshGraph.refreshPhotosPlacesAndPublicPreview(photoStatusFilter)}
+        />
+      </main>
+    </AppShell>
+  );
+}

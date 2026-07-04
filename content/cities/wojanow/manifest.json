@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "wojanow",
+    "name": "Wojanów",
+    "lat": 50.875483,
+    "lon": 15.8149461,
+    "default_zoom": 13,
+    "sort_order": 370,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "palac-wojanow",
+      "title": "Pałac Wojanów",
+      "description": "Odrestaurowany pałac w Dolinie Pałaców i Ogrodów, otoczony parkiem i widokami na Karkonosze.",
+      "local_comment": "To miejsce potrzebuje eleganckiego covera z pałacem, parkiem i przestrzenią. Dobrze działa o złotej godzinie i przy szerokim kadrze.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Rezydencja z karkonoskim tłem"
+        },
+        {
+          "type": "paragraph",
+          "text": "Pałac Wojanów jest jednym z najmocniejszych punktów Doliny Pałaców i Ogrodów. Łączy architekturę rezydencjonalną, parkowy spacer i poczucie, że region da się zwiedzać spokojniej niż tylko przez szczyty i zamki."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.875483,
+      "lon": 15.8149461,
+      "weight": 4.3,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

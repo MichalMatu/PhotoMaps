@@ -1,0 +1,56 @@
+{
+  "city": {
+    "id": "bolkow",
+    "name": "Bolków",
+    "lat": 50.9220033,
+    "lon": 16.100499,
+    "default_zoom": 13,
+    "sort_order": 270,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zamek-bolkow",
+      "title": "Zamek Bolków",
+      "description": "Ruiny średniowiecznego zamku z charakterystyczną wieżą i widokiem na miasto oraz Pogórze Kaczawskie.",
+      "local_comment": "Warto pokazać geometrię murów i wieży, ale też relację zamku z miasteczkiem. Najlepsze kadry nie kończą się na samej bramie.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Warownia w rytmie małego miasta"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zamek Bolków uzupełnia mapę zamków o miejsce bardziej surowe i otwarte. Ruiny dobrze pokazują warstwę średniowieczną regionu bez pałacowego wygładzenia."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.9217788,
+      "lon": 16.0979331,
+      "weight": 4.0,
+      "status": "published"
+    },
+    {
+      "slug": "zamek-swiny",
+      "title": "Zamek Świny",
+      "description": "Ruiny jednego z najstarszych zamków w regionie, położone na wzgórzu niedaleko Bolkowa.",
+      "local_comment": "Wybierać ujęcia z bryłą ruin, wzgórzem i murami. To nie może wyglądać jak anonimowa ruina bez kontekstu.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Starszy sąsiad Bolkowa"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zamek Świny uzupełnia mapę zamków o miejsce bardziej surowe i mniej oczywiste. W połączeniu z Bolkowem tworzy krótki, bardzo dolnośląski duet ruin, wzgórz i kamiennych murów."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.9387307,
+      "lon": 16.1122737,
+      "weight": 3.9,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

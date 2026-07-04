@@ -1,0 +1,77 @@
+{
+  "city": {
+    "id": "jelenia-gora",
+    "name": "Jelenia Góra",
+    "lat": 50.8501049,
+    "lon": 15.6537492,
+    "default_zoom": 12,
+    "sort_order": 140,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zamek-chojnik",
+      "title": "Zamek Chojnik",
+      "description": "Ruiny zamku nad Sobieszowem, z podejściem przez las i szerokimi widokami na Kotlinę Jeleniogórską.",
+      "local_comment": "Najlepiej działa zestaw: podejście, mury, punkt widokowy. Same ruiny są świetne, ale trasa do nich buduje połowę klimatu.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Zamek, do którego trzeba dojść"
+        },
+        {
+          "type": "paragraph",
+          "text": "Chojnik jest mocnym miejscem właśnie dlatego, że nie stoi przy parkingu jako szybka atrakcja. Las, kamienie, mury i widok z góry składają się w klasyczny dolnośląski spacer z nagrodą."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.8338261,
+      "lon": 15.6441456,
+      "weight": 4.7,
+      "status": "published"
+    },
+    {
+      "slug": "park-zdrojowy-cieplice",
+      "title": "Park Zdrojowy w Cieplicach",
+      "description": "Uzdrowiskowy park w cieplickiej części Jeleniej Góry, z alejami, pawilonami i spokojnym rytmem spaceru.",
+      "local_comment": "Galeria powinna pokazać park jako uzdrowisko, nie tylko zieleń: aleje, architekturę, sezonowe kwiaty i punkty odpoczynku.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Uzdrowiskowy oddech Jeleniej Góry"
+        },
+        {
+          "type": "paragraph",
+          "text": "Park Zdrojowy w Cieplicach dodaje do mapy bardziej miękki, spacerowy rytm Kotliny Jeleniogórskiej. To miejsce działa przez aleje, detale uzdrowiskowej architektury i bliskość historycznego centrum Cieplic."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.8622748,
+      "lon": 15.6814323,
+      "weight": 4.0,
+      "status": "published"
+    },
+    {
+      "slug": "palac-paulinum-jelenia-gora",
+      "title": "Pałac Paulinum",
+      "description": "Pałac na wzgórzu w Jeleniej Górze, otoczony parkiem i widokami na Kotlinę Jeleniogórską.",
+      "local_comment": "Najlepiej działa z kontekstem parku i wysokości. Same zbliżenia fasady są mniej wartościowe niż kadry pokazujące położenie pałacu.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Pałac ponad miastem"
+        },
+        {
+          "type": "paragraph",
+          "text": "Paulinum rozszerza jeleniogórską warstwę pałacową o miejsce bardziej kameralne niż największe rezydencje Kotliny. Jego siłą jest połączenie architektury, zieleni i punktu widokowego nad miastem."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.8918174,
+      "lon": 15.7608315,
+      "weight": 3.8,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

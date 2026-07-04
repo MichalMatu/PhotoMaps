@@ -1,0 +1,39 @@
+{
+  "city": {
+    "id": "wiesciszowice",
+    "name": "Wieściszowice",
+    "lat": 50.8293,
+    "lon": 15.9702,
+    "default_zoom": 13,
+    "sort_order": 90,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "kolorowe-jeziorka",
+      "title": "Kolorowe Jeziorka",
+      "description": "Zespół barwnych stawów w Rudawach Janowickich, powstałych w dawnych wyrobiskach i znanych z nietypowych kolorów wody.",
+      "local_comment": "Najlepsze kadry powinny pokazać różnicę kolorów, ale też leśny kontekst. Same zbliżenia tafli szybko robią się powtarzalne.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Kolor jako cel spaceru"
+        },
+        {
+          "type": "paragraph",
+          "text": "Kolorowe Jeziorka obiecują prostą rzecz: krótki spacer i kilka zupełnie różnych odcieni wody w leśnym krajobrazie."
+        },
+        {
+          "type": "paragraph",
+          "text": "To miejsce najlepiej działa, gdy galeria pokazuje różne zbiorniki i pory światła, a nie trzy ujęcia tego samego brzegu."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.8293,
+      "lon": 15.9702,
+      "weight": 4.1,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

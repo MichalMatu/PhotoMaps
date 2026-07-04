@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "kliczkow",
+    "name": "Kliczków",
+    "lat": 51.3315496,
+    "lon": 15.4323132,
+    "default_zoom": 13,
+    "sort_order": 360,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zamek-kliczkow",
+      "title": "Zamek Kliczków",
+      "description": "Rezydencja zamkowa w Borach Dolnośląskich, łącząca pałacowy charakter z zielonym, leśnym otoczeniem.",
+      "local_comment": "Najlepiej działa szeroki kadr z bryłą i parkiem. Warto szukać zdjęć porannych albo jesiennych, bo wtedy miejsce nie wygląda jak zwykły hotel.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Zamek w leśnym otoczeniu"
+        },
+        {
+          "type": "paragraph",
+          "text": "Kliczków domyka zachodnią część mapy regionu i pokazuje rezydencjonalny Dolny Śląsk poza najbardziej oczywistymi punktami. To miejsce potrzebuje dobrego covera z parkiem, żeby od razu odróżniało się od miejskich zabytków."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 51.3366802,
+      "lon": 15.4345058,
+      "weight": 4.0,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

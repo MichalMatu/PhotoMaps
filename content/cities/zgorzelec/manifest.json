@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "zgorzelec",
+    "name": "Zgorzelec",
+    "lat": 51.1576786,
+    "lon": 14.9952039,
+    "default_zoom": 13,
+    "sort_order": 580,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "panorama-zgorzelec-gorlitz",
+      "title": "Panorama Zgorzelca i Görlitz",
+      "description": "Widok przy Moście Staromiejskim na polsko-niemieckie miasto nad Nysą Łużycką.",
+      "local_comment": "Cover powinien pokazać rzekę, most i panoramę Görlitz. To ważne miejsce graniczne, więc zdjęcia muszą czytelnie pokazywać dwie strony miasta.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Miasto po obu stronach rzeki"
+        },
+        {
+          "type": "paragraph",
+          "text": "Panorama Zgorzelca i Görlitz dodaje mapie zachodnią granicę regionu oraz inny typ atrakcji: nie pojedynczy obiekt, tylko widok na wspólne miasto. To mocny sygnał położenia Dolnego Śląska na styku kultur."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 51.1576786,
+      "lon": 14.9952039,
+      "weight": 4.0,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

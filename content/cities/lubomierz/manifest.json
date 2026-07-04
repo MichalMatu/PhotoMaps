@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "lubomierz",
+    "name": "Lubomierz",
+    "lat": 51.0126848,
+    "lon": 15.511109,
+    "default_zoom": 13,
+    "sort_order": 560,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "rynek-lubomierz",
+      "title": "Rynek w Lubomierzu",
+      "description": "Kameralny rynek miasteczka znanego z filmowego klimatu i historycznej zabudowy Pogórza Izerskiego.",
+      "local_comment": "Cover powinien pokazać małomiasteczkowy rytm: pierzeje, bruk, kościół albo detale filmowego Lubomierza.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Filmowe miasteczko Pogórza Izerskiego"
+        },
+        {
+          "type": "paragraph",
+          "text": "Rynek w Lubomierzu dodaje do mapy miejsce mniej monumentalne, ale bardzo charakterystyczne. Dobrze pokazuje małomiasteczkową warstwę Dolnego Śląska, która nie konkuruje skalą z zamkami, tylko atmosferą."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 51.0126848,
+      "lon": 15.511109,
+      "weight": 3.7,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

@@ -1,0 +1,56 @@
+{
+  "city": {
+    "id": "szczytna",
+    "name": "Szczytna",
+    "lat": 50.4628776,
+    "lon": 16.4117461,
+    "default_zoom": 12,
+    "sort_order": 470,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "skalne-grzyby",
+      "title": "Skalne Grzyby",
+      "description": "Rozproszony zespół formacji skalnych w Górach Stołowych, spokojniejsza alternatywa dla najbardziej obleganych punktów parku.",
+      "local_comment": "Galeria powinna pokazać skalne kształty, las i poczucie wędrówki. Unikać kadrów, w których formacje są nieczytelne jako miniatura.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Stołowe Góry poza oczywistym szlakiem"
+        },
+        {
+          "type": "paragraph",
+          "text": "Skalne Grzyby dodają do mapy bardziej rozproszoną, terenową warstwę Gór Stołowych. To miejsce jest mniej pocztówkowe niż Szczeliniec, ale świetnie pokazuje charakter skalnych lasów regionu."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.4628776,
+      "lon": 16.4117461,
+      "weight": 4.0,
+      "status": "published"
+    },
+    {
+      "slug": "zamek-lesna-skala-szczytna",
+      "title": "Zamek Leśna Skała w Szczytnej",
+      "description": "Neogotycki zamek na Szczytniku, znany z położenia nad Szczytną i punktów widokowych na Góry Stołowe.",
+      "local_comment": "Warto wybierać ujęcia z wieżami, murem i widokiem z góry. Sam front bez krajobrazu nie pokazuje, dlaczego to miejsce zapada w pamięć.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Zamek na krawędzi Gór Stołowych"
+        },
+        {
+          "type": "paragraph",
+          "text": "Leśna Skała działa jako połączenie zamku i punktu widokowego. Nie ma monumentalnej skali Książa, ale ma mocny lokalny charakter: kamienną bryłę, wyniesienie i szerokie spojrzenie na okolicę."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.4122837,
+      "lon": 16.4577531,
+      "weight": 3.9,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

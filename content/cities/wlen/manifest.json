@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "wlen",
+    "name": "Wleń",
+    "lat": 51.0155,
+    "lon": 15.6747,
+    "default_zoom": 13,
+    "sort_order": 610,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zamek-lenno-wlen",
+      "title": "Zamek Lenno we Wleniu",
+      "description": "Ruiny zamku na Górze Zamkowej nad Wleniem, z widokiem na dolinę Bobru i Pogórze Izerskie.",
+      "local_comment": "Najlepsze kadry powinny łączyć mury, wieżę, zieleń i widok na dolinę. Nie wybierać samych fragmentów kamienia bez rozpoznawalnej bryły.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Zamek nad doliną Bobru"
+        },
+        {
+          "type": "paragraph",
+          "text": "Lenno jest jednym z tych miejsc, w których ruina i krajobraz działają razem. Podejście przez wzgórze, kamienne mury i widok na Wleń budują spokojniejszy, mniej oczywisty wariant dolnośląskiego zamku."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 51.0175,
+      "lon": 15.6628,
+      "weight": 4.0,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

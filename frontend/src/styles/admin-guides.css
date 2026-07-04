@@ -1,0 +1,358 @@
+.guide-manager {
+  min-width: 0;
+}
+
+.guide-list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.guide-row {
+  overflow: hidden;
+}
+
+.guide-row-summary {
+  align-items: center;
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 62px;
+  padding: var(--space-3) var(--space-4);
+}
+
+.guide-row-toggle {
+  grid-template-columns: auto minmax(220px, 1fr) auto;
+}
+
+.guide-row-copy {
+  min-width: 0;
+}
+
+.guide-row-title,
+.guide-row-slug {
+  display: block;
+  min-width: 0;
+}
+
+.guide-row-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.guide-row-slug {
+  color: var(--color-muted);
+  font-size: var(--text-caption);
+  margin-top: var(--space-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.guide-row-status {
+  justify-self: start;
+}
+
+.guide-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.guide-detail-panel {
+  border-top: 1px solid var(--color-border);
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-3) var(--space-4) var(--space-4);
+}
+
+.guide-place-form {
+  align-items: end;
+  gap: var(--space-3);
+  grid-template-columns: minmax(220px, 1fr) minmax(180px, 260px) auto;
+}
+
+.guide-place-city,
+.guide-place-search {
+  min-width: 0;
+}
+
+.guide-form,
+.guide-place-form {
+  min-width: 0;
+}
+
+.guide-form textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.guide-place-form button {
+  min-height: var(--control-height-small);
+  white-space: nowrap;
+}
+
+.guide-place-picker {
+  align-items: start;
+  display: grid;
+  gap: var(--space-2);
+  grid-auto-rows: minmax(var(--control-height-small), auto);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 420px));
+  justify-content: start;
+  max-height: 190px;
+  min-width: 0;
+  overflow: auto;
+}
+
+.guide-place-choice {
+  align-items: center;
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+}
+
+.guide-place-choice input {
+  min-height: auto;
+  width: auto;
+}
+
+.guide-place-choice-title {
+  overflow: hidden;
+  line-height: 1.25;
+  overflow-wrap: break-word;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.guide-place-choice-status {
+  border-radius: var(--radius-control);
+  height: var(--space-3);
+  justify-self: end;
+  min-height: var(--space-3);
+  min-width: var(--space-5);
+  padding: 0;
+  width: var(--space-5);
+}
+
+.guide-place-list {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.guide-place-row {
+  align-items: center;
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-width: 0;
+  padding: var(--space-3);
+}
+
+.guide-place-row-copy {
+  min-width: 0;
+}
+
+.guide-place-row-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.guide-place-row-title {
+  display: block;
+  min-width: 0;
+}
+
+.guide-place-row-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.guide-place-row-status {
+  justify-self: start;
+  margin-top: var(--space-1);
+}
+
+.guide-form--modal {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.guide-route-editor {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-3);
+}
+
+.guide-route-editor-header {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: space-between;
+}
+
+.guide-route-editor-header > div:first-child {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.guide-route-editor-header span {
+  color: var(--color-muted);
+  font-size: var(--text-caption);
+}
+
+.guide-route-editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.guide-route-editor-actions .ui-button {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--space-2);
+  min-height: var(--control-height-small);
+}
+
+.guide-route-editor-body {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 240px);
+  min-width: 0;
+}
+
+.guide-route-editor-map {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  min-height: 340px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.guide-route-editor-line {
+  stroke: var(--color-accent);
+}
+
+.guide-route-editor-stop {
+  fill: var(--color-surface);
+  stroke: var(--color-accent);
+}
+
+.guide-route-editor-marker {
+  align-items: center;
+  background: var(--color-accent);
+  border: 2px solid var(--color-surface);
+  border-radius: 999px;
+  color: var(--content-on-accent);
+  display: flex;
+  font-size: var(--text-caption);
+  font-weight: 800;
+  justify-content: center;
+  box-shadow: var(--shadow-floating);
+}
+
+.guide-route-editor-marker span {
+  line-height: 1;
+}
+
+.guide-route-editor-list {
+  align-content: start;
+  display: grid;
+  gap: var(--space-2);
+  max-height: 340px;
+  min-width: 0;
+  overflow: auto;
+}
+
+.guide-route-editor-point {
+  align-items: center;
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-width: 0;
+  padding: var(--space-2);
+}
+
+.guide-route-editor-point > span {
+  align-items: center;
+  background: var(--color-accent-soft);
+  border-radius: 999px;
+  color: var(--color-accent);
+  display: inline-flex;
+  font-size: var(--text-caption);
+  font-weight: 800;
+  height: 24px;
+  justify-content: center;
+  width: 24px;
+}
+
+.guide-route-editor-point code {
+  color: var(--color-muted);
+  font-size: var(--text-caption);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .guide-row-summary,
+  .guide-place-form,
+  .guide-place-row,
+  .guide-route-editor-body {
+    grid-template-columns: 1fr;
+  }
+
+  .guide-place-choice {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .guide-place-choice-status {
+    justify-self: end;
+  }
+
+  .guide-row-toggle {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .guide-route-editor-actions,
+  .guide-place-form button {
+    width: 100%;
+  }
+
+  .guide-route-editor-actions .ui-button {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .guide-actions,
+  .guide-place-row-actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .guide-row-status {
+    grid-column: 2;
+  }
+}

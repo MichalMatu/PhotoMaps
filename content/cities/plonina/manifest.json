@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "plonina",
+    "name": "Płonina",
+    "lat": 50.9041,
+    "lon": 16.0038,
+    "default_zoom": 13,
+    "sort_order": 660,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zamek-niesytno",
+      "title": "Zamek Niesytno",
+      "description": "Zamek w Płoninie łączący średniowieczne ruiny z późniejszą rezydencją, położony na Pogórzu Kaczawskim.",
+      "local_comment": "Galeria powinna pokazać różnicę między ruiną a odnowioną częścią rezydencji. Unikać pięciu podobnych ujęć z tego samego dziedzińca.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Ruina i rezydencja w jednym kadrze"
+        },
+        {
+          "type": "paragraph",
+          "text": "Niesytno jest interesujące właśnie przez napięcie między ruiną, pałacową częścią i krajobrazem Pogórza. Na mapie daje mniej oczywisty, ale bardzo dolnośląski wariant zamkowej opowieści."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.90414,
+      "lon": 16.00378,
+      "weight": 3.8,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

@@ -1,0 +1,39 @@
+{
+  "city": {
+    "id": "krzeszow",
+    "name": "Krzeszów",
+    "lat": 50.7347,
+    "lon": 16.069,
+    "default_zoom": 13,
+    "sort_order": 100,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "opactwo-krzeszow",
+      "title": "Opactwo Cystersów w Krzeszowie",
+      "description": "Barokowy kompleks sakralny z bazyliką, klasztorem i mocnym krajobrazowym tłem Kotliny Kamiennogórskiej.",
+      "local_comment": "Najlepiej działa zestaw: fasada z dystansu, detal barokowy i kontekst zabudowań. Sama pocztówkowa elewacja nie oddaje gęstości miejsca.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Barokowy ciężar regionu"
+        },
+        {
+          "type": "paragraph",
+          "text": "Krzeszów jest jednym z najważniejszych zespołów sakralnych Dolnego Śląska. Ma skalę, detal i spokojniejszy rytm niż bardziej oblegane zamki czy szczyty."
+        },
+        {
+          "type": "paragraph",
+          "text": "Warto pokazywać go jako cel na świadome zwiedzanie, nie tylko szybki przystanek przy fasadzie."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.7347,
+      "lon": 16.069,
+      "weight": 4.0,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

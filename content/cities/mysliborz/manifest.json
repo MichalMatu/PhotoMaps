@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "mysliborz",
+    "name": "Myślibórz",
+    "lat": 51.0159,
+    "lon": 16.0932,
+    "default_zoom": 13,
+    "sort_order": 650,
+    "status": "archived"
+  },
+  "places": [
+    {
+      "slug": "wawoz-mysliborski",
+      "title": "Wąwóz Myśliborski",
+      "description": "Rezerwat w Parku Krajobrazowym Chełmy, z leśnym wąwozem, potokiem i bazaltowymi skałami.",
+      "local_comment": "Najlepsze kadry powinny pokazać głębię wąwozu, skały i wodę. Płaskie zdjęcia ścieżki przez las są za słabe dla mapy.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Zielony wąwóz Pogórza Kaczawskiego"
+        },
+        {
+          "type": "paragraph",
+          "text": "Wąwóz Myśliborski dodaje do mapy naturalne miejsce bez wielkiej infrastruktury. To spokojny, leśny kontrapunkt dla zamków i miast, dobry dla osób szukających krótszej trasy wśród skał i potoku."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 51.0167416,
+      "lon": 16.0956407,
+      "weight": 3.9,
+      "status": "draft"
+    }
+  ],
+  "guides": []
+}

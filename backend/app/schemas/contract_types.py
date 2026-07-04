@@ -1,0 +1,16 @@
+from typing import Literal
+
+CategoryStatus = Literal["active", "archived"]
+CityStatus = Literal["active", "archived"]
+GuideStatus = Literal["draft", "published", "archived"]
+MapPreviewKind = Literal["photo", "memory"]
+PhotoRole = Literal["gallery"]
+PhotoSource = Literal["editorial"]
+ContentBlockType = Literal["heading", "subheading", "paragraph", "link"]
+PlaceStatus = Literal["draft", "published", "archived"]
+PlaceCustomFieldType = Literal["text", "textarea", "number", "select", "url", "boolean", "date"]
+ReportStatus = Literal["open", "closed"]
+ReportReason = Literal["wrong_data", "bad_photo", "closed_place", "other"]
+ReportTargetType = Literal["place", "photo", "memory", "guide"]
+ReviewFinalStatus = Literal["approved", "rejected"]
+ReviewStatus = Literal["pending", "approved", "rejected"]

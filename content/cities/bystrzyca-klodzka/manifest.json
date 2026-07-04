@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "bystrzyca-klodzka",
+    "name": "Bystrzyca Kłodzka",
+    "lat": 50.2970135,
+    "lon": 16.6531935,
+    "default_zoom": 13,
+    "sort_order": 440,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "rynek-bystrzyca-klodzka",
+      "title": "Rynek w Bystrzycy Kłodzkiej",
+      "description": "Historyczny rynek miasta na skarpie, z kamienicami i zwartym układem starej Bystrzycy Kłodzkiej.",
+      "local_comment": "Najlepszy cover powinien pokazać pochyłość, kamienice i ciasny miejski charakter. To nie ma być zwykły plac, tylko miasto na wysokości.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Stare miasto na skarpie"
+        },
+        {
+          "type": "paragraph",
+          "text": "Rynek w Bystrzycy Kłodzkiej dodaje mapie miejsce o wyraźnej topografii i historycznym rytmie. Jest dobrym miejskim kontrapunktem dla górskich i uzdrowiskowych atrakcji ziemi kłodzkiej."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.2970135,
+      "lon": 16.6531935,
+      "weight": 3.8,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

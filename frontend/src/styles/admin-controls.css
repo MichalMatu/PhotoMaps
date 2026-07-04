@@ -1,0 +1,24 @@
+.category-actions button,
+.admin-list-group-actions button,
+.guide-actions button,
+.guide-place-row-actions button,
+.review-actions button,
+.table-actions button,
+.system-modal-actions button {
+  border-radius: var(--radius-control);
+  font-size: var(--text-button);
+  min-height: var(--control-height-small);
+  padding: 0 var(--space-3);
+}
+
+.admin-icon-action {
+  flex: 0 0 var(--control-hit-target);
+  min-height: var(--control-hit-target);
+  min-width: var(--control-hit-target);
+  padding: 0;
+  width: var(--control-hit-target);
+}
+
+.admin-icon-action svg {
+  flex: 0 0 auto;
+}

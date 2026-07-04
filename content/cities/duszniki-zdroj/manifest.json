@@ -1,0 +1,56 @@
+{
+  "city": {
+    "id": "duszniki-zdroj",
+    "name": "Duszniki-Zdrój",
+    "lat": 50.3703403,
+    "lon": 16.3784907,
+    "default_zoom": 13,
+    "sort_order": 170,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "muzeum-papiernictwa",
+      "title": "Muzeum Papiernictwa w Dusznikach-Zdroju",
+      "description": "Historyczny młyn papierniczy i muzeum techniki, jeden z najbardziej rozpoznawalnych zabytków Dusznik-Zdroju.",
+      "local_comment": "Najlepsze kadry pokazują bryłę młyna nad wodą, faktury drewna i detale rzemiosła. To miejsce lubi spokojniejsze, jasne światło.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Rzemiosło jako atrakcja"
+        },
+        {
+          "type": "paragraph",
+          "text": "Muzeum Papiernictwa dodaje do mapy inny rodzaj doświadczenia: nie zamek i nie szczyt, tylko materialną historię pracy, papieru i uzdrowiskowego miasta."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.4043073,
+      "lon": 16.3955877,
+      "weight": 4.4,
+      "status": "published"
+    },
+    {
+      "slug": "torfowisko-pod-zielencem",
+      "title": "Torfowisko pod Zieleńcem",
+      "description": "Rezerwat torfowiskowy w Górach Bystrzyckich, z drewnianymi kładkami i spokojnym, północnym krajobrazem.",
+      "local_comment": "Galeria powinna pokazać kładki, wodę, roślinność i otwarty charakter torfowiska. Nie brać płaskich kadrów, które wyglądają jak zwykły las.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Inny krajobraz okolic Zieleńca"
+        },
+        {
+          "type": "paragraph",
+          "text": "Torfowisko pod Zieleńcem jest spokojniejszym kontrapunktem dla uzdrowisk i górskich panoram. Na mapie wnosi ciszę, kładki, mokradła i bardzo charakterystyczny rytm spaceru."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.3451171,
+      "lon": 16.4145805,
+      "weight": 3.8,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

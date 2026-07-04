@@ -1,0 +1,60 @@
+{
+  "city": {
+    "id": "staniszow",
+    "name": "Staniszów",
+    "lat": 50.8442549,
+    "lon": 15.7416865,
+    "default_zoom": 13,
+    "sort_order": 390,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "palac-staniszow",
+      "title": "Pałac Staniszów",
+      "description": "Pałac z parkiem w Staniszowie, położony między Jelenią Górą a Karpaczem.",
+      "local_comment": "Zdjęcia powinny podkreślać parkową ciszę i elegancję bryły. To dobre miejsce na miękkie światło, nie tylko katalogowy front.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Spokojny pałac pod Karkonoszami"
+        },
+        {
+          "type": "paragraph",
+          "text": "Pałac Staniszów wzmacnia pałacową warstwę Kotliny Jeleniogórskiej i dodaje mapie miejsce bardziej nastrojowe niż oczywiste. Dobrze spina trasę między Karpaczem, Jelenią Górą i Doliną Pałaców."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.8442549,
+      "lon": 15.7416865,
+      "weight": 4.0,
+      "status": "published"
+    },
+    {
+      "slug": "zamek-ksiecia-henryka",
+      "title": "Zamek Księcia Henryka",
+      "description": "Romantyczna wieża zamkowa na wzgórzu Grodna nad Sosnówką, z widokiem na Karkonosze i Kotlinę Jeleniogórską.",
+      "local_comment": "Galeria powinna pokazać wieżę, podejście, kamienne detale i widok z góry. Nie wybierać samych panoram bez rozpoznawalnej bryły zamku.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Romantyczna wieża nad Kotliną"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zamek Księcia Henryka jest niewielki, ale bardzo fotograficzny: kamienna wieża, leśne dojście i widok na Karkonosze tworzą miejsce, które dobrze działa jako krótki cel spaceru."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie uzupełnia pałacową warstwę Staniszowa o bardziej terenową atrakcję, stojącą między architekturą, punktem widokowym i lokalną legendą."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.8352975,
+      "lon": 15.7233411,
+      "weight": 3.9,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

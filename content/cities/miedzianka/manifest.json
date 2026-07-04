@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "miedzianka",
+    "name": "Miedzianka",
+    "lat": 50.8776846,
+    "lon": 15.9440726,
+    "default_zoom": 13,
+    "sort_order": 610,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "miedzianka",
+      "title": "Miedzianka",
+      "description": "Dawne górnicze miasteczko w Rudawach Janowickich, dziś miejsce pamięci, krajobrazu i współczesnego powrotu do historii.",
+      "local_comment": "To trudniejsze miejsce wizualnie: potrzebuje covera z krajobrazem, zabudową albo charakterystycznym punktem, który nie będzie wyglądał jak przypadkowa wieś.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Miasteczko, które trzeba czytać z krajobrazu"
+        },
+        {
+          "type": "paragraph",
+          "text": "Miedzianka dodaje do mapy miejsce o bardziej opowieściowym charakterze. Nie działa jak klasyczny zabytek, ale dobrze pokazuje dolnośląską historię zanikania, górnictwa i ponownego odkrywania małych miejscowości."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.8776846,
+      "lon": 15.9440726,
+      "weight": 3.8,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

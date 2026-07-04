@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "swieradow-zdroj",
+    "name": "Świeradów-Zdrój",
+    "lat": 50.9093388,
+    "lon": 15.3332153,
+    "default_zoom": 13,
+    "sort_order": 350,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "dom-zdrojowy-swieradow",
+      "title": "Dom Zdrojowy w Świeradowie-Zdroju",
+      "description": "Reprezentacyjny dom zdrojowy z najdłuższą modrzewiową halą spacerową na Dolnym Śląsku.",
+      "local_comment": "W galerii potrzebne są wnętrze hali, detal drewna i zewnętrzny kontekst uzdrowiska. To miejsce najlepiej działa spokojnie, nie pocztówkowo.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Uzdrowisko jako przestrzeń spaceru"
+        },
+        {
+          "type": "paragraph",
+          "text": "Dom Zdrojowy w Świeradowie-Zdroju pokazuje uzdrowiskową warstwę regionu: architekturę, rytm kurortu i spokojny spacer pod dachem. To dobry kontrast dla górskich szlaków w okolicy."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.9063642,
+      "lon": 15.3342277,
+      "weight": 4.0,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

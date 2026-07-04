@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "proboszczow",
+    "name": "Proboszczów",
+    "lat": 51.0633351,
+    "lon": 15.7934124,
+    "default_zoom": 12,
+    "sort_order": 220,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "ostrzyca-proboszczowicka",
+      "title": "Ostrzyca Proboszczowicka",
+      "description": "Charakterystyczny stożek wygasłego wulkanu na Pogórzu Kaczawskim, nazywany dolnośląską Fudżijamą.",
+      "local_comment": "Najlepszy efekt daje kadr z dystansu, gdy widać samotny kształt góry w krajobrazie. Warto też pokazać kamienne podejście i widok ze szczytu.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Najbardziej rozpoznawalny stożek Krainy Wygasłych Wulkanów"
+        },
+        {
+          "type": "paragraph",
+          "text": "Ostrzyca jest prosta i mocna wizualnie: pojedyncza góra, wyraźny profil i krótka trasa na punkt widokowy. To miejsce dobrze wprowadza geologiczną warstwę Dolnego Śląska."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 51.0559965,
+      "lon": 15.7632692,
+      "weight": 4.2,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

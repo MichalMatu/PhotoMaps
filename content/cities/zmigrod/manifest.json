@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "zmigrod",
+    "name": "Żmigród",
+    "lat": 51.4811809,
+    "lon": 16.9178976,
+    "default_zoom": 13,
+    "sort_order": 530,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "ruiny-palacu-hatzfeldow-zmigrod",
+      "title": "Ruiny pałacu Hatzfeldów w Żmigrodzie",
+      "description": "Ruiny pałacu i park w Żmigrodzie, ważny punkt północnej części regionu i Doliny Baryczy.",
+      "local_comment": "Zdjęcia powinny pokazać romantyczną skalę ruin, park i wodę. To miejsce potrzebuje nastroju, a nie tylko dokumentacji murów.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Romantyczne ruiny na północy regionu"
+        },
+        {
+          "type": "paragraph",
+          "text": "Ruiny pałacu Hatzfeldów w Żmigrodzie dodają mapie północny, parkowo-historyczny punkt. To dobry pomost między Doliną Baryczy, zamkami i mniejszymi miejskimi atrakcjami."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 51.4811809,
+      "lon": 16.9178976,
+      "weight": 3.9,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

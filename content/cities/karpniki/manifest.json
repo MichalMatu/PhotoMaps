@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "karpniki",
+    "name": "Karpniki",
+    "lat": 50.846424,
+    "lon": 15.8499152,
+    "default_zoom": 13,
+    "sort_order": 400,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zamek-karpniki",
+      "title": "Zamek Karpniki",
+      "description": "Historyczna rezydencja w Karpnikach, położona wśród parkowego krajobrazu Rudaw Janowickich.",
+      "local_comment": "Cover powinien jasno odróżniać to miejsce od pobliskich pałaców: woda, park i bardziej zamkowy charakter bryły.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Rezydencja między pałacami i skałami"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zamek Karpniki domyka pałacowo-zamkowy krajobraz okolic Jeleniej Góry od strony Rudaw. Na mapie działa jako elegancki przystanek między spokojnymi rezydencjami a bardziej terenowymi punktami widokowymi."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.846424,
+      "lon": 15.8499152,
+      "weight": 4.0,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

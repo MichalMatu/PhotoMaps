@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "sleza",
+    "name": "Ślęza",
+    "lat": 51.0346383,
+    "lon": 16.9898716,
+    "default_zoom": 13,
+    "sort_order": 500,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zamek-topacz",
+      "title": "Zamek Topacz",
+      "description": "Odrestaurowany zamek i park w Ślęzie pod Wrocławiem, z muzealną i spacerową warstwą miejsca.",
+      "local_comment": "Cover powinien pokazać wodę, park i bryłę zamku. To ma być mocny punkt podmiejski, nie hotelowy katalog.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Podmiejska rezydencja z parkiem"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zamek Topacz dobrze uzupełnia mapę wokół Wrocławia o miejsce krótkiej wycieczki. Ma czytelną bryłę, parkowy charakter i pozwala pokazać atrakcje poza ścisłym centrum miasta."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 51.0346383,
+      "lon": 16.9898716,
+      "weight": 3.9,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

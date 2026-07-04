@@ -1,0 +1,60 @@
+{
+  "city": {
+    "id": "kletno",
+    "name": "Kletno",
+    "lat": 50.2347,
+    "lon": 16.8439,
+    "default_zoom": 13,
+    "sort_order": 110,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "jaskinia-niedzwiedzia",
+      "title": "Jaskinia Niedźwiedzia w Kletnie",
+      "description": "Jedna z najważniejszych jaskiń turystycznych w Polsce, znana z szaty naciekowej i położenia w Masywie Śnieżnika.",
+      "local_comment": "Najlepsza galeria powinna mieszać wejście i wnętrze. Same ciemne ujęcia nacieków są efektowne, ale bez kontekstu trudne do czytania na mapie.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Podziemny finał górskiej trasy"
+        },
+        {
+          "type": "paragraph",
+          "text": "Jaskinia Niedźwiedzia łączy górski dojazd z bardzo innym doświadczeniem pod ziemią: chłodem, światłem punktowym i formami naciekowymi."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie powinna wyglądać jak atrakcja wymagająca zaplanowania, ale warta drogi dla samego kontrastu z krajobrazem na powierzchni."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.2347,
+      "lon": 16.8439,
+      "weight": 3.9,
+      "status": "published"
+    },
+    {
+      "slug": "kopalnia-uranu-kletno",
+      "title": "Kopalnia Uranu w Kletnie",
+      "description": "Podziemna trasa w dawnej kopalni uranu, pokazująca surową historię wydobycia w Masywie Śnieżnika.",
+      "local_comment": "Najlepsze zdjęcia powinny pokazać wejście, korytarze, światło techniczne i faktury skały. Unikać serii niemal identycznych ciemnych tuneli.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Podziemna warstwa Kletna"
+        },
+        {
+          "type": "paragraph",
+          "text": "Kopalnia Uranu dodaje do Kletna drugi, bardziej techniczny punkt zwiedzania. Obok Jaskini Niedźwiedziej pokazuje, że ta część Masywu Śnieżnika ma nie tylko przyrodę, ale też trudną historię wydobycia."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.248034,
+      "lon": 16.844745,
+      "weight": 4.1,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

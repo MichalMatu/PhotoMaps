@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "sobotka",
+    "name": "Sobótka",
+    "lat": 50.8992535,
+    "lon": 16.7444655,
+    "default_zoom": 12,
+    "sort_order": 600,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "gora-sleza",
+      "title": "Ślęża",
+      "description": "Najbardziej rozpoznawalny szczyt Masywu Ślęży, klasyczny cel krótkiej wycieczki z Wrocławia.",
+      "local_comment": "Cover powinien pokazać górę jako mocny krajobrazowy znak pod Wrocławiem: sylwetkę masywu, las albo światło nad szczytem, nie tylko techniczny punkt na trasie.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Góra, która organizuje krajobraz pod Wrocławiem"
+        },
+        {
+          "type": "paragraph",
+          "text": "Ślęża jest jednym z najbardziej naturalnych punktów weekendowych wokół Wrocławia. Na mapie działa inaczej niż miejskie zabytki: daje wysokość, las, widok i poczucie krótkiej wyprawy bez wyjazdu daleko z regionu."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.8640875,
+      "lon": 16.7074963,
+      "weight": 4.6,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

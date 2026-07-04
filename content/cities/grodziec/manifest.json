@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "grodziec",
+    "name": "Grodziec",
+    "lat": 51.16895,
+    "lon": 15.78645,
+    "default_zoom": 13,
+    "sort_order": 210,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zamek-grodziec",
+      "title": "Zamek Grodziec",
+      "description": "Zamek położony na bazaltowym wzgórzu, jeden z najbardziej filmowych punktów Krainy Wygasłych Wulkanów.",
+      "local_comment": "Najmocniejsze ujęcia pokazują zamek z dystansu na wzgórzu albo dramatyczne światło na murach. Detal kamienia jest równie ważny jak panorama.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Zamek na wulkanicznym wzgórzu"
+        },
+        {
+          "type": "paragraph",
+          "text": "Grodziec łączy dwie silne warstwy regionu: zamki i wulkaniczny krajobraz Pogórza Kaczawskiego. Dzięki temu działa jako bardzo czytelny punkt na mapie, nie tylko kolejna warownia."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 51.1770151,
+      "lon": 15.7595163,
+      "weight": 4.4,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "gryfow-slaski",
+    "name": "Gryfów Śląski",
+    "lat": 51.0308,
+    "lon": 15.4202,
+    "default_zoom": 12,
+    "sort_order": 670,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zamek-gryf-proszowka",
+      "title": "Zamek Gryf w Proszówce",
+      "description": "Ruiny zamku nad Proszówką i Gryfowem Śląskim, z widokiem na Pogórze Izerskie.",
+      "local_comment": "Najlepsze zdjęcia powinny pokazać mury, wieżę i położenie na wzgórzu. Nie importować przypadkowych kadrów samej zieleni.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Izerska ruina nad Gryfowem"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zamek Gryf wzmacnia zachodnią część mapy o kolejne miejsce, w którym ruina i krajobraz tworzą wspólny cel spaceru. Dobrze łączy się z Czochą, Leśną i Lwówkiem Śląskim."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.9925,
+      "lon": 15.421389,
+      "weight": 3.8,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

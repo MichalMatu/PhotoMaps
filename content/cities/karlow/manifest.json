@@ -1,0 +1,39 @@
+{
+  "city": {
+    "id": "karlow",
+    "name": "Karłów",
+    "lat": 50.4848,
+    "lon": 16.339,
+    "default_zoom": 13,
+    "sort_order": 60,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "szczeliniec-wielki",
+      "title": "Szczeliniec Wielki",
+      "description": "Najwyższy szczyt Gór Stołowych z labiryntem skał, punktami widokowymi i charakterystycznym płaskim krajobrazem.",
+      "local_comment": "To miejsce najlepiej fotografować jako sekwencję: wejście, skały, szczeliny, schody i nagłe otwarcie widoku.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Skalny labirynt z widokiem"
+        },
+        {
+          "type": "paragraph",
+          "text": "Szczeliniec Wielki ma wyraźną trasę, charakterystyczne formacje skalne i widok, który pojawia się po przejściu przez gęstsze fragmenty szlaku."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie powinien wyglądać bardziej jak przygoda terenowa niż zwykły punkt widokowy."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.4848,
+      "lon": 16.339,
+      "weight": 4.5,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

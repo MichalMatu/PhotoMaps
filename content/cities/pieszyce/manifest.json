@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "pieszyce",
+    "name": "Pieszyce",
+    "lat": 50.7122,
+    "lon": 16.5837,
+    "default_zoom": 12,
+    "sort_order": 620,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "wieza-wielka-sowa",
+      "title": "Wieża widokowa na Wielkiej Sowie",
+      "description": "Kamienna wieża na najwyższym szczycie Gór Sowich, z panoramą Sudetów i charakterystyczną sylwetką widoczną na szlaku.",
+      "local_comment": "Wybierać ujęcia pokazujące wieżę, dojście i widoki z góry. Zbyt ciasne kadry samego wejścia nie oddają skali szczytu.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Symbol Gór Sowich"
+        },
+        {
+          "type": "paragraph",
+          "text": "Wieża na Wielkiej Sowie jest prostym, czytelnym punktem orientacyjnym dla całych Gór Sowich. Łączy górski spacer, historyczną architekturę i szeroki widok na Sudety."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.6791667,
+      "lon": 16.4869444,
+      "weight": 4.3,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

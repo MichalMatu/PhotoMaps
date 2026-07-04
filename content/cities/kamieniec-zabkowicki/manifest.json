@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "kamieniec-zabkowicki",
+    "name": "Kamieniec Ząbkowicki",
+    "lat": 50.5229139,
+    "lon": 16.8736143,
+    "default_zoom": 13,
+    "sort_order": 190,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "palac-marianny-oranskiej",
+      "title": "Pałac Marianny Orańskiej",
+      "description": "Monumentalny pałac w Kamieńcu Ząbkowickim, z tarasami, ogrodami i jedną z najmocniejszych brył rezydencjonalnych regionu.",
+      "local_comment": "Warto szukać ujęć z osi tarasów i z dystansu. Skala pałacu najlepiej działa, gdy widać jego położenie nad miejscowością.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Rezydencja w wielkiej skali"
+        },
+        {
+          "type": "paragraph",
+          "text": "Pałac Marianny Orańskiej jest jednym z najważniejszych braków w regionalnej mapie atrakcji. Łączy monumentalną architekturę, ogrody i historię miejsca, które dobrze wygląda zarówno z bliska, jak i w panoramie."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.5211192,
+      "lon": 16.8812071,
+      "weight": 4.6,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

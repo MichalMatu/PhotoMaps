@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "sedziszowa",
+    "name": "Sędziszowa",
+    "lat": 51.0279865,
+    "lon": 15.8698375,
+    "default_zoom": 13,
+    "sort_order": 230,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "organy-wielislawskie",
+      "title": "Organy Wielisławskie",
+      "description": "Bazaltowa formacja skalna o regularnym układzie słupów, jeden z mocnych geologicznych punktów Pogórza Kaczawskiego.",
+      "local_comment": "To miejsce potrzebuje zdjęć detalu i skali. Najlepiej pokazać rytm słupów, nie tylko ogólną ścianę skały.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Geologia jako obraz"
+        },
+        {
+          "type": "paragraph",
+          "text": "Organy Wielisławskie są świetnym przykładem miejsca, które nie musi być wielkie, żeby być zapamiętywalne. Regularna struktura skał daje PhotoMap mocny, niemal graficzny kadr."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 51.0347971,
+      "lon": 15.8697095,
+      "weight": 3.8,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

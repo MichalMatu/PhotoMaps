@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "wojslawice",
+    "name": "Wojsławice",
+    "lat": 50.7082461,
+    "lon": 16.853495,
+    "default_zoom": 13,
+    "sort_order": 250,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "arboretum-wojslawice",
+      "title": "Arboretum Wojsławice",
+      "description": "Rozległy ogród dendrologiczny Uniwersytetu Wrocławskiego, znany z kolekcji roślin i sezonowych kolorów.",
+      "local_comment": "Warto zadbać o różne pory roku: kwitnienie, jesienne barwy, aleje i detale roślin. To miejsce żyje sezonem bardziej niż jedną bryłą.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Ogród, który zmienia się z porą roku"
+        },
+        {
+          "type": "paragraph",
+          "text": "Arboretum Wojsławice wnosi do PhotoMap spokojniejszy, botaniczny typ atrakcji. Dobrze działa jako cel krótszej wycieczki, ale wizualnie potrzebuje galerii z rytmem kolorów i faktur."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.7116686,
+      "lon": 16.8607139,
+      "weight": 4.2,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

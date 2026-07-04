@@ -1,0 +1,39 @@
+{
+  "city": {
+    "id": "zloty-stok",
+    "name": "Złoty Stok",
+    "lat": 50.4449,
+    "lon": 16.8815,
+    "default_zoom": 13,
+    "sort_order": 80,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "kopalnia-zlota-zloty-stok",
+      "title": "Kopalnia Złota w Złotym Stoku",
+      "description": "Dawna kopalnia złota przekształcona w trasę turystyczną ze sztolniami, podziemnym klimatem i industrialnym kontekstem.",
+      "local_comment": "Potrzebuje mieszanki zdjęć: wejście i zabudowania dają orientację, ale najważniejszy klimat jest w sztolniach.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Podziemna strona Dolnego Śląska"
+        },
+        {
+          "type": "paragraph",
+          "text": "Złoty Stok pokazuje region od strony górnictwa i dawnych technologii. To nie jest tylko muzeum, ale przejście przez chłodne, wilgotne i ciemniejsze przestrzenie."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie warto równoważyć zdjęcia zewnętrzne i podziemne, żeby użytkownik od razu rozumiał, czego się spodziewać."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.4449,
+      "lon": 16.8815,
+      "weight": 4.2,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

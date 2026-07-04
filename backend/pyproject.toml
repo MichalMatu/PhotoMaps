@@ -1,0 +1,33 @@
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+exclude = [
+  ".venv",
+  "alembic/versions",
+]
+
+[tool.ruff.lint]
+select = [
+  "E",
+  "F",
+  "I",
+  "UP",
+  "B",
+]
+ignore = ["B008"]
+
+[tool.pytest.ini_options]
+testpaths = ["app/tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["app"]
+
+[tool.coverage.report]
+fail_under = 70
+show_missing = true
+skip_covered = true
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+]

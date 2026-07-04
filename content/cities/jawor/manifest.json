@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "jawor",
+    "name": "Jawor",
+    "lat": 51.0504653,
+    "lon": 16.1932008,
+    "default_zoom": 13,
+    "sort_order": 120,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "kosciol-pokoju-jawor",
+      "title": "Kościół Pokoju w Jaworze",
+      "description": "Drewniany Kościół Pokoju wpisany na listę UNESCO, jedno z najważniejszych wnętrz sakralnych Dolnego Śląska.",
+      "local_comment": "Warto szukać kadrów wnętrza z rytmem empor i malowideł. Z zewnątrz najlepiej działa spokojny kontekst zieleni i drewnianej bryły.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Drugi filar dolnośląskich Kościołów Pokoju"
+        },
+        {
+          "type": "paragraph",
+          "text": "Po Świdnicy Jawor jest naturalnym uzupełnieniem mapy UNESCO w regionie. To miejsce nie potrzebuje wielkiej panoramy: siła jest w drewnianej konstrukcji, malowanych detalach i zaskakującej skali wnętrza."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 51.05396,
+      "lon": 16.18901,
+      "weight": 4.8,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

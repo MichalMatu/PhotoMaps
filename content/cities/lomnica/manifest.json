@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "lomnica",
+    "name": "Łomnica",
+    "lat": 50.8759386,
+    "lon": 15.8096435,
+    "default_zoom": 13,
+    "sort_order": 380,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "palac-lomnica",
+      "title": "Pałac Łomnica",
+      "description": "Zespół pałacowo-parkowy w Łomnicy, ważny punkt Doliny Pałaców i Ogrodów blisko Jeleniej Góry.",
+      "local_comment": "W galerii warto mieszać front pałacu, park i detale folwarczne. To miejsce ma być bardziej kameralne niż monumentalne.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Pałacowy rytm Kotliny Jeleniogórskiej"
+        },
+        {
+          "type": "paragraph",
+          "text": "Pałac Łomnica pokazuje Dolny Śląsk jako region małych podróży między rezydencjami. Jest blisko Wojanowa, ale ma własny charakter: park, zabudowania gospodarcze i spokojniejszą skalę zwiedzania."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.8759386,
+      "lon": 15.8096435,
+      "weight": 4.1,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

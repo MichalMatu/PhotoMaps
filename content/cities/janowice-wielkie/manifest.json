@@ -1,0 +1,56 @@
+{
+  "city": {
+    "id": "janowice-wielkie",
+    "name": "Janowice Wielkie",
+    "lat": 50.87828,
+    "lon": 15.9208773,
+    "default_zoom": 12,
+    "sort_order": 330,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "sokolik-krzyzna-gora",
+      "title": "Sokolik i Krzyżna Góra",
+      "description": "Skalne punkty widokowe w Rudawach Janowickich, popularne wśród turystów, wspinaczy i fotografów krajobrazu.",
+      "local_comment": "Najlepsze kadry powinny pokazać skały, schody, ekspozycję i widok na Karkonosze. Unikać przypadkowych ujęć z parkingu lub samej ścieżki.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Rudawy Janowickie w jednym mocnym kadrze"
+        },
+        {
+          "type": "paragraph",
+          "text": "Sokolik i Krzyżna Góra są jednym z najłatwiejszych sposobów, żeby pokazać skalny charakter Rudaw Janowickich. To miejsce łączy krótki wysiłek, ekspozycję i widok, który dobrze sprzedaje region wizualnie."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.8653,
+      "lon": 15.8681,
+      "weight": 4.3,
+      "status": "published"
+    },
+    {
+      "slug": "zamek-bolczow",
+      "title": "Zamek Bolczów",
+      "description": "Leśne ruiny zamku w Rudawach Janowickich, ukryte między skałami i szlakami nad Janowicami Wielkimi.",
+      "local_comment": "Cover powinien pokazać związek ruin ze skałami i lasem. To nie jest pałacowy kadr, tylko przygodowy punkt w terenie.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Ruiny wtopione w Rudawy"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zamek Bolczów uzupełnia Rudawy Janowickie o bardziej tajemniczą warstwę: ruiny, kamień, las i dojście szlakiem. Na mapie dobrze równoważy widokowe Sokoliki miejscem o bardziej średniowiecznym klimacie."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.8607429,
+      "lon": 15.912149,
+      "weight": 4.2,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

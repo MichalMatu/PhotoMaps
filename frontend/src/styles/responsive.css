@@ -1,0 +1,108 @@
+@media (max-width: 1180px) {
+  .admin-editor .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .category-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .app-shell {
+    --shell-rail-width: calc(var(--space-14) + var(--space-5));
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .shell-menu-button {
+    top: var(--space-3);
+  }
+
+  .side-rail {
+    gap: var(--space-5);
+    padding: calc(var(--space-14) + var(--space-5)) var(--space-2) var(--space-5);
+    width: var(--shell-rail-width);
+  }
+
+  .rail-item {
+    font-size: 0.68rem;
+    min-height: 62px;
+  }
+
+  .rail-item span {
+    font-size: 0.55rem;
+    max-width: none;
+  }
+
+  .admin-workspace {
+    padding: var(--space-4);
+  }
+
+  .admin-section-tabs {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 152px), 1fr));
+    overflow: visible;
+    padding: var(--space-1);
+  }
+
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .map-frame,
+  .place-map {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .field-row,
+  .cover-photo-grid,
+  .place-article-block-editor,
+  .category-form {
+    grid-template-columns: 1fr;
+  }
+
+  .category-description-field {
+    grid-column: auto;
+  }
+
+  .category-actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .guide-actions,
+  .guide-place-row-actions {
+    flex-wrap: wrap;
+  }
+
+  .guide-detail-hero,
+  .place-detail-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .guide-detail-hero .guide-card-media,
+  .place-detail-media {
+    min-height: 220px;
+  }
+
+  .guide-page-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .drawer-item {
+    gap: 16px;
+    padding: 0 22px;
+  }
+
+  .map-status-panel {
+    left: var(--space-3);
+    max-width: calc(100vw - var(--space-6));
+    right: var(--space-3);
+    top: var(--space-3);
+  }
+
+  .measure-panel {
+    left: var(--space-3);
+  }
+}

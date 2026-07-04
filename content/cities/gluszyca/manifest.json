@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "gluszyca",
+    "name": "Głuszyca",
+    "lat": 50.6850304,
+    "lon": 16.3730344,
+    "default_zoom": 12,
+    "sort_order": 180,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "podziemne-miasto-osowka",
+      "title": "Podziemne Miasto Osówka",
+      "description": "Podziemny kompleks projektu Riese w Górach Sowich, z surowymi korytarzami i mocnym historycznym kontekstem.",
+      "local_comment": "Zdjęcia powinny oddać skalę i chłód podziemi: światło latarek, beton, wilgoć i długie perspektywy tuneli.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Dolny Śląsk pod ziemią"
+        },
+        {
+          "type": "paragraph",
+          "text": "Osówka jest jednym z najmocniejszych punktów dla osób, które szukają czegoś więcej niż widoków i architektury. To miejsce działa atmosferą, niedopowiedzeniem i fizycznym zejściem pod powierzchnię krajobrazu."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.6733398,
+      "lon": 16.4213601,
+      "weight": 4.5,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

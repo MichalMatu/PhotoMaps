@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "brzezina",
+    "name": "Brzezina",
+    "lat": 51.2033974,
+    "lon": 16.8329955,
+    "default_zoom": 13,
+    "sort_order": 510,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "palac-brzezina",
+      "title": "Pałac Brzezina",
+      "description": "Pałacowy obiekt w Brzezinie pod Wrocławiem, kameralny punkt zachodniej części aglomeracji.",
+      "local_comment": "Warto pokazać front, park i spokojniejszy charakter miejsca. To ma działać jako lokalne odkrycie, nie wielka atrakcja masowa.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Kameralny pałac blisko Wrocławia"
+        },
+        {
+          "type": "paragraph",
+          "text": "Pałac Brzezina dodaje do mapy mniejsze, podmiejskie miejsce z pałacowej warstwy regionu. Jest dobrym przykładem atrakcji, które nie są pierwszym wyborem turysty, ale wzmacniają gęstość lokalnego zwiedzania."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 51.2033974,
+      "lon": 16.8329955,
+      "weight": 3.5,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

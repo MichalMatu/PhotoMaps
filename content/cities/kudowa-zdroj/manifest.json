@@ -1,0 +1,56 @@
+{
+  "city": {
+    "id": "kudowa-zdroj",
+    "name": "Kudowa-Zdrój",
+    "lat": 50.4420034,
+    "lon": 16.2416299,
+    "default_zoom": 12,
+    "sort_order": 130,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "bledne-skaly",
+      "title": "Błędne Skały",
+      "description": "Skalny labirynt w Górach Stołowych, z wąskimi przejściami, szczelinami i bardzo charakterystyczną rzeźbą piaskowca.",
+      "local_comment": "Najlepsze zdjęcia powstają nisko i blisko skał: przejścia, światło wpadające między bloki i ludzie jako skala miejsca.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Labirynt, który prowadzi ciało"
+        },
+        {
+          "type": "paragraph",
+          "text": "Błędne Skały są doświadczeniem ruchu, nie tylko punktem widokowym. Wąskie przejścia i naturalne korytarze sprawiają, że miejsce świetnie działa na mapie jako obietnica krótkiej, intensywnej przygody."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.4782654,
+      "lon": 16.2905806,
+      "weight": 4.8,
+      "status": "published"
+    },
+    {
+      "slug": "kaplica-czaszek",
+      "title": "Kaplica Czaszek w Czermnej",
+      "description": "Niewielka, poruszająca kaplica w Kudowie-Zdroju, znana z wnętrza wyłożonego ludzkimi szczątkami.",
+      "local_comment": "To miejsce wymaga spokojniejszego tonu zdjęć i opisu. Nie powinno być traktowane jak sensacja, tylko jako mocny, historyczny punkt pamięci.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Mała przestrzeń o dużej sile"
+        },
+        {
+          "type": "paragraph",
+          "text": "Kaplica Czaszek jest jednym z najbardziej osobnych miejsc na Dolnym Śląsku. Dobrze uzupełnia uzdrowiskowy obraz Kudowy o warstwę pamięci, ciszy i refleksji."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.4515335,
+      "lon": 16.2419398,
+      "weight": 4.1,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

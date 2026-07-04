@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "miedzylesie",
+    "name": "Międzylesie",
+    "lat": 50.1482314,
+    "lon": 16.6663857,
+    "default_zoom": 13,
+    "sort_order": 430,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zamek-miedzylesie",
+      "title": "Zamek Międzylesie",
+      "description": "Zespół zamkowo-pałacowy Althannów przy rynku w Międzylesiu, ważny punkt południowej części ziemi kłodzkiej.",
+      "local_comment": "Cover powinien jasno pokazać skalę budynku i miejski kontekst placu. To miejsce ma wzmocnić południowy kraniec mapy regionu.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Zamek na południowym szlaku"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zamek Międzylesie rozszerza mapę poza najbardziej oczywiste uzdrowiska i Góry Stołowe. Daje mocny punkt historyczny blisko granicy i Masywu Śnieżnika."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.1482314,
+      "lon": 16.6663857,
+      "weight": 3.8,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "wambierzyce",
+    "name": "Wambierzyce",
+    "lat": 50.4900304,
+    "lon": 16.4558424,
+    "default_zoom": 13,
+    "sort_order": 300,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "bazylika-wambierzyce",
+      "title": "Bazylika w Wambierzycach",
+      "description": "Barokowe sanktuarium nazywane śląską Jerozolimą, z monumentalną fasadą i schodami wpisanymi w układ miejscowości.",
+      "local_comment": "Najlepsze ujęcie to fasada z osią schodów i placu. Wieczorne światło może mocno podnieść jakość covera.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Sanktuarium jako centrum miejscowości"
+        },
+        {
+          "type": "paragraph",
+          "text": "Wambierzyce są ważne nie tylko przez samą bazylikę, ale przez układ przestrzeni: schody, plac, fasadę i pielgrzymkowy charakter całej miejscowości."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.4901273,
+      "lon": 16.4547564,
+      "weight": 4.1,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

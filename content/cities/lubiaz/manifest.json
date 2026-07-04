@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "lubiaz",
+    "name": "Lubiąż",
+    "lat": 51.2620546,
+    "lon": 16.4673748,
+    "default_zoom": 13,
+    "sort_order": 480,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "opactwo-lubiaz",
+      "title": "Opactwo Cystersów w Lubiążu",
+      "description": "Jeden z największych zespołów klasztornych w Europie, monumentalny punkt nad Odrą.",
+      "local_comment": "Cover musi pokazać skalę. Najlepsze będą szerokie kadry fasady, dziedzińca albo wnętrz z mocnym światłem.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Monument nad Odrą"
+        },
+        {
+          "type": "paragraph",
+          "text": "Opactwo w Lubiążu jest miejscem, które mocno poszerza skalę mapy regionu. To nie jest tylko lokalny zabytek, ale ogromna architektoniczna scena, która dobrze pokazuje ambicję dawnego Dolnego Śląska."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 51.2620546,
+      "lon": 16.4673748,
+      "weight": 4.7,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

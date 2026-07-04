@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "milicz",
+    "name": "Milicz",
+    "lat": 51.5302859,
+    "lon": 17.2669513,
+    "default_zoom": 13,
+    "sort_order": 520,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "palac-maltzanow-milicz",
+      "title": "Pałac Maltzanów w Miliczu",
+      "description": "Ruiny i park dawnej rezydencji Maltzanów, miejski punkt historii obok przyrodniczej Doliny Baryczy.",
+      "local_comment": "Cover powinien pokazać romantyczny charakter ruin i zieleni. To kontrast dla stawów, które są już na mapie jako atrakcja przyrodnicza.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Historyczny akcent Doliny Baryczy"
+        },
+        {
+          "type": "paragraph",
+          "text": "Pałac Maltzanów w Miliczu pozwala pokazać północno-wschodnią część Dolnego Śląska nie tylko przez przyrodę. Ruiny i park dodają miastu własny punkt wizualny i historyczny."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 51.5302859,
+      "lon": 17.2669513,
+      "weight": 3.7,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

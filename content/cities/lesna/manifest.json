@@ -1,0 +1,60 @@
+{
+  "city": {
+    "id": "lesna",
+    "name": "Leśna",
+    "lat": 51.0309,
+    "lon": 15.303,
+    "default_zoom": 13,
+    "sort_order": 50,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zamek-czocha",
+      "title": "Zamek Czocha",
+      "description": "Malowniczy zamek nad Jeziorem Leśniańskim, znany z kamiennej bryły, dziedzińców i filmowego nastroju.",
+      "local_comment": "Najlepiej pokazać go z wodą albo z podjazdem, bo wtedy zamek dostaje skalę i przestaje być tylko zbliżeniem murów.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Filmowy zamek nad wodą"
+        },
+        {
+          "type": "paragraph",
+          "text": "Czocha działa bardziej baśniowo niż monumentalnie: kamienne przejścia, wieże, dziedzińce i położenie nad wodą tworzą miejsce, które łatwo zapamiętać z jednego mocnego kadru."
+        },
+        {
+          "type": "paragraph",
+          "text": "To dobra atrakcja na trasę po zachodniej części województwa, szczególnie gdy połączy się ją ze spacerem przy jeziorze."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 51.0309,
+      "lon": 15.303,
+      "weight": 4.6,
+      "status": "published"
+    },
+    {
+      "slug": "zapora-lesnianska",
+      "title": "Zapora Leśniańska",
+      "description": "Kamienna zapora na Kwisie tworząca Jezioro Leśniańskie, ważny punkt krajobrazowy w okolicy Zamku Czocha.",
+      "local_comment": "Najlepsze kadry pokazują łuk zapory, wodę i skalę obiektu. Nie powielać galerii Czochy; tu centrum ma być infrastruktura i jezioro.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Technika wpisana w krajobraz Kwisy"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zapora Leśniańska jest naturalnym uzupełnieniem Zamku Czocha. Pokazuje zachodni Dolny Śląsk jako miejsce, gdzie historia, woda i infrastruktura tworzą wspólny krajobraz."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 51.0306373,
+      "lon": 15.2907543,
+      "weight": 3.9,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

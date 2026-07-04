@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "polanica-zdroj",
+    "name": "Polanica-Zdrój",
+    "lat": 50.4092976,
+    "lon": 16.5108696,
+    "default_zoom": 13,
+    "sort_order": 450,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "park-zdrojowy-polanica",
+      "title": "Park Zdrojowy w Polanicy-Zdroju",
+      "description": "Elegancki park uzdrowiskowy z pijalnią, kwiatowymi kompozycjami i spacerowym centrum Polanicy.",
+      "local_comment": "Cover powinien być jasny i uzdrowiskowy: park, pijalnia, kwiaty albo deptak. Warto szukać zdjęć z ludzką skalą spaceru.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Uzdrowisko w spacerowym rytmie"
+        },
+        {
+          "type": "paragraph",
+          "text": "Park Zdrojowy w Polanicy-Zdroju pokazuje Dolny Śląsk jako region uzdrowisk i spokojnego pobytu. Na mapie dodaje zieloną, elegancką warstwę między zamkami, górami i podziemiami."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.4092976,
+      "lon": 16.5108696,
+      "weight": 4.1,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

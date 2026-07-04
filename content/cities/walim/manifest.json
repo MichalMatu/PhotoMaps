@@ -1,0 +1,56 @@
+{
+  "city": {
+    "id": "walim",
+    "name": "Walim",
+    "lat": 50.6974888,
+    "lon": 16.4411137,
+    "default_zoom": 12,
+    "sort_order": 200,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "sztolnie-walimskie",
+      "title": "Sztolnie Walimskie",
+      "description": "Podziemna trasa w kompleksie Riese w Rzeczce, pokazująca surową, militarną warstwę Gór Sowich.",
+      "local_comment": "To dobre uzupełnienie Osówki: podobny temat, ale inna lokalizacja i inny rytm zwiedzania. Kadry powinny unikać przypadkowego, płaskiego światła.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Riese w wersji bardziej kameralnej"
+        },
+        {
+          "type": "paragraph",
+          "text": "Sztolnie Walimskie wzmacniają podziemną warstwę PhotoMap. Razem z Osówką tworzą szlak miejsc, które pokazują, że Dolny Śląsk jest regionem ukrytych przestrzeni, a nie tylko zamków i panoram."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.6884236,
+      "lon": 16.4440927,
+      "weight": 4.2,
+      "status": "published"
+    },
+    {
+      "slug": "kompleks-wlodarz",
+      "title": "Kompleks Włodarz",
+      "description": "Największy udostępniany fragment podziemnego kompleksu Riese w Górach Sowich, z surowymi halami i trasą pod ziemią.",
+      "local_comment": "To miejsce wymaga kadrów, które pokazują skalę podziemi. Warto wybierać ujęcia z ludźmi albo światłem dla czytelnej proporcji.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Największa podziemna skala Riese"
+        },
+        {
+          "type": "paragraph",
+          "text": "Włodarz wzmacnia mapę o mocny punkt w Górach Sowich. To nie jest tylko kolejna sztolnia, ale miejsce, w którym rozmach niedokończonego projektu Riese jest szczególnie czytelny."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.7016578,
+      "lon": 16.4196853,
+      "weight": 4.3,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

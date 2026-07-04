@@ -1,0 +1,12 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+sqlmodel==0.0.22
+alembic==1.14.0
+Pillow==11.0.0
+mutagen==1.47.0
+python-multipart==0.0.20
+pytest==9.0.3
+httpx==0.28.1
+ruff==0.8.4
+coverage==7.6.10
+schemathesis==4.21.5

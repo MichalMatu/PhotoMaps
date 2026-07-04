@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "zabkowice-slaskie",
+    "name": "Ząbkowice Śląskie",
+    "lat": 50.589,
+    "lon": 16.8124,
+    "default_zoom": 13,
+    "sort_order": 630,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "krzywa-wieza-zabkowice-slaskie",
+      "title": "Krzywa Wieża w Ząbkowicach Śląskich",
+      "description": "Charakterystyczna pochylona wieża w centrum Ząbkowic Śląskich, jeden z najbardziej rozpoznawalnych miejskich punktów regionu.",
+      "local_comment": "Galeria powinna pokazać pochylenie wieży i jej miejskie otoczenie. Same detale cegły nie wystarczą, bo główną wartością jest sylwetka.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Dolnośląska wieża z własnym charakterem"
+        },
+        {
+          "type": "paragraph",
+          "text": "Krzywa Wieża działa natychmiastowo: jej pochylenie jest czytelne nawet w miniaturze. To dobry miejski kontrapunkt dla zamków, pałaców i górskich punktów widokowych."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.5888694,
+      "lon": 16.8097611,
+      "weight": 4.2,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

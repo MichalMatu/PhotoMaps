@@ -1,0 +1,77 @@
+{
+  "city": {
+    "id": "boleslawiec",
+    "name": "Bolesławiec",
+    "lat": 51.2621692,
+    "lon": 15.5550197,
+    "default_zoom": 13,
+    "sort_order": 310,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "muzeum-ceramiki-boleslawiec",
+      "title": "Muzeum Ceramiki w Bolesławcu",
+      "description": "Muzeum poświęcone bolesławieckiej ceramice, jednemu z najbardziej rozpoznawalnych rzemiosł Dolnego Śląska.",
+      "local_comment": "Galeria powinna pokazać wzory, detale naczyń i kontekst miasta. To miejsce jest o fakturze i kolorze, nie tylko o budynku.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Dolnośląski wzór rozpoznawalny daleko poza regionem"
+        },
+        {
+          "type": "paragraph",
+          "text": "Bolesławiecka ceramika jest silnym znakiem lokalnej tożsamości. Muzeum daje mapie miejsce, które prowadzi przez rzemiosło, wzór i codzienny przedmiot zamiast przez monumentalny zabytek."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 51.265045,
+      "lon": 15.5556335,
+      "weight": 3.8,
+      "status": "published"
+    },
+    {
+      "slug": "rynek-boleslawiec",
+      "title": "Rynek w Bolesławcu",
+      "description": "Kolorowy plac starego miasta z ratuszem, kamienicami i miejskim rytmem Bolesławca.",
+      "local_comment": "Rynek powinien mieć jasny, miejski cover: kamienice, ratusz i bruk. To drugi, bardziej spacerowy punkt miasta obok ceramiki.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Ceramiczne miasto od strony rynku"
+        },
+        {
+          "type": "paragraph",
+          "text": "Rynek w Bolesławcu pozwala zobaczyć miasto nie tylko przez jego rzemiosło, ale też przez codzienną przestrzeń starego centrum. Dobrze uzupełnia muzeum i buduje pełniejszy obraz miasta na mapie."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 51.2633042,
+      "lon": 15.5649796,
+      "weight": 3.7,
+      "status": "published"
+    },
+    {
+      "slug": "wiadukt-kolejowy-boleslawiec",
+      "title": "Wiadukt kolejowy w Bolesławcu",
+      "description": "Monumentalny kamienny wiadukt nad Bobrem, jeden z najbardziej charakterystycznych obiektów inżynieryjnych miasta.",
+      "local_comment": "Najlepsze zdjęcia powinny pokazać skalę łuków i relację z rzeką. To mocny, rozpoznawalny kontrast dla rynku i ceramiki.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Kamienna skala nad Bobrem"
+        },
+        {
+          "type": "paragraph",
+          "text": "Wiadukt kolejowy w Bolesławcu jest takim miejscem, które od razu nadaje miastu charakter. Na mapie działa jako punkt architektury i krajobrazu jednocześnie: rytm łuków, rzeka i duża inżynieryjna forma."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 51.2683291,
+      "lon": 15.5526609,
+      "weight": 4.0,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

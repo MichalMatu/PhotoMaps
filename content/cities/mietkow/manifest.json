@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "mietkow",
+    "name": "Mietków",
+    "lat": 50.9748184,
+    "lon": 16.6504992,
+    "default_zoom": 12,
+    "sort_order": 610,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zalew-mietkowski",
+      "title": "Zalew Mietkowski",
+      "description": "Duży zbiornik wodny pod Wrocławiem, popularny na spacery, zachody słońca i widoki w stronę Ślęży.",
+      "local_comment": "Najlepszy cover powinien mieć wodę, przestrzeń i najlepiej Ślężę w tle. To miejsce ma czytać się jako oddech od miasta, nie jako przypadkowy brzeg jeziora.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Woda, wiatr i widok na Ślężę"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zalew Mietkowski dobrze domyka południowo-zachodni kierunek wycieczek spod Wrocławia. Jest prostym miejscem na popołudniowy spacer, zdjęcia przy zachodzie i krajobrazowy kontrapunkt dla miejskich atrakcji."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.9572276,
+      "lon": 16.6187442,
+      "weight": 4.1,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

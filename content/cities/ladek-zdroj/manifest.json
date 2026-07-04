@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "ladek-zdroj",
+    "name": "Lądek-Zdrój",
+    "lat": 50.3438087,
+    "lon": 16.8885422,
+    "default_zoom": 13,
+    "sort_order": 460,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zdroj-wojciech",
+      "title": "Zdrój Wojciech w Lądku-Zdroju",
+      "description": "Charakterystyczny zakład przyrodoleczniczy i pijalnia, jeden z symboli uzdrowiskowego Lądka-Zdroju.",
+      "local_comment": "Zdjęcia powinny pokazać rotundę, wnętrze lub plac zdrojowy. To cover dla całego uzdrowiskowego charakteru Lądka.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Klasyka dolnośląskiego uzdrowiska"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zdrój Wojciech jest jednym z najbardziej rozpoznawalnych obiektów Lądka-Zdroju. Na mapie wzmacnia sieć uzdrowisk regionu i daje miejsce o wyraźnej architekturze, historii i rytuale pobytu."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.3438087,
+      "lon": 16.8885422,
+      "weight": 4.2,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

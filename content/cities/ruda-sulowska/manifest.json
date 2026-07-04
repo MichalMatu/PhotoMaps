@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "ruda-sulowska",
+    "name": "Ruda Sułowska",
+    "lat": 51.5118661,
+    "lon": 17.1124056,
+    "default_zoom": 12,
+    "sort_order": 240,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "stawy-milickie-naturum",
+      "title": "Stawy Milickie i Naturum",
+      "description": "Brama do Doliny Baryczy: stawy, ptaki, groble i centrum edukacyjno-turystyczne w Rudzie Sułowskiej.",
+      "local_comment": "Najlepsza galeria powinna mieć wodę, ptaki, mgłę albo zachód słońca. To miejsce nie może wyglądać jak zwykły hotelowy kadr.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Woda i ptaki zamiast miejskiej atrakcji"
+        },
+        {
+          "type": "paragraph",
+          "text": "Stawy Milickie dodają do mapy północno-wschodnią warstwę regionu: spokojniejszą, przyrodniczą i rozciągniętą w czasie. To dobry kontrast dla Karkonoszy, zamków i podziemi."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 51.5121865,
+      "lon": 17.1094455,
+      "weight": 4.1,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

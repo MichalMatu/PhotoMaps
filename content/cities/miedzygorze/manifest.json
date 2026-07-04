@@ -1,0 +1,56 @@
+{
+  "city": {
+    "id": "miedzygorze",
+    "name": "Międzygórze",
+    "lat": 50.2289928,
+    "lon": 16.7606325,
+    "default_zoom": 13,
+    "sort_order": 420,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "wodospad-wilczki",
+      "title": "Wodospad Wilczki",
+      "description": "Wysoki wodospad w Międzygórzu, jeden z najbardziej fotogenicznych punktów Masywu Śnieżnika.",
+      "local_comment": "Najlepsze kadry powinny pokazać pion, mostki i wilgotny skalny kontekst. To ma wyglądać jak cel spaceru, nie tylko punkt przy drodze.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Woda i skalny cień Międzygórza"
+        },
+        {
+          "type": "paragraph",
+          "text": "Wodospad Wilczki jest naturalnym punktem startowym dla Międzygórza. Na mapie daje silny sygnał krajobrazowy i dobrze równoważy uzdrowiskowe oraz miejskie miejsca Kotliny Kłodzkiej."
+        }
+      ],
+      "category_ids": ["local_classic", "date_spot"],
+      "lat": 50.2289928,
+      "lon": 16.7606325,
+      "weight": 4.4,
+      "status": "published"
+    },
+    {
+      "slug": "ogrod-bajek",
+      "title": "Ogród Bajek",
+      "description": "Leśny ogród z baśniowymi rzeźbami nad Międzygórzem, popularny rodzinny przystanek w drodze na spacery.",
+      "local_comment": "Galeria powinna pokazać detal i atmosferę miejsca, ale bez infantylnego chaosu. Dobre będą kadry z lasem i małą architekturą.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Baśniowy przystanek w lesie"
+        },
+        {
+          "type": "paragraph",
+          "text": "Ogród Bajek dodaje Międzygórzu bardziej rodzinny, miękki punkt. Dobrze uzupełnia Wodospad Wilczki i pokazuje, że miejscowość ma kilka sposobów spędzenia spacerowego dnia."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.2350235,
+      "lon": 16.7587363,
+      "weight": 3.6,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

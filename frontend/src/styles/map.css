@@ -1,0 +1,628 @@
+.map-frame {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+.place-map {
+  height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  --map-marker-hover-lift: -2px;
+  --map-marker-hover-scale: 1.035;
+  --map-photo-marker-selected-lift: -10px;
+  --map-photo-marker-selected-scale: 1.56;
+  --map-marker-selected-lift: -3px;
+  --map-marker-selected-scale: 1.045;
+  --map-gallery-hover-scale: 1.045;
+  width: 100%;
+}
+
+.place-map.is-photo-gallery-open .leaflet-control-container {
+  pointer-events: none;
+}
+
+.place-map.is-photo-gallery-open .leaflet-marker-pane .leaflet-marker-icon {
+  pointer-events: none;
+}
+
+.place-map.is-photo-gallery-open .leaflet-control-zoom {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.map-page {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
+  position: relative;
+}
+
+.map-status-panel {
+  align-items: center;
+  border-radius: var(--radius-media);
+  display: flex;
+  gap: var(--space-3);
+  max-width: min(360px, calc(100vw - 124px));
+  min-height: 44px;
+  padding: var(--space-3) var(--space-4);
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  z-index: 700;
+}
+
+.map-status-panel::before {
+  background: var(--color-accent);
+  border-radius: var(--radius-full);
+  content: "";
+  display: block;
+  flex: 0 0 auto;
+  height: 8px;
+  width: 8px;
+}
+
+.map-status-panel--error::before {
+  background: var(--color-danger);
+}
+
+.map-status-panel p {
+  color: var(--color-text);
+  font-size: var(--text-body);
+  font-weight: 650;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.map-status-panel .error-text {
+  color: var(--color-danger);
+}
+
+.map-empty-panel {
+  align-items: center;
+  border-radius: var(--radius-media);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  left: 50%;
+  max-width: min(420px, calc(100vw - 124px));
+  padding: var(--space-3) var(--space-4);
+  position: absolute;
+  top: 18px;
+  transform: translateX(-50%);
+  z-index: 700;
+}
+
+.map-empty-panel p {
+  color: var(--color-text);
+  font-size: var(--text-body);
+  font-weight: 650;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.map-empty-panel button {
+  min-height: var(--control-height-small);
+}
+
+.place-map .leaflet-control-zoom {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.place-map .leaflet-control-zoom a {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-full);
+  box-shadow: none;
+  color: var(--color-text-strong);
+  display: flex;
+  height: 38px;
+  justify-content: center;
+  line-height: 1;
+  margin-top: 8px;
+  width: 38px;
+}
+
+.place-map .leaflet-control-zoom a:first-child,
+.place-map .leaflet-control-zoom a:last-child {
+  border-radius: var(--radius-full);
+}
+
+.place-map .leaflet-control-zoom a:first-child {
+  transform: translateY(5px);
+}
+
+.place-map .leaflet-control-zoom a:hover {
+  background: transparent;
+  color: var(--color-accent);
+}
+
+.place-marker-icon {
+  background: transparent;
+  border: 0;
+}
+
+.place-marker-icon span {
+  background: var(--color-accent);
+  border: 3px solid var(--color-surface-strong);
+  border-radius: var(--radius-map-pin);
+  box-shadow: var(--elevation-pin);
+  display: block;
+  height: 28px;
+  transform: rotate(-45deg);
+  transition:
+    box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
+    transform var(--motion-duration-fast) var(--motion-ease-standard);
+  width: 28px;
+}
+
+.place-marker-icon span::after {
+  background: var(--color-surface-strong);
+  border-radius: var(--radius-full);
+  content: "";
+  display: block;
+  height: 8px;
+  left: 7px;
+  position: relative;
+  top: 7px;
+  width: 8px;
+}
+
+.place-marker-icon.is-selected span {
+  box-shadow:
+    0 0 0 8px var(--accent-soft),
+    var(--elevation-pin-selected);
+  transform: rotate(-45deg) scale(var(--map-marker-selected-scale));
+}
+
+.place-marker-icon.is-entering span {
+  animation: place-pin-filter-in var(--motion-duration-slow) var(--motion-ease-emphasised) backwards;
+  animation-delay: var(--place-marker-enter-delay, 0ms);
+}
+
+.place-photo-marker {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  outline: 0;
+  transition: transform var(--motion-duration-regular) var(--motion-ease-standard);
+  will-change: transform;
+}
+
+.place-photo-marker span {
+  background-image: var(--place-marker-image);
+  background-color: var(--color-surface-soft);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: var(--radius-media);
+  box-shadow: var(--elevation-marker);
+  display: block;
+  height: var(--place-marker-height, 52px);
+  overflow: hidden;
+  position: relative;
+  transform: translateY(0) scale(1);
+  transform-origin: center;
+  transition:
+    box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
+    filter var(--motion-duration-fast) var(--motion-ease-standard),
+    transform var(--motion-duration-fast) var(--motion-ease-standard);
+  width: var(--place-marker-width, 64px);
+}
+
+.place-photo-marker.is-entering span {
+  animation: place-marker-filter-in var(--motion-duration-slow) var(--motion-ease-emphasised) backwards;
+  animation-delay: var(--place-marker-enter-delay, 0ms);
+}
+
+.place-photo-marker:focus,
+.place-photo-marker:focus-visible {
+  box-shadow: none;
+  outline: 0;
+}
+
+.place-photo-marker.is-selected span {
+  box-shadow: var(--elevation-marker-selected);
+  opacity: 0;
+  transform: translateY(var(--map-photo-marker-selected-lift)) scale(0.82);
+}
+
+.place-photo-marker.is-memory span {
+  box-shadow: var(--elevation-marker);
+}
+
+.place-photo-marker.is-memory.is-selected span {
+  box-shadow: var(--elevation-marker-selected);
+}
+
+.place-photo-marker.has-audio span::after,
+.photo-gallery-marker.has-audio span::after {
+  background: var(--surface-media-glass-action);
+  border: 1px solid var(--border-on-media-subtle);
+  border-radius: var(--radius-full);
+  bottom: var(--space-1);
+  box-shadow: var(--shadow-media-glass-action);
+  content: "";
+  height: var(--space-3);
+  position: absolute;
+  right: var(--space-1);
+  width: var(--space-3);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .place-marker-icon:hover span {
+    box-shadow: var(--elevation-pin-selected);
+    transform: rotate(-45deg) scale(var(--map-marker-hover-scale));
+  }
+
+  .place-marker-icon.is-selected:hover span {
+    transform: rotate(-45deg) scale(var(--map-marker-selected-scale));
+  }
+
+  .place-photo-marker:hover span {
+    box-shadow: var(--elevation-marker-hover);
+    filter: saturate(1.05);
+    transform: translateY(var(--map-marker-hover-lift)) scale(var(--map-marker-hover-scale));
+  }
+
+  .place-photo-marker.is-selected:hover span {
+    box-shadow: var(--elevation-marker-selected);
+    transform: translateY(var(--map-photo-marker-selected-lift)) scale(0.82);
+  }
+
+  .photo-gallery-marker:hover span,
+  .photo-gallery-add-marker:hover span {
+    box-shadow: var(--elevation-marker-hover);
+    filter: saturate(1.06);
+    transform: translate(calc(-50% + var(--gallery-x, 0px)), calc(-50% + var(--gallery-y, 0px)))
+      scale(var(--map-gallery-hover-scale));
+  }
+}
+
+.photo-gallery-marker,
+.photo-gallery-add-marker {
+  background: transparent;
+  border: 0;
+}
+
+.photo-gallery-pane {
+  z-index: 720;
+}
+
+.photo-gallery-glass-overlay {
+  animation: photo-gallery-glass-open var(--motion-duration-slow) var(--motion-ease-emphasised) both;
+  background: var(--surface-glass);
+  backdrop-filter: var(--blur-glass) saturate(1.08);
+  box-sizing: border-box;
+  display: block;
+  inset: 0;
+  opacity: 0.68;
+  overflow: hidden;
+  pointer-events: auto;
+  position: absolute;
+  z-index: 520;
+}
+
+.photo-gallery-glass-overlay::after {
+  animation: photo-gallery-glass-bloom var(--motion-duration-slow) var(--motion-ease-emphasised) both;
+  background: radial-gradient(circle, var(--surface-glass) 0, transparent 68%);
+  border-radius: var(--radius-full);
+  content: "";
+  display: block;
+  filter: blur(12px);
+  height: 160px;
+  left: var(--photo-gallery-glass-origin-x, 50%);
+  opacity: 0;
+  position: absolute;
+  top: var(--photo-gallery-glass-origin-y, 50%);
+  transform: translate(-50%, -50%) scale(0.2);
+  width: 160px;
+}
+
+.photo-gallery-marker span,
+.photo-gallery-add-marker span {
+  animation: photo-gallery-in var(--motion-duration-slow) var(--motion-ease-emphasised) backwards;
+  animation-delay: var(--gallery-delay, 0ms);
+  border-radius: var(--radius-media);
+  box-shadow: var(--elevation-marker);
+  display: block;
+  opacity: 1;
+  overflow: hidden;
+  position: absolute;
+  transform: translate(calc(-50% + var(--gallery-x, 0px)), calc(-50% + var(--gallery-y, 0px))) scale(1);
+  transform-origin: center;
+  transition:
+    box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
+    filter var(--motion-duration-fast) var(--motion-ease-standard),
+    transform var(--motion-duration-fast) var(--motion-ease-standard);
+  will-change: transform, opacity;
+}
+
+.photo-gallery-marker span {
+  background-image: var(--photo-gallery-image);
+  background-color: var(--color-surface-soft);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: var(--gallery-height, 62px);
+  width: var(--gallery-width, 62px);
+}
+
+.photo-gallery-marker.is-memory span {
+  box-shadow: var(--elevation-marker);
+}
+
+.photo-gallery-add-marker span {
+  align-items: center;
+  background: var(--surface-media);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(6px);
+  color: var(--content-on-media);
+  display: flex;
+  font-size: 0;
+  font-weight: 650;
+  height: var(--gallery-height, 42px);
+  justify-content: center;
+  line-height: 1;
+  width: var(--gallery-width, 42px);
+}
+
+.photo-gallery-add-marker span::before,
+.photo-gallery-add-marker span::after {
+  background: var(--content-on-media);
+  border-radius: var(--radius-full);
+  content: "";
+  height: 3px;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+}
+
+.photo-gallery-add-marker span::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.photo-gallery-add-marker:hover span {
+  background: var(--surface-media);
+  border-color: var(--color-border-strong);
+}
+
+.place-photo-marker:focus-visible span,
+.photo-gallery-marker:focus-visible span,
+.photo-gallery-add-marker:focus-visible span {
+  box-shadow: var(--elevation-marker-selected), var(--focus-soft);
+}
+
+@keyframes photo-gallery-in {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+
+  72% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--gallery-x, 0px)), calc(-50% + var(--gallery-y, 0px))) scale(1.04);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--gallery-x, 0px)), calc(-50% + var(--gallery-y, 0px))) scale(1);
+  }
+}
+
+@keyframes photo-gallery-glass-open {
+  0% {
+    opacity: 0;
+  }
+
+  58% {
+    opacity: 0.72;
+  }
+
+  100% {
+    opacity: 0.68;
+  }
+}
+
+@keyframes photo-gallery-glass-bloom {
+  0% {
+    opacity: 0.64;
+    transform: translate(-50%, -50%) scale(0.22);
+  }
+
+  68% {
+    opacity: 0.18;
+    transform: translate(-50%, -50%) scale(4.6);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(5.4);
+  }
+}
+
+@keyframes photo-gallery-glass-reduced-open {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 0.68;
+  }
+}
+
+@keyframes place-marker-filter-in {
+  0% {
+    opacity: 0;
+    transform: translateY(7px) scale(0.9);
+  }
+
+  68% {
+    opacity: 1;
+    transform: translateY(-1px) scale(1.035);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes place-pin-filter-in {
+  0% {
+    opacity: 0;
+    transform: rotate(-45deg) scale(0.82);
+  }
+
+  68% {
+    opacity: 1;
+    transform: rotate(-45deg) scale(1.06);
+  }
+
+  100% {
+    opacity: 1;
+    transform: rotate(-45deg) scale(1);
+  }
+}
+
+@keyframes place-marker-filter-reduced-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes photo-gallery-reduced-in {
+  from {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--gallery-x, 0px)), calc(-50% + var(--gallery-y, 0px))) scale(1);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--gallery-x, 0px)), calc(-50% + var(--gallery-y, 0px))) scale(1);
+  }
+}
+
+@media (max-width: 520px) {
+  .photo-gallery-add-marker span::before,
+  .photo-gallery-add-marker span::after {
+    width: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .place-photo-marker {
+    transition: none;
+  }
+
+  .place-marker-icon.is-entering span,
+  .place-photo-marker.is-entering span {
+    animation-name: place-marker-filter-reduced-in;
+  }
+
+  .photo-gallery-marker span,
+  .photo-gallery-add-marker span {
+    animation-name: photo-gallery-reduced-in;
+  }
+
+  .photo-gallery-glass-overlay {
+    animation-name: photo-gallery-glass-reduced-open;
+  }
+}
+
+.memory-sheet-content {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+}
+
+.report-sheet-content {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.memory-token-field {
+  color: var(--color-muted-strong);
+  display: grid;
+  font-size: var(--text-caption);
+  font-weight: 650;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.memory-token-label-row {
+  align-items: baseline;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+}
+
+.memory-token-hint {
+  color: var(--content-secondary);
+  display: block;
+  font-size: var(--text-micro);
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: left;
+}
+
+.memory-token-generate {
+  background: transparent;
+  color: var(--accent-primary);
+  font-size: var(--text-micro);
+  font-weight: 700;
+  min-height: 0;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.memory-token-generate:hover {
+  background: transparent;
+  color: var(--content-strong);
+}
+
+.memory-token-field input {
+  background: var(--surface-control);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+}
+
+.memory-sheet-content .memory-panel {
+  border-top: 0;
+  gap: var(--space-2);
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.memory-sheet-content .memory-list:empty {
+  display: none;
+}
+
+.memory-sheet-content .photo-upload {
+  border-top: 0;
+  margin-top: 0;
+  padding-top: 2px;
+}
+
+.report-sheet-content .report-form {
+  border-top: 0;
+  margin-top: 0;
+  padding-top: 0;
+}

@@ -1,0 +1,35 @@
+{
+  "city": {
+    "id": "siedlecin",
+    "name": "Siedlęcin",
+    "lat": 50.9387107,
+    "lon": 15.6905264,
+    "default_zoom": 13,
+    "sort_order": 280,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "wieza-ksiazeca-siedlecin",
+      "title": "Wieża Książęca w Siedlęcinie",
+      "description": "Średniowieczna wieża mieszkalna znana z unikalnych malowideł o sir Lancelocie.",
+      "local_comment": "To miejsce wymaga dobrych zdjęć wnętrz i detali, nie tylko zewnętrznej bryły. Historia malowideł jest jego największym wyróżnikiem.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Mały obiekt z wyjątkową historią"
+        },
+        {
+          "type": "paragraph",
+          "text": "Wieża w Siedlęcinie nie konkuruje skalą z Książem czy Grodźcem. Jej siłą jest unikalność: zachowane malowidła i kameralny kontakt z historią średniowiecznej rezydencji."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.935006,
+      "lon": 15.6855921,
+      "weight": 3.9,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}
