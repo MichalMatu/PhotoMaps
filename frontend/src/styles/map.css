@@ -29,6 +29,10 @@
   pointer-events: none;
 }
 
+.place-map.is-photo-gallery-open .leaflet-marker-pane .leaflet-marker-icon.place-photo-marker span {
+  pointer-events: none;
+}
+
 .place-map.is-photo-gallery-open .leaflet-control-zoom {
   opacity: 0;
   visibility: hidden;
@@ -197,6 +201,10 @@
   will-change: transform;
 }
 
+.place-map .leaflet-marker-icon.place-photo-marker {
+  pointer-events: none;
+}
+
 .place-photo-marker span {
   background-image: var(--place-marker-image);
   background-color: var(--color-surface-soft);
@@ -233,6 +241,7 @@
 .place-photo-marker.is-selected span {
   box-shadow: var(--elevation-marker-selected);
   opacity: 0;
+  pointer-events: none;
   transform: translate(
       var(--place-marker-offset-x, 0px),
       calc(var(--place-marker-offset-y, 0px) + var(--map-photo-marker-selected-lift))
@@ -304,6 +313,16 @@
 .photo-gallery-add-marker {
   background: transparent;
   border: 0;
+}
+
+.place-map .leaflet-marker-icon.photo-gallery-marker,
+.place-map .leaflet-marker-icon.photo-gallery-add-marker {
+  pointer-events: none;
+}
+
+.place-map .leaflet-marker-icon.photo-gallery-marker span,
+.place-map .leaflet-marker-icon.photo-gallery-add-marker span {
+  pointer-events: auto;
 }
 
 .photo-gallery-pane {
