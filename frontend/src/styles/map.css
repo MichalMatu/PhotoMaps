@@ -4,6 +4,7 @@
   min-height: 100vh;
   min-height: 100dvh;
   overflow: hidden;
+  position: relative;
 }
 
 .place-map {
@@ -191,6 +192,7 @@
   border: 0;
   box-shadow: none;
   outline: 0;
+  pointer-events: none;
   transition: transform var(--motion-duration-regular) var(--motion-ease-standard);
   will-change: transform;
 }
@@ -206,8 +208,9 @@
   display: block;
   height: var(--place-marker-height, 52px);
   overflow: hidden;
+  pointer-events: auto;
   position: relative;
-  transform: translateY(0) scale(1);
+  transform: translate(var(--place-marker-offset-x, 0px), var(--place-marker-offset-y, 0px)) scale(1);
   transform-origin: center;
   transition:
     box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
@@ -230,7 +233,11 @@
 .place-photo-marker.is-selected span {
   box-shadow: var(--elevation-marker-selected);
   opacity: 0;
-  transform: translateY(var(--map-photo-marker-selected-lift)) scale(0.82);
+  transform: translate(
+      var(--place-marker-offset-x, 0px),
+      calc(var(--place-marker-offset-y, 0px) + var(--map-photo-marker-selected-lift))
+    )
+    scale(0.82);
 }
 
 .place-photo-marker.is-memory span {
@@ -268,12 +275,20 @@
   .place-photo-marker:hover span {
     box-shadow: var(--elevation-marker-hover);
     filter: saturate(1.05);
-    transform: translateY(var(--map-marker-hover-lift)) scale(var(--map-marker-hover-scale));
+    transform: translate(
+        var(--place-marker-offset-x, 0px),
+        calc(var(--place-marker-offset-y, 0px) + var(--map-marker-hover-lift))
+      )
+      scale(var(--map-marker-hover-scale));
   }
 
   .place-photo-marker.is-selected:hover span {
     box-shadow: var(--elevation-marker-selected);
-    transform: translateY(var(--map-photo-marker-selected-lift)) scale(0.82);
+    transform: translate(
+        var(--place-marker-offset-x, 0px),
+        calc(var(--place-marker-offset-y, 0px) + var(--map-photo-marker-selected-lift))
+      )
+      scale(0.82);
   }
 
   .photo-gallery-marker:hover span,
@@ -463,17 +478,17 @@
 @keyframes place-marker-filter-in {
   0% {
     opacity: 0;
-    transform: translateY(7px) scale(0.9);
+    transform: translate(var(--place-marker-offset-x, 0px), calc(var(--place-marker-offset-y, 0px) + 7px)) scale(0.9);
   }
 
   68% {
     opacity: 1;
-    transform: translateY(-1px) scale(1.035);
+    transform: translate(var(--place-marker-offset-x, 0px), calc(var(--place-marker-offset-y, 0px) - 1px)) scale(1.035);
   }
 
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate(var(--place-marker-offset-x, 0px), var(--place-marker-offset-y, 0px)) scale(1);
   }
 }
 

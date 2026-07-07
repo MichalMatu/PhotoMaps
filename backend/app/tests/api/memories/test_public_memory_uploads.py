@@ -27,7 +27,7 @@ def assert_blurred_pixel(value: tuple[int, int, int]) -> None:
     assert 40 < value[2] < 220
 
 
-def test_memory_upload_stays_pending_and_hidden_publicly(client_session) -> None:
+def test_memory_upload_stays_pending_private_and_hidden_publicly(client_session, tmp_path: Path) -> None:
     client, session = client_session
     place = create_place(session)
 
@@ -49,13 +49,31 @@ def test_memory_upload_stays_pending_and_hidden_publicly(client_session) -> None
     assert response.status_code == 201
     body = response.json()
     assert memory.status == "pending"
+    assert memory.public_path is None
+    assert memory.thumb_path is None
     assert body["caption"] == "Byłem tutaj"
     assert body["memory_text"] == MEMORY_TEXT
     assert body["author_name"] == "Marta"
+    assert body["status"] == "pending"
+    assert "public_path" not in body
+    assert "thumb_path" not in body
+    assert "audio" not in body
     assert "claim_token_hash" not in body
     assert "original_path" not in body
     assert public_response.status_code == 200
     assert public_response.json() == []
+    assert [path for path in (tmp_path / "public").rglob("*") if path.is_file()] == []
+
+    admin_response = client.get("/api/admin/memories", headers=ADMIN_HEADERS)
+    admin_body = admin_response.json()[0]
+    thumb_response = client.get(admin_body["admin_thumb_path"], headers=ADMIN_HEADERS)
+    image_response = client.get(admin_body["admin_public_path"], headers=ADMIN_HEADERS)
+
+    assert admin_body["public_path"] is None
+    assert admin_body["thumb_path"] is None
+    assert thumb_response.status_code == 200
+    assert thumb_response.headers["content-type"] in {"image/jpeg", "image/png"}
+    assert image_response.status_code == 200
 
 
 def test_memory_upload_with_audio_is_hidden_until_approved(client_session, monkeypatch) -> None:
@@ -81,15 +99,17 @@ def test_memory_upload_with_audio_is_hidden_until_approved(client_session, monke
     hidden_response = client.get(f"/api/places/{place.id}/memories")
 
     assert response.status_code == 201
-    assert response.json()["audio"] is None
-    assert memory.audio_public_path is not None
+    assert "audio" not in response.json()
+    assert memory.audio_public_path is None
     assert memory.audio_original_path is not None
-    assert admin_response.json()[0]["audio"] == {
+    assert admin_response.json()[0]["audio"] is None
+    assert admin_response.json()[0]["admin_audio"] == {
         "duration_seconds": 1.25,
         "mime_type": "audio/mpeg",
-        "public_path": memory.audio_public_path,
+        "public_path": f"/api/admin/memories/{memory.id}/media/audio",
         "size_bytes": len(b"test-audio"),
     }
+    assert client.get(admin_response.json()[0]["admin_audio"]["public_path"], headers=ADMIN_HEADERS).status_code == 200
     assert hidden_response.json() == []
 
     review_response = client.post(
@@ -100,8 +120,60 @@ def test_memory_upload_with_audio_is_hidden_until_approved(client_session, monke
     public_response = client.get(f"/api/places/{place.id}/memories")
 
     assert review_response.status_code == 200
-    assert public_response.json()[0]["audio"] == admin_response.json()[0]["audio"]
+    session.refresh(memory)
+    assert memory.audio_public_path is not None
+    assert public_response.json()[0]["audio"] == {
+        "duration_seconds": 1.25,
+        "mime_type": "audio/mpeg",
+        "public_path": memory.audio_public_path,
+        "size_bytes": memory.audio_size_bytes,
+    }
     assert "audio_original_path" not in public_response.json()[0]
+
+
+def test_rejected_memory_unpublishes_public_media(client_session, tmp_path: Path) -> None:
+    client, session = client_session
+    place = create_place(session)
+
+    upload_response = client.post(
+        f"/api/places/{place.id}/memories",
+        files={"file": image_upload("memory.jpg")},
+        data={
+            "caption": "Byłem tutaj",
+            "memory_text": MEMORY_TEXT,
+            "claim_token": MEMORY_TOKEN,
+            "consent_confirmed": "true",
+        },
+    )
+    memory = session.exec(select(Memory)).one()
+    approve_response = client.post(
+        f"/api/admin/memories/{memory.id}/review",
+        headers=ADMIN_HEADERS,
+        json={"status": "approved"},
+    )
+    session.refresh(memory)
+    public_path = memory.public_path
+    thumb_path = memory.thumb_path
+
+    reject_response = client.post(
+        f"/api/admin/memories/{memory.id}/review",
+        headers=ADMIN_HEADERS,
+        json={"status": "rejected"},
+    )
+    session.refresh(memory)
+
+    assert upload_response.status_code == 201
+    assert approve_response.status_code == 200
+    assert public_path is not None
+    assert thumb_path is not None
+    assert reject_response.status_code == 200
+    assert reject_response.json()["public_path"] is None
+    assert reject_response.json()["thumb_path"] is None
+    assert memory.public_path is None
+    assert memory.thumb_path is None
+    assert not (tmp_path / "public" / public_path.removeprefix("/media/")).exists()
+    assert not (tmp_path / "public" / thumb_path.removeprefix("/media/")).exists()
+    assert client.get(public_path).status_code == 404
 
 
 def test_memory_upload_cleans_files_when_database_save_fails(client_session, tmp_path: Path, monkeypatch) -> None:

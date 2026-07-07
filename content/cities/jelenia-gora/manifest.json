@@ -2,6 +2,7 @@
   "city": {
     "id": "jelenia-gora",
     "name": "Jelenia Góra",
+    "region": "Dolnośląskie",
     "lat": 50.8501049,
     "lon": 15.6537492,
     "default_zoom": 12,
@@ -24,7 +25,7 @@
           "text": "Chojnik jest mocnym miejscem właśnie dlatego, że nie stoi przy parkingu jako szybka atrakcja. Las, kamienie, mury i widok z góry składają się w klasyczny dolnośląski spacer z nagrodą."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.8338261,
       "lon": 15.6441456,
       "weight": 4.7,
@@ -45,7 +46,7 @@
           "text": "Park Zdrojowy w Cieplicach dodaje do mapy bardziej miękki, spacerowy rytm Kotliny Jeleniogórskiej. To miejsce działa przez aleje, detale uzdrowiskowej architektury i bliskość historycznego centrum Cieplic."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.8622748,
       "lon": 15.6814323,
       "weight": 4.0,
@@ -66,7 +67,7 @@
           "text": "Paulinum rozszerza jeleniogórską warstwę pałacową o miejsce bardziej kameralne niż największe rezydencje Kotliny. Jego siłą jest połączenie architektury, zieleni i punktu widokowego nad miastem."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.8918174,
       "lon": 15.7608315,
       "weight": 3.8,

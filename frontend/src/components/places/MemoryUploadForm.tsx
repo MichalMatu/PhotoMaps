@@ -2,12 +2,14 @@ import { FormEvent } from "react";
 
 import { AUDIO_FILE_ACCEPT } from "../ui/audioAttachment";
 import { FileInputControl } from "../ui/FileInputControl";
+import { SettingField } from "../ui/SettingField";
 import {
   MEMORY_AUTHOR_MAX_LENGTH,
   MEMORY_CAPTION_MAX_LENGTH,
   MEMORY_TEXT_MAX_LENGTH,
   type MemoryFieldErrors,
 } from "./memoryValidation";
+import { PUBLIC_PLACE_INTERACTION_HELP } from "./publicPlaceInteractionHelp";
 
 type Props = {
   audioFile: File | null;
@@ -57,8 +59,20 @@ export function MemoryUploadForm({
 }: Props) {
   return (
     <form className="ui-form photo-upload" noValidate onSubmit={onSubmit}>
-      <label>
-        Zdjęcie pamiątki
+      <SettingField
+        id="memory-photo-file"
+        label="Zdjęcie pamiątki"
+        hint={PUBLIC_PLACE_INTERACTION_HELP["memory-photo"]}
+        helpMode="inline"
+        describedByProp="describedBy"
+        footer={
+          fieldErrors.file ? (
+            <span className="field-error" id="memory-file-error">
+              {fieldErrors.file}
+            </span>
+          ) : null
+        }
+      >
         <FileInputControl
           accept="image/*"
           describedBy={fieldErrors.file ? "memory-file-error" : undefined}
@@ -67,14 +81,21 @@ export function MemoryUploadForm({
           isInvalid={Boolean(fieldErrors.file)}
           onChange={onFileChange}
         />
-        {fieldErrors.file ? (
-          <span className="field-error" id="memory-file-error">
-            {fieldErrors.file}
-          </span>
-        ) : null}
-      </label>
-      <label>
-        Audio
+      </SettingField>
+      <SettingField
+        id="memory-audio-file"
+        label="Audio"
+        hint={PUBLIC_PLACE_INTERACTION_HELP["memory-audio"]}
+        helpMode="inline"
+        describedByProp="describedBy"
+        footer={
+          fieldErrors.audioFile ? (
+            <span className="field-error" id="memory-audio-file-error">
+              {fieldErrors.audioFile}
+            </span>
+          ) : null
+        }
+      >
         <FileInputControl
           accept={AUDIO_FILE_ACCEPT}
           describedBy={fieldErrors.audioFile ? "memory-audio-file-error" : undefined}
@@ -83,14 +104,20 @@ export function MemoryUploadForm({
           isInvalid={Boolean(fieldErrors.audioFile)}
           onChange={onAudioFileChange}
         />
-        {fieldErrors.audioFile ? (
-          <span className="field-error" id="memory-audio-file-error">
-            {fieldErrors.audioFile}
-          </span>
-        ) : null}
-      </label>
-      <label>
-        Podpis
+      </SettingField>
+      <SettingField
+        id="memory-caption"
+        label="Podpis"
+        hint={PUBLIC_PLACE_INTERACTION_HELP["memory-caption"]}
+        helpMode="inline"
+        footer={
+          fieldErrors.caption ? (
+            <span className="field-error" id="memory-caption-error">
+              {fieldErrors.caption}
+            </span>
+          ) : null
+        }
+      >
         <input
           aria-describedby={fieldErrors.caption ? "memory-caption-error" : undefined}
           aria-invalid={Boolean(fieldErrors.caption)}
@@ -99,14 +126,25 @@ export function MemoryUploadForm({
           onChange={(event) => onCaptionChange(event.target.value)}
           required
         />
-        {fieldErrors.caption ? (
-          <span className="field-error" id="memory-caption-error">
-            {fieldErrors.caption}
-          </span>
-        ) : null}
-      </label>
-      <label>
-        Myśl / wspomnienie
+      </SettingField>
+      <SettingField
+        id="memory-text"
+        label="Myśl / wspomnienie"
+        hint={PUBLIC_PLACE_INTERACTION_HELP["memory-text"]}
+        helpMode="inline"
+        footer={
+          <>
+            <span className="field-limit">
+              {memoryText.trim().length}/{MEMORY_TEXT_MAX_LENGTH}
+            </span>
+            {fieldErrors.memoryText ? (
+              <span className="field-error" id="memory-text-error">
+                {fieldErrors.memoryText}
+              </span>
+            ) : null}
+          </>
+        }
+      >
         <textarea
           aria-describedby={fieldErrors.memoryText ? "memory-text-error" : undefined}
           aria-invalid={Boolean(fieldErrors.memoryText)}
@@ -116,18 +154,21 @@ export function MemoryUploadForm({
           onChange={(event) => onMemoryTextChange(event.target.value)}
           required
         />
-        <span className="field-limit">
-          {memoryText.trim().length}/{MEMORY_TEXT_MAX_LENGTH}
-        </span>
-        {fieldErrors.memoryText ? (
-          <span className="field-error" id="memory-text-error">
-            {fieldErrors.memoryText}
-          </span>
-        ) : null}
-      </label>
+      </SettingField>
       <div className="field-row">
-        <label>
-          Imię
+        <SettingField
+          id="memory-author-name"
+          label="Imię"
+          hint={PUBLIC_PLACE_INTERACTION_HELP["memory-author-name"]}
+          helpMode="inline"
+          footer={
+            fieldErrors.authorName ? (
+              <span className="field-error" id="memory-author-name-error">
+                {fieldErrors.authorName}
+              </span>
+            ) : null
+          }
+        >
           <input
             aria-describedby={fieldErrors.authorName ? "memory-author-name-error" : undefined}
             aria-invalid={Boolean(fieldErrors.authorName)}
@@ -135,14 +176,20 @@ export function MemoryUploadForm({
             value={authorName}
             onChange={(event) => onAuthorNameChange(event.target.value)}
           />
-          {fieldErrors.authorName ? (
-            <span className="field-error" id="memory-author-name-error">
-              {fieldErrors.authorName}
-            </span>
-          ) : null}
-        </label>
-        <label>
-          Miasto
+        </SettingField>
+        <SettingField
+          id="memory-author-city"
+          label="Miasto"
+          hint={PUBLIC_PLACE_INTERACTION_HELP["memory-author-city"]}
+          helpMode="inline"
+          footer={
+            fieldErrors.authorCity ? (
+              <span className="field-error" id="memory-author-city-error">
+                {fieldErrors.authorCity}
+              </span>
+            ) : null
+          }
+        >
           <input
             aria-describedby={fieldErrors.authorCity ? "memory-author-city-error" : undefined}
             aria-invalid={Boolean(fieldErrors.authorCity)}
@@ -150,12 +197,7 @@ export function MemoryUploadForm({
             value={authorCity}
             onChange={(event) => onAuthorCityChange(event.target.value)}
           />
-          {fieldErrors.authorCity ? (
-            <span className="field-error" id="memory-author-city-error">
-              {fieldErrors.authorCity}
-            </span>
-          ) : null}
-        </label>
+        </SettingField>
       </div>
       <label className="checkbox-field consent-field">
         <input

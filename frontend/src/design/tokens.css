@@ -156,6 +156,13 @@
     --control-height-compact: 36px;
     --control-height-small: 34px;
     --control-hit-target: 44px;
+    --setting-field-label-gap: var(--space-1);
+    --setting-field-help-size: 28px;
+    --setting-field-popover-gap: var(--space-1);
+    --setting-field-popover-offset: var(--space-2);
+    --setting-field-popover-padding: var(--space-3);
+    --setting-field-popover-width: min(280px, calc(100vw - var(--space-8)));
+    --setting-field-popover-z-index: 30;
     --media-modal-max-width: 1180px;
     --media-modal-viewport-gap: var(--space-6);
     --media-modal-viewport-gap-compact: var(--space-3);

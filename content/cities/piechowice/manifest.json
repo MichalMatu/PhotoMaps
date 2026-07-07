@@ -2,6 +2,7 @@
   "city": {
     "id": "piechowice",
     "name": "Piechowice",
+    "region": "Dolnośląskie",
     "lat": 50.8494747,
     "lon": 15.5976047,
     "default_zoom": 12,
@@ -24,7 +25,7 @@
           "text": "Szklarka jest idealnym uzupełnieniem wodospadu Kamieńczyka. Pokazuje podobny typ atrakcji, ale w bardziej miękkiej, spacerowej formie."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.829593,
       "lon": 15.5548695,
       "weight": 4.3,
@@ -66,7 +67,7 @@
           "text": "Pałac Pakoszów wzmacnia pałacową warstwę Kotliny Jeleniogórskiej, ale w spokojniejszej skali niż największe rezydencje. Dobrze działa jako elegancki, zielony przystanek między miastem a górami."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.8566314,
       "lon": 15.6270335,
       "weight": 3.8,

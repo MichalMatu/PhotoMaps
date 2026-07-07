@@ -4,7 +4,9 @@ import type { City, ContentBlock, ContentBlockType, Place } from "../../api/type
 import { ContentBlockEditor } from "../content/ContentBlockEditor";
 import { AUDIO_FILE_ACCEPT } from "../ui/audioAttachment";
 import { FileInputControl } from "../ui/FileInputControl";
+import { SettingField } from "../ui/SettingField";
 import { SystemModal } from "./SystemModal";
+import { ADMIN_MEDIA_FIELD_HELP } from "./adminMediaFieldHelp";
 import { PHOTO_CAPTION_MAX_LENGTH } from "./adminMediaUi";
 import { PhotoAttributionFields } from "./PhotoAttributionFields";
 import type { PhotoAttributionDraft } from "./placePhotoPanelState";
@@ -111,8 +113,7 @@ export function PhotoUploadModal({
           </div>
         ) : (
           <>
-            <label>
-              Miasto
+            <SettingField id="photo-upload-city" label="Miasto" hint={ADMIN_MEDIA_FIELD_HELP.city}>
               <select value={cityId} onChange={(event) => onCityChange(event.target.value)} required>
                 <option value="">Wybierz miasto</option>
                 {cities.map((city) => (
@@ -121,9 +122,8 @@ export function PhotoUploadModal({
                   </option>
                 ))}
               </select>
-            </label>
-            <label>
-              Miejsce
+            </SettingField>
+            <SettingField id="photo-upload-place" label="Miejsce" hint={ADMIN_MEDIA_FIELD_HELP.place}>
               <select
                 value={placeId}
                 disabled={!cityId}
@@ -137,15 +137,30 @@ export function PhotoUploadModal({
                   </option>
                 ))}
               </select>
-            </label>
+            </SettingField>
           </>
         )}
-        <label>
-          Zdjęcie
+        <SettingField
+          id="photo-upload-file"
+          label="Zdjęcie"
+          hint={ADMIN_MEDIA_FIELD_HELP["photo-file"]}
+          describedByProp="describedBy"
+        >
           <FileInputControl accept="image/*" file={file} inputKey={`image-${inputKey}`} onChange={onFileChange} />
-        </label>
-        <label>
-          Audio
+        </SettingField>
+        <SettingField
+          id="photo-upload-audio"
+          label="Audio"
+          hint={ADMIN_MEDIA_FIELD_HELP["audio-file"]}
+          describedByProp="describedBy"
+          footer={
+            audioError ? (
+              <span className="field-error" id="admin-photo-audio-error">
+                {audioError}
+              </span>
+            ) : null
+          }
+        >
           <FileInputControl
             accept={AUDIO_FILE_ACCEPT}
             describedBy={audioError ? "admin-photo-audio-error" : undefined}
@@ -154,29 +169,28 @@ export function PhotoUploadModal({
             isInvalid={Boolean(audioError)}
             onChange={onAudioFileChange}
           />
-          {audioError ? (
-            <span className="field-error" id="admin-photo-audio-error">
-              {audioError}
-            </span>
-          ) : null}
-        </label>
-        <label>
-          Podpis
+        </SettingField>
+        <SettingField id="photo-upload-caption" label="Podpis" hint={ADMIN_MEDIA_FIELD_HELP.caption}>
           <input
             maxLength={PHOTO_CAPTION_MAX_LENGTH}
             value={caption}
             onChange={(event) => onCaptionChange(event.target.value)}
           />
-        </label>
+        </SettingField>
         <ContentBlockEditor
           blocks={descriptionBlocks}
+          idPrefix="photo-upload-description"
           legend="Opis zdjęcia"
           onAddBlock={onAddDescriptionBlock}
           onRemoveBlock={onRemoveDescriptionBlock}
           onUpdateBlock={onUpdateDescriptionBlock}
           onUpdateBlockType={onUpdateDescriptionBlockType}
         />
-        <PhotoAttributionFields draft={attributionDraft} onChange={onAttributionDraftChange} />
+        <PhotoAttributionFields
+          draft={attributionDraft}
+          idPrefix="photo-upload-attribution"
+          onChange={onAttributionDraftChange}
+        />
       </form>
     </SystemModal>
   );

@@ -14,7 +14,12 @@ if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
 from app import models as _models  # noqa: E402,F401
-from app.core.config import DATABASE_PATH, DATABASE_URL, PRIVATE_STORAGE_DIR, PUBLIC_STORAGE_DIR  # noqa: E402
+from app.core.config import (  # noqa: E402
+    DATABASE_PATH,
+    DATABASE_URL,
+    PRIVATE_STORAGE_DIR,
+    PUBLIC_STORAGE_DIR,
+)
 from app.services.local_data_diagnostics import (  # noqa: E402
     format_local_data_diagnostics,
     run_local_data_diagnostics,
@@ -26,8 +31,16 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Check PhotoMap local database and media storage consistency.")
     parser.add_argument("--json", action="store_true", help="Print the full JSON report.")
     parser.add_argument("--output-json", type=Path, help="Write the full JSON report to this path.")
-    parser.add_argument("--no-image-check", action="store_true", help="Check paths and records without opening images.")
-    parser.add_argument("--strict", action="store_true", help="Return a failure code for warnings as well as errors.")
+    parser.add_argument(
+        "--no-image-check",
+        action="store_true",
+        help="Check paths and records without opening images.",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Return a failure code for warnings as well as errors.",
+    )
     return parser.parse_args()
 
 
@@ -42,9 +55,27 @@ def missing_database_report() -> dict:
         },
         "checks": {"images": False},
         "summary": {
-            "photos": {"records": 0, "approved": 0, "pending": 0, "rejected": 0, "unknown_status": 0},
-            "memories": {"records": 0, "approved": 0, "pending": 0, "rejected": 0, "unknown_status": 0},
-            "places": {"records": 0, "published": 0, "draft": 0, "archived": 0, "unknown_status": 0},
+            "photos": {
+                "records": 0,
+                "approved": 0,
+                "pending": 0,
+                "rejected": 0,
+                "unknown_status": 0,
+            },
+            "memories": {
+                "records": 0,
+                "approved": 0,
+                "pending": 0,
+                "rejected": 0,
+                "unknown_status": 0,
+            },
+            "places": {
+                "records": 0,
+                "published": 0,
+                "draft": 0,
+                "archived": 0,
+                "unknown_status": 0,
+            },
             "references": {},
             "public_payloads": {"checked": 0},
             "storage": {
@@ -52,10 +83,15 @@ def missing_database_report() -> dict:
                 "public_files": 0,
                 "orphan_private_files": 0,
                 "orphan_public_files": 0,
+                "orphan_private_empty_dirs": 0,
+                "orphan_public_empty_dirs": 0,
                 "private_bytes": 0,
                 "public_bytes": 0,
             },
-            "issues": {"total": 1, "by_severity": {"error": 1, "warning": 0, "info": 0}},
+            "issues": {
+                "total": 1,
+                "by_severity": {"error": 1, "warning": 0, "info": 0},
+            },
         },
         "issues": [
             {

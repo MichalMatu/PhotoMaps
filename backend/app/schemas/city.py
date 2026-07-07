@@ -6,6 +6,7 @@ from app.schemas.contract_types import CityStatus
 class CityCreate(SQLModel):
     id: str
     name: str
+    region: str
     lat: float
     lon: float
     default_zoom: int = 13
@@ -15,6 +16,7 @@ class CityCreate(SQLModel):
 
 class CityUpdate(SQLModel):
     name: str | None = None
+    region: str | None = None
     lat: float | None = None
     lon: float | None = None
     default_zoom: int | None = None
@@ -25,6 +27,7 @@ class CityUpdate(SQLModel):
 class CityRead(SQLModel):
     id: str
     name: str
+    region: str
     lat: float
     lon: float
     default_zoom: int

@@ -2,6 +2,7 @@
   "city": {
     "id": "ruda-sulowska",
     "name": "Ruda Sułowska",
+    "region": "Dolnośląskie",
     "lat": 51.5118661,
     "lon": 17.1124056,
     "default_zoom": 12,
@@ -24,7 +25,7 @@
           "text": "Stawy Milickie dodają do mapy północno-wschodnią warstwę regionu: spokojniejszą, przyrodniczą i rozciągniętą w czasie. To dobry kontrast dla Karkonoszy, zamków i podziemi."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.5121865,
       "lon": 17.1094455,
       "weight": 4.1,

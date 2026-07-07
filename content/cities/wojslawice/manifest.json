@@ -2,6 +2,7 @@
   "city": {
     "id": "wojslawice",
     "name": "Wojsławice",
+    "region": "Dolnośląskie",
     "lat": 50.7082461,
     "lon": 16.853495,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Arboretum Wojsławice wnosi do PhotoMap spokojniejszy, botaniczny typ atrakcji. Dobrze działa jako cel krótszej wycieczki, ale wizualnie potrzebuje galerii z rytmem kolorów i faktur."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.7116686,
       "lon": 16.8607139,
       "weight": 4.2,

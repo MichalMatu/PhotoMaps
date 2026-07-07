@@ -12,6 +12,7 @@ const DEFAULT_CITY_FALLBACK = {
   lon: 0,
   zoom: 13,
 };
+const DEFAULT_CITY_REGION = "Dolnośląskie";
 
 type CityAction = {
   city: City;
@@ -50,6 +51,7 @@ export function useCityActions({ cities, mapFallback, onChanged, places }: UseCi
   const [lon, setLon] = useState("");
   const [name, setName] = useState("");
   const [operationError, setOperationError] = useState<OperationError | null>(null);
+  const [region, setRegion] = useState(DEFAULT_CITY_REGION);
   const [sortOrder, setSortOrder] = useState("0");
   const [status, setStatus] = useState<CityStatus>(INITIAL_STATUS);
   const [zoom, setZoom] = useState("13");
@@ -69,7 +71,9 @@ export function useCityActions({ cities, mapFallback, onChanged, places }: UseCi
     }),
     [cities],
   );
-  const canSave = Boolean(cityId && name.trim() && latitude !== null && longitude !== null && defaultZoom !== null);
+  const canSave = Boolean(
+    cityId && name.trim() && region.trim() && latitude !== null && longitude !== null && defaultZoom !== null,
+  );
 
   function resetForm() {
     setEditingCity(null);
@@ -77,6 +81,7 @@ export function useCityActions({ cities, mapFallback, onChanged, places }: UseCi
     setLat(String(cityFallback.lat));
     setLon(String(cityFallback.lon));
     setName("");
+    setRegion(DEFAULT_CITY_REGION);
     setSortOrder("0");
     setStatus(INITIAL_STATUS);
     setZoom(String(cityFallback.zoom));
@@ -93,6 +98,7 @@ export function useCityActions({ cities, mapFallback, onChanged, places }: UseCi
     setLat(String(city.lat));
     setLon(String(city.lon));
     setName(city.name);
+    setRegion(city.region);
     setSortOrder(String(city.sort_order));
     setStatus(city.status);
     setZoom(String(city.default_zoom));
@@ -112,13 +118,21 @@ export function useCityActions({ cities, mapFallback, onChanged, places }: UseCi
     const nextLongitude = parseRequiredNumber(lon);
     const nextZoom = parseRequiredNumber(zoom);
 
-    if (!cityId || !name.trim() || nextLatitude === null || nextLongitude === null || nextZoom === null) {
+    if (
+      !cityId ||
+      !name.trim() ||
+      !region.trim() ||
+      nextLatitude === null ||
+      nextLongitude === null ||
+      nextZoom === null
+    ) {
       return;
     }
 
     const payload: CityPayload = {
       id: cityId,
       name: name.trim(),
+      region: region.trim(),
       lat: nextLatitude,
       lon: nextLongitude,
       default_zoom: nextZoom,
@@ -132,6 +146,7 @@ export function useCityActions({ cities, mapFallback, onChanged, places }: UseCi
       if (editingCity) {
         await updateCity(editingCity.id, {
           name: payload.name,
+          region: payload.region,
           lat: payload.lat,
           lon: payload.lon,
           default_zoom: payload.default_zoom,
@@ -210,12 +225,14 @@ export function useCityActions({ cities, mapFallback, onChanged, places }: UseCi
     openCreateCityModal,
     openEditCityModal,
     operationError,
+    region,
     setCityAction,
     setId: (value: string) => setId(slugify(value, "_")),
     setLat,
     setLon,
     setName,
     setOperationError,
+    setRegion,
     setSortOrder,
     setStatus,
     setZoom,

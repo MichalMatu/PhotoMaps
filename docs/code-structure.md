@@ -47,7 +47,8 @@ Kolory, spacing współdzielony, typografia, cienie, radiusy i motion należą d
 Publiczna mapa trzyma reguły wizualnego układu w małych helperach w `frontend/src/components/map`:
 
 - `mapDisplayConfig.ts` centralizuje stałe rozmiaru, gęstości, ruchu i kolizji markerów.
-- `mapMarkerScale.ts` wylicza rozmiar pojedynczego markera miejsca z zoomu i priorytetu redakcyjnego.
+- `mapMarkerScale.ts` wylicza rozmiar pojedynczego markera miejsca z zoomu, priorytetu redakcyjnego i ustawień `app_config.map.marker_scale`.
+- `mapMarkerDensity.ts` wybiera widoczne kafle według viewportu, zoomu i ustawień `app_config.map.marker_density` oraz `app_config.map.marker_priority`.
 - `placeGallerySizing.ts` wylicza maksymalny obszar rozwiniętej galerii miejsca z realnego viewportu, dostępnego miejsca wokół markera i liczby elementów.
 - `mapMotion.ts` układa kafelki rozwiniętej galerii w chmurę/wachlarz, skaluje je do przekazanego obszaru i pilnuje krótkich opóźnień wejścia.
 

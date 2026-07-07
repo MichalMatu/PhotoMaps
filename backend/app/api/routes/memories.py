@@ -4,8 +4,8 @@ from sqlmodel import Session, select
 from app.db.session import get_session
 from app.models.memory import Memory
 from app.models.place import Place
-from app.schemas.memory import MemoryClaimRead, MemoryClaimToken, MemoryRead, MemoryUpdate
-from app.serializers.memory import memory_to_read
+from app.schemas.memory import MemoryClaimRead, MemoryClaimToken, MemoryRead, MemorySubmissionRead, MemoryUpdate
+from app.serializers.memory import memory_to_read, memory_to_submission_read
 from app.services.memory_fields import (
     MAX_MEMORY_AUTHOR_LENGTH,
     MAX_MEMORY_CAPTION_LENGTH,
@@ -41,6 +41,7 @@ def list_place_memories(place_id: str, session: Session = Depends(get_session)) 
         select(Memory)
         .where(Memory.place_id == place_id)
         .where(Memory.status == "approved")
+        .where(Memory.public_path.is_not(None), Memory.thumb_path.is_not(None))
         .order_by(Memory.approved_at.desc(), Memory.created_at.desc())
     )
     return [memory_to_read(memory) for memory in session.exec(statement).all()]
@@ -50,12 +51,18 @@ def list_place_memories(place_id: str, session: Session = Depends(get_session)) 
 def get_public_place_memory(place_id: str, memory_id: str, session: Session = Depends(get_session)) -> MemoryRead:
     place = ensure_public_place(place_id, session)
     memory = session.get(Memory, memory_id)
-    if memory is None or memory.place_id != place.id or memory.status != "approved":
+    if (
+        memory is None
+        or memory.place_id != place.id
+        or memory.status != "approved"
+        or memory.public_path is None
+        or memory.thumb_path is None
+    ):
         raise HTTPException(status_code=404, detail="Memory not found")
     return memory_to_read(memory)
 
 
-@router.post("", response_model=MemoryRead, status_code=201)
+@router.post("", response_model=MemorySubmissionRead, status_code=201)
 async def upload_place_memory(
     place_id: str,
     file: UploadFile = File(...),
@@ -67,7 +74,7 @@ async def upload_place_memory(
     claim_token: str = Form(...),
     consent_confirmed: bool = Form(...),
     session: Session = Depends(get_session),
-) -> MemoryRead:
+) -> MemorySubmissionRead:
     ensure_public_place(place_id, session)
     if not consent_confirmed:
         raise HTTPException(status_code=422, detail="Publication consent is required")
@@ -88,7 +95,7 @@ async def upload_place_memory(
         place_id=place_id,
         session=session,
     )
-    return memory_to_read(memory)
+    return memory_to_submission_read(memory)
 
 
 @router.post("/{memory_id}/claim", response_model=MemoryClaimRead)

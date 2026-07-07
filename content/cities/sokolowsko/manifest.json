@@ -1,0 +1,65 @@
+{
+  "city": {
+    "id": "sokolowsko",
+    "name": "Sokołowsko",
+    "region": "Dolnośląskie",
+    "lat": 50.6864,
+    "lon": 16.2414,
+    "default_zoom": 13,
+    "sort_order": 425,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "sanatorium-grunwald-sokolowsko",
+      "title": "Sanatorium Grunwald w Sokołowsku",
+      "description": "Dawne sanatorium dr. Brehmera w Sokołowsku, ważny ślad uzdrowiskowej historii miejscowości i jej roli jako śląskiego Davos.",
+      "local_comment": "To miejsce powinno mieć kadry pokazujące neogotycką bryłę, ruiny, odbudowę i górski kontekst Sokołowska. Unikać sensacyjnego tonu; siłą jest historia leczenia, architektura i powolne odzyskiwanie miejsca.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Uzdrowiskowa pamięć Sokołowska"
+        },
+        {
+          "type": "paragraph",
+          "text": "Sanatorium Grunwald jest jednym z najważniejszych znaków Sokołowska: miejscem, w którym historia leczenia klimatycznego, architektura i powojenna degradacja spotykają się z dzisiejszą odbudową."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie dobrze działa jako przystanek bardziej nastrojowy niż pocztówkowy. Pokazuje Dolny Śląsk przez uzdrowiskową przeszłość, górskie położenie i materialną pamięć miejsca."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.685071,
+      "lon": 16.232125,
+      "weight": 4.2,
+      "status": "published"
+    },
+    {
+      "slug": "zamek-radosno",
+      "title": "Zamek Radosno",
+      "description": "Leśne ruiny średniowiecznego zamku w Górach Suchych, położone między Sokołowskiem a Rybnicą Leśną.",
+      "local_comment": "Cover powinien oddać leśny, ukryty charakter ruin i pokazać skalę przyziemia albo wieży. Nie wybierać ciemnego kadru, w którym mur zlewa się z lasem.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Cicha ruina na szlaku z Sokołowska"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zamek Radosno dodaje Sokołowsku bardziej szlakowy, odkrywczy kierunek. Ruiny są schowane w lesie na zboczu Gór Suchych, więc działają inaczej niż miejskie zabytki: wymagają krótkiej wyprawy i nagradzają atmosferą miejsca znalezionego po drodze."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie uzupełnia Sanatorium Grunwald o średniowieczną warstwę regionu i pozwala prowadzić uwagę z uzdrowiskowej miejscowości w stronę górskiego krajobrazu."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.685556,
+      "lon": 16.264167,
+      "weight": 3.6,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

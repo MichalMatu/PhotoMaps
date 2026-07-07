@@ -13,7 +13,7 @@ import { AdminSegmentedControl } from "./AdminSegmentedControl";
 import { SystemModal } from "./SystemModal";
 import { useAdminConfigDraft } from "./useAdminConfigDraft";
 
-type ConfigurationSection = "application" | "maintenance";
+type ConfigurationSection = "application" | "map" | "place-fields" | "maintenance";
 
 type Props = {
   appConfig: AppConfig;
@@ -34,42 +34,56 @@ export function AdminConfigurationSection({ appConfig, onPlacesChanged, onSaved 
         ariaLabel="Sekcje konfiguracji"
         items={[
           { key: "application", label: "Aplikacja" },
+          { key: "map", label: "Mapa" },
+          { key: "place-fields", label: "Pola miejsc" },
           { key: "maintenance", label: "Utrzymanie" },
         ]}
         onChange={setActiveSection}
       />
 
-      {activeSection === "application" ? (
+      {activeSection !== "maintenance" ? (
         <form className="ui-form admin-config-form" onSubmit={configDraft.handleSubmit}>
-          <div className="admin-config-grid">
-            <AdminConfigProductPanel
-              locale={draft.locale}
-              productName={draft.product_name}
-              onLocaleChange={configDraft.updateLocale}
-              onProductNameChange={configDraft.updateProductName}
-            />
-            <AdminConfigBrandingPanel
-              colorInputValue={configDraft.colorInputValue}
-              logoUrl={draft.branding.logo_url ?? ""}
-              primaryColor={draft.branding.primary_color}
-              onLogoUrlChange={configDraft.updateLogoUrl}
-              onPrimaryColorChange={configDraft.updatePrimaryColor}
-            />
-            <AdminConfigLabelsPanel labels={draft.labels} onLabelChange={configDraft.updateLabel} />
+          {activeSection === "application" ? (
+            <div className="admin-config-grid admin-config-grid--application">
+              <AdminConfigProductPanel
+                locale={draft.locale}
+                productName={draft.product_name}
+                onLocaleChange={configDraft.updateLocale}
+                onProductNameChange={configDraft.updateProductName}
+              />
+              <AdminConfigBrandingPanel
+                colorInputValue={configDraft.colorInputValue}
+                logoUrl={draft.branding.logo_url ?? ""}
+                primaryColor={draft.branding.primary_color}
+                onLogoUrlChange={configDraft.updateLogoUrl}
+                onPrimaryColorChange={configDraft.updatePrimaryColor}
+              />
+              <AdminConfigLabelsPanel labels={draft.labels} onLabelChange={configDraft.updateLabel} />
+            </div>
+          ) : null}
+
+          {activeSection === "map" ? (
             <AdminConfigMapPanel
               map={draft.map}
               onCenterChange={configDraft.updateMapCenter}
+              onMarkerBaseSizeChange={configDraft.updateMapMarkerBaseSize}
+              onMarkerDensityChange={configDraft.updateMapMarkerDensity}
+              onMarkerPriorityChange={configDraft.updateMapMarkerPriority}
+              onMarkerPriorityScaleChange={configDraft.updateMapMarkerPriorityScale}
+              onMarkerRenderScaleChange={configDraft.updateMapMarkerRenderScale}
               onZoomChange={configDraft.updateMapZoom}
             />
-          </div>
+          ) : null}
 
-          <AdminConfigCustomFieldsPanel
-            fields={draft.place_custom_fields}
-            onAddField={configDraft.addCustomField}
-            onFieldChange={configDraft.updateCustomField}
-            onFieldLabelChange={configDraft.updateCustomFieldLabel}
-            onRequestRemoveField={configDraft.requestRemoveCustomField}
-          />
+          {activeSection === "place-fields" ? (
+            <AdminConfigCustomFieldsPanel
+              fields={draft.place_custom_fields}
+              onAddField={configDraft.addCustomField}
+              onFieldChange={configDraft.updateCustomField}
+              onFieldLabelChange={configDraft.updateCustomFieldLabel}
+              onRequestRemoveField={configDraft.requestRemoveCustomField}
+            />
+          ) : null}
 
           {configDraft.formErrors.length > 0 ? (
             <div className="ui-error admin-config-errors" role="alert">
@@ -104,7 +118,7 @@ export function AdminConfigurationSection({ appConfig, onPlacesChanged, onSaved 
 
       {activeSection === "maintenance" ? <AdminMaintenancePanel /> : null}
 
-      {activeSection === "application" && pendingFieldRemoval ? (
+      {activeSection === "place-fields" && pendingFieldRemoval ? (
         <SystemModal
           confirmLabel="Usuń pole"
           message={`Pole "${pendingFieldRemoval.field.label}" zostanie usunięte z konfiguracji, a jego wartości znikną ze wszystkich miejsc po zapisie konfiguracji.`}
@@ -115,7 +129,7 @@ export function AdminConfigurationSection({ appConfig, onPlacesChanged, onSaved 
         />
       ) : null}
 
-      {activeSection === "application" && configDraft.operationError ? (
+      {activeSection !== "maintenance" && configDraft.operationError ? (
         <ErrorModal {...configDraft.operationError} onClose={configDraft.clearOperationError} />
       ) : null}
     </section>

@@ -22,6 +22,7 @@ describe("guides API", () => {
           created_at: "2026-06-21T00:00:00",
           description: null,
           id: "guide-1",
+          kind: "route",
           place_count: 0,
           places: [],
           preview_places: [],

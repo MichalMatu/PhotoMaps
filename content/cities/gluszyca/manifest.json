@@ -2,6 +2,7 @@
   "city": {
     "id": "gluszyca",
     "name": "Głuszyca",
+    "region": "Dolnośląskie",
     "lat": 50.6850304,
     "lon": 16.3730344,
     "default_zoom": 12,
@@ -28,6 +29,31 @@
       "lat": 50.6733398,
       "lon": 16.4213601,
       "weight": 4.5,
+      "status": "published"
+    },
+    {
+      "slug": "zamek-rogowiec",
+      "title": "Zamek Rogowiec",
+      "description": "Ruiny średniowiecznego zamku na szczycie Rogowca w Górach Suchych, uznawane za najwyżej położone ruiny zamkowe w Polsce.",
+      "local_comment": "Cover powinien pokazać ruiny razem ze stromym, leśnym kontekstem szczytu. Unikać samych fragmentów muru, które nie tłumaczą wysokości miejsca.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Warownia wysoko nad Górami Suchymi"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zamek Rogowiec wzmacnia górską warstwę okolic Głuszycy. To nie tylko ruina, ale cel podejścia na wyraźny szczyt, z którego dawny zamek kontrolował przejścia przez Góry Kamienne."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie dobrze kontrastuje z Osówką: tam schodzi się pod ziemię, tutaj wspina się do pozostałości warowni i patrzy na Sudety Środkowe z dużo bardziej otwartej perspektywy."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.693419,
+      "lon": 16.314986,
+      "weight": 3.8,
       "status": "published"
     }
   ],

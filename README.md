@@ -12,11 +12,14 @@ Glownym bytem systemu jest `place`. Zdjecia, pamiatki, kolekcje i zgloszenia sa 
 - [Prompt miniatur miejsc](docs/image_generation/place-thumbnails.md)
 - [Assety redakcyjne](assets/README.md)
 - [Uruchamianie i testy](docs/dev.md)
+- [Skrypty i Make](scripts/README.md)
 - [Struktura kodu](docs/code-structure.md)
 
 ## Dev
 
 ```bash
+make help
+make scripts
 make start
 make restart
 make stop

@@ -7,16 +7,16 @@ repos:
     hooks:
       - id: backend-format
         name: backend ruff format check
-        entry: bash -lc 'ROOT_DIR="$(pwd)"; PYTHON_BIN="${PYTHON:-python3}"; if [ -x "$ROOT_DIR/backend/.venv/bin/python" ]; then PYTHON_BIN="$ROOT_DIR/backend/.venv/bin/python"; fi; cd backend && "$PYTHON_BIN" -m ruff format --check app ../scripts/check_schema.py ../scripts/cleanup_orphan_media.py ../scripts/quality/check_frontend_bundle.py ../scripts/quality/css_token_gate.py ../scripts/quality/perf_seed.py ../scripts/quality/perf_smoke.py ../scripts/quality/smoke.py'
+        entry: bash -lc 'ROOT_DIR="$(pwd)"; PYTHON_BIN="${PYTHON:-python3}"; if [ -x "$ROOT_DIR/backend/.venv/bin/python" ]; then PYTHON_BIN="$ROOT_DIR/backend/.venv/bin/python"; fi; cd backend && "$PYTHON_BIN" -m ruff format --check app ../scripts/check_schema.py ../scripts/cleanup_orphan_media.py ../scripts/generate_audit_prompt.py ../scripts/quality/check_frontend_bundle.py ../scripts/quality/css_token_gate.py ../scripts/quality/perf_seed.py ../scripts/quality/perf_smoke.py ../scripts/quality/smoke.py'
         language: system
         pass_filenames: false
-        files: ^(backend/app/.*\.py|scripts/check_schema\.py|scripts/cleanup_orphan_media\.py|scripts/quality/(check_frontend_bundle|css_token_gate|perf_seed|perf_smoke|smoke)\.py)$
+        files: ^(backend/app/.*\.py|scripts/(check_schema|cleanup_orphan_media|generate_audit_prompt)\.py|scripts/quality/(check_frontend_bundle|css_token_gate|perf_seed|perf_smoke|smoke)\.py)$
       - id: backend-ruff
         name: backend ruff
-        entry: bash -lc 'ROOT_DIR="$(pwd)"; PYTHON_BIN="${PYTHON:-python3}"; if [ -x "$ROOT_DIR/backend/.venv/bin/python" ]; then PYTHON_BIN="$ROOT_DIR/backend/.venv/bin/python"; fi; cd backend && "$PYTHON_BIN" -m ruff check app ../scripts/check_schema.py ../scripts/cleanup_orphan_media.py ../scripts/quality/check_frontend_bundle.py ../scripts/quality/css_token_gate.py ../scripts/quality/perf_seed.py ../scripts/quality/perf_smoke.py ../scripts/quality/smoke.py'
+        entry: bash -lc 'ROOT_DIR="$(pwd)"; PYTHON_BIN="${PYTHON:-python3}"; if [ -x "$ROOT_DIR/backend/.venv/bin/python" ]; then PYTHON_BIN="$ROOT_DIR/backend/.venv/bin/python"; fi; cd backend && "$PYTHON_BIN" -m ruff check app ../scripts/check_schema.py ../scripts/cleanup_orphan_media.py ../scripts/generate_audit_prompt.py ../scripts/quality/check_frontend_bundle.py ../scripts/quality/css_token_gate.py ../scripts/quality/perf_seed.py ../scripts/quality/perf_smoke.py ../scripts/quality/smoke.py'
         language: system
         pass_filenames: false
-        files: ^(backend/app/.*\.py|scripts/check_schema\.py|scripts/cleanup_orphan_media\.py|scripts/quality/(check_frontend_bundle|css_token_gate|perf_seed|perf_smoke|smoke)\.py)$
+        files: ^(backend/app/.*\.py|scripts/(check_schema|cleanup_orphan_media|generate_audit_prompt)\.py|scripts/quality/(check_frontend_bundle|css_token_gate|perf_seed|perf_smoke|smoke)\.py)$
       - id: css-token-gate
         name: css token gate
         entry: bash -lc 'ROOT_DIR="$(pwd)"; PYTHON_BIN="${PYTHON:-python3}"; if [ -x "$ROOT_DIR/backend/.venv/bin/python" ]; then PYTHON_BIN="$ROOT_DIR/backend/.venv/bin/python"; fi; "$PYTHON_BIN" scripts/quality/css_token_gate.py'

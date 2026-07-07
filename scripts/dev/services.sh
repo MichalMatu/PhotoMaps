@@ -16,6 +16,33 @@ run_migrations() {
   ) >> "$BACKEND_LOG" 2>&1
 }
 
+wait_for_http() {
+  local label="$1"
+  local url="$2"
+  local pid="$3"
+  local log_file="$4"
+
+  if ! command -v curl >/dev/null 2>&1; then
+    return
+  fi
+
+  for _ in {1..60}; do
+    if curl -fsS --max-time 1 "$url" >/dev/null 2>&1; then
+      return
+    fi
+    if ! is_running "$pid"; then
+      echo "$label nie wystartował. Ostatnie logi:"
+      tail -n 40 "$log_file" || true
+      return 1
+    fi
+    sleep 0.25
+  done
+
+  echo "$label nie odpowiedział pod $url. Ostatnie logi:"
+  tail -n 40 "$log_file" || true
+  return 1
+}
+
 start_backend() {
   ensure_dirs
 
@@ -46,6 +73,7 @@ start_backend() {
     tail -n 40 "$BACKEND_LOG" || true
     return 1
   fi
+  wait_for_http "Backend" "$BACKEND_URL/health" "$pid" "$BACKEND_LOG"
 
   echo "Backend: $BACKEND_URL, PID $pid"
 }
@@ -79,6 +107,7 @@ start_frontend() {
     tail -n 40 "$FRONTEND_LOG" || true
     return 1
   fi
+  wait_for_http "Frontend" "$FRONTEND_URL" "$pid" "$FRONTEND_LOG"
 
   echo "Frontend: $FRONTEND_URL, PID $pid"
 }

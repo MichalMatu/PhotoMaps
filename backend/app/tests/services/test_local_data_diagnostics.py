@@ -123,3 +123,26 @@ def test_local_data_diagnostics_warns_about_orphan_storage(client_session, tmp_p
     assert report["status"] == "warning"
     assert "orphan_private_file" in codes
     assert "orphan_public_file" in codes
+
+
+def test_local_data_diagnostics_warns_about_empty_storage_dirs(client_session, tmp_path: Path) -> None:
+    _, session = client_session
+    private_root = tmp_path / "private"
+    public_root = tmp_path / "public"
+    create_place(session)
+    (private_root / "memories" / "stale-place").mkdir(parents=True)
+    (public_root / "memories" / "stale-place").mkdir(parents=True)
+
+    report = run_local_data_diagnostics(
+        session,
+        private_storage_dir=private_root,
+        public_storage_dir=public_root,
+        check_images=False,
+    )
+    codes = {issue["code"] for issue in report["issues"]}
+
+    assert report["status"] == "warning"
+    assert report["summary"]["storage"]["orphan_private_empty_dirs"] == 1
+    assert report["summary"]["storage"]["orphan_public_empty_dirs"] == 1
+    assert "orphan_private_empty_dir" in codes
+    assert "orphan_public_empty_dir" in codes

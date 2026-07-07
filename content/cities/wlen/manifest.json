@@ -2,6 +2,7 @@
   "city": {
     "id": "wlen",
     "name": "Wleń",
+    "region": "Dolnośląskie",
     "lat": 51.0155,
     "lon": 15.6747,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Lenno jest jednym z tych miejsc, w których ruina i krajobraz działają razem. Podejście przez wzgórze, kamienne mury i widok na Wleń budują spokojniejszy, mniej oczywisty wariant dolnośląskiego zamku."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.0175,
       "lon": 15.6628,
       "weight": 4.0,

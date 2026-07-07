@@ -11,11 +11,11 @@
 ## Local Contracts
 
 - Importer ma byc idempotentny: ponowne uruchomienie na tym samym manifiescie aktualizuje istniejace rekordy zamiast tworzyc duplikaty.
-- Klucze stabilnosci to `city.id`, `place.slug` i `guide.slug`.
+- Klucze stabilnosci to `city.id`, `place.slug` i `guide.slug`; `city.region` jest wymaganym kontekstem wojewodztwa dla selektora miast.
 - Importer musi walidowac aktywne `category_ids` przed zapisem miejsc.
 - Importer musi walidowac `place.custom_fields` wedlug aktualnych definicji konfiguracji produktu z `/api/app-config`.
 - Importer musi odrzucac przypiecia tras/kolekcji do miejsc innych niz `published`.
-- Importer moze zapisac opcjonalne `guide.route_points` jako geometrie linii mapy trasy; przystanki nadal wynikaja z `guide.places`.
+- Importer waliduje `guide.kind` jako `route` albo `collection`; tylko trasy moga zapisac opcjonalne `guide.route_points`, a przystanki/miejsca nadal wynikaja z `guide.places`.
 - Importer nie obsluguje ikon ani ilustracyjnych coverow miejsc; media coverowe przechodza przez adminowy pipeline zdjec i moderacji.
 - Nie dodawac pobierania danych z internetu, generowania obrazow, platnosci, audio ani innych modulow spoza aktualnego zakresu mapy.
 - Przy zmianie formatu manifestu zaktualizowac testy i dokumentacje w `content`.

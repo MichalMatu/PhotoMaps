@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import type { AppConfigMapMarkerScale } from "../../api/types";
 import { getPlaceMarkerLayout } from "./mapMarkerScale";
 
 describe("getPlaceMarkerLayout", () => {
@@ -49,5 +50,29 @@ describe("getPlaceMarkerLayout", () => {
     expect(highPriority.height).toBe(104);
     expect(highPriority.width).toBeGreaterThan(lowestPriority.width * 2);
     expect(highPriority.zIndexOffset - sampleLowPriority.zIndexOffset).toBeGreaterThan(250);
+  });
+
+  it("uses runtime map settings for configured tile size and editorial priority scale", () => {
+    const markerScale: AppConfigMapMarkerScale = {
+      base_size: {
+        height: 72,
+        width: 96,
+      },
+      max_render_scale: 2.2,
+      min_render_scale: 0.5,
+      priority: {
+        curve: 0.8,
+        max_scale: 2.1,
+        min_scale: 0.55,
+      },
+    };
+
+    const normalPriority = getPlaceMarkerLayout({ editorialPriority: 1, markerScale, zoom: 13 });
+    const highPriority = getPlaceMarkerLayout({ editorialPriority: 5, markerScale, zoom: 13 });
+
+    expect(normalPriority.width).toBeGreaterThan(56);
+    expect(normalPriority.height).toBeGreaterThan(45);
+    expect(highPriority.width).toBeGreaterThan(170);
+    expect(highPriority.height).toBeGreaterThan(130);
   });
 });

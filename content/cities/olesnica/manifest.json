@@ -2,6 +2,7 @@
   "city": {
     "id": "olesnica",
     "name": "Oleśnica",
+    "region": "Dolnośląskie",
     "lat": 51.208968,
     "lon": 17.3762631,
     "default_zoom": 13,
@@ -28,6 +29,56 @@
       "lat": 51.208968,
       "lon": 17.3762631,
       "weight": 4.1,
+      "status": "published"
+    },
+    {
+      "slug": "bazylika-sw-jana-olesnica",
+      "title": "Bazylika św. Jana Apostoła w Oleśnicy",
+      "description": "Gotycka bazylika przy zamku książęcym, ważny sakralny punkt starego centrum Oleśnicy.",
+      "local_comment": "Cover powinien pokazać całą bryłę i relację z zamkiem albo placem. Nie dublować zamku detalami: tutaj najważniejsza jest sakralna dominanta centrum.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Kościół przy zamku"
+        },
+        {
+          "type": "paragraph",
+          "text": "Bazylika św. Jana Apostoła uzupełnia oleśnicki zamek o sąsiedni, sakralny punkt centrum. Jej gotycka bryła stoi bardzo blisko rezydencji książęcej, więc na mapie pomaga czytać Oleśnicę jako zwarte miasto z kilkoma mocnymi miejscami obok siebie."
+        },
+        {
+          "type": "paragraph",
+          "text": "To dobry przystanek między zamkiem a rynkiem: spokojniejszy, bardziej pionowy i mocno wpisany w historyczny układ starej Oleśnicy."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 51.209555,
+      "lon": 17.3780742,
+      "weight": 3.9,
+      "status": "published"
+    },
+    {
+      "slug": "rynek-ratusz-olesnica",
+      "title": "Rynek i ratusz w Oleśnicy",
+      "description": "Historyczny plac z ratuszem i kamienicami, spacerowe serce starej Oleśnicy.",
+      "local_comment": "Cover powinien pokazać plac, ratusz i miejską skalę centrum. Dobry kadr szeroki będzie działał lepiej niż sama wieża albo fragment fasady.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Miejski środek Oleśnicy"
+        },
+        {
+          "type": "paragraph",
+          "text": "Rynek i ratusz w Oleśnicy dodają do mapy codzienny punkt orientacyjny miasta. Po zamku i bazylice plac pokazuje bardziej miejski rytm: kamienice, przejścia, fasady i miejsce, od którego naturalnie zaczyna się spacer po centrum."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie rynek spina pobliskie zabytki w krótką trasę pieszą, zamiast zostawiać Oleśnicę jako pojedynczy punkt zamkowy."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 51.209389,
+      "lon": 17.379694,
+      "weight": 3.8,
       "status": "published"
     }
   ],

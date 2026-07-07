@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import type { PlaceMapItem } from "../../api/types";
 import { MemoryPanel } from "../places/MemoryPanel";
 import { CLAIM_TOKEN_MAX_LENGTH, CLAIM_TOKEN_MIN_LENGTH, validateClaimToken } from "../places/memoryValidation";
+import { PUBLIC_PLACE_INTERACTION_HELP } from "../places/publicPlaceInteractionHelp";
+import { SettingField } from "../ui/SettingField";
 import { SystemModal } from "../ui/SystemModal";
 
 type Props = {
@@ -35,30 +37,41 @@ export function MemorySheet({ onClose, onUploaded, place }: Props) {
   return (
     <SystemModal eyebrow={place.title} showActions={false} title="Byłem tutaj" onClose={onClose}>
       <div className="memory-sheet-content">
-        <label className="memory-token-field">
-          <span className="memory-token-label-row">
-            <span>Token</span>
+        <SettingField
+          id="memory-token"
+          label="Token"
+          hint={PUBLIC_PLACE_INTERACTION_HELP["memory-token"]}
+          helpMode="inline"
+          controlMode="composite"
+          footer={
+            tokenError ? (
+              <span className="field-error" id="memory-token-error">
+                {tokenError}
+              </span>
+            ) : null
+          }
+        >
+          <span className="memory-token-field">
+            <span className="memory-token-label-row">
+              <span className="memory-token-hint">minimum 8 cyfr, znaków lub znaków specjalnych</span>
+            </span>
             <button className="memory-token-generate" type="button" onClick={() => setVisitToken(generateClaimToken())}>
               generuj token
             </button>
+            <input
+              autoComplete="off"
+              aria-describedby={["memory-token-hint", tokenError ? "memory-token-error" : null]
+                .filter(Boolean)
+                .join(" ")}
+              aria-invalid={Boolean(tokenError)}
+              maxLength={CLAIM_TOKEN_MAX_LENGTH}
+              minLength={CLAIM_TOKEN_MIN_LENGTH}
+              placeholder="Wpisz token"
+              value={visitToken}
+              onChange={(event) => setVisitToken(event.target.value)}
+            />
           </span>
-          <span className="memory-token-hint">wpisz swój token, minimum 8 cyfr, znaków lub znaków specjalnych</span>
-          <input
-            autoComplete="off"
-            aria-describedby={tokenError ? "memory-token-error" : undefined}
-            aria-invalid={Boolean(tokenError)}
-            maxLength={CLAIM_TOKEN_MAX_LENGTH}
-            minLength={CLAIM_TOKEN_MIN_LENGTH}
-            placeholder="Wpisz token"
-            value={visitToken}
-            onChange={(event) => setVisitToken(event.target.value)}
-          />
-          {tokenError ? (
-            <span className="field-error" id="memory-token-error">
-              {tokenError}
-            </span>
-          ) : null}
-        </label>
+        </SettingField>
         {isUnlocked ? (
           <MemoryPanel claimToken={visitToken} mode="form-only" placeId={place.id} onUploaded={onUploaded} />
         ) : null}

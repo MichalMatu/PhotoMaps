@@ -5,11 +5,12 @@ export function getPlace(idOrSlug: string): Promise<PlaceDetail> {
   return request<PlaceDetail>(`/api/places/${encodeURIComponent(idOrSlug)}`);
 }
 
-export function getMapPlaces(cityId: string): Promise<PlaceMapItem[]> {
-  return request<PlaceMapItem[]>(`/api/places/map?city_id=${encodeURIComponent(cityId)}`);
+export function getMapPlaces(cityId?: string | null): Promise<PlaceMapItem[]> {
+  const query = cityId ? `?city_id=${encodeURIComponent(cityId)}` : "";
+  return request<PlaceMapItem[]>(`/api/places/map${query}`);
 }
 
-export async function getMapPlacesForCities(cities: City[]): Promise<PlaceMapItem[]> {
+export async function getAdminMapPlacesForCities(cities: City[]): Promise<PlaceMapItem[]> {
   const activeCities = cities.filter((city) => city.status === "active");
   const cityResults = await Promise.all(activeCities.map((city) => getMapPlaces(city.id)));
   return cityResults.flat();

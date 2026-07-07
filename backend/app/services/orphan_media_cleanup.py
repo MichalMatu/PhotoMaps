@@ -10,13 +10,15 @@ from app.core.config import PRIVATE_STORAGE_DIR, PUBLIC_STORAGE_DIR
 from app.services.local_data_diagnostics import run_local_data_diagnostics
 from app.services.local_data_diagnostics_common import safe_child, safe_relative_path
 
-OrphanCodeMap = Mapping[str, tuple[str, Path]]
+OrphanCodeMap = Mapping[str, tuple[str, Path, str]]
 
 
-def default_orphan_codes(private_storage_dir: Path, public_storage_dir: Path) -> dict[str, tuple[str, Path]]:
+def default_orphan_codes(private_storage_dir: Path, public_storage_dir: Path) -> dict[str, tuple[str, Path, str]]:
     return {
-        "orphan_private_file": ("private", private_storage_dir),
-        "orphan_public_file": ("public", public_storage_dir),
+        "orphan_private_file": ("private", private_storage_dir, "delete_file"),
+        "orphan_public_file": ("public", public_storage_dir, "delete_file"),
+        "orphan_private_empty_dir": ("private", private_storage_dir, "delete_empty_dir"),
+        "orphan_public_empty_dir": ("public", public_storage_dir, "delete_empty_dir"),
     }
 
 
@@ -52,7 +54,7 @@ def orphan_actions_from_diagnostics(
         target = str(issue.get("target", ""))
         if code not in codes:
             continue
-        storage_kind, root = codes[code]
+        storage_kind, root, action_type = codes[code]
         prefix = f"{storage_kind}:"
         if not target.startswith(prefix):
             continue
@@ -61,7 +63,7 @@ def orphan_actions_from_diagnostics(
             continue
         actions.append(
             {
-                "action": "delete_file",
+                "action": action_type,
                 "applied": False,
                 "path": safe_child(root, relative_path).as_posix(),
                 "relative_path": relative_path,
@@ -78,11 +80,27 @@ def apply_orphan_actions(actions: list[dict[str, Any]]) -> None:
             action["applied"] = False
             action["status"] = "missing"
             continue
-        if not path.is_file():
+        if action["action"] == "delete_file":
+            if not path.is_file():
+                action["applied"] = False
+                action["status"] = "not-file"
+                continue
+            path.unlink()
+        elif action["action"] == "delete_empty_dir":
+            if not path.is_dir():
+                action["applied"] = False
+                action["status"] = "not-dir"
+                continue
+            try:
+                path.rmdir()
+            except OSError:
+                action["applied"] = False
+                action["status"] = "not-empty"
+                continue
+        else:
             action["applied"] = False
-            action["status"] = "not-file"
+            action["status"] = "unsupported"
             continue
-        path.unlink()
         action["applied"] = True
         action["status"] = "deleted"
 

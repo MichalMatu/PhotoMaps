@@ -1,4 +1,9 @@
+from io import BytesIO
+from mimetypes import guess_type
+
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
+from fastapi.responses import FileResponse, Response
+from PIL import Image, ImageOps, UnidentifiedImageError
 from sqlmodel import Session, select
 
 from app.api.admin_auth import require_admin_token
@@ -11,6 +16,7 @@ from app.schemas.contract_types import ReviewStatus
 from app.schemas.media_redaction import MediaRedactionPayload, MediaRedactionReport
 from app.schemas.memory import MemoryAdminRead, MemoryAdminUpdate, MemoryReview
 from app.serializers.memory import memory_to_admin_read
+from app.services.media import images
 from app.services.memory_fields import (
     MAX_MEMORY_AUTHOR_LENGTH,
     MAX_MEMORY_CAPTION_LENGTH,
@@ -29,6 +35,51 @@ from app.services.review import (
 router = APIRouter(prefix="/api/admin/memories", tags=["admin memories"], dependencies=[Depends(require_admin_token)])
 
 
+def admin_memory_or_404(memory_id: str, session: Session) -> Memory:
+    memory = session.get(Memory, memory_id)
+    if memory is None:
+        raise HTTPException(status_code=404, detail="Memory not found")
+    return memory
+
+
+def private_memory_image_path(memory: Memory):
+    path = images.storage_path(images.PRIVATE_STORAGE_DIR, memory.original_path)
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Memory media not found")
+    return path
+
+
+def thumbnail_response(memory: Memory) -> Response:
+    path = private_memory_image_path(memory)
+    try:
+        with Image.open(path) as image:
+            output_format = images.public_image_format(image)
+            output_image = images.normalized_public_image(image, output_format)
+            thumb_image = ImageOps.fit(
+                output_image,
+                images.THUMB_SIZE,
+                method=Image.Resampling.LANCZOS,
+                centering=(0.5, 0.5),
+            )
+            buffer = BytesIO()
+            if output_format == "PNG":
+                thumb_image.save(buffer, "PNG", optimize=True)
+                media_type = "image/png"
+            else:
+                thumb_image.save(
+                    buffer,
+                    "JPEG",
+                    quality=images.THUMB_IMAGE_QUALITY,
+                    subsampling=images.THUMB_JPEG_SUBSAMPLING,
+                    optimize=True,
+                )
+                media_type = "image/jpeg"
+    except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
+        raise HTTPException(status_code=422, detail="Memory media could not be processed") from exc
+
+    return Response(content=buffer.getvalue(), media_type=media_type)
+
+
 @router.get("", response_model=list[MemoryAdminRead])
 def list_admin_memories(
     status: ReviewStatus | None = Query(default=None),
@@ -44,6 +95,31 @@ def list_admin_memories(
         statement = statement.where(Memory.status == status)
 
     return [memory_to_admin_read(memory) for memory in session.exec(statement.offset(offset).limit(limit)).all()]
+
+
+@router.get("/{memory_id}/media/image")
+def get_memory_admin_image(memory_id: str, session: Session = Depends(get_session)) -> FileResponse:
+    memory = admin_memory_or_404(memory_id, session)
+    path = private_memory_image_path(memory)
+    media_type = guess_type(path.name)[0] or "application/octet-stream"
+    return FileResponse(path, media_type=media_type)
+
+
+@router.get("/{memory_id}/media/thumb")
+def get_memory_admin_thumbnail(memory_id: str, session: Session = Depends(get_session)) -> Response:
+    memory = admin_memory_or_404(memory_id, session)
+    return thumbnail_response(memory)
+
+
+@router.get("/{memory_id}/media/audio")
+def get_memory_admin_audio(memory_id: str, session: Session = Depends(get_session)) -> FileResponse:
+    memory = admin_memory_or_404(memory_id, session)
+    if memory.audio_original_path is None:
+        raise HTTPException(status_code=404, detail="Memory audio not found")
+    path = images.storage_path(images.PRIVATE_STORAGE_DIR, memory.audio_original_path)
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Memory audio not found")
+    return FileResponse(path, media_type=memory.audio_mime_type or "application/octet-stream")
 
 
 @router.post("/{memory_id}/review", response_model=MemoryAdminRead)

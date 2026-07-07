@@ -1,8 +1,11 @@
 import type { ContentBlock, ContentBlockType } from "../../api/types";
+import { SettingField } from "../ui/SettingField";
+import { CONTENT_BLOCK_FIELD_HELP } from "./contentBlockFieldHelp";
 import { CONTENT_BLOCK_TYPES, contentBlockLabel } from "./contentBlocks";
 
 type Props = {
   blocks: ContentBlock[];
+  idPrefix?: string;
   legend: string;
   onAddBlock: (type: ContentBlockType) => void;
   onRemoveBlock: (index: number) => void;
@@ -12,6 +15,7 @@ type Props = {
 
 export function ContentBlockEditor({
   blocks,
+  idPrefix = "content-block",
   legend,
   onAddBlock,
   onRemoveBlock,
@@ -24,8 +28,7 @@ export function ContentBlockEditor({
       <div className="content-block-editor-list place-article-block-list">
         {blocks.map((block, index) => (
           <div className="content-block-editor-row place-article-block-editor" key={index}>
-            <label>
-              Format
+            <SettingField id={`${idPrefix}-${index}-format`} label="Format" hint={CONTENT_BLOCK_FIELD_HELP.format}>
               <select
                 value={block.type}
                 onChange={(event) => onUpdateBlockType(index, event.target.value as ContentBlockType)}
@@ -36,36 +39,42 @@ export function ContentBlockEditor({
                   </option>
                 ))}
               </select>
-            </label>
+            </SettingField>
             {block.type === "link" ? (
               <div className="content-block-link-fields place-article-link-fields">
-                <label>
-                  Etykieta
+                <SettingField
+                  id={`${idPrefix}-${index}-link-label`}
+                  label="Etykieta"
+                  hint={CONTENT_BLOCK_FIELD_HELP["link-label"]}
+                >
                   <input
                     value={block.text}
                     onChange={(event) => onUpdateBlock(index, { ...block, text: event.target.value })}
                     required
                   />
-                </label>
-                <label>
-                  URL
+                </SettingField>
+                <SettingField
+                  id={`${idPrefix}-${index}-link-url`}
+                  label="URL"
+                  hint={CONTENT_BLOCK_FIELD_HELP["link-url"]}
+                >
                   <input
                     type="url"
                     value={block.url}
                     onChange={(event) => onUpdateBlock(index, { ...block, url: event.target.value })}
                     required
                   />
-                </label>
+                </SettingField>
               </div>
             ) : (
-              <label className="content-block-text place-article-block-text">
-                Treść
+              <SettingField id={`${idPrefix}-${index}-text`} label="Treść" hint={CONTENT_BLOCK_FIELD_HELP.text}>
                 <textarea
+                  className="content-block-text place-article-block-text"
                   rows={block.type === "paragraph" ? 5 : 2}
                   value={block.text}
                   onChange={(event) => onUpdateBlock(index, { ...block, text: event.target.value })}
                 />
-              </label>
+              </SettingField>
             )}
             <button
               className="ui-button ui-button--ghost place-article-remove-button"

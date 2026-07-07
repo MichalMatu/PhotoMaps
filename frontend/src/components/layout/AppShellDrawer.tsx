@@ -1,11 +1,13 @@
 import { APP_NAME } from "../../config/app";
 import { DrawerAdminAction } from "./AppShellAdminAction";
+import { DrawerMapAudioControl } from "./AppShellMapAudioControl";
 import { DrawerMapCategoryControls } from "./AppShellMapCategoryControls";
 import { DrawerMapLayerControls } from "./AppShellMapLayerControls";
 import { DrawerPinnedMediaControl } from "./AppShellPinnedMediaControl";
 import type {
   AppSection,
   AppShellAdminAction,
+  AppShellMapAudioControl,
   AppShellMapCategoryControls,
   AppShellMapLayerControls,
   AppShellMapPinnedMediaControl,
@@ -16,6 +18,7 @@ type Props = {
   activeSection: AppSection;
   adminAction?: AppShellAdminAction;
   isOpen: boolean;
+  mapAudioControl?: AppShellMapAudioControl;
   mapCategoryControls?: AppShellMapCategoryControls;
   mapLayerControls?: AppShellMapLayerControls;
   mapPinnedMediaControl?: AppShellMapPinnedMediaControl;
@@ -28,6 +31,7 @@ export function AppShellDrawer({
   activeSection,
   adminAction,
   isOpen,
+  mapAudioControl,
   mapCategoryControls,
   mapLayerControls,
   mapPinnedMediaControl,
@@ -73,6 +77,7 @@ export function AppShellDrawer({
       {isMapSection && mapPinnedMediaControl ? (
         <DrawerPinnedMediaControl control={mapPinnedMediaControl} onClose={onClose} />
       ) : null}
+      {isMapSection && mapAudioControl ? <DrawerMapAudioControl control={mapAudioControl} onClose={onClose} /> : null}
       {isMapSection && mapCategoryControls ? <DrawerMapCategoryControls controls={mapCategoryControls} /> : null}
       {adminAction ? <DrawerAdminAction action={adminAction} onClick={onAdminAction} /> : null}
     </aside>

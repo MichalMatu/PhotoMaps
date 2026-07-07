@@ -46,6 +46,7 @@ const place: PlaceMapItem = {
     lat: 50.7714,
     lon: 16.2843,
     name: "Wałbrzych",
+    region: "Dolnośląskie",
     sort_order: 1,
     status: "active",
   },
@@ -101,7 +102,14 @@ function stubSpeechSynthesis() {
 function renderModal(item: PlaceMapVisualItem) {
   return renderToStaticMarkup(
     <TtsProvider>
-      <PhotoDetailModal customFieldDefinitions={[]} item={item} place={place} onClose={noop} onReport={noop} />
+      <PhotoDetailModal
+        customFieldDefinitions={[]}
+        isAudioAutoplayEnabled={false}
+        item={item}
+        place={place}
+        onClose={noop}
+        onReport={noop}
+      />
     </TtsProvider>,
   );
 }

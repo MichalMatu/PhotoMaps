@@ -23,8 +23,9 @@ import { usePhotoDetailMemory } from "./usePhotoDetailMemory";
 import { usePhotoDetailNavigation } from "./usePhotoDetailNavigation";
 
 type Props = {
-  item: PlaceMapVisualItem;
   customFieldDefinitions: PlaceCustomFieldDefinition[];
+  isAudioAutoplayEnabled: boolean;
+  item: PlaceMapVisualItem;
   navigationItems?: PlaceMapVisualItem[];
   onClose: () => void;
   onNavigate?: (item: PlaceMapVisualItem) => void;
@@ -88,6 +89,7 @@ function isPhotoDetailSwipeTargetBlocked(target: EventTarget | null) {
 
 export function PhotoDetailModal({
   customFieldDefinitions,
+  isAudioAutoplayEnabled,
   item,
   navigationItems = [],
   onClose,
@@ -139,6 +141,18 @@ export function PhotoDetailModal({
       return;
     }
     toggleFullscreen();
+  };
+
+  const handleContentClick = (event: MouseEvent<HTMLDivElement>) => {
+    if (
+      !isCopyExpanded ||
+      !(event.target instanceof HTMLElement) ||
+      event.target.closest(".photo-detail-overlay, .photo-detail-description, button, a")
+    ) {
+      return;
+    }
+
+    setIsCopyExpanded(false);
   };
 
   const handleCopyClick = (event: MouseEvent<HTMLDivElement>) => {
@@ -235,7 +249,7 @@ export function PhotoDetailModal({
       eyebrow={modalEyebrow}
       headerActions={
         <>
-          <PhotoDetailAudioControl audio={audio} />
+          <PhotoDetailAudioControl audio={audio} isAutoplayEnabled={isAudioAutoplayEnabled} />
           <PhotoDescriptionActions
             actionClassName="system-modal-icon-action"
             descriptionText={photoDescriptionText}
@@ -276,6 +290,7 @@ export function PhotoDetailModal({
       <div
         ref={contentRef}
         className={contentClassName}
+        onClick={handleContentClick}
         onDoubleClick={handleContentDoubleClick}
         onPointerCancel={handleSwipePointerCancel}
         onPointerDown={handleSwipePointerDown}

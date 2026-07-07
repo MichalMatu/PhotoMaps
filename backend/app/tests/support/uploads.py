@@ -11,8 +11,12 @@ def image_upload(filename: str = "upload.jpg") -> tuple[str, BytesIO, str]:
     return filename, buffer, "image/jpeg"
 
 
-def audio_upload(filename: str = "clip.mp3", content: bytes = b"test-audio") -> tuple[str, BytesIO, str]:
-    return filename, BytesIO(content), "audio/mpeg"
+def audio_upload(
+    filename: str = "clip.mp3",
+    content: bytes = b"test-audio",
+    content_type: str = "audio/mpeg",
+) -> tuple[str, BytesIO, str]:
+    return filename, BytesIO(content), content_type
 
 
 def detailed_image_upload(filename: str = "upload.jpg") -> tuple[str, BytesIO, str]:

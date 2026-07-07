@@ -183,6 +183,7 @@ export function AdminPhotoGalleryModal({
             <AdminAudioControls
               audio={photo.audio}
               inputKeyPrefix={`admin-gallery-audio-${photo.id}`}
+              mode="compact"
               onDeleteAudio={() => onDeleteAudio(photo)}
               onError={onError}
               onSaveAudio={(nextAudioFile) => onSaveAudio(photo, nextAudioFile)}

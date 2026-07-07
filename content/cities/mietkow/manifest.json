@@ -2,6 +2,7 @@
   "city": {
     "id": "mietkow",
     "name": "Mietków",
+    "region": "Dolnośląskie",
     "lat": 50.9748184,
     "lon": 16.6504992,
     "default_zoom": 12,
@@ -24,7 +25,7 @@
           "text": "Zalew Mietkowski dobrze domyka południowo-zachodni kierunek wycieczek spod Wrocławia. Jest prostym miejscem na popołudniowy spacer, zdjęcia przy zachodzie i krajobrazowy kontrapunkt dla miejskich atrakcji."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.9572276,
       "lon": 16.6187442,
       "weight": 4.1,

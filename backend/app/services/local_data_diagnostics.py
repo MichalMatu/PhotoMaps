@@ -104,7 +104,9 @@ def format_local_data_diagnostics(report: dict[str, Any]) -> str:
             f"{summary['storage']['private_files']} private files, "
             f"{summary['storage']['public_files']} public files, "
             f"{summary['storage']['orphan_private_files']} orphan private, "
-            f"{summary['storage']['orphan_public_files']} orphan public"
+            f"{summary['storage']['orphan_public_files']} orphan public, "
+            f"{summary['storage']['orphan_private_empty_dirs']} empty private dirs, "
+            f"{summary['storage']['orphan_public_empty_dirs']} empty public dirs"
         ),
         f"Public payloads checked: {summary['public_payloads']['checked']}",
         f"Problems: {issues['error']} error, {issues['warning']} warning, {issues['info']} info",

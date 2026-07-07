@@ -6,7 +6,7 @@ import { getAdminCities } from "../../api/cities";
 import { getAdminGuides } from "../../api/guides";
 import { getAdminMemories, getAdminPhotos } from "../../api/media";
 import { getAdminModerationCounts } from "../../api/moderation";
-import { getAdminPlaces, getMapPlacesForCities } from "../../api/places";
+import { getAdminMapPlacesForCities, getAdminPlaces } from "../../api/places";
 import { getAdminReports } from "../../api/reports";
 import type {
   AdminMemory,
@@ -149,7 +149,7 @@ export function useAdminSettingsResources() {
 }
 
 export function useAdminPlaceResources(cities: City[]) {
-  const loadMapPlaces = useCallback(() => getMapPlacesForCities(cities), [cities]);
+  const loadMapPlaces = useCallback(() => getAdminMapPlacesForCities(cities), [cities]);
   const {
     refresh: refreshPlaces,
     reset: resetAdminPlaces,

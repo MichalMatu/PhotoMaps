@@ -1,0 +1,40 @@
+{
+  "city": {
+    "id": "bukowiec",
+    "name": "Bukowiec",
+    "region": "Dolnośląskie",
+    "lat": 50.824675,
+    "lon": 15.814572,
+    "default_zoom": 13,
+    "sort_order": 390,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "palac-park-bukowiec",
+      "title": "Pałac i park w Bukowcu",
+      "description": "Klasycystyczny pałac z rozległym parkiem krajobrazowym w Dolinie Pałaców i Ogrodów Kotliny Jeleniogórskiej.",
+      "local_comment": "Cover powinien pokazać pałac jako część założenia parkowego: fasadę, zieleń i spokojną skalę rezydencji. Nie ograniczać galerii do przypadkowego detalu elewacji.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Rezydencja w krajobrazowym parku"
+        },
+        {
+          "type": "paragraph",
+          "text": "Pałac i park w Bukowcu rozszerzają Dolinę Pałaców o miejsce, które działa bardziej krajobrazem niż samą fasadą. Rezydencja, parkowe polany, osie widokowe i bliskość Rudaw Janowickich tworzą spokojny przystanek między większymi pałacami Kotliny Jeleniogórskiej."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie dobrze domyka ciąg Wojanów, Łomnica i Karpniki, pokazując, że pałacowa warstwa regionu to nie tylko pojedyncze budynki, ale całe założenia spacerowe."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.824675,
+      "lon": 15.814572,
+      "weight": 4.0,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

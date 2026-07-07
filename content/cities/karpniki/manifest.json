@@ -2,6 +2,7 @@
   "city": {
     "id": "karpniki",
     "name": "Karpniki",
+    "region": "Dolnośląskie",
     "lat": 50.846424,
     "lon": 15.8499152,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Zamek Karpniki domyka pałacowo-zamkowy krajobraz okolic Jeleniej Góry od strony Rudaw. Na mapie działa jako elegancki przystanek między spokojnymi rezydencjami a bardziej terenowymi punktami widokowymi."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.846424,
       "lon": 15.8499152,
       "weight": 4.0,

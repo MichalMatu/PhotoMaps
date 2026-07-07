@@ -1,20 +1,27 @@
-import type { PlaceMapItem } from "../../api/types";
+import type { AppConfigMapMarkerDensity, AppConfigMapMarkerPriority, PlaceMapItem } from "../../api/types";
 import { MAX_PLACE_PRIORITY, MIN_PLACE_PRIORITY } from "../../config/placePriority";
 import { MAP_DISPLAY_CONFIG } from "./mapDisplayConfig";
 
 type MarkerDensityOptions = {
+  markerDensity?: AppConfigMapMarkerDensity;
+  markerPriority?: AppConfigMapMarkerPriority;
   viewportHeight: number;
   viewportWidth: number;
   zoom: number;
 };
 
+const DEFAULT_MARKER_DENSITY = MAP_DISPLAY_CONFIG.fallback.emptyCountryMap.marker_density;
+const DEFAULT_MARKER_PRIORITY = MAP_DISPLAY_CONFIG.fallback.emptyCountryMap.marker_priority;
 const MARKER_DENSITY_CONFIG = MAP_DISPLAY_CONFIG.markerDensity;
-const MARKER_PRIORITY_CONFIG = MAP_DISPLAY_CONFIG.markerPriority;
 
 type RankedPlace = {
   index: number;
   place: PlaceMapItem;
   priority: number;
+};
+
+type AddPlaceOptions = {
+  enforceCityLimit: boolean;
 };
 
 function clamp(value: number, min: number, max: number) {
@@ -32,15 +39,15 @@ function safeViewportArea({
   return Math.max(0, viewportWidth * viewportHeight);
 }
 
-function zoomFillRatio(zoom: number) {
+function zoomFillRatio(zoom: number, markerDensity: AppConfigMapMarkerDensity) {
   const safeZoom = Number.isFinite(zoom) ? zoom : MARKER_DENSITY_CONFIG.defaultZoom;
-  const zoomRange = MARKER_DENSITY_CONFIG.fullDensityZoom - MARKER_DENSITY_CONFIG.minZoom;
-  const progress = zoomRange > 0 ? clamp((safeZoom - MARKER_DENSITY_CONFIG.minZoom) / zoomRange, 0, 1) : 1;
+  const zoomRange = markerDensity.full_density_zoom - markerDensity.min_zoom;
+  const progress = zoomRange > 0 ? clamp((safeZoom - markerDensity.min_zoom) / zoomRange, 0, 1) : 1;
 
   return (
-    MARKER_DENSITY_CONFIG.minZoomFillRatio +
-    (MARKER_DENSITY_CONFIG.maxZoomFillRatio - MARKER_DENSITY_CONFIG.minZoomFillRatio) *
-      Math.pow(progress, MARKER_DENSITY_CONFIG.zoomCurve)
+    markerDensity.min_zoom_fill_ratio +
+    (markerDensity.max_zoom_fill_ratio - markerDensity.min_zoom_fill_ratio) *
+      Math.pow(progress, markerDensity.zoom_curve)
   );
 }
 
@@ -68,7 +75,7 @@ function everyCityFitsLimit(places: PlaceMapItem[], cityLimit: number) {
   return true;
 }
 
-function maxPlacesPerCity(places: PlaceMapItem[], zoom: number, limit: number) {
+function maxPlacesPerCity(zoom: number, limit: number) {
   const safeZoom = Number.isFinite(zoom) ? zoom : MARKER_DENSITY_CONFIG.defaultZoom;
   if (safeZoom < MARKER_DENSITY_CONFIG.cityDetailZoomStart) {
     return 1;
@@ -83,15 +90,12 @@ function maxPlacesPerCity(places: PlaceMapItem[], zoom: number, limit: number) {
 
   return Math.max(
     1,
-    Math.floor(
-      1 +
-        Math.pow(progress, MARKER_DENSITY_CONFIG.cityDetailZoomCurve) *
-          MARKER_DENSITY_CONFIG.maxCityRepresentativesBeforeDetail,
-    ),
+    Math.min(limit, Math.ceil(1 + Math.pow(progress, MARKER_DENSITY_CONFIG.cityDetailZoomCurve) * (limit - 1))),
   );
 }
 
 export function getMapMarkerDensityLimit(places: PlaceMapItem[], options: MarkerDensityOptions): number {
+  const markerDensity = options.markerDensity ?? DEFAULT_MARKER_DENSITY;
   if (places.length === 0) {
     return 0;
   }
@@ -103,11 +107,9 @@ export function getMapMarkerDensityLimit(places: PlaceMapItem[], options: Marker
 
   const viewportCapacity = Math.max(
     1,
-    Math.floor(
-      viewportArea / Math.max(MARKER_DENSITY_CONFIG.minViewportSize, MARKER_DENSITY_CONFIG.markerViewportArea),
-    ),
+    Math.floor(viewportArea / Math.max(MARKER_DENSITY_CONFIG.minViewportSize, markerDensity.marker_viewport_area)),
   );
-  const zoomAwareLimit = Math.max(1, Math.floor(viewportCapacity * zoomFillRatio(options.zoom)));
+  const zoomAwareLimit = Math.max(1, Math.floor(viewportCapacity * zoomFillRatio(options.zoom, markerDensity)));
   const cityRepresentativeLimit = Math.max(
     1,
     Math.floor(
@@ -120,7 +122,10 @@ export function getMapMarkerDensityLimit(places: PlaceMapItem[], options: Marker
   return Math.min(places.length, Math.max(zoomAwareLimit, cityDiversityFloor));
 }
 
-export function getMapPlacePriority(place: PlaceMapItem): number {
+export function getMapPlacePriority(
+  place: PlaceMapItem,
+  markerPriority: AppConfigMapMarkerPriority = DEFAULT_MARKER_PRIORITY,
+): number {
   const editorialWeight = clamp(
     Number.isFinite(place.weight) ? place.weight : 1,
     MIN_PLACE_PRIORITY,
@@ -129,11 +134,11 @@ export function getMapPlacePriority(place: PlaceMapItem): number {
   const score = Math.max(0, Number.isFinite(place.score) ? place.score : 0);
   const photoCount = Math.max(0, place.photo_count);
   const memoryCount = Math.max(0, place.memory_count);
-  const editorialPriority = editorialWeight * editorialWeight * MARKER_PRIORITY_CONFIG.editorialWeightMultiplier;
+  const editorialPriority = editorialWeight * editorialWeight * markerPriority.editorial_weight_multiplier;
   const contentSignal =
-    score * MARKER_PRIORITY_CONFIG.scoreMultiplier +
-    Math.sqrt(photoCount) * MARKER_PRIORITY_CONFIG.photoCountSqrtMultiplier +
-    memoryCount * MARKER_PRIORITY_CONFIG.memoryCountMultiplier;
+    score * markerPriority.score_multiplier +
+    Math.sqrt(photoCount) * markerPriority.photo_count_sqrt_multiplier +
+    memoryCount * markerPriority.memory_count_multiplier;
 
   return editorialPriority + contentSignal;
 }
@@ -167,37 +172,46 @@ function bestPlacePerCity(rankedPlaces: RankedPlace[]) {
 
 export function limitMapMarkersByDensity(places: PlaceMapItem[], options: MarkerDensityOptions): PlaceMapItem[] {
   const limit = getMapMarkerDensityLimit(places, options);
-  const cityLimit = maxPlacesPerCity(places, options.zoom, limit);
+  const cityLimit = maxPlacesPerCity(options.zoom, limit);
 
   if (places.length <= limit && everyCityFitsLimit(places, cityLimit)) {
     return places;
   }
 
-  const rankedPlaces = places.map((place, index) => ({ index, place, priority: getMapPlacePriority(place) }));
+  const rankedPlaces = places.map((place, index) => ({
+    index,
+    place,
+    priority: getMapPlacePriority(place, options.markerPriority),
+  }));
   const selectedIds = new Set<string>();
   const selectedCountByCity = new Map<string, number>();
-  const addPlace = (place: PlaceMapItem) => {
+  const addPlace = (place: PlaceMapItem, { enforceCityLimit }: AddPlaceOptions) => {
     const citySelectedCount = selectedCountByCity.get(place.city_id) ?? 0;
-    if (selectedIds.has(place.id) || citySelectedCount >= cityLimit || selectedIds.size >= limit) {
+    if (
+      selectedIds.has(place.id) ||
+      selectedIds.size >= limit ||
+      (enforceCityLimit && citySelectedCount >= cityLimit)
+    ) {
       return;
     }
 
     selectedIds.add(place.id);
     selectedCountByCity.set(place.city_id, citySelectedCount + 1);
   };
+  const rankedByPriority = [...rankedPlaces].sort(compareRankedPlaces);
 
   for (const rankedPlace of bestPlacePerCity(rankedPlaces)) {
     if (selectedIds.size >= limit) {
       break;
     }
-    addPlace(rankedPlace.place);
+    addPlace(rankedPlace.place, { enforceCityLimit: true });
   }
 
-  for (const rankedPlace of [...rankedPlaces].sort(compareRankedPlaces)) {
+  for (const rankedPlace of rankedByPriority) {
     if (selectedIds.size >= limit) {
       break;
     }
-    addPlace(rankedPlace.place);
+    addPlace(rankedPlace.place, { enforceCityLimit: true });
   }
 
   return places.filter((place) => selectedIds.has(place.id));

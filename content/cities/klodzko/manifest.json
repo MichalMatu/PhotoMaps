@@ -2,6 +2,7 @@
   "city": {
     "id": "klodzko",
     "name": "Kłodzko",
+    "region": "Dolnośląskie",
     "lat": 50.4337118,
     "lon": 16.6422465,
     "default_zoom": 13,
@@ -28,6 +29,48 @@
       "lat": 50.4403206,
       "lon": 16.6527629,
       "weight": 4.5,
+      "status": "published"
+    },
+    {
+      "slug": "most-gotycki-klodzko",
+      "title": "Most gotycki w Kłodzku",
+      "description": "Kamienny most nad Młynówką, jeden z najbardziej rozpoznawalnych symboli Kłodzka, z figurami i widokiem na starą zabudowę.",
+      "local_comment": "Najlepiej działa w osi mostu albo z poziomu wody. Ważne są figury, kamień, skala przejścia i bliskość starego miasta.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Mały most o dużej pamięci"
+        },
+        {
+          "type": "paragraph",
+          "text": "Most gotycki porządkuje spacer po Kłodzku inaczej niż twierdza: nie przez panoramę, tylko przez detal i przejście. Kamień, figury i ciasna miejska skala dają miejsce, które łatwo zapamiętać po jednym kadrze."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.438125,
+      "lon": 16.6555,
+      "weight": 4.0,
+      "status": "published"
+    },
+    {
+      "slug": "podziemna-trasa-turystyczna-klodzko",
+      "title": "Podziemna Trasa Turystyczna w Kłodzku",
+      "description": "Sieć udostępnionych korytarzy pod starówką, pokazująca magazyny, piwnice i obronną historię miasta od środka.",
+      "local_comment": "Zdjęcia powinny być czytelne mimo ciemności: światło w korytarzu, faktura ścian, sklepienia, wejście i skala przejść. Unikać przypadkowych czarnych kadrów.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Kłodzko pod poziomem ulic"
+        },
+        {
+          "type": "paragraph",
+          "text": "Podziemna trasa dodaje Kłodzku drugą warstwę zwiedzania. Nad ziemią widać most, rynek i twierdzę, a pod starówką pojawiają się korytarze, dawne piwnice i historia miasta budowana od spodu."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.4383,
+      "lon": 16.6528,
+      "weight": 4.1,
       "status": "published"
     }
   ],

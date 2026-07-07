@@ -2,6 +2,7 @@
   "city": {
     "id": "walbrzych",
     "name": "Wałbrzych",
+    "region": "Dolnośląskie",
     "lat": 50.8422,
     "lon": 16.2924,
     "default_zoom": 13,
@@ -28,7 +29,7 @@
           "text": "Na mapie warto czytać go nie tylko jako zabytek, ale też jako cel na pół dnia: z widokami, ogrodami i trasami po okolicy."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.8422,
       "lon": 16.2924,
       "weight": 5.0,
@@ -57,6 +58,27 @@
       "lat": 50.7723905,
       "lon": 16.2614471,
       "weight": 4.5,
+      "status": "published"
+    },
+    {
+      "slug": "palmiarnia-walbrzych",
+      "title": "Palmiarnia w Wałbrzychu",
+      "description": "Historyczna palmiarnia przy Książu, z egzotyczną roślinnością, szkłem, cegłą i spokojniejszym rytmem zwiedzania.",
+      "local_comment": "Nie traktować jako dodatku do zamku. Galeria powinna mieć osobną logikę: wnętrza, światło przez szkło, rośliny, detale konstrukcji i wejście.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Zielony kontrapunkt dla Książa"
+        },
+        {
+          "type": "paragraph",
+          "text": "Palmiarnia w Wałbrzychu działa najlepiej jako miękkie dopełnienie zamkowej skali Książa. Zamiast murów i tarasów pojawia się ciepło szklarni, egzotyczna zieleń i historia miejsca zbudowanego jako prywatny gest."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.8296,
+      "lon": 16.3065,
+      "weight": 4.0,
       "status": "published"
     }
   ],

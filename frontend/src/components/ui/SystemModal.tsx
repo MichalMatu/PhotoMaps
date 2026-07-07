@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { GripHorizontal, X } from "lucide-react";
 
 import { lockDocumentScroll, unlockDocumentScroll } from "./documentScrollLock";
@@ -24,6 +24,7 @@ type Props = {
   onConfirm?: () => void;
   showActions?: boolean;
   size?: "default" | "wide" | "large";
+  style?: CSSProperties;
   title: string;
   tone?: "default" | "danger" | "error";
   variant?: "default" | "media";
@@ -49,6 +50,7 @@ export function SystemModal({
   onConfirm,
   showActions = true,
   size = "default",
+  style,
   title,
   tone = "default",
   variant = "default",
@@ -90,6 +92,8 @@ export function SystemModal({
   }, [isBusy, isTopModal, requestClose]);
 
   useDialogFocus(draggableWindow.windowRef, true, isTopModal);
+  const modalStyle =
+    isFullscreen || (!style && !draggableWindow.style) ? undefined : { ...style, ...draggableWindow.style };
 
   return createPortal(
     <div
@@ -118,7 +122,7 @@ export function SystemModal({
         aria-labelledby={titleId}
         tabIndex={-1}
         ref={draggableWindow.windowRef}
-        style={isFullscreen ? undefined : draggableWindow.style}
+        style={modalStyle}
         onClick={stopFloatingWindowEvent}
         onContextMenu={stopFloatingWindowEvent}
         onDoubleClick={stopFloatingWindowEvent}

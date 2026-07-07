@@ -2,6 +2,7 @@
   "city": {
     "id": "radochow",
     "name": "Radochów",
+    "region": "Dolnośląskie",
     "lat": 50.3497257,
     "lon": 16.8294883,
     "default_zoom": 13,

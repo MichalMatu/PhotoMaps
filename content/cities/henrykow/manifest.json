@@ -1,0 +1,36 @@
+{
+  "city": {
+    "id": "henrykow",
+    "name": "Henryków",
+    "region": "Dolnośląskie",
+    "lat": 50.653,
+    "lon": 17.014,
+    "default_zoom": 13,
+    "sort_order": 195,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "opactwo-cystersow-henrykow",
+      "title": "Opactwo Cystersów w Henrykowie",
+      "description": "Rozległy pocysterski zespół klasztorny, kojarzony z Księgą Henrykowską i jedną z najważniejszych warstw piśmiennictwa w regionie.",
+      "local_comment": "Galeria powinna mieć rytm monumentalny, ale nie ciężki: dziedziniec, fasada, wnętrza dostępne do fotografowania, park i detale barokowe.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Klasztor, księga i długa pamięć"
+        },
+        {
+          "type": "paragraph",
+          "text": "Opactwo w Henrykowie jest miejscem, w którym architektura spotyka się z historią języka i klasztornej pracy. Dla PhotoMap to dobry punkt do pokazania Dolnego Śląska mniej oczywistego niż zamki: uporządkowanego, spokojnego i bardzo silnie osadzonego w kulturze."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.6526227,
+      "lon": 17.0137816,
+      "weight": 4.0,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

@@ -38,6 +38,7 @@ def test_import_city_manifest_upserts_places_and_guides(client_session, tmp_path
                 "city": {
                     "id": "wroclaw",
                     "name": "Wrocław",
+                    "region": "Dolnośląskie",
                     "lat": 51.1079,
                     "lon": 17.0385,
                     "default_zoom": 13,
@@ -101,6 +102,7 @@ def test_import_city_manifest_upserts_places_and_guides(client_session, tmp_path
     assert summary.places_created == 1
     assert summary.guides_created == 1
     assert city is not None
+    assert city.region == "Dolnośląskie"
     assert place.title == "Rynek"
     assert place.city_id == "wroclaw"
     assert place.status == "published"
@@ -119,6 +121,7 @@ def test_import_city_manifest_upserts_places_and_guides(client_session, tmp_path
     assert place.photo_count == 0
     assert place.cover_photo_id is None
     assert guide.title == "Pierwszy spacer"
+    assert guide.kind == "route"
     assert guide.article_blocks == [
         {"type": "heading", "text": "Pełny opis spaceru"},
         {"type": "paragraph", "text": "Trasa prowadzi przez najczytelniejsze punkty miasta."},
@@ -131,6 +134,90 @@ def test_import_city_manifest_upserts_places_and_guides(client_session, tmp_path
 
     assert second_summary.places_updated == 1
     assert len(session.exec(select(PlaceGuide)).all()) == 1
+
+
+def test_import_city_manifest_supports_collections(client_session, tmp_path: Path) -> None:
+    _, session = client_session
+    module = load_import_city_module()
+    manifest_path = tmp_path / "manifest.json"
+    session.add(Category(id="local_classic", label="Lokalny klasyk", status="active"))
+    session.commit()
+
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "city": {
+                    "id": "wroclaw",
+                    "name": "Wrocław",
+                    "region": "Dolnośląskie",
+                    "lat": 51.1079,
+                    "lon": 17.0385,
+                    "default_zoom": 13,
+                    "sort_order": 10,
+                    "status": "active",
+                },
+                "places": [
+                    {
+                        "slug": "mur",
+                        "title": "Mur",
+                        "category_ids": ["local_classic"],
+                        "lat": 51.109,
+                        "lon": 17.032,
+                        "status": "published",
+                    }
+                ],
+                "guides": [
+                    {
+                        "slug": "murale",
+                        "kind": "collection",
+                        "title": "Murale",
+                        "status": "published",
+                        "places": [{"slug": "mur", "sort_order": 0}],
+                    }
+                ],
+            }
+        )
+    )
+
+    summary = module.import_city_manifest(manifest_path, session=session)
+    guide = session.exec(select(Guide).where(Guide.slug == "murale")).one()
+
+    assert summary.guides_created == 1
+    assert guide.kind == "collection"
+    assert guide.route_points == []
+
+
+def test_import_city_manifest_rejects_collection_route_points(client_session, tmp_path: Path) -> None:
+    _, session = client_session
+    module = load_import_city_module()
+    manifest_path = tmp_path / "manifest.json"
+
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "city": {
+                    "id": "wroclaw",
+                    "name": "Wrocław",
+                    "region": "Dolnośląskie",
+                    "lat": 51.1079,
+                    "lon": 17.0385,
+                },
+                "places": [],
+                "guides": [
+                    {
+                        "slug": "murale",
+                        "kind": "collection",
+                        "title": "Murale",
+                        "route_points": [{"lat": 51.109, "lon": 17.032}],
+                        "status": "draft",
+                    }
+                ],
+            }
+        )
+    )
+
+    with pytest.raises(ValueError, match=r"guide\[murale\]\.route_points must be empty for collections"):
+        module.import_city_manifest(manifest_path, session=session)
 
 
 def test_import_city_manifest_dry_run_leaves_database_and_storage_unchanged(
@@ -146,7 +233,13 @@ def test_import_city_manifest_dry_run_leaves_database_and_storage_unchanged(
     manifest_path.write_text(
         json.dumps(
             {
-                "city": {"id": "wroclaw", "name": "Wrocław", "lat": 51.1079, "lon": 17.0385},
+                "city": {
+                    "id": "wroclaw",
+                    "name": "Wrocław",
+                    "region": "Dolnośląskie",
+                    "lat": 51.1079,
+                    "lon": 17.0385,
+                },
                 "places": [
                     {
                         "slug": "dry-run-place",
@@ -182,6 +275,7 @@ def test_import_city_manifest_rejects_non_published_guide_places(client_session,
                 "city": {
                     "id": "wroclaw",
                     "name": "Wrocław",
+                    "region": "Dolnośląskie",
                     "lat": 51.1079,
                     "lon": 17.0385,
                     "status": "active",
@@ -227,6 +321,7 @@ def test_import_city_manifest_rejects_invalid_custom_fields(client_session, tmp_
                 "city": {
                     "id": "wroclaw",
                     "name": "Wrocław",
+                    "region": "Dolnośląskie",
                     "lat": 51.1079,
                     "lon": 17.0385,
                     "status": "active",
@@ -265,6 +360,7 @@ def test_import_city_manifest_rejects_invalid_article_blocks(client_session, tmp
                 "city": {
                     "id": "wroclaw",
                     "name": "Wrocław",
+                    "region": "Dolnośląskie",
                     "lat": 51.1079,
                     "lon": 17.0385,
                     "status": "active",
@@ -295,6 +391,7 @@ def test_import_city_manifest_rejects_invalid_article_blocks(client_session, tmp
                 "city": {
                     "id": "wroclaw",
                     "name": "Wrocław",
+                    "region": "Dolnośląskie",
                     "lat": 51.1079,
                     "lon": 17.0385,
                     "status": "active",
@@ -325,6 +422,7 @@ def test_import_city_manifest_rejects_invalid_article_blocks(client_session, tmp
                 "city": {
                     "id": "wroclaw",
                     "name": "Wrocław",
+                    "region": "Dolnośląskie",
                     "lat": 51.1079,
                     "lon": 17.0385,
                     "status": "active",

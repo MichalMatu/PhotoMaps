@@ -20,11 +20,23 @@ from app.services.guide_deletion import delete_guide_permanently
 from app.services.guide_previews import approved_cover_photos_by_place
 
 GUIDE_STATUSES = {"draft", "published", "archived"}
+GUIDE_KINDS = {"route", "collection"}
 
 
 def ensure_guide_status(status: str) -> None:
     if status not in GUIDE_STATUSES:
         raise HTTPException(status_code=422, detail="Unsupported guide status")
+
+
+def ensure_guide_kind(kind: str) -> None:
+    if kind not in GUIDE_KINDS:
+        raise HTTPException(status_code=422, detail="Unsupported guide kind")
+
+
+def ensure_guide_shape(kind: str, route_points: list[GuideRoutePoint] | list[dict]) -> None:
+    ensure_guide_kind(kind)
+    if kind == "collection" and route_points:
+        raise HTTPException(status_code=422, detail="Collections cannot define route points")
 
 
 def ensure_guide_slug_available(session: Session, slug: str, guide_id: str | None = None) -> None:
@@ -79,6 +91,7 @@ def get_admin_guide_detail(session: Session, guide_id: str) -> GuideDetailRead:
 
 
 def create_admin_guide(session: Session, payload: GuideCreate) -> GuideRead:
+    ensure_guide_shape(payload.kind, payload.route_points)
     ensure_guide_status(payload.status)
     ensure_guide_slug_available(session, payload.slug)
     data = payload.model_dump()
@@ -97,6 +110,9 @@ def update_admin_guide(session: Session, guide_id: str, payload: GuideUpdate) ->
         raise HTTPException(status_code=404, detail="Guide not found")
 
     data = payload.model_dump(exclude_unset=True)
+    next_kind = data.get("kind", guide.kind)
+    next_route_points = payload.route_points if "route_points" in data else guide.route_points
+    ensure_guide_shape(next_kind, next_route_points or [])
     if "status" in data and data["status"] is not None:
         ensure_guide_status(data["status"])
         if data["status"] == "published":

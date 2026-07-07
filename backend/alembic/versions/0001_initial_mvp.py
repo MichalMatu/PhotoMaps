@@ -16,17 +16,11 @@ branch_labels = None
 depends_on = None
 
 STARTER_CATEGORIES = [
-    ("bar_mleczny", "Bar mleczny", "Tanie lokalne jedzenie bez udawania.", "utensils", 10),
-    ("street_food", "Street food", "Szybkie miejsca z charakterem.", "sandwich", 20),
-    ("coffee", "Kawa", "Kawiarnie warte postoju.", "coffee", 30),
-    ("viewpoint", "Punkt widokowy", "Miejsca z dobrym kadrem na miasto.", "binoculars", 40),
+    ("local_classic", "Lokalny klasyk", "Miejsca mocno związane z miastem i jego pamięcią.", "landmark", 10),
+    ("atmospheric_place", "Miejsce z klimatem", "Nastrojowe miejsca dobre do zdjęć, spaceru i opowieści.", "sparkles", 20),
+    ("viewpoint", "Punkt widokowy", "Miejsca z dobrym kadrem na miasto.", "binoculars", 30),
+    ("hidden_gem", "Ukryta perła", "Miejsca poza oczywistą trasą.", "sparkles", 40),
     ("mural", "Mural", "Sztuka uliczna i ściany z historią.", "palette", 50),
-    ("hidden_gem", "Hidden gem", "Miejsca poza oczywistą trasą.", "sparkles", 60),
-    ("cheap_food", "Tanie jedzenie", "Dobre ceny i sensowna jakość.", "coins", 70),
-    ("date_spot", "Na randkę", "Miejsca na spokojne spotkanie.", "heart", 80),
-    ("rainy_day", "Na deszcz", "Adresy dobre, gdy pogoda nie pomaga.", "cloud-rain", 90),
-    ("after_22", "Po 22", "Miejsca działające późnym wieczorem.", "moon", 100),
-    ("local_classic", "Lokalny klasyk", "Adresy znane i lubiane przez mieszkańców.", "landmark", 110),
 ]
 
 
@@ -135,6 +129,7 @@ def create_guide_tables() -> None:
         "guide",
         sa.Column("id", sa.String(), primary_key=True),
         sa.Column("slug", sa.String(), nullable=False),
+        sa.Column("kind", sa.String(), nullable=False, server_default="route"),
         sa.Column("title", sa.String(), nullable=False),
         sa.Column("description", sa.String(), nullable=True),
         sa.Column("status", sa.String(), nullable=False, server_default="draft"),
@@ -142,6 +137,7 @@ def create_guide_tables() -> None:
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
     )
     create_index_if_missing("ix_guide_slug", "guide", ["slug"], unique=True)
+    create_index_if_missing("ix_guide_kind", "guide", ["kind"])
     create_index_if_missing("ix_guide_status", "guide", ["status"])
 
     op.create_table(

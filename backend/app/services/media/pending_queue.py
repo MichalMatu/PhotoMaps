@@ -35,16 +35,18 @@ def pending_public_media_usage(session: Session) -> PendingMediaQueueUsage:
 
 def stored_media_bytes(
     original_path: str,
-    public_path: str,
-    thumb_path: str,
+    public_path: str | None,
+    thumb_path: str | None,
     audio_original_path: str | None = None,
     audio_public_path: str | None = None,
 ) -> int:
     paths = []
     try:
         paths.append(images.storage_path(images.PRIVATE_STORAGE_DIR, original_path))
-        paths.append(images.public_storage_path(public_path))
-        paths.append(images.public_storage_path(thumb_path))
+        if public_path:
+            paths.append(images.public_storage_path(public_path))
+        if thumb_path:
+            paths.append(images.public_storage_path(thumb_path))
         if audio_original_path:
             paths.append(images.storage_path(images.PRIVATE_STORAGE_DIR, audio_original_path))
         if audio_public_path:

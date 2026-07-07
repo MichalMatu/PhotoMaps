@@ -1,0 +1,36 @@
+{
+  "city": {
+    "id": "kamienna-gora",
+    "name": "Kamienna Góra",
+    "region": "Dolnośląskie",
+    "lat": 50.7833,
+    "lon": 16.0333,
+    "default_zoom": 13,
+    "sort_order": 105,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "projekt-arado",
+      "title": "Projekt Arado",
+      "description": "Podziemna trasa turystyczna w Kamiennej Górze, łącząca wojenną historię, ekspozycję techniczną i teatralny sposób zwiedzania.",
+      "local_comment": "To miejsce potrzebuje zdjęć wejścia, korytarzy, światła i eksponatów. Kadry muszą być czytelne w ciemności i nie mogą robić z historii taniej sensacji.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Podziemia z fabułą"
+        },
+        {
+          "type": "paragraph",
+          "text": "Projekt Arado dodaje do mapy Kamienną Górę jako punkt tajemnic i techniki. Siła miejsca nie polega tylko na tunelach, ale na połączeniu podziemnej przestrzeni, wojennej historii i prowadzenia zwiedzających przez opowieść."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.7799044,
+      "lon": 16.0298151,
+      "weight": 4.1,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

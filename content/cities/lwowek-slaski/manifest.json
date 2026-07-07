@@ -2,6 +2,7 @@
   "city": {
     "id": "lwowek-slaski",
     "name": "Lwówek Śląski",
+    "region": "Dolnośląskie",
     "lat": 51.1108921,
     "lon": 15.5851502,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Rynek w Lwówku Śląskim wzmacnia zachodnią część mapy o klasyczny miejski punkt. Dobrze łączy się z zamkami, mostami i mniejszymi miejscowościami Pogórza Izerskiego."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1108921,
       "lon": 15.5851502,
       "weight": 3.8,
@@ -45,7 +46,7 @@
           "text": "Szwajcaria Lwówecka dodaje do Lwówka naturalną warstwę krajobrazową. To szybki przeskok z rynku i ratusza w piaskowcowe formy, widoki i spacerowy rytm Pogórza."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1014,
       "lon": 15.59404,
       "weight": 4.0,

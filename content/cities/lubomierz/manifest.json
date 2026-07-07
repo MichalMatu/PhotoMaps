@@ -2,6 +2,7 @@
   "city": {
     "id": "lubomierz",
     "name": "Lubomierz",
+    "region": "Dolnośląskie",
     "lat": 51.0126848,
     "lon": 15.511109,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Rynek w Lubomierzu dodaje do mapy miejsce mniej monumentalne, ale bardzo charakterystyczne. Dobrze pokazuje małomiasteczkową warstwę Dolnego Śląska, która nie konkuruje skalą z zamkami, tylko atmosferą."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.0126848,
       "lon": 15.511109,
       "weight": 3.7,

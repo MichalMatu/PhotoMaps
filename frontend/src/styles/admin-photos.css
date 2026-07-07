@@ -112,7 +112,45 @@
 .place-photo-strip {
   display: grid;
   gap: var(--space-3);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+}
+
+.place-photo-strip--slots-2 {
+  grid-template-columns: repeat(2, minmax(min(100%, 280px), 1fr));
+}
+
+.place-photo-strip--slots-3 {
+  grid-template-columns: repeat(3, minmax(min(100%, 280px), 1fr));
+}
+
+.place-photo-strip--slots-4 {
+  grid-template-columns: repeat(4, minmax(min(100%, 280px), 1fr));
+}
+
+.place-photo-strip--slots-5 {
+  grid-template-columns: repeat(5, minmax(min(100%, 280px), 1fr));
+}
+
+.place-photo-add-card {
+  align-items: center;
+  background: color-mix(in srgb, var(--surface-card) 46%, transparent);
+  border-color: var(--border-strong);
+  border-style: dashed;
+  color: var(--content-secondary);
+  cursor: pointer;
+  display: grid;
+  justify-items: center;
+  min-height: 220px;
+  padding: var(--space-4);
+}
+
+.place-photo-add-card:hover {
+  background: var(--accent-soft);
+  color: var(--accent-primary);
+}
+
+.place-photo-add-card:focus-visible {
+  box-shadow: var(--focus-soft);
 }
 
 .admin-media-albums {
@@ -285,6 +323,15 @@
   display: grid;
   gap: var(--space-2);
   min-width: 0;
+}
+
+.admin-audio-controls--compact .ui-setting-field-label-row {
+  block-size: 1px;
+  clip-path: inset(50%);
+  inline-size: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
 }
 
 .admin-audio-controls label {
@@ -584,9 +631,55 @@
 
 .admin-photo-gallery-sidebar {
   align-content: start;
+  background: var(--surface-media-soft);
+  color: var(--content-on-media);
   display: grid;
   gap: var(--space-3);
-  max-height: min(52vh, 520px);
+  max-height: none;
+  overflow: visible;
+  text-shadow: var(--shadow-media-glass-note-text);
+}
+
+.admin-photo-gallery-sidebar .admin-audio-controls,
+.admin-photo-gallery-sidebar .ui-setting-field-label,
+.admin-photo-gallery-sidebar .ui-field-hint-trigger {
+  color: var(--content-on-media-muted);
+}
+
+.admin-photo-gallery-sidebar .file-input-control {
+  background: var(--surface-media-control);
+  border-color: var(--border-media-control);
+  color: var(--content-on-media);
+}
+
+.admin-photo-gallery-sidebar .file-input-control-button {
+  background: var(--surface-media-control-hover);
+  color: var(--content-media-control-hover);
+}
+
+.admin-photo-gallery-sidebar .file-input-control-name {
+  color: var(--content-on-media-muted);
+}
+
+.admin-photo-gallery-sidebar .ui-button--secondary {
+  background: var(--surface-media-control);
+  border-color: var(--border-media-control);
+  color: var(--content-on-media);
+}
+
+.admin-photo-gallery-sidebar .ui-button--secondary:not(:disabled):hover {
+  background: var(--surface-media-control-hover);
+  color: var(--content-media-control-hover);
+}
+
+.admin-photo-gallery-sidebar .ui-button--ghost {
+  border-color: var(--border-media-control);
+  color: var(--content-on-media-muted);
+}
+
+.admin-photo-gallery-sidebar .ui-button--ghost:not(:disabled):hover {
+  background: var(--surface-media-control-hover);
+  color: var(--content-media-control-hover);
 }
 
 .admin-photo-text-form {
@@ -707,7 +800,7 @@
   }
 
   .admin-photo-gallery-sidebar {
-    max-height: 34vh;
+    max-height: none;
   }
 
   .admin-photo-gallery-description {
@@ -747,5 +840,13 @@
 
   .place-photo-strip {
     grid-template-columns: 1fr;
+  }
+
+  .place-photo-panel .admin-media-item-image {
+    aspect-ratio: 16 / 9;
+  }
+
+  .place-photo-add-card {
+    min-height: 72px;
   }
 }

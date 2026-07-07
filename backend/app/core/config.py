@@ -3,6 +3,7 @@ from pathlib import Path
 
 APP_NAME = os.getenv("APP_NAME", "PhotoMap")
 API_TITLE = os.getenv("API_TITLE", f"{APP_NAME} API")
+PUBLIC_SITE_URL = os.getenv("PHOTOMAP_PUBLIC_SITE_URL", "").rstrip("/")
 
 
 def get_admin_token() -> str | None:

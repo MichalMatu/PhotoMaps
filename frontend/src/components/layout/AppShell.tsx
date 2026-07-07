@@ -9,6 +9,7 @@ import { getNextAppShellNavigationState, type AppShellNavigationState } from "./
 import type {
   AppSection,
   AppShellAdminAction,
+  AppShellMapAudioControl,
   AppShellMapCategoryControls,
   AppShellMapLayerControls,
   AppShellMapPinnedMediaControl,
@@ -18,6 +19,7 @@ type Props = {
   activeSection: AppSection;
   adminAction?: AppShellAdminAction;
   children: ReactNode;
+  mapAudioControl?: AppShellMapAudioControl;
   mapLayerControls?: AppShellMapLayerControls;
   mapPinnedMediaControl?: AppShellMapPinnedMediaControl;
   mapCategoryControls?: AppShellMapCategoryControls;
@@ -33,6 +35,7 @@ export function AppShell({
   activeSection,
   adminAction,
   children,
+  mapAudioControl,
   mapCategoryControls,
   mapLayerControls,
   mapPinnedMediaControl,
@@ -83,6 +86,7 @@ export function AppShell({
         activeSection={activeSection}
         adminAction={adminAction}
         isOpen={isRailOpen}
+        mapAudioControl={mapAudioControl}
         mapCategoryControls={mapCategoryControls}
         mapLayerControls={mapLayerControls}
         mapPinnedMediaControl={mapPinnedMediaControl}
@@ -99,6 +103,7 @@ export function AppShell({
         activeSection={activeSection}
         adminAction={adminAction}
         isOpen={isMenuOpen}
+        mapAudioControl={mapAudioControl}
         mapCategoryControls={mapCategoryControls}
         mapLayerControls={mapLayerControls}
         mapPinnedMediaControl={mapPinnedMediaControl}

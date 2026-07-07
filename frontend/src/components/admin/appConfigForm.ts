@@ -44,6 +44,14 @@ export function createAppConfigDraft(config: AppConfig): AppConfigDraft {
     map: {
       fallback_center: { ...config.map.fallback_center },
       fallback_zoom: config.map.fallback_zoom,
+      marker_density: { ...config.map.marker_density },
+      marker_priority: { ...config.map.marker_priority },
+      marker_scale: {
+        base_size: { ...config.map.marker_scale.base_size },
+        max_render_scale: config.map.marker_scale.max_render_scale,
+        min_render_scale: config.map.marker_scale.min_render_scale,
+        priority: { ...config.map.marker_scale.priority },
+      },
     },
     place_custom_fields: [...config.place_custom_fields]
       .sort((firstField, secondField) => firstField.sort_order - secondField.sort_order)
@@ -103,6 +111,7 @@ export function appConfigPayloadFromDraft(draft: AppConfigDraft): AppConfigDraft
   ) {
     errors.push("Domyślny zoom mapy musi być liczbą od 1 do 20.");
   }
+  validateMapSettings(draft, errors);
 
   if (errors.length > 0) {
     return { errors, payload: null };
@@ -123,6 +132,33 @@ export function appConfigPayloadFromDraft(draft: AppConfigDraft): AppConfigDraft
           lon: Number(draft.map.fallback_center.lon),
         },
         fallback_zoom: Number(draft.map.fallback_zoom),
+        marker_density: {
+          full_density_zoom: Number(draft.map.marker_density.full_density_zoom),
+          marker_viewport_area: Number(draft.map.marker_density.marker_viewport_area),
+          max_zoom_fill_ratio: Number(draft.map.marker_density.max_zoom_fill_ratio),
+          min_zoom: Number(draft.map.marker_density.min_zoom),
+          min_zoom_fill_ratio: Number(draft.map.marker_density.min_zoom_fill_ratio),
+          zoom_curve: Number(draft.map.marker_density.zoom_curve),
+        },
+        marker_priority: {
+          editorial_weight_multiplier: Number(draft.map.marker_priority.editorial_weight_multiplier),
+          memory_count_multiplier: Number(draft.map.marker_priority.memory_count_multiplier),
+          photo_count_sqrt_multiplier: Number(draft.map.marker_priority.photo_count_sqrt_multiplier),
+          score_multiplier: Number(draft.map.marker_priority.score_multiplier),
+        },
+        marker_scale: {
+          base_size: {
+            height: Number(draft.map.marker_scale.base_size.height),
+            width: Number(draft.map.marker_scale.base_size.width),
+          },
+          max_render_scale: Number(draft.map.marker_scale.max_render_scale),
+          min_render_scale: Number(draft.map.marker_scale.min_render_scale),
+          priority: {
+            curve: Number(draft.map.marker_scale.priority.curve),
+            max_scale: Number(draft.map.marker_scale.priority.max_scale),
+            min_scale: Number(draft.map.marker_scale.priority.min_scale),
+          },
+        },
       },
       place_custom_fields: customFields,
       product_name: productName,
@@ -226,4 +262,78 @@ function isHttpUrl(value: string): boolean {
 
 function isFiniteMapNumber(value: number, min: number, max: number): boolean {
   return Number.isFinite(Number(value)) && Number(value) >= min && Number(value) <= max;
+}
+
+function validateMapSettings(draft: AppConfigDraft, errors: string[]) {
+  const { marker_density: density, marker_priority: priority, marker_scale: scale } = draft.map;
+
+  if (!isIntegerInRange(scale.base_size.width, 32, 240)) {
+    errors.push("Szerokość kafla miejsca musi być liczbą całkowitą od 32 do 240 px.");
+  }
+  if (!isIntegerInRange(scale.base_size.height, 24, 220)) {
+    errors.push("Wysokość kafla miejsca musi być liczbą całkowitą od 24 do 220 px.");
+  }
+  if (!isFiniteMapNumber(scale.min_render_scale, 0.25, 3)) {
+    errors.push("Minimalna skala kafla musi być od 0.25 do 3.");
+  }
+  if (!isFiniteMapNumber(scale.max_render_scale, 0.25, 3)) {
+    errors.push("Maksymalna skala kafla musi być od 0.25 do 3.");
+  }
+  if (Number(scale.min_render_scale) > Number(scale.max_render_scale)) {
+    errors.push("Minimalna skala kafla nie może być większa niż maksymalna.");
+  }
+  if (!isFiniteMapNumber(scale.priority.min_scale, 0.25, 3)) {
+    errors.push("Skala niskiego priorytetu musi być od 0.25 do 3.");
+  }
+  if (!isFiniteMapNumber(scale.priority.max_scale, 0.25, 3)) {
+    errors.push("Skala wysokiego priorytetu musi być od 0.25 do 3.");
+  }
+  if (Number(scale.priority.min_scale) > Number(scale.priority.max_scale)) {
+    errors.push("Skala niskiego priorytetu nie może być większa niż wysokiego.");
+  }
+  if (!isFiniteMapNumber(scale.priority.curve, 0.25, 3)) {
+    errors.push("Krzywa priorytetu kafla musi być od 0.25 do 3.");
+  }
+
+  if (!isIntegerInRange(density.marker_viewport_area, 3_000, 80_000)) {
+    errors.push("Powierzchnia ekranu na kafel musi być liczbą całkowitą od 3000 do 80000 px.");
+  }
+  if (!isFiniteMapNumber(density.min_zoom, 1, 20)) {
+    errors.push("Zoom startowy gęstości musi być od 1 do 20.");
+  }
+  if (!isFiniteMapNumber(density.full_density_zoom, 1, 20)) {
+    errors.push("Zoom pełnej gęstości musi być od 1 do 20.");
+  }
+  if (Number(density.min_zoom) > Number(density.full_density_zoom)) {
+    errors.push("Zoom startowy gęstości nie może być większy niż zoom pełnej gęstości.");
+  }
+  if (!isFiniteMapNumber(density.min_zoom_fill_ratio, 0.02, 1.5)) {
+    errors.push("Minimalne wypełnienie mapy musi być od 0.02 do 1.5.");
+  }
+  if (!isFiniteMapNumber(density.max_zoom_fill_ratio, 0.02, 1.5)) {
+    errors.push("Maksymalne wypełnienie mapy musi być od 0.02 do 1.5.");
+  }
+  if (Number(density.min_zoom_fill_ratio) > Number(density.max_zoom_fill_ratio)) {
+    errors.push("Minimalne wypełnienie mapy nie może być większe niż maksymalne.");
+  }
+  if (!isFiniteMapNumber(density.zoom_curve, 0.25, 4)) {
+    errors.push("Krzywa gęstości musi być od 0.25 do 4.");
+  }
+
+  if (!isFiniteMapNumber(priority.editorial_weight_multiplier, 0, 100)) {
+    errors.push("Waga priorytetu redakcji musi być od 0 do 100.");
+  }
+  if (!isFiniteMapNumber(priority.photo_count_sqrt_multiplier, 0, 100)) {
+    errors.push("Waga liczby zdjęć musi być od 0 do 100.");
+  }
+  if (!isFiniteMapNumber(priority.memory_count_multiplier, 0, 100)) {
+    errors.push("Waga pamiątek musi być od 0 do 100.");
+  }
+  if (!isFiniteMapNumber(priority.score_multiplier, 0, 100)) {
+    errors.push("Waga score musi być od 0 do 100.");
+  }
+}
+
+function isIntegerInRange(value: number, min: number, max: number): boolean {
+  return Number.isInteger(Number(value)) && Number(value) >= min && Number(value) <= max;
 }

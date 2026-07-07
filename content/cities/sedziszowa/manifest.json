@@ -2,6 +2,7 @@
   "city": {
     "id": "sedziszowa",
     "name": "Sędziszowa",
+    "region": "Dolnośląskie",
     "lat": 51.0279865,
     "lon": 15.8698375,
     "default_zoom": 13,

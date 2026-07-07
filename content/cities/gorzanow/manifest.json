@@ -1,0 +1,40 @@
+{
+  "city": {
+    "id": "gorzanow",
+    "name": "Gorzanów",
+    "region": "Dolnośląskie",
+    "lat": 50.35133,
+    "lon": 16.63456,
+    "default_zoom": 13,
+    "sort_order": 441,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zamek-gorzanow",
+      "title": "Zamek w Gorzanowie",
+      "description": "Rozległy renesansowo-barokowy zespół pałacowo-zamkowy w Gorzanowie, jedna z najważniejszych rezydencji ziemi kłodzkiej.",
+      "local_comment": "Cover powinien pokazać skalę czteroskrzydłowego założenia, wieżę i sgraffitowe elewacje. Unikać samych zrujnowanych detali bez czytelnej bryły.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Wielka rezydencja ziemi kłodzkiej"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zamek w Gorzanowie wnosi do mapy miejsce o dużej architektonicznej skali, ale mniej oczywiste niż najpopularniejsze dolnośląskie zamki. Czteroskrzydłowy układ, dziedzińce, wieża i ślady kolejnych przebudów tworzą mocny punkt między uzdrowiskami a południową częścią Kotliny Kłodzkiej."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie dobrze działa jako przykład rezydencji, która przez lata była zapomniana, a dziś stopniowo odzyskuje czytelność i turystyczną obecność."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.35133,
+      "lon": 16.63456,
+      "weight": 3.9,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

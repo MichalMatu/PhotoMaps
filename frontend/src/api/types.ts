@@ -25,6 +25,7 @@ export type CityStatus = "active" | "archived";
 export type City = {
   id: string;
   name: string;
+  region: string;
   lat: number;
   lon: number;
   default_zoom: number;
@@ -35,6 +36,7 @@ export type City = {
 export type CityPayload = {
   id: string;
   name: string;
+  region: string;
   lat: number;
   lon: number;
   default_zoom: number;
@@ -60,12 +62,49 @@ export type PlaceCustomFieldDefinition = {
   sort_order: number;
 };
 
+type AppConfigMapMarkerSize = {
+  width: number;
+  height: number;
+};
+
+type AppConfigMapMarkerPriorityScale = {
+  min_scale: number;
+  max_scale: number;
+  curve: number;
+};
+
+export type AppConfigMapMarkerScale = {
+  base_size: AppConfigMapMarkerSize;
+  min_render_scale: number;
+  max_render_scale: number;
+  priority: AppConfigMapMarkerPriorityScale;
+};
+
+export type AppConfigMapMarkerDensity = {
+  marker_viewport_area: number;
+  min_zoom: number;
+  full_density_zoom: number;
+  min_zoom_fill_ratio: number;
+  max_zoom_fill_ratio: number;
+  zoom_curve: number;
+};
+
+export type AppConfigMapMarkerPriority = {
+  editorial_weight_multiplier: number;
+  photo_count_sqrt_multiplier: number;
+  memory_count_multiplier: number;
+  score_multiplier: number;
+};
+
 export type AppConfigMap = {
   fallback_center: {
     lat: number;
     lon: number;
   };
   fallback_zoom: number;
+  marker_scale: AppConfigMapMarkerScale;
+  marker_density: AppConfigMapMarkerDensity;
+  marker_priority: AppConfigMapMarkerPriority;
 };
 
 export type AppConfig = {
@@ -177,7 +216,30 @@ export type Memory = {
   audio: AudioAttachment | null;
 };
 
-export type AdminMemory = Memory & {
+export type MemorySubmission = {
+  id: string;
+  place_id: string;
+  author_name: string | null;
+  author_city: string | null;
+  caption: string;
+  memory_text: string;
+  status: ReviewStatus;
+  created_at: string;
+};
+
+export type AdminMemory = {
+  id: string;
+  place_id: string;
+  author_name: string | null;
+  author_city: string | null;
+  caption: string;
+  memory_text: string;
+  public_path: string | null;
+  thumb_path: string | null;
+  admin_public_path: string;
+  admin_thumb_path: string;
+  audio: AudioAttachment | null;
+  admin_audio: AudioAttachment | null;
   status: ReviewStatus;
   paid: boolean;
   share_slug: string;
@@ -407,10 +469,12 @@ export type PlaceMapMemoryPreviewItem = {
 export type PlaceMapPreviewItem = PlaceMapPhotoPreviewItem | PlaceMapMemoryPreviewItem;
 
 export type GuideStatus = "draft" | "published" | "archived";
+export type GuideKind = "route" | "collection";
 
 export type PublicGuide = {
   id: string;
   slug: string;
+  kind: GuideKind;
   title: string;
   description: string | null;
   article_blocks: ContentBlock[];
@@ -460,6 +524,7 @@ export type GuideDetail = Guide & {
 
 export type GuidePayload = {
   slug: string;
+  kind: GuideKind;
   title: string;
   description: string | null;
   article_blocks: ContentBlock[];

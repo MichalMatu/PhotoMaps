@@ -2,6 +2,7 @@
   "city": {
     "id": "bolkow",
     "name": "Bolków",
+    "region": "Dolnośląskie",
     "lat": 50.9220033,
     "lon": 16.100499,
     "default_zoom": 13,

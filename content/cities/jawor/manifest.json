@@ -2,6 +2,7 @@
   "city": {
     "id": "jawor",
     "name": "Jawor",
+    "region": "Dolnośląskie",
     "lat": 51.0504653,
     "lon": 16.1932008,
     "default_zoom": 13,

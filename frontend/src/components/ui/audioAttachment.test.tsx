@@ -9,7 +9,10 @@ describe("audio attachment UI helpers", () => {
   it("validates optional audio files before upload", () => {
     expect(validateAudioFile(null)).toBeNull();
     expect(validateAudioFile(new File([], "empty.mp3", { type: "audio/mpeg" }))).toBe("Plik audio jest pusty.");
-    expect(validateAudioFile(new File(["audio"], "clip.wav", { type: "audio/wav" }))).toBe("Dodaj plik MP3 albo M4A.");
+    expect(validateAudioFile(new File(["audio"], "clip.flac", { type: "audio/flac" }))).toBeNull();
+    expect(validateAudioFile(new File(["audio"], "clip.wav", { type: "audio/wav" }))).toBe(
+      "Dodaj plik MP3, M4A albo FLAC.",
+    );
     expect(
       validateAudioFile(new File(["x".repeat(MAX_AUDIO_FILE_BYTES + 1)], "clip.mp3", { type: "audio/mpeg" })),
     ).toBe("Plik audio może mieć maksymalnie 12 MB.");

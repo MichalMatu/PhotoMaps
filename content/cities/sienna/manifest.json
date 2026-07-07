@@ -1,0 +1,40 @@
+{
+  "city": {
+    "id": "sienna",
+    "name": "Sienna",
+    "region": "Dolnośląskie",
+    "lat": 50.2571,
+    "lon": 16.7939,
+    "default_zoom": 13,
+    "sort_order": 421,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "czarna-gora-masyw-snieznika",
+      "title": "Czarna Góra",
+      "description": "Szczyt w Masywie Śnieżnika nad Sienną, znany z panoram, górskich tras i całorocznego ośrodka turystycznego.",
+      "local_comment": "Cover powinien pokazać masyw i krajobraz, a nie wyłącznie infrastrukturę resortu. Dobre będą kadry z grzbietem, stokami i relacją Czarnej Góry do Śnieżnika.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Szczyt nad Sienną"
+        },
+        {
+          "type": "paragraph",
+          "text": "Czarna Góra dodaje mapie Masywu Śnieżnika bardziej sportowy i widokowy punkt. To miejsce działa zarówno jako cel krótkiego wyjścia, jak i brama do tras w stronę Śnieżnika."
+        },
+        {
+          "type": "paragraph",
+          "text": "W zestawie z Międzygórzem, Igliczną i samym Śnieżnikiem tworzy czytelny klaster południowej ziemi kłodzkiej: wodospad, sanktuarium, szczyt i górski ośrodek."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.25185,
+      "lon": 16.804953,
+      "weight": 4.0,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

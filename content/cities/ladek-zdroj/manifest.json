@@ -2,6 +2,7 @@
   "city": {
     "id": "ladek-zdroj",
     "name": "Lądek-Zdrój",
+    "region": "Dolnośląskie",
     "lat": 50.3438087,
     "lon": 16.8885422,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Zdrój Wojciech jest jednym z najbardziej rozpoznawalnych obiektów Lądka-Zdroju. Na mapie wzmacnia sieć uzdrowisk regionu i daje miejsce o wyraźnej architekturze, historii i rytuale pobytu."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.3438087,
       "lon": 16.8885422,
       "weight": 4.2,

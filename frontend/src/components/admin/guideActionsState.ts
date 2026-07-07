@@ -1,4 +1,4 @@
-import type { ContentBlock, Guide, GuidePayload, GuideRoutePoint, GuideStatus } from "../../api/types";
+import type { ContentBlock, Guide, GuideKind, GuidePayload, GuideRoutePoint, GuideStatus } from "../../api/types";
 import { normalizeContentBlocks } from "../content/contentBlocks";
 
 export type GuideStatusFilter = GuideStatus | "all";
@@ -8,6 +8,7 @@ type GuidePayloadInput = {
   description: string;
   editingGuide: Guide | null;
   generatedSlug: string;
+  kind: GuideKind;
   routePoints: GuideRoutePoint[];
   status: GuideStatus;
   title: string;
@@ -30,6 +31,7 @@ export function guidePayloadFromState({
   description,
   editingGuide,
   generatedSlug,
+  kind,
   routePoints,
   status,
   title,
@@ -40,6 +42,7 @@ export function guidePayloadFromState({
 
   return {
     slug: editingGuide?.slug ?? generatedSlug,
+    kind,
     title,
     description: description.trim() || null,
     article_blocks: normalizeContentBlocks(articleBlocks),

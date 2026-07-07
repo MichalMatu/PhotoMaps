@@ -2,6 +2,7 @@
   "city": {
     "id": "legnica",
     "name": "Legnica",
+    "region": "Dolnośląskie",
     "lat": 51.2081617,
     "lon": 16.1603187,
     "default_zoom": 13,
@@ -28,6 +29,56 @@
       "lat": 51.2110717,
       "lon": 16.1618131,
       "weight": 3.9,
+      "status": "published"
+    },
+    {
+      "slug": "katedra-legnica",
+      "title": "Katedra Świętych Apostołów Piotra i Pawła w Legnicy",
+      "description": "Gotycko-neogotycka katedra w centrum Legnicy, z dwiema wieżami i mocną obecnością w miejskiej panoramie.",
+      "local_comment": "Cover powinien pokazać pion wież i miejski kontekst placu. Dobre są kadry z bryłą całej świątyni, nie tylko portal albo fragment fasady.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Pion gotyckiego centrum"
+        },
+        {
+          "type": "paragraph",
+          "text": "Katedra legnicka dodaje miastu drugi mocny punkt obok zamku. Jest bardziej sakralna i pionowa: wieże, cegła, plac i historyczny układ centrum tworzą miejsce łatwe do rozpoznania podczas spaceru."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie pozwala czytać Legnicę nie tylko przez piastowską warstwę zamkową, ale też przez miejską skalę kościoła, który porządkuje starą część miasta."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 51.207027,
+      "lon": 16.161072,
+      "weight": 4.0,
+      "status": "published"
+    },
+    {
+      "slug": "akademia-rycerska-legnica",
+      "title": "Akademia Rycerska w Legnicy",
+      "description": "Barokowy gmach dawnej Akademii Rycerskiej, jeden z ważnych zabytków centrum Legnicy i obecna przestrzeń kultury.",
+      "local_comment": "Cover powinien pokazać długość fasady, rytm okien i miejskie otoczenie. Portal może być dodatkowym zdjęciem, ale jako cover lepiej działa szerszy kadr.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Barokowa instytucja w środku miasta"
+        },
+        {
+          "type": "paragraph",
+          "text": "Akademia Rycerska w Legnicy pokazuje miasto od strony edukacyjno-reprezentacyjnej, nie tylko zamkowej i sakralnej. Jej długa barokowa fasada tworzy spokojny, miejski kontrapunkt dla bardziej pionowej katedry."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie to dobry trzeci punkt centrum: pozwala zbudować krótki spacer między zamkiem, katedrą i ważnym gmachem publicznym."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 51.208138,
+      "lon": 16.15856,
+      "weight": 3.8,
       "status": "published"
     }
   ],

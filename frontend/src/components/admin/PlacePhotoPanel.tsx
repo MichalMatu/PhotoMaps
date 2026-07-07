@@ -5,6 +5,7 @@ import type { AdminPhoto, City, Place } from "../../api/types";
 import { AdminPhotoGalleryModal } from "./AdminPhotoGalleryModal";
 import { MediaRedactionModal } from "./MediaRedactionModal";
 import { PhotoUploadModal } from "./PhotoUploadModal";
+import { placePhotoGridSlotCount } from "./placePhotoPanelLayout";
 import { PlacePhotoCard } from "./PlacePhotoCard";
 import { PhotoTextEditModal } from "./PhotoTextEditModal";
 import { SystemModal } from "./SystemModal";
@@ -23,6 +24,7 @@ export function PlacePhotoPanel({ cities, onChanged, photos, place }: Props) {
   const editingPhoto = panel.editingPhotoId
     ? (panel.sortedPhotos.find((photo) => photo.id === panel.editingPhotoId) ?? null)
     : null;
+  const gridSlotCount = placePhotoGridSlotCount(panel.sortedPhotos.length);
 
   return (
     <section className="place-photo-panel">
@@ -37,7 +39,7 @@ export function PlacePhotoPanel({ cities, onChanged, photos, place }: Props) {
         </button>
       </div>
 
-      <div className="place-photo-strip">
+      <div className={`place-photo-strip place-photo-strip--slots-${gridSlotCount}`}>
         {panel.sortedPhotos.map((photo) => {
           const isCover = place.cover_photo_id === photo.id;
           return (
@@ -56,6 +58,15 @@ export function PlacePhotoPanel({ cities, onChanged, photos, place }: Props) {
             />
           );
         })}
+        <button
+          aria-label={`Dodaj zdjęcie do miejsca ${place.title}`}
+          className="ui-card place-photo-add-card"
+          title="Dodaj zdjęcie"
+          type="button"
+          onClick={panel.openUploadModal}
+        >
+          <Plus aria-hidden="true" size={24} />
+        </button>
         {photos.length === 0 ? <p className="ui-empty">Brak zdjęć dla tego miejsca.</p> : null}
       </div>
 

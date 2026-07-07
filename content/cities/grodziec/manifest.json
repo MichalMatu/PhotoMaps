@@ -2,6 +2,7 @@
   "city": {
     "id": "grodziec",
     "name": "Grodziec",
+    "region": "Dolnośląskie",
     "lat": 51.16895,
     "lon": 15.78645,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Grodziec łączy dwie silne warstwy regionu: zamki i wulkaniczny krajobraz Pogórza Kaczawskiego. Dzięki temu działa jako bardzo czytelny punkt na mapie, nie tylko kolejna warownia."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1770151,
       "lon": 15.7595163,
       "weight": 4.4,

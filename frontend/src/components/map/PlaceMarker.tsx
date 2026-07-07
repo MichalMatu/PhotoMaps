@@ -3,10 +3,11 @@ import { useMemo } from "react";
 import { Marker, useMap } from "react-leaflet";
 
 import { mediaUrl } from "../../api/http";
-import type { PlaceMapItem } from "../../api/types";
+import type { AppConfigMapMarkerScale, PlaceMapItem } from "../../api/types";
 import { MAP_DISPLAY_CONFIG } from "./mapDisplayConfig";
 import { escapeAttribute } from "./mapHtml";
 import { isMapKeyboardActivationKey } from "./mapKeyboardActivation";
+import { placeMarkerOffsetStyle, type MarkerDisplayOffset } from "./mapMarkerDisplayOffset";
 import { getPlaceMarkerLayout, type PlaceMarkerLayout } from "./mapMarkerScale";
 import {
   galleryMotionStyle,
@@ -27,10 +28,12 @@ function markerIcon(
   layout: PlaceMarkerLayout,
   enterIndex: number,
   isEntering: boolean,
+  displayOffset: MarkerDisplayOffset | null | undefined,
 ) {
   const markerEnterStyle = placeMarkerEnterStyle(enterIndex);
   const enterClassName = isEntering ? "is-entering" : null;
   const imageUrl = escapeAttribute(mediaUrl(previewItem.thumb_path));
+  const markerOffsetStyle = placeMarkerOffsetStyle(displayOffset);
   return L.divIcon({
     className: [
       "place-photo-marker",
@@ -41,7 +44,7 @@ function markerIcon(
     ]
       .filter(Boolean)
       .join(" "),
-    html: `<span style="--place-marker-width: ${layout.width}px; --place-marker-height: ${layout.height}px; --place-marker-image: url('${imageUrl}'); ${markerEnterStyle}"></span>`,
+    html: `<span style="--place-marker-width: ${layout.width}px; --place-marker-height: ${layout.height}px; --place-marker-image: url('${imageUrl}'); ${markerOffsetStyle} ${markerEnterStyle}"></span>`,
     iconAnchor: [Math.round(layout.width / 2), Math.round(layout.height / 2)],
     iconSize: [layout.width, layout.height],
   });
@@ -86,11 +89,12 @@ function activateMarkerFromKeyboard(event: L.LeafletKeyboardEvent, onActivate: (
 }
 
 type Props = {
-  displayPosition?: L.LatLngExpression;
+  displayOffset?: MarkerDisplayOffset;
   place: PlaceMapItem;
   galleryItems: PlaceMapVisualItem[];
   isExpanded: boolean;
   isEntering: boolean;
+  markerScale: AppConfigMapMarkerScale;
   onMediaOpen: (place: PlaceMapItem, item: PlaceMapVisualItem) => void;
   onMemoryOpen: (place: PlaceMapItem) => void;
   onToggleGallery: () => void;
@@ -99,11 +103,12 @@ type Props = {
 };
 
 export function PlaceMarker({
-  displayPosition,
+  displayOffset,
   place,
   galleryItems,
   isExpanded,
   isEntering,
+  markerScale,
   onMediaOpen,
   onMemoryOpen,
   onToggleGallery,
@@ -114,18 +119,19 @@ export function PlaceMarker({
   const galleryItemCount = galleryItems.length + 1;
   const previewItem = useMemo(() => getPlacePreviewVisual(place), [place]);
   const placeLayout = useMemo(
-    () => getPlaceMarkerLayout({ editorialPriority: place.weight, zoom }),
-    [place.weight, zoom],
+    () => getPlaceMarkerLayout({ editorialPriority: place.weight, markerScale, zoom }),
+    [markerScale, place.weight, zoom],
   );
+  const markerVisualOffset = isExpanded ? null : displayOffset;
   const placeIcon = useMemo(
-    () => (previewItem ? markerIcon(previewItem, isExpanded, placeLayout, enterIndex, isEntering) : null),
-    [enterIndex, isEntering, isExpanded, placeLayout, previewItem],
+    () =>
+      previewItem ? markerIcon(previewItem, isExpanded, placeLayout, enterIndex, isEntering, markerVisualOffset) : null,
+    [enterIndex, isEntering, isExpanded, markerVisualOffset, placeLayout, previewItem],
   );
   const markerTitle = place.title;
   const mapSize = map.getSize();
   const markerPoint = map.latLngToContainerPoint([place.lat, place.lon]);
   const placePosition = L.latLng(place.lat, place.lon);
-  const markerPosition = isExpanded ? placePosition : (displayPosition ?? placePosition);
   const availableGalleryWidth = Math.max(
     0,
     Math.min(markerPoint.x, mapSize.x - markerPoint.x) * 2 - PLACE_GALLERY_DISPLAY_CONFIG.edgePadding,
@@ -193,7 +199,7 @@ export function PlaceMarker({
         key={isExpanded ? PHOTO_GALLERY_PANE : MAP_MARKER_PANE}
         keyboard
         pane={isExpanded ? PHOTO_GALLERY_PANE : MAP_MARKER_PANE}
-        position={markerPosition}
+        position={placePosition}
         riseOnHover
         title={markerTitle}
         zIndexOffset={isExpanded ? 1280 : placeLayout.zIndexOffset}

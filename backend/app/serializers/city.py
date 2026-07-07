@@ -6,6 +6,7 @@ def city_to_read(city: City) -> CityRead:
     return CityRead(
         id=city.id,
         name=city.name,
+        region=city.region,
         lat=city.lat,
         lon=city.lon,
         default_zoom=city.default_zoom,

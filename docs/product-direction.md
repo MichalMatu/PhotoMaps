@@ -18,7 +18,7 @@ Centralnym bytem jest `place`. `City` organizuje dane, `Category` opisuje charak
 - trasy albo kolekcje miejsc,
 - lekkie zgloszenia jakosci.
 
-Nie tworzymy osobnych produktow dla zdjec, pamiatek, tras, audio czy historii. Audio dziala jako krotki zalacznik do konkretnego medium wizualnego, a nie osobna warstwa mapy, feed ani niezalezny byt produktu. Mapa ma laczyc potrzebne warstwy przez miejsce, a formaty spoza aktualnego zakresu zostaja zamrozone.
+Nie tworzymy osobnych produktow dla zdjec, pamiatek, tras, audio czy historii. Audio dziala jako krotki zalacznik do konkretnego medium wizualnego, a nie osobna warstwa mapy, feed ani niezalezny byt produktu. Obslugiwane formaty audio to MP3, M4A i FLAC; formaty spoza aktualnego zakresu zostaja zamrozone.
 
 ## Doswiadczenie Mapy
 
@@ -31,6 +31,7 @@ Zasady produktu:
 - zoom zmienia gestosc i rozmiar elementow,
 - klikniecie miniatury w galerii miejsca otwiera bezposrednio jeden lekki widok medium; nie dodajemy posredniego podgladu tego samego zdjecia,
 - widok medium eksponuje obraz, nazwe miejsca, opcjonalne audio oraz jeden kompaktowy blok tekstu: podpis zdjecia z opisem miejsca albo dane pamiatki,
+- audio w widoku medium moze dzialac jako delikatny ambient autoplay tylko po wlaczeniu kontrolki `Audio` w menu mapy,
 - akcje pomocnicze, takie jak edycja pamiatki i zgloszenie problemu, pozostaja male i drugoplanowe,
 - zewnetrzne materialy maja byc pozniej osobnymi, strukturalnymi linkami przypietymi do miejsca, a nie tekstem w podpisie zdjecia,
 - warstwy pomagaja ogladac dane: polecane, galerie, pamiatki i proste kolekcje,
@@ -72,7 +73,7 @@ Admin UI sluzy do korekt, moderacji i pojedynczych zmian. Wieksze paczki miejsc,
 
 PhotoMap nie jest generatorem dowolnych aplikacji. Uniwersalnosc produktu ma wynikac z konfiguracji produktu i rozszerzalnego modelu miejsca:
 
-- `/api/app-config` publicznie opisuje aktualna nazwe produktu, etykiety, branding, jezyk, fallback mapy i pola dodatkowe miejsca,
+- `/api/app-config` publicznie opisuje aktualna nazwe produktu, etykiety, branding, jezyk, fallback mapy, ustawienia kafli/gęstości/rankingu mapy i pola dodatkowe miejsca,
 - adminowa sekcja `Konfiguracja` pozwala bezpiecznie edytowac te ustawienia bez grzebania w kodzie,
 - `place` zachowuje stale pola wymagane przez mape,
 - dlugie redakcyjne opisy miejsc ida do `place.article_blocks`, a nie do pierwszego renderu mapy,
@@ -81,6 +82,8 @@ PhotoMap nie jest generatorem dowolnych aplikacji. Uniwersalnosc produktu ma wyn
 - admin pozwala edytowac wartosci skonfigurowanych pol w formularzu miejsca.
 
 Konfiguracja produktu ma pozostac waskim mechanizmem runtime, nie kreatorem dowolnych aplikacji. Istniejace pola miejsc maja chroniony techniczny `key` i `type`; zmiana etykiety, widocznosci, wymagalnosci, kolejnosci i opcji jest dozwolona tylko wtedy, gdy nie psuje istniejacych danych miejsc.
+
+Ustawienia mapy w konfiguracji obejmuja pierwszy etap strojenia publicznej tablicy miniaturek: bazowy rozmiar kafli miejsc, zakres skalowania po priorytecie redakcyjnym, podstawowa gestosc widocznych kafli oraz wagi rankingu wyboru miejsc. Bardziej techniczne parametry kolizji i zachowania miasta przy odleglych zoomach pozostaja w kodzie do czasu osobnej decyzji produktowej.
 
 Kod pod konkretnego klienta powinien byc wtedy niewielka warstwa konfiguracji i ewentualnych dopasowan domenowych, nie osobna aplikacja od zera.
 

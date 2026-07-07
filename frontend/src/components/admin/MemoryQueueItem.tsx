@@ -1,6 +1,5 @@
 import type { FormEvent } from "react";
 
-import { mediaUrl } from "../../api/http";
 import type { AdminMemory, ReviewFinalStatus } from "../../api/types";
 import {
   MEMORY_AUTHOR_MAX_LENGTH,
@@ -8,6 +7,7 @@ import {
   MEMORY_TEXT_MAX_LENGTH,
 } from "../places/memoryValidation";
 import { AdminAudioControls } from "./AdminAudioControls";
+import { AdminMediaImage } from "./AdminAuthenticatedMedia";
 import { ADMIN_MEDIA_STATUS_LABELS } from "./adminMediaUi";
 
 type Props = {
@@ -57,12 +57,12 @@ export function MemoryQueueItem({
 }: Props) {
   return (
     <article className="ui-card admin-media-item">
-      <img
+      <AdminMediaImage
         className="admin-media-item-image"
         alt={memory.caption}
         decoding="async"
         loading="lazy"
-        src={mediaUrl(memory.thumb_path)}
+        src={memory.admin_thumb_path}
       />
       <div className="admin-media-item-body">
         <div className="photo-meta-row">
@@ -120,7 +120,7 @@ export function MemoryQueueItem({
             <p className="admin-media-caption">{memory.caption}</p>
             <p className="admin-media-text">{memory.memory_text}</p>
             <AdminAudioControls
-              audio={memory.audio}
+              audio={memory.admin_audio}
               inputKeyPrefix={`memory-audio-${memory.id}`}
               onDeleteAudio={() => onDeleteAudio(memory)}
               onError={onError}

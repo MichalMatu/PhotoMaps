@@ -8,6 +8,7 @@ type ScreenPoint = {
 };
 
 export type ScreenDensityCandidate = {
+  cityId?: string;
   height: number;
   id: string;
   point: ScreenPoint;
@@ -56,15 +57,24 @@ export function limitMapMarkersByScreenDensity<TCandidate extends ScreenDensityC
   const maxOverlapRatio = options.maxOverlapRatio ?? MARKER_DENSITY_CONFIG.screenDensityMaxOverlapRatio;
   const selected: TCandidate[] = [];
   const selectedIds = new Set<string>();
+  const selectedCityIds = new Set<string>();
   const rankedCandidates = candidates.map((candidate, index) => ({ candidate, index })).sort(compareRankedCandidates);
 
   for (const { candidate } of rankedCandidates) {
-    if (selected.some((selectedCandidate) => overlapsTooMuchOnScreen(candidate, selectedCandidate, maxOverlapRatio))) {
+    const hasCityRepresentative = candidate.cityId ? selectedCityIds.has(candidate.cityId) : true;
+    const overlapsSelectedCandidate = selected.some((selectedCandidate) =>
+      overlapsTooMuchOnScreen(candidate, selectedCandidate, maxOverlapRatio),
+    );
+
+    if (overlapsSelectedCandidate && hasCityRepresentative) {
       continue;
     }
 
     selected.push(candidate);
     selectedIds.add(candidate.id);
+    if (candidate.cityId) {
+      selectedCityIds.add(candidate.cityId);
+    }
   }
 
   return candidates.filter((candidate) => selectedIds.has(candidate.id));

@@ -2,6 +2,7 @@
   "city": {
     "id": "pieszyce",
     "name": "Pieszyce",
+    "region": "Dolnośląskie",
     "lat": 50.7122,
     "lon": 16.5837,
     "default_zoom": 12,
@@ -24,7 +25,7 @@
           "text": "Wieża na Wielkiej Sowie jest prostym, czytelnym punktem orientacyjnym dla całych Gór Sowich. Łączy górski spacer, historyczną architekturę i szeroki widok na Sudety."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.6791667,
       "lon": 16.4869444,
       "weight": 4.3,

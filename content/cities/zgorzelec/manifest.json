@@ -2,6 +2,7 @@
   "city": {
     "id": "zgorzelec",
     "name": "Zgorzelec",
+    "region": "Dolnośląskie",
     "lat": 51.1576786,
     "lon": 14.9952039,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Panorama Zgorzelca i Görlitz dodaje mapie zachodnią granicę regionu oraz inny typ atrakcji: nie pojedynczy obiekt, tylko widok na wspólne miasto. To mocny sygnał położenia Dolnego Śląska na styku kultur."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1576786,
       "lon": 14.9952039,
       "weight": 4.0,

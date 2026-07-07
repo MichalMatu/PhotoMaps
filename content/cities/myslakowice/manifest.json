@@ -1,0 +1,65 @@
+{
+  "city": {
+    "id": "myslakowice",
+    "name": "Mysłakowice",
+    "region": "Dolnośląskie",
+    "lat": 50.8416,
+    "lon": 15.7789,
+    "default_zoom": 13,
+    "sort_order": 395,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "palac-krolewski-myslakowice",
+      "title": "Pałac Królewski w Mysłakowicach",
+      "description": "Dawna rezydencja królewska w Mysłakowicach, przebudowana w XIX wieku i wpisana w pałacowy krajobraz Kotliny Jeleniogórskiej.",
+      "local_comment": "Cover powinien pokazać długą bryłę pałacu, wieżę i parkowy kontekst. Warto unikać kadrów zbyt szkolnych albo ciasnych, bo dziś budynek pełni funkcję użytkową.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Królewska rezydencja pod Karkonoszami"
+        },
+        {
+          "type": "paragraph",
+          "text": "Pałac Królewski w Mysłakowicach dodaje do mapy ważny fragment historii pruskiej obecności w Kotlinie Jeleniogórskiej. Nie jest tak hotelowo-widowiskowy jak część odrestaurowanych pałaców, ale ma mocne znaczenie jako dawny punkt rezydencjonalny i element większej sieci parków oraz osi widokowych."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie dobrze łączy Karpacz, Bukowiec, Łomnicę i Wojanów, pokazując, że pałacowy krajobraz regionu nie kończy się na najbardziej promowanych obiektach."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.844703,
+      "lon": 15.779494,
+      "weight": 3.9,
+      "status": "published"
+    },
+    {
+      "slug": "domy-tyrolskie-myslakowice",
+      "title": "Domy tyrolskie w Mysłakowicach",
+      "description": "Zachowane domy tyrolskich osadników z XIX wieku, tworzące charakterystyczną, drewnianą warstwę zabudowy Mysłakowic.",
+      "local_comment": "Cover powinien pokazać drewniany detal, szerokie okapy i skalę domu przy ulicy. To ma być miejsce o żywej, lokalnej pamięci, nie tylko katalog zabytków.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Tyrolski ślad w Kotlinie Jeleniogórskiej"
+        },
+        {
+          "type": "paragraph",
+          "text": "Domy tyrolskie w Mysłakowicach pokazują zupełnie inną warstwę regionu niż zamki i pałace. To historia osadników, którzy w XIX wieku przenieśli tu swój sposób budowania, zostawiając w krajobrazie Kotliny Jeleniogórskiej rozpoznawalne drewniane formy."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie warto traktować je jako spacerowy motyw: zamiast jednego monumentalnego obiektu pojawia się układ domów, detali i lokalnej opowieści rozciągniętej po miejscowości."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.832866,
+      "lon": 15.788748,
+      "weight": 3.7,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

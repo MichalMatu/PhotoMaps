@@ -2,6 +2,7 @@
   "city": {
     "id": "karlow",
     "name": "Karłów",
+    "region": "Dolnośląskie",
     "lat": 50.4848,
     "lon": 16.339,
     "default_zoom": 13,
@@ -28,7 +29,7 @@
           "text": "Na mapie powinien wyglądać bardziej jak przygoda terenowa niż zwykły punkt widokowy."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.4848,
       "lon": 16.339,
       "weight": 4.5,

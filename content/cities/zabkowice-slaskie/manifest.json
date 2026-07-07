@@ -2,6 +2,7 @@
   "city": {
     "id": "zabkowice-slaskie",
     "name": "Ząbkowice Śląskie",
+    "region": "Dolnośląskie",
     "lat": 50.589,
     "lon": 16.8124,
     "default_zoom": 13,

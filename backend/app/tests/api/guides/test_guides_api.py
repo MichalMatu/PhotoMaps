@@ -1,5 +1,6 @@
 from sqlmodel import select
 
+from app.models.city import City
 from app.models.guide import Guide, PlaceGuide
 from app.models.photo import Photo
 from app.models.place import Place
@@ -71,6 +72,7 @@ def test_public_guides_only_show_published_with_published_places(client_session)
     assert "created_at" not in listed_guide
     assert "updated_at" not in listed_guide
     assert listed_guide["place_count"] == 1
+    assert listed_guide["kind"] == "route"
     assert listed_guide["route_points"] == [{"lat": 51.11, "lon": 17.03}, {"lat": 51.12, "lon": 17.04}]
     assert listed_guide["cover_photo"]["id"] == cover_photo.id
     assert listed_guide["preview_places"][0]["slug"] == "public-place"
@@ -83,12 +85,103 @@ def test_public_guides_only_show_published_with_published_places(client_session)
     assert "original_path" not in listed_guide["cover_photo"]
     assert detail_response.status_code == 200
     detail_payload = detail_response.json()
+    assert detail_payload["kind"] == "route"
     assert detail_payload["route_points"] == [{"lat": 51.11, "lon": 17.03}, {"lat": 51.12, "lon": 17.04}]
     assert [place["slug"] for place in detail_payload["places"]] == ["public-place"]
     assert detail_payload["places"][0]["cover_photo"]["public_path"] == "/media/photos/public.jpg"
     assert "local_comment" not in detail_payload["places"][0]
     assert "status" not in detail_payload["places"][0]
     assert "draft-place" not in [place["slug"] for place in detail_payload["preview_places"]]
+
+
+def test_public_guides_require_visible_places_in_active_cities(client_session) -> None:
+    client, session = client_session
+    session.add(City(id="archived-city", name="Archived", lat=50.06, lon=19.94, status="archived"))
+    session.commit()
+    active_place = create_place(session, slug="active-place", title="Active")
+    archived_place = create_place(
+        session,
+        city_id="archived-city",
+        slug="archived-place",
+        title="Archived",
+        lat=50.06,
+        lon=19.94,
+    )
+    mixed_guide = Guide(slug="mixed-guide", title="Mixed", status="published")
+    archived_guide = Guide(slug="archived-guide", title="Archived", status="published")
+    session.add(mixed_guide)
+    session.add(archived_guide)
+    session.commit()
+    session.refresh(mixed_guide)
+    session.refresh(archived_guide)
+    session.add(PlaceGuide(guide_id=mixed_guide.id, place_id=archived_place.id, sort_order=0))
+    session.add(PlaceGuide(guide_id=mixed_guide.id, place_id=active_place.id, sort_order=1))
+    session.add(PlaceGuide(guide_id=archived_guide.id, place_id=archived_place.id, sort_order=0))
+    session.commit()
+
+    list_response = client.get("/api/guides")
+    mixed_response = client.get("/api/guides/mixed-guide")
+    archived_response = client.get("/api/guides/archived-guide")
+
+    assert list_response.status_code == 200
+    assert [guide["slug"] for guide in list_response.json()] == ["mixed-guide"]
+    assert list_response.json()[0]["place_count"] == 1
+    assert [place["slug"] for place in list_response.json()[0]["preview_places"]] == ["active-place"]
+    assert mixed_response.status_code == 200
+    assert [place["slug"] for place in mixed_response.json()["places"]] == ["active-place"]
+    assert archived_response.status_code == 404
+
+
+def test_admin_can_create_public_collection_without_route_geometry(client_session) -> None:
+    client, session = client_session
+    place = create_place(session)
+
+    create_response = client.post(
+        "/api/admin/guides",
+        headers=ADMIN_HEADERS,
+        json={"slug": "murals", "kind": "collection", "title": "Murale", "status": "draft"},
+    )
+    guide_id = create_response.json()["id"]
+    add_response = client.post(
+        f"/api/admin/guides/{guide_id}/places",
+        headers=ADMIN_HEADERS,
+        json={"place_id": place.id, "sort_order": 0},
+    )
+    publish_response = client.patch(
+        f"/api/admin/guides/{guide_id}",
+        headers=ADMIN_HEADERS,
+        json={"status": "published"},
+    )
+    public_response = client.get("/api/guides/murals")
+
+    assert create_response.status_code == 201
+    assert create_response.json()["kind"] == "collection"
+    assert create_response.json()["route_points"] == []
+    assert add_response.status_code == 200
+    assert publish_response.status_code == 200
+    assert public_response.status_code == 200
+    assert public_response.json()["kind"] == "collection"
+    assert public_response.json()["route_points"] == []
+    assert [place["slug"] for place in public_response.json()["places"]] == ["public-place"]
+
+
+def test_collection_rejects_route_points(client_session) -> None:
+    client, _session = client_session
+
+    response = client.post(
+        "/api/admin/guides",
+        headers=ADMIN_HEADERS,
+        json={
+            "slug": "invalid-collection",
+            "kind": "collection",
+            "title": "Invalid collection",
+            "route_points": [{"lat": 51.11, "lon": 17.03}],
+            "status": "draft",
+        },
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"] == "Collections cannot define route points"
 
 
 def test_admin_can_remove_place_from_guide(client_session) -> None:

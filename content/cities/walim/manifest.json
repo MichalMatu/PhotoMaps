@@ -2,6 +2,7 @@
   "city": {
     "id": "walim",
     "name": "Walim",
+    "region": "Dolnośląskie",
     "lat": 50.6974888,
     "lon": 16.4411137,
     "default_zoom": 12,

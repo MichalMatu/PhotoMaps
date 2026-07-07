@@ -2,6 +2,7 @@
   "city": {
     "id": "bystrzyca-klodzka",
     "name": "Bystrzyca Kłodzka",
+    "region": "Dolnośląskie",
     "lat": 50.2970135,
     "lon": 16.6531935,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Rynek w Bystrzycy Kłodzkiej dodaje mapie miejsce o wyraźnej topografii i historycznym rytmie. Jest dobrym miejskim kontrapunktem dla górskich i uzdrowiskowych atrakcji ziemi kłodzkiej."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.2970135,
       "lon": 16.6531935,
       "weight": 3.8,

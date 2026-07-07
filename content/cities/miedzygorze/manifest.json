@@ -2,6 +2,7 @@
   "city": {
     "id": "miedzygorze",
     "name": "Międzygórze",
+    "region": "Dolnośląskie",
     "lat": 50.2289928,
     "lon": 16.7606325,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Wodospad Wilczki jest naturalnym punktem startowym dla Międzygórza. Na mapie daje silny sygnał krajobrazowy i dobrze równoważy uzdrowiskowe oraz miejskie miejsca Kotliny Kłodzkiej."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.2289928,
       "lon": 16.7606325,
       "weight": 4.4,
@@ -49,6 +50,106 @@
       "lat": 50.2350235,
       "lon": 16.7587363,
       "weight": 3.6,
+      "status": "published"
+    },
+    {
+      "slug": "snieznik-wieza-widokowa",
+      "title": "Śnieżnik i wieża widokowa",
+      "description": "Najwyższy szczyt polskiej części Sudetów Wschodnich, z nową wieżą widokową i szeroką panoramą Masywu Śnieżnika.",
+      "local_comment": "To miejsce powinno mieć kadry pokazujące zarówno szczytowy krajobraz, jak i charakterystyczną wieżę. Ważne, żeby cover nie był tylko abstrakcyjnym detalem konstrukcji.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Szczyt z nową panoramą"
+        },
+        {
+          "type": "paragraph",
+          "text": "Śnieżnik jest naturalnym celem dłuższej wizyty w Międzygórzu. Szczyt domyka górski kontekst miejscowości, a wieża widokowa przywraca mu czytelny punkt orientacyjny i możliwość pełniejszego oglądania panoramy."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie to mocny kontrast dla Wodospadu Wilczki: mniej krótki przystanek, bardziej wyprawa i nagroda w postaci widoku nad polskimi i czeskimi pasmami."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.20748,
+      "lon": 16.84732,
+      "weight": 4.5,
+      "status": "published"
+    },
+    {
+      "slug": "sanktuarium-maria-sniezna-igliczna",
+      "title": "Sanktuarium Maria Śnieżna na Iglicznej",
+      "description": "Górskie sanktuarium pod szczytem Iglicznej, jeden z najbardziej nastrojowych celów krótkiej wycieczki z Międzygórza.",
+      "local_comment": "Galeria powinna łączyć kościół, położenie na zboczu, szlakowy kontekst i widok na Masyw Śnieżnika. To nie ma być tylko fasada świątyni, ale miejsce osadzone w górach.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Sanktuarium na górskim zboczu"
+        },
+        {
+          "type": "paragraph",
+          "text": "Maria Śnieżna na Iglicznej dodaje Międzygórzu spokojniejszy, pielgrzymkowo-spacerowy cel. Droga z miejscowości prowadzi przez las i otwiera się na miejsce, w którym architektura jest mocno związana z krajobrazem."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie to dobry punkt pomiędzy krótkim Wodospadem Wilczki a dużą wyprawą na Śnieżnik: ma własny rytm, widok i lokalną pamięć."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.244594,
+      "lon": 16.74945,
+      "weight": 4.1,
+      "status": "published"
+    },
+    {
+      "slug": "zapora-wodna-miedzygorze",
+      "title": "Zapora wodna w Międzygórzu",
+      "description": "Kamienna zapora przeciwpowodziowa na Wilczce, położona poniżej Wodospadu Wilczki i udostępniona jako spacerowy punkt techniczno-krajobrazowy.",
+      "local_comment": "To miejsce powinno być pokazane przez skalę kamiennej konstrukcji, koronę zapory, dolinę Wilczki i mostek. Nie dublować Wodospadu Wilczki samą wodą.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Techniczna brama Międzygórza"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zapora wodna w Międzygórzu pokazuje miejscowość od strony inżynierii wpisanej w górską dolinę. To krótki spacerowy punkt, ale z dużą skalą: kamień, stroma dolina Wilczki i pamięć powodzi, przed którymi konstrukcja miała chronić niżej położone miejscowości."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie dobrze uzupełnia Wodospad Wilczki, bo przesuwa uwagę z samej atrakcji przyrodniczej na krajobraz, który został przetworzony przez człowieka."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.230556,
+      "lon": 16.746389,
+      "weight": 3.8,
+      "status": "published"
+    },
+    {
+      "slug": "schronisko-pttk-na-sniezniku",
+      "title": "Schronisko PTTK Na Śnieżniku",
+      "description": "Górskie schronisko na Hali pod Śnieżnikiem, ważny punkt odpoczynku i orientacji na trasach Masywu Śnieżnika.",
+      "local_comment": "Cover powinien pokazać schronisko razem z halą i szlakowym krajobrazem. Unikać samego szyldu albo ciasnego kadru wejścia.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Przystanek pod szczytem"
+        },
+        {
+          "type": "paragraph",
+          "text": "Schronisko PTTK Na Śnieżniku jest jednym z najważniejszych punktów na trasie z Międzygórza w stronę szczytu. Leży na Hali pod Śnieżnikiem, więc działa jednocześnie jako miejsce odpoczynku, węzeł szlaków i naturalny punkt widokowy przed ostatnim podejściem."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie uzupełnia Śnieżnik i wieżę widokową o bardziej ludzki rytm górskiej wycieczki: ławki, plecaki, dłuższy postój i krajobraz, który zaczyna się otwierać jeszcze przed samym wierzchołkiem."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.208328,
+      "lon": 16.832191,
+      "weight": 4.0,
       "status": "published"
     }
   ],

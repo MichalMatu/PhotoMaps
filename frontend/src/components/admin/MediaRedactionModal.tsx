@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { RotateCcw, RotateCw, Trash2, Undo2 } from "lucide-react";
 
-import { mediaUrl } from "../../api/http";
 import type { AdminMemory, AdminPhoto } from "../../api/types";
+import { AdminMediaImage } from "./AdminAuthenticatedMedia";
 import { SystemModal } from "./SystemModal";
 import type { RedactionPolygon } from "./mediaRedactionGeometry";
 import { useMediaRedactionEditor } from "./useMediaRedactionEditor";
@@ -39,6 +39,7 @@ export function MediaRedactionModal({ isApplying = false, kind, media, onApply, 
 
   const title = kind === "photo" ? "Anonimizuj zdjęcie" : "Anonimizuj pamiątkę";
   const canApply = redactions.length > 0 && !isApplying;
+  const imagePath = kind === "memory" ? (media as AdminMemory).admin_public_path : (media as AdminPhoto).public_path;
 
   async function handleApply() {
     setSaveError(null);
@@ -70,7 +71,7 @@ export function MediaRedactionModal({ isApplying = false, kind, media, onApply, 
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
         >
-          <img className="media-redaction-image" alt={media.caption ?? title} src={mediaUrl(media.public_path)} />
+          <AdminMediaImage className="media-redaction-image" alt={media.caption ?? title} src={imagePath} />
           <svg className="media-redaction-overlay" aria-hidden="true" viewBox="0 0 1 1" preserveAspectRatio="none">
             {[...redactions, ...(draftRedaction ? [draftRedaction] : [])].map((redaction, index) => {
               const isDraft = index >= redactions.length;

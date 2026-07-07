@@ -1,0 +1,36 @@
+{
+  "city": {
+    "id": "zlotoryja",
+    "name": "Złotoryja",
+    "region": "Dolnośląskie",
+    "lat": 51.1264,
+    "lon": 15.9198,
+    "default_zoom": 13,
+    "sort_order": 325,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "kopalnia-zlota-aurelia",
+      "title": "Kopalnia Złota Aurelia",
+      "description": "Krótka, historyczna sztolnia pod Górą św. Mikołaja w Złotoryi, przypominająca o górniczym rodowodzie najstarszego miasta w Polsce.",
+      "local_comment": "Zdjęcia muszą pokazać ciasną skalę sztolni i wejście w krajobrazie miasta. Nie mieszać z Kopalnią Złota w Złotym Stoku, bo to inna historia i inny rozmiar doświadczenia.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Złotoryja pod powierzchnią"
+        },
+        {
+          "type": "paragraph",
+          "text": "Kopalnia Aurelia jest niewielka, ale dobrze tłumaczy, dlaczego Złotoryja tak mocno kojarzy się ze złotem i dawnym górnictwem. Na mapie jest to punkt bardziej kameralny niż duże podziemne trasy, za to bardzo lokalny i łatwy do powiązania ze spacerem po mieście."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 51.1303943,
+      "lon": 15.9212089,
+      "weight": 3.7,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

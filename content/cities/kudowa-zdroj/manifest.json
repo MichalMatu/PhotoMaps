@@ -2,6 +2,7 @@
   "city": {
     "id": "kudowa-zdroj",
     "name": "Kudowa-Zdrój",
+    "region": "Dolnośląskie",
     "lat": 50.4420034,
     "lon": 16.2416299,
     "default_zoom": 12,
@@ -24,7 +25,7 @@
           "text": "Błędne Skały są doświadczeniem ruchu, nie tylko punktem widokowym. Wąskie przejścia i naturalne korytarze sprawiają, że miejsce świetnie działa na mapie jako obietnica krótkiej, intensywnej przygody."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.4782654,
       "lon": 16.2905806,
       "weight": 4.8,
@@ -49,6 +50,27 @@
       "lat": 50.4515335,
       "lon": 16.2419398,
       "weight": 4.1,
+      "status": "published"
+    },
+    {
+      "slug": "skansen-pstrazna",
+      "title": "Skansen w Pstrążnej",
+      "description": "Muzeum Kultury Ludowej Pogórza Sudeckiego w wiejskiej części Kudowy-Zdroju, z drewnianą architekturą i wyposażeniem dawnych gospodarstw.",
+      "local_comment": "Galeria powinna być ciepła i materialna: drewno, wnętrza, narzędzia, kuźnia, wiatrak i górski kontekst. Nie ograniczać się do tablicy wejściowej.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Wiejska warstwa uzdrowiska"
+        },
+        {
+          "type": "paragraph",
+          "text": "Skansen w Pstrążnej pokazuje Kudowę-Zdrój poza klasycznym rytmem parku i pijalni. Drewniane budynki, sprzęty codziennego życia i położenie na zboczu dodają mapie bardziej dotykalną, domową opowieść o regionie."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.473594,
+      "lon": 16.261246,
+      "weight": 3.8,
       "status": "published"
     }
   ],

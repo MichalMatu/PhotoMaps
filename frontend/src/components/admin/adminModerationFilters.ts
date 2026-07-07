@@ -56,7 +56,7 @@ export function filterAdminModerationPhotos(photos: AdminPhoto[], filters: Admin
 export function filterAdminModerationMemories(memories: AdminMemory[], filters: AdminModerationFilters): AdminMemory[] {
   return memories.filter((memory) => {
     if (filters.placeId !== "all" && memory.place_id !== filters.placeId) return false;
-    if (!matchesAudio(memory.audio, filters.audio)) return false;
+    if (!matchesAudio(memory.admin_audio, filters.audio)) return false;
     return includesQuery(
       [memory.caption, memory.memory_text, memory.author_name, memory.author_city, memory.id],
       filters.query,

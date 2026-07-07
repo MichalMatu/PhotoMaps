@@ -2,6 +2,7 @@
   "city": {
     "id": "boleslawiec",
     "name": "Bolesławiec",
+    "region": "Dolnośląskie",
     "lat": 51.2621692,
     "lon": 15.5550197,
     "default_zoom": 13,
@@ -45,7 +46,7 @@
           "text": "Rynek w Bolesławcu pozwala zobaczyć miasto nie tylko przez jego rzemiosło, ale też przez codzienną przestrzeń starego centrum. Dobrze uzupełnia muzeum i buduje pełniejszy obraz miasta na mapie."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.2633042,
       "lon": 15.5649796,
       "weight": 3.7,

@@ -3,6 +3,7 @@ import { polishCountLabel } from "../ui/polishCountLabel";
 import { PlaceForm } from "./PlaceForm";
 import { SystemModal } from "./SystemModal";
 import type { PlaceFormPayload } from "./useAdminPlaceManagement";
+import type { PlaceLocation } from "./placeLocationAutoSave";
 
 type Props = {
   appConfig: AppConfig;
@@ -13,6 +14,7 @@ type Props = {
   editingPlaceView: AdminPlace | null;
   onClose: () => void;
   onManageCategories: () => void;
+  onLocationAutoSave?: (location: PlaceLocation) => Promise<void>;
   onOpenPhotoPreview: (place: AdminPlace) => void;
   onSubmit: (payload: PlaceFormPayload) => Promise<void>;
 };
@@ -33,6 +35,7 @@ export function AdminPlaceFormModal({
   editingPlacePhotoCount,
   editingPlaceView,
   onClose,
+  onLocationAutoSave,
   onManageCategories,
   onOpenPhotoPreview,
   onSubmit,
@@ -62,6 +65,7 @@ export function AdminPlaceFormModal({
             : undefined
         }
         onCancel={onClose}
+        onLocationAutoSave={onLocationAutoSave}
         onManageCategories={onManageCategories}
         onSubmit={onSubmit}
       />

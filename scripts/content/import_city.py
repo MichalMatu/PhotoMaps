@@ -28,7 +28,7 @@ from app.services.app_config import (  # noqa: E402
     normalize_place_custom_fields,
 )
 from app.services.cities import CITY_STATUSES  # noqa: E402
-from app.services.guides import GUIDE_STATUSES  # noqa: E402
+from app.services.guides import GUIDE_KINDS, GUIDE_STATUSES  # noqa: E402
 from app.services.place_taxonomy import active_category_validation, replace_place_categories  # noqa: E402
 from app.services.places import PLACE_STATUSES  # noqa: E402
 
@@ -160,6 +160,7 @@ def upsert_city(session: Session, raw_city: dict[str, Any], summary: ImportSumma
     data = {
         "id": city_id,
         "name": require_string(raw_city.get("name"), f"city[{city_id}].name"),
+        "region": require_string(raw_city.get("region"), f"city[{city_id}].region"),
         "lat": require_float(raw_city.get("lat"), f"city[{city_id}].lat"),
         "lon": require_float(raw_city.get("lon"), f"city[{city_id}].lon"),
         "default_zoom": int(raw_city.get("default_zoom", 13)),
@@ -241,6 +242,7 @@ def upsert_guide(session: Session, raw_guide: dict[str, Any], summary: ImportSum
     slug = require_string(raw_guide.get("slug"), "guide.slug")
     data = {
         "slug": slug,
+        "kind": require_status(raw_guide.get("kind", "route"), GUIDE_KINDS, f"guide[{slug}].kind"),
         "title": require_string(raw_guide.get("title"), f"guide[{slug}].title"),
         "description": optional_string(raw_guide.get("description"), f"guide[{slug}].description"),
         "article_blocks": normalize_content_blocks(
@@ -250,6 +252,8 @@ def upsert_guide(session: Session, raw_guide: dict[str, Any], summary: ImportSum
         "route_points": normalize_route_points(raw_guide.get("route_points", []), f"guide[{slug}].route_points"),
         "status": require_status(raw_guide.get("status", "draft"), GUIDE_STATUSES, f"guide[{slug}].status"),
     }
+    if data["kind"] == "collection" and data["route_points"]:
+        raise ValueError(f"guide[{slug}].route_points must be empty for collections")
 
     guide = guide_by_slug(session, slug)
     if guide is None:

@@ -2,6 +2,7 @@
   "city": {
     "id": "zloty-stok",
     "name": "Złoty Stok",
+    "region": "Dolnośląskie",
     "lat": 50.4449,
     "lon": 16.8815,
     "default_zoom": 13,

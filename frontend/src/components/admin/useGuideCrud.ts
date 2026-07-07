@@ -1,7 +1,15 @@
 import { useMemo, useState } from "react";
 
 import { createGuide, deleteGuide, updateGuide } from "../../api/guides";
-import type { ContentBlock, ContentBlockType, Guide, GuideDetail, GuideRoutePoint, GuideStatus } from "../../api/types";
+import type {
+  ContentBlock,
+  ContentBlockType,
+  Guide,
+  GuideDetail,
+  GuideKind,
+  GuideRoutePoint,
+  GuideStatus,
+} from "../../api/types";
 import { slugify } from "../../utils/slugify";
 import { emptyContentBlock } from "../content/contentBlocks";
 import { errorDetails, type OperationError } from "../ui/ErrorModal";
@@ -33,6 +41,7 @@ export function useGuideCrud({
   const [isDeletingGuide, setIsDeletingGuide] = useState(false);
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
   const [isGuideSaving, setIsGuideSaving] = useState(false);
+  const [kind, setGuideKind] = useState<GuideKind>("route");
   const [routePoints, setRoutePoints] = useState<GuideRoutePoint[]>([]);
   const [status, setStatus] = useState<GuideStatus>("draft");
   const [title, setTitle] = useState("");
@@ -42,6 +51,7 @@ export function useGuideCrud({
     setDescription("");
     setArticleBlocks([]);
     setEditingGuide(null);
+    setGuideKind("route");
     setRoutePoints([]);
     setStatus("draft");
     setTitle("");
@@ -56,6 +66,7 @@ export function useGuideCrud({
     setDescription(guide.description ?? "");
     setArticleBlocks(guide.article_blocks);
     setEditingGuide(guide);
+    setGuideKind(guide.kind);
     setRoutePoints(guide.route_points);
     setSelectedGuideId(guide.id);
     setStatus(guide.status);
@@ -88,6 +99,7 @@ export function useGuideCrud({
       description,
       editingGuide,
       generatedSlug,
+      kind,
       routePoints,
       status,
       title,
@@ -152,6 +164,13 @@ export function useGuideCrud({
     setArticleBlocks((currentBlocks) => [...currentBlocks, emptyContentBlock(type)]);
   }
 
+  function setKind(nextKind: GuideKind) {
+    setGuideKind(nextKind);
+    if (nextKind === "collection") {
+      setRoutePoints([]);
+    }
+  }
+
   function setArticleBlock(index: number, nextBlock: ContentBlock) {
     setArticleBlocks((currentBlocks) =>
       currentBlocks.map((currentBlock, currentIndex) => (currentIndex === index ? nextBlock : currentBlock)),
@@ -185,6 +204,7 @@ export function useGuideCrud({
     isDeletingGuide,
     isGuideModalOpen,
     isGuideSaving,
+    kind,
     openCreateGuideModal,
     openEditGuideModal,
     removeArticleBlock,
@@ -194,6 +214,7 @@ export function useGuideCrud({
     setArticleBlock,
     setArticleBlockType,
     setDescription,
+    setKind,
     setRoutePoints,
     setStatus,
     setTitle,

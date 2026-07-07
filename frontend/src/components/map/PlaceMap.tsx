@@ -1,11 +1,11 @@
 import "leaflet/dist/leaflet.css";
 import { useQuery } from "@tanstack/react-query";
-import type { LatLngExpression, Map as LeafletMap } from "leaflet";
+import type { Map as LeafletMap } from "leaflet";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MapContainer, TileLayer, useMap, useMapEvents, ZoomControl } from "react-leaflet";
 
 import { getPlacePhotos } from "../../api/media";
-import type { AppConfigMap, City, PlaceCustomFieldDefinition, PlaceMapItem } from "../../api/types";
+import type { AppConfigMap, PlaceCustomFieldDefinition, PlaceMapItem } from "../../api/types";
 import { SystemModal } from "../ui/SystemModal";
 import { DistanceMeasureTool } from "./DistanceMeasureTool";
 import { MemorySheet } from "./MemorySheet";
@@ -19,8 +19,9 @@ import { PinnedMediaBoard, type PinnedMediaPlaceProjector } from "./PinnedMediaB
 import { PlaceMarker } from "./PlaceMarker";
 import { resolveMapMarkerCollisions } from "./mapMarkerCollision";
 import { getMapPlacePriority, limitMapMarkersByDensity } from "./mapMarkerDensity";
+import type { MarkerDisplayOffset } from "./mapMarkerDisplayOffset";
+import { limitMapMarkersByResolvedDensity } from "./mapMarkerSelection";
 import { getPlaceMarkerLayout } from "./mapMarkerScale";
-import { limitMapMarkersByScreenDensity } from "./mapMarkerScreenDensity";
 import { filterMapMarkersByViewport } from "./mapMarkerViewport";
 import { findPlaceGalleryItem, getPlaceGalleryItems, type PlaceMapVisualItem } from "./placePreview";
 import { useCenteredPlaceGallery } from "./useCenteredPlaceGallery";
@@ -28,7 +29,7 @@ import { type PinMediaRequest, usePinnedMediaBoard } from "./usePinnedMediaBoard
 import { ReportSheet } from "./ReportSheet";
 
 type Props = {
-  mapCity?: City | null;
+  isAudioAutoplayEnabled: boolean;
   mapFallback: AppConfigMap;
   markerPlaces: PlaceMapItem[];
   onPinnedMediaVisibleChange: (isVisible: boolean) => void;
@@ -44,6 +45,8 @@ type VisualTarget = {
 };
 
 type PlaceLayerProps = {
+  isAudioAutoplayEnabled: boolean;
+  mapSettings: AppConfigMap;
   onPinMedia: (request: PinMediaRequest) => boolean;
   places: PlaceMapItem[];
   placeCustomFieldDefinitions: PlaceCustomFieldDefinition[];
@@ -173,7 +176,13 @@ function MapProjectionTracker({
   return null;
 }
 
-function PlaceLayer({ onPinMedia, places, placeCustomFieldDefinitions }: PlaceLayerProps) {
+function PlaceLayer({
+  isAudioAutoplayEnabled,
+  mapSettings,
+  onPinMedia,
+  places,
+  placeCustomFieldDefinitions,
+}: PlaceLayerProps) {
   const map = useMap();
   const [mapViewport, setMapViewport] = useState(() => readMapViewport(map));
   const refreshMapViewport = useCallback(() => {
@@ -211,18 +220,32 @@ function PlaceLayer({ onPinMedia, places, placeCustomFieldDefinitions }: PlaceLa
     }
 
     return places.map((place) => {
-      const markerLayout = getPlaceMarkerLayout({ editorialPriority: place.weight, zoom });
+      const markerLayout = getPlaceMarkerLayout({
+        editorialPriority: place.weight,
+        markerScale: mapSettings.marker_scale,
+        zoom,
+      });
       const point = map.latLngToContainerPoint([place.lat, place.lon]);
 
       return {
         height: markerLayout.height,
         place,
         point: { x: point.x, y: point.y },
-        priority: getMapPlacePriority(place),
+        priority: getMapPlacePriority(place, mapSettings.marker_priority),
         width: markerLayout.width,
       };
     });
-  }, [map, places, viewportCenterLat, viewportCenterLon, viewportHeight, viewportWidth, zoom]);
+  }, [
+    map,
+    mapSettings.marker_priority,
+    mapSettings.marker_scale,
+    places,
+    viewportCenterLat,
+    viewportCenterLon,
+    viewportHeight,
+    viewportWidth,
+    zoom,
+  ]);
   const viewportProjectedPlaces = useMemo(
     () =>
       filterMapMarkersByViewport(projectedPlaces, {
@@ -235,6 +258,8 @@ function PlaceLayer({ onPinMedia, places, placeCustomFieldDefinitions }: PlaceLa
     const densityPlaces = limitMapMarkersByDensity(
       viewportProjectedPlaces.map((projectedPlace) => projectedPlace.place),
       {
+        markerDensity: mapSettings.marker_density,
+        markerPriority: mapSettings.marker_priority,
         viewportHeight,
         viewportWidth,
         zoom,
@@ -245,18 +270,31 @@ function PlaceLayer({ onPinMedia, places, placeCustomFieldDefinitions }: PlaceLa
       densityPlaceIds.has(projectedPlace.place.id),
     );
 
-    return limitMapMarkersByScreenDensity(
+    return limitMapMarkersByResolvedDensity(
       densityProjectedPlaces.map((projectedPlace) => ({
         ...projectedPlace,
+        cityId: projectedPlace.place.city_id,
         id: projectedPlace.place.id,
       })),
+      {
+        viewportHeight,
+        viewportWidth,
+        zoom,
+      },
     );
-  }, [viewportHeight, viewportProjectedPlaces, viewportWidth, zoom]);
+  }, [
+    mapSettings.marker_density,
+    mapSettings.marker_priority,
+    viewportHeight,
+    viewportProjectedPlaces,
+    viewportWidth,
+    zoom,
+  ]);
   const markerPlaces = useMemo(
     () => markerProjectedPlaces.map((projectedPlace) => projectedPlace.place),
     [markerProjectedPlaces],
   );
-  const markerDisplayPositions = useMemo(() => {
+  const markerDisplayOffsets = useMemo(() => {
     const collisionLayouts = resolveMapMarkerCollisions(
       markerProjectedPlaces.map((projectedPlace) => ({
         height: projectedPlace.height,
@@ -272,10 +310,8 @@ function PlaceLayer({ onPinMedia, places, placeCustomFieldDefinitions }: PlaceLa
       },
     );
 
-    return new Map<string, LatLngExpression>(
-      collisionLayouts.map((layout) => [layout.id, map.containerPointToLatLng([layout.point.x, layout.point.y])]),
-    );
-  }, [map, markerProjectedPlaces, viewportHeight, viewportWidth, zoom]);
+    return new Map<string, MarkerDisplayOffset>(collisionLayouts.map((layout) => [layout.id, layout.offset]));
+  }, [markerProjectedPlaces, viewportHeight, viewportWidth, zoom]);
   const { closePlaceGallery, expandedPlace, expandedPlaceId, isGalleryInteractionLocked, togglePlaceGallery } =
     useCenteredPlaceGallery(map, markerPlaces);
   const expandedPlacePhotosQuery = useQuery({
@@ -359,7 +395,8 @@ function PlaceLayer({ onPinMedia, places, placeCustomFieldDefinitions }: PlaceLa
             setVisualDetail({ id: nextItem.id, kind: nextItem.kind, placeId: nextPlace.id });
           }}
           onToggleGallery={() => togglePlaceGallery(place)}
-          displayPosition={markerDisplayPositions.get(place.id)}
+          displayOffset={markerDisplayOffsets.get(place.id)}
+          markerScale={mapSettings.marker_scale}
           zoom={zoom}
         />
       ))}
@@ -374,6 +411,7 @@ function PlaceLayer({ onPinMedia, places, placeCustomFieldDefinitions }: PlaceLa
       {detailItem && detailPlace ? (
         <PhotoDetailModal
           customFieldDefinitions={placeCustomFieldDefinitions}
+          isAudioAutoplayEnabled={isAudioAutoplayEnabled}
           item={detailItem}
           navigationItems={detailNavigationItems}
           place={detailPlace}
@@ -412,7 +450,7 @@ function PlaceLayer({ onPinMedia, places, placeCustomFieldDefinitions }: PlaceLa
 }
 
 export function PlaceMap({
-  mapCity = null,
+  isAudioAutoplayEnabled,
   mapFallback,
   markerPlaces,
   onPinnedMediaVisibleChange,
@@ -420,9 +458,8 @@ export function PlaceMap({
   placeCustomFieldDefinitions,
   showPinnedMedia,
 }: Props) {
-  const center: [number, number] = mapCity
-    ? [mapCity.lat, mapCity.lon]
-    : [mapFallback.fallback_center.lat, mapFallback.fallback_center.lon];
+  const center: [number, number] = [mapFallback.fallback_center.lat, mapFallback.fallback_center.lon];
+  const mapStartKey = `${mapFallback.fallback_center.lat}:${mapFallback.fallback_center.lon}:${mapFallback.fallback_zoom}`;
   const { cards, notice, onBringToFront, onLayoutChange, onMediaSizeChange, onRemove, pinMedia } =
     usePinnedMediaBoard(pinnedMediaPlaces);
   const [projectPlacePoint, setProjectPlacePoint] = useState<PinnedMediaPlaceProjector | null>(null);
@@ -443,9 +480,9 @@ export function PlaceMap({
     <>
       <MapContainer
         center={center}
-        zoom={mapCity?.default_zoom ?? mapFallback.fallback_zoom}
+        zoom={mapFallback.fallback_zoom}
         className="place-map"
-        key={mapCity?.id ?? "default"}
+        key={mapStartKey}
         scrollWheelZoom={MAP_DISPLAY_CONFIG.mapContainer.scrollWheelZoom}
         zoomDelta={MAP_DISPLAY_CONFIG.mapContainer.zoomDelta}
         zoomControl={MAP_DISPLAY_CONFIG.mapContainer.zoomControl}
@@ -457,6 +494,8 @@ export function PlaceMap({
         <ZoomControl position={MAP_DISPLAY_CONFIG.mapControls.zoomControlPosition} />
         <TileLayer attribution={MAP_DISPLAY_CONFIG.tileLayer.attribution} url={MAP_DISPLAY_CONFIG.tileLayer.url} />
         <PlaceLayer
+          isAudioAutoplayEnabled={isAudioAutoplayEnabled}
+          mapSettings={mapFallback}
           places={markerPlaces}
           placeCustomFieldDefinitions={placeCustomFieldDefinitions}
           onPinMedia={handlePinMedia}

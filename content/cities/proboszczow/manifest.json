@@ -2,6 +2,7 @@
   "city": {
     "id": "proboszczow",
     "name": "Proboszczów",
+    "region": "Dolnośląskie",
     "lat": 51.0633351,
     "lon": 15.7934124,
     "default_zoom": 12,
@@ -24,7 +25,7 @@
           "text": "Ostrzyca jest prosta i mocna wizualnie: pojedyncza góra, wyraźny profil i krótka trasa na punkt widokowy. To miejsce dobrze wprowadza geologiczną warstwę Dolnego Śląska."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.0559965,
       "lon": 15.7632692,
       "weight": 4.2,

@@ -2,6 +2,7 @@
   "city": {
     "id": "gryfow-slaski",
     "name": "Gryfów Śląski",
+    "region": "Dolnośląskie",
     "lat": 51.0308,
     "lon": 15.4202,
     "default_zoom": 12,

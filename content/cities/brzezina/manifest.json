@@ -2,6 +2,7 @@
   "city": {
     "id": "brzezina",
     "name": "Brzezina",
+    "region": "Dolnośląskie",
     "lat": 51.2033974,
     "lon": 16.8329955,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Pałac Brzezina dodaje do mapy mniejsze, podmiejskie miejsce z pałacowej warstwy regionu. Jest dobrym przykładem atrakcji, które nie są pierwszym wyborem turysty, ale wzmacniają gęstość lokalnego zwiedzania."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.2033974,
       "lon": 16.8329955,
       "weight": 3.5,

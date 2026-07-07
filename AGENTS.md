@@ -170,6 +170,8 @@ UI ma byc kompaktowy, spojny i minimalistyczny. Nie duplikuj tytulow, opisow, li
 
 Dla zdjec i pamiatek trzymaj zasade: oryginal trafia do private storage, publiczna kopia jest bezpieczna do zwrocenia przez API, zachowuje rozdzielczosc wejscia po bezpiecznym przetworzeniu, a publiczne API nigdy nie ujawnia prywatnych sciezek. Publicznie widoczne sa tylko tresci zatwierdzone.
 
+Lokalne paczki research w `research-exports/` są domyślnie tekstowym eksportem opisów miejsca, bez prywatnych oryginałów zdjęć, EXIF i lokalnych ścieżek storage. Struktura katalogów ma zostać czytelna: `miejsca/{place-slug}.zip` dla pojedynczego miejsca, `miasta/{city-slug}.zip` dla zbiorczej paczki miasta oraz `wszystkie/wszystkie.zip` dla zbiorczej paczki wszystkich miejsc. Paczki zawierają `tts-guidelines.md` z aktualnym standardem `docs/create_tts.md`, żeby audyt traktował `description_blocks` jako tekst widoczny i materiał do TTS. Zbiorcze paczki mają jeden wspólny `PROMPT.md` i `tts-guidelines.md` w głównym katalogu ZIP oraz osobne katalogi miejsc w środku. Każdy eksport odświeża też `research-exports/prompt.txt` z krótką instrukcją do skopiowania do czatu razem z ZIP-em. Wynik audytu ma być wklejony bezpośrednio w czacie, bez linków i plików do pobrania. Te paczki są lokalnym narzędziem redakcyjnym, nie publicznym payloadem ani materiałem do commita; katalog `research-exports/` ma pozostać ignorowany przez Git.
+
 ## Spojnosc Domeny
 
 Nie wprowadzaj nazw, modeli, endpointow, komponentow ani dokumentacji spoza aktualnej domeny PhotoMap. Jesli trafisz na pozostalosci dawnych domen produktowych, usun je albo przemigruj do jezyka `place`, miasta, kategorii, zdjec, pamiatek, tras/kolekcji i zgloszen.

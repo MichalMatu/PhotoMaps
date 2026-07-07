@@ -78,6 +78,7 @@ function place(): PlaceMapItem {
       lat: 51.1079,
       lon: 17.0385,
       name: "Wrocław",
+      region: "Dolnośląskie",
       sort_order: 1,
       status: "active",
     },

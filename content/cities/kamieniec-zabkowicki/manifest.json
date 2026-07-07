@@ -2,6 +2,7 @@
   "city": {
     "id": "kamieniec-zabkowicki",
     "name": "Kamieniec Ząbkowicki",
+    "region": "Dolnośląskie",
     "lat": 50.5229139,
     "lon": 16.8736143,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Pałac Marianny Orańskiej jest jednym z najważniejszych braków w regionalnej mapie atrakcji. Łączy monumentalną architekturę, ogrody i historię miejsca, które dobrze wygląda zarówno z bliska, jak i w panoramie."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.5211192,
       "lon": 16.8812071,
       "weight": 4.6,

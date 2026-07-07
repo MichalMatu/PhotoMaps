@@ -141,6 +141,7 @@ def test_openapi_contract_exposes_domain_enums() -> None:
     publish_states = {"draft", "published", "archived"}
     review_states = {"pending", "approved", "rejected"}
     final_review_states = {"approved", "rejected"}
+    guide_kinds = {"collection", "route"}
     report_target_types = {"place", "photo", "memory", "guide"}
     report_reasons = {"wrong_data", "bad_photo", "closed_place", "other"}
     report_states = {"open", "closed"}
@@ -159,8 +160,11 @@ def test_openapi_contract_exposes_domain_enums() -> None:
     assert component_property_enum("PlaceCreate", "status") == publish_states
     assert component_property_enum("PlaceUpdate", "status") == publish_states
     assert component_property_enum("ContentBlock", "type") == content_block_types
+    assert component_property_enum("GuideRead", "kind") == guide_kinds
     assert component_property_enum("GuideRead", "status") == publish_states
+    assert component_property_enum("GuideCreate", "kind") == guide_kinds
     assert component_property_enum("GuideCreate", "status") == publish_states
+    assert component_property_enum("GuideUpdate", "kind") == guide_kinds
     assert component_property_enum("GuideUpdate", "status") == publish_states
     assert component_property_enum("GuidePlacePreviewRead", "status") == publish_states
     assert component_property_enum("PhotoAdminRead", "status") == review_states
@@ -202,8 +206,8 @@ def test_openapi_contract_exposes_domain_enums() -> None:
 def test_openapi_contract_keeps_public_payloads_out_of_admin_shape() -> None:
     city_parameter = query_parameter("/api/places/map", "city_id")
     assert city_parameter["in"] == "query"
-    assert city_parameter["required"] is True
-    assert city_parameter["schema"]["type"] == "string"
+    assert city_parameter["required"] is False
+    assert city_parameter["schema"]["anyOf"] == [{"type": "string", "minLength": 1}, {"type": "null"}]
     assert component_properties("PlaceMapRead") == {
         "categories",
         "category_ids",
@@ -228,6 +232,7 @@ def test_openapi_contract_keeps_public_payloads_out_of_admin_shape() -> None:
         assert "status" not in component_properties(component)
     for component in ("PublicGuideRead", "PublicGuideDetailRead"):
         properties = component_properties(component)
+        assert "kind" in properties
         assert "status" not in properties
         assert "created_at" not in properties
         assert "updated_at" not in properties
@@ -254,6 +259,42 @@ def test_openapi_contract_keeps_public_payloads_out_of_admin_shape() -> None:
         "memory_text",
         "place_id",
         "public_path",
+        "thumb_path",
+    }
+    assert (
+        response_schema_ref("POST", "/api/places/{place_id}/memories", "201")
+        == "#/components/schemas/MemorySubmissionRead"
+    )
+    assert component_properties("MemorySubmissionRead") == {
+        "author_city",
+        "author_name",
+        "caption",
+        "created_at",
+        "id",
+        "memory_text",
+        "place_id",
+        "status",
+    }
+    assert "public_path" not in component_properties("MemorySubmissionRead")
+    assert "thumb_path" not in component_properties("MemorySubmissionRead")
+    assert component_properties("MemoryAdminRead") == {
+        "admin_audio",
+        "admin_public_path",
+        "admin_thumb_path",
+        "approved_at",
+        "audio",
+        "author_city",
+        "author_name",
+        "caption",
+        "consent_confirmed",
+        "created_at",
+        "id",
+        "memory_text",
+        "paid",
+        "place_id",
+        "public_path",
+        "share_slug",
+        "status",
         "thumb_path",
     }
     assert component_properties("PlaceMapPhotoRead") == {

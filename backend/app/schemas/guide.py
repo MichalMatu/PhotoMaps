@@ -5,7 +5,7 @@ from pydantic import field_validator
 from sqlmodel import Field, SQLModel
 
 from app.schemas.content import ContentBlock
-from app.schemas.contract_types import GuideStatus, PlaceStatus
+from app.schemas.contract_types import GuideKind, GuideStatus, PlaceStatus
 from app.schemas.photo import PhotoRead
 
 
@@ -48,6 +48,7 @@ class GuidePlacePreviewRead(PublicGuidePlacePreviewRead):
 
 class GuideBase(SQLModel):
     slug: str
+    kind: GuideKind = "route"
     title: str
     description: str | None = None
     article_blocks: list[ContentBlock] = Field(default_factory=list)
@@ -61,6 +62,7 @@ class GuideCreate(GuideBase):
 
 class GuideUpdate(SQLModel):
     slug: str | None = None
+    kind: GuideKind | None = None
     title: str | None = None
     description: str | None = None
     article_blocks: list[ContentBlock] | None = None
@@ -71,6 +73,7 @@ class GuideUpdate(SQLModel):
 class GuideRead(SQLModel):
     id: str
     slug: str
+    kind: GuideKind
     title: str
     description: str | None
     article_blocks: list[ContentBlock]
@@ -90,6 +93,7 @@ class GuideDetailRead(GuideRead):
 class PublicGuideRead(SQLModel):
     id: str
     slug: str
+    kind: GuideKind
     title: str
     description: str | None
     article_blocks: list[ContentBlock]

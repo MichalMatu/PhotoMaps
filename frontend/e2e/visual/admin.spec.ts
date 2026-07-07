@@ -238,6 +238,15 @@ test("admin place status sections split city places", async ({ page }) => {
 });
 
 test("admin place status tabs filter city groups", async ({ page }) => {
+  const emptyCity = {
+    ...city,
+    id: "krakow",
+    lat: 50.0614,
+    lon: 19.9366,
+    name: "Kraków",
+    region: "Małopolskie",
+    sort_order: 20,
+  };
   const statusPlaces = [
     adminPlaces[0],
     {
@@ -256,7 +265,7 @@ test("admin place status tabs filter city groups", async ({ page }) => {
     },
   ];
 
-  await mockAdminApi(page, { adminPlaceList: statusPlaces });
+  await mockAdminApi(page, { adminCityList: [city, emptyCity], adminPlaceList: statusPlaces });
   await page.goto("/");
   await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
   await page.goto("/admin");
@@ -272,10 +281,13 @@ test("admin place status tabs filter city groups", async ({ page }) => {
   await expect(statusTabs.getByRole("tab", { name: /Archiwalne 1/ })).toBeVisible();
 
   const cityToggle = page.locator(".place-city-toggle").filter({ hasText: city.name });
+  await expect(page.locator(".place-city-toggle")).toHaveCount(2);
   await cityToggle.click();
 
   await statusTabs.getByRole("tab", { name: /Szkice 1/ }).click();
   const draftSection = page.locator(".place-status-section--draft");
+  await expect(page.locator(".place-city-toggle")).toHaveCount(1);
+  await expect(page.locator(".place-city-toggle").filter({ hasText: emptyCity.name })).toHaveCount(0);
   await expect(draftSection.getByRole("button", { name: /Szkice 1 miejsce/ })).toBeVisible();
   await draftSection.getByRole("button", { name: /Szkice 1 miejsce/ }).click();
   await expect(draftSection.locator(".table-row").filter({ hasText: "Miejsce szkicowe" })).toBeVisible();
@@ -284,6 +296,8 @@ test("admin place status tabs filter city groups", async ({ page }) => {
 
   await statusTabs.getByRole("tab", { name: /Archiwalne 1/ }).click();
   const archivedSection = page.locator(".place-status-section--archived");
+  await expect(page.locator(".place-city-toggle")).toHaveCount(1);
+  await expect(page.locator(".place-city-toggle").filter({ hasText: emptyCity.name })).toHaveCount(0);
   await expect(archivedSection.getByRole("button", { name: /Archiwalne 1 miejsce/ })).toBeVisible();
   await archivedSection.getByRole("button", { name: /Archiwalne 1 miejsce/ }).click();
   await expect(archivedSection.locator(".table-row").filter({ hasText: "Miejsce archiwalne" })).toBeVisible();
@@ -652,6 +666,112 @@ test("admin place photo gallery exposes moderator tools in responsive media view
 
   await openPhotoGallery(1600, 900);
   await openPhotoGallery(390, 740);
+});
+
+test("admin single-photo place gallery keeps the card and media tools compact", async ({ page }) => {
+  test.setTimeout(60_000);
+
+  await page.setViewportSize({ height: 900, width: 1600 });
+  await mockAdminApi(page, { adminPhotoList: [rynekCover] });
+  await unlockAdmin(page);
+  await clickAdminSection(page, /Miejsca/);
+
+  const cityToggle = page.locator(".place-city-toggle").filter({ hasText: city.name });
+  await cityToggle.click();
+  const placeRow = page.locator(".place-city-group .table-row").filter({ hasText: adminPlaces[0].title });
+  await placeRow.getByRole("button", { name: `Galeria zdjęć miejsca ${adminPlaces[0].title}` }).click();
+
+  const photoPanelDialog = page.getByRole("dialog", { name: "Zdjęcia miejsca" });
+  await expect(photoPanelDialog).toBeVisible();
+  const panelMetrics = await photoPanelDialog.evaluate((element) => {
+    const card = element.querySelector(".place-photo-strip .admin-media-item");
+    const cardRect = card?.getBoundingClientRect();
+    const modalRect = element.getBoundingClientRect();
+    const addCards = Array.from(element.querySelectorAll(".place-photo-add-card")).map((addCard) => {
+      const rect = addCard.getBoundingClientRect();
+      return {
+        height: Math.round(rect.height),
+        top: Math.round(rect.top),
+        width: Math.round(rect.width),
+      };
+    });
+    return {
+      cardWidth: Math.round(cardRect?.width ?? 0),
+      modalWidth: Math.round(modalRect.width),
+      modalScrollDelta: Math.round(element.scrollHeight - element.clientHeight),
+      addCardCount: addCards.length,
+      addCardHeightDelta: Math.max(
+        0,
+        ...addCards.map((addCard) => Math.abs(addCard.height - Math.round(cardRect?.height ?? 0))),
+      ),
+      addCardTopDelta: Math.max(
+        0,
+        ...addCards.map((addCard) => Math.abs(addCard.top - Math.round(cardRect?.top ?? 0))),
+      ),
+      addCardWidthDelta: Math.max(
+        0,
+        ...addCards.map((addCard) => Math.abs(addCard.width - Math.round(cardRect?.width ?? 0))),
+      ),
+    };
+  });
+  expect(panelMetrics.cardWidth).toBeGreaterThanOrEqual(260);
+  expect(panelMetrics.cardWidth).toBeLessThanOrEqual(340);
+  expect(panelMetrics.modalWidth).toBeGreaterThanOrEqual(600);
+  expect(panelMetrics.modalWidth).toBeLessThanOrEqual(660);
+  expect(panelMetrics.addCardCount).toBe(1);
+  expect(panelMetrics.addCardHeightDelta).toBeLessThanOrEqual(1);
+  expect(panelMetrics.addCardTopDelta).toBeLessThanOrEqual(1);
+  expect(panelMetrics.addCardWidthDelta).toBeLessThanOrEqual(1);
+  expect(panelMetrics.modalScrollDelta).toBeLessThanOrEqual(1);
+
+  await page.setViewportSize({ height: 740, width: 390 });
+  await expect(photoPanelDialog).toBeVisible();
+  const mobilePanelMetrics = await photoPanelDialog.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    const grid = element.querySelector(".place-photo-strip");
+    const gridStyle = grid ? window.getComputedStyle(grid) : null;
+    return {
+      addCardCount: element.querySelectorAll(".place-photo-add-card").length,
+      cardCount: element.querySelectorAll(".place-photo-strip .admin-media-item").length,
+      gridColumnCount: gridStyle?.gridTemplateColumns.split(" ").filter(Boolean).length ?? 0,
+      modalScrollDelta: Math.round(element.scrollHeight - element.clientHeight),
+      modalWidth: Math.round(rect.width),
+    };
+  });
+  expect(mobilePanelMetrics.cardCount).toBe(1);
+  expect(mobilePanelMetrics.addCardCount).toBe(1);
+  expect(mobilePanelMetrics.gridColumnCount).toBe(1);
+  expect(mobilePanelMetrics.modalWidth).toBeLessThanOrEqual(342);
+  expect(mobilePanelMetrics.modalScrollDelta).toBeLessThanOrEqual(1);
+
+  await photoPanelDialog.getByRole("button", { name: `Otwórz galerię zdjęć miejsca ${adminPlaces[0].title}` }).click();
+
+  const galleryDialog = page.getByRole("dialog", { name: "Galeria zdjęć" });
+  await expect(galleryDialog).toBeVisible();
+  await page.setViewportSize({ height: 740, width: 390 });
+  await expect(galleryDialog.locator(".admin-photo-gallery-sidebar")).toBeVisible();
+
+  const sidebarMetrics = await galleryDialog.locator(".admin-photo-gallery-sidebar").evaluate((element) => {
+    const style = window.getComputedStyle(element);
+    const fileInput = element.querySelector(".file-input-control");
+    const fileInputStyle = fileInput ? window.getComputedStyle(fileInput) : null;
+    const labelRow = element.querySelector(".ui-setting-field-label-row");
+    const labelRowRect = labelRow?.getBoundingClientRect();
+    return {
+      backgroundColor: style.backgroundColor,
+      fileInputBackgroundColor: fileInputStyle?.backgroundColor ?? "",
+      hintButtonCount: element.querySelectorAll(".ui-field-hint-trigger").length,
+      labelRowHeight: Math.round(labelRowRect?.height ?? 0),
+      overflowY: style.overflowY,
+      scrollDelta: Math.round(element.scrollHeight - element.clientHeight),
+    };
+  });
+  expect(sidebarMetrics.backgroundColor).toContain("rgba(16, 18, 22");
+  expect(sidebarMetrics.fileInputBackgroundColor).toContain("rgba(39, 39, 42");
+  expect(sidebarMetrics.hintButtonCount).toBe(0);
+  expect(sidebarMetrics.labelRowHeight).toBeLessThanOrEqual(1);
+  expect(sidebarMetrics.overflowY).toBe("visible");
+  expect(sidebarMetrics.scrollDelta).toBeLessThanOrEqual(1);
 });
 
 test("admin main section tabs keep stable geometry across all sections", async ({ page }) => {

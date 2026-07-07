@@ -18,7 +18,30 @@ class MemoryRead(SQLModel):
     audio: AudioAttachment | None
 
 
-class MemoryAdminRead(MemoryRead):
+class MemorySubmissionRead(SQLModel):
+    id: str
+    place_id: str
+    author_name: str | None
+    author_city: str | None
+    caption: str
+    memory_text: str
+    status: ReviewStatus
+    created_at: datetime
+
+
+class MemoryAdminRead(SQLModel):
+    id: str
+    place_id: str
+    author_name: str | None
+    author_city: str | None
+    caption: str
+    memory_text: str
+    public_path: str | None
+    thumb_path: str | None
+    admin_public_path: str
+    admin_thumb_path: str
+    audio: AudioAttachment | None
+    admin_audio: AudioAttachment | None
     status: ReviewStatus
     paid: bool
     share_slug: str

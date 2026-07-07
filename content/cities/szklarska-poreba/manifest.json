@@ -2,6 +2,7 @@
   "city": {
     "id": "szklarska-poreba",
     "name": "Szklarska Poręba",
+    "region": "Dolnośląskie",
     "lat": 50.8268011,
     "lon": 15.5221261,
     "default_zoom": 12,
@@ -24,7 +25,7 @@
           "text": "Kamieńczyk jest prosty do rozpoznania na zdjęciach: ciemny wąwóz, spadająca woda i poczucie chłodu. To jedna z tych atrakcji, które dobrze czytają się nawet jako mała miniatura na mapie."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.8135624,
       "lon": 15.496672,
       "weight": 4.6,
@@ -45,10 +46,52 @@
           "text": "Śnieżne Kotły dodają do mapy górski dramat: ekspozycję, wiatr, rozległy widok i skalne ściany. To dobry kontrast dla wodospadów i miejskich atrakcji Szklarskiej Poręby."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.7784465,
       "lon": 15.5609623,
       "weight": 4.7,
+      "status": "published"
+    },
+    {
+      "slug": "szrenica",
+      "title": "Szrenica",
+      "description": "Karkonoski szczyt nad Szklarską Porębą, z rozległymi widokami, schroniskiem i łatwym połączeniem ze szlakami graniowymi.",
+      "local_comment": "Galeria powinna pokazać szczyt jako punkt docelowy i jako początek dalszej trasy. Warto mieszać panoramy, schronisko, zimę i widok na grzbiet.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Szczyt, który otwiera grań"
+        },
+        {
+          "type": "paragraph",
+          "text": "Szrenica jest jednym z naturalnych punktów startowych do czytania Karkonoszy ze Szklarskiej Poręby. Daje widok, ale też wybór dalszego ruchu: zejście, grzbiet, schronisko albo spokojniejsze oglądanie pogody nad górami."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.7913889,
+      "lon": 15.5141667,
+      "weight": 4.5,
+      "status": "published"
+    },
+    {
+      "slug": "zakret-smierci",
+      "title": "Zakręt Śmierci",
+      "description": "Słynny zakręt i punkt widokowy nad Szklarską Porębą, znany z ostrego łuku drogi i panoramy Gór Izerskich.",
+      "local_comment": "Najlepiej działa jako widok i detal infrastruktury naraz: łuk drogi, barierki, las i daleki plan. Nie robić z niego tylko zdjęcia asfaltu.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Widok z ostrym łukiem"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zakręt Śmierci jest małym, ale zapamiętywalnym punktem Szklarskiej Poręby. Łączy trasę samochodową, punkt widokowy i lokalną nazwę, która od razu budzi ciekawość, a na mapie daje inny rytm niż wodospady i górskie szczyty."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.8490256,
+      "lon": 15.5363938,
+      "weight": 3.7,
       "status": "published"
     }
   ],

@@ -21,6 +21,7 @@ backend/data/
 backend/storage/private/
 backend/storage/public/
 backups/
+research-exports/
 
 _legacy/
 

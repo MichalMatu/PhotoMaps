@@ -12,7 +12,7 @@ Zdjecia redakcyjne nie sa importowane manifestem. Pozyskiwanie legalnych, wysoki
 
 ## Zasada
 
-Manifesty sa roboczym zrodlem wiekszych zmian, a nie runtime storage aplikacji. Importer dziala po `city.id`, `place.slug` i `guide.slug`, wiec moze tworzyc miasta, nowe miejsca i aktualizowac istniejace bez masowego klikania rekordow w UI.
+Manifesty sa roboczym zrodlem wiekszych zmian, a nie runtime storage aplikacji. Importer dziala po `city.id`, `place.slug` i `guide.slug`, wiec moze tworzyc miasta, nowe miejsca i aktualizowac istniejace bez masowego klikania rekordow w UI. Kazde miasto ma tez jawne `city.region`, uzywane w publicznym selektorze miast.
 
 Kazdy manifest zawiera obiekt `city`, a miejsca uzywaja `category_ids`, zeby jedno miejsce moglo nalezec do kilku kategorii. Dlugie opisy miejsc zapisuj w `article_blocks`; krotkie `description` i `local_comment` zostaja do kart, list i wstepu.
 

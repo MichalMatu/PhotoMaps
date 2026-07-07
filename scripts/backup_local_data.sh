@@ -62,6 +62,7 @@ By default the script keeps the newest 1 backup. Override with --keep-backups N
 or PHOTOMAP_BACKUP_KEEP=N. Use --no-prune to keep all backups for one run.
 Storage backup reuses unchanged files from the newest existing local backup via
 hard links when possible, then synchronizes the directory to the current state.
+Empty storage directories are pruned from the finalized backup.
 EOF
       exit 0
       ;;
@@ -141,6 +142,7 @@ PY
       rm -rf "$BACKUP_WORK_DIR/backend/storage"
       cp -R "$ROOT_DIR/backend/storage" "$BACKUP_WORK_DIR/backend/storage"
     fi
+    find "$BACKUP_WORK_DIR/backend/storage" -mindepth 1 -depth -type d -empty -delete
   else
     echo "No backend/storage found; skipping media storage copy."
   fi

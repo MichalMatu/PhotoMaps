@@ -16,8 +16,8 @@ class Memory(SQLModel, table=True):
     caption: str = Field(max_length=80)
     memory_text: str = Field(max_length=240)
     original_path: str
-    public_path: str
-    thumb_path: str
+    public_path: str | None = None
+    thumb_path: str | None = None
     audio_original_path: str | None = None
     audio_public_path: str | None = None
     audio_mime_type: str | None = None

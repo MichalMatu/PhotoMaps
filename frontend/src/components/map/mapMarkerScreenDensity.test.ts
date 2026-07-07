@@ -35,6 +35,16 @@ describe("limitMapMarkersByScreenDensity", () => {
     expect(limitMapMarkersByScreenDensity(markers).map((item) => item.id)).toEqual(["kept", "separate"]);
   });
 
+  it("keeps an overlapping marker when it is the only representative of another city", () => {
+    const markers = [
+      marker(0, { cityId: "wroclaw", id: "kept", point: { x: 100, y: 100 }, priority: 10 }),
+      marker(1, { cityId: "walbrzych", id: "city-representative", point: { x: 112, y: 108 }, priority: 1 }),
+      marker(2, { cityId: "wroclaw", id: "same-city-overlap", point: { x: 116, y: 112 }, priority: 1 }),
+    ];
+
+    expect(limitMapMarkersByScreenDensity(markers).map((item) => item.id)).toEqual(["kept", "city-representative"]);
+  });
+
   it("keeps nearby markers when the local overlap is still mild", () => {
     const markers = [
       marker(0, { id: "first", point: { x: 100, y: 100 }, priority: 10 }),

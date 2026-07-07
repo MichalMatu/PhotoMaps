@@ -2,6 +2,7 @@
   "city": {
     "id": "duszniki-zdroj",
     "name": "Duszniki-Zdrój",
+    "region": "Dolnośląskie",
     "lat": 50.3703403,
     "lon": 16.3784907,
     "default_zoom": 13,
@@ -45,10 +46,31 @@
           "text": "Torfowisko pod Zieleńcem jest spokojniejszym kontrapunktem dla uzdrowisk i górskich panoram. Na mapie wnosi ciszę, kładki, mokradła i bardzo charakterystyczny rytm spaceru."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.3451171,
       "lon": 16.4145805,
       "weight": 3.8,
+      "status": "published"
+    },
+    {
+      "slug": "dworek-chopina-duszniki",
+      "title": "Dworek Chopina w Dusznikach-Zdroju",
+      "description": "Teatr Zdrojowy im. Fryderyka Chopina w Parku Zdrojowym, związany z muzyczną pamięcią uzdrowiska i festiwalem chopinowskim.",
+      "local_comment": "Warto pokazać budynek w zieleni Parku Zdrojowego, detal architektury i spokojny kontekst kurortu. Nie robić z tego wyłącznie portretu szyldu.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Muzyczny punkt parku zdrojowego"
+        },
+        {
+          "type": "paragraph",
+          "text": "Dworek Chopina dodaje Dusznikom-Zdrojowi warstwę muzyki i uzdrowiskowej elegancji. To miejsce działa najlepiej w połączeniu z parkiem: jako spokojny przystanek, w którym architektura, koncerty i historia kurortu składają się w jedną opowieść."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.3938308,
+      "lon": 16.3841199,
+      "weight": 3.9,
       "status": "published"
     }
   ],

@@ -6,6 +6,7 @@ from sqlmodel import Session, select
 from app.models.memory import Memory
 from app.models.photo import Photo
 from app.models.place import Place
+from app.services.memory_uploads import publish_memory_media, unpublish_memory_media
 
 VISIBLE_REVIEW_STATUSES = {"pending", "approved", "rejected"}
 FINAL_REVIEW_STATUSES = {"approved", "rejected"}
@@ -70,6 +71,11 @@ def review_memory(memory: Memory, place: Place, status: str) -> None:
     ensure_final_review_status(status)
 
     previous_status = memory.status
+    if status == "approved":
+        publish_memory_media(memory)
+    elif previous_status == "approved" or memory.public_path is not None or memory.thumb_path is not None:
+        unpublish_memory_media(memory)
+
     memory.status = status
     memory.approved_at = datetime.now(UTC) if status == "approved" else None
     place.memory_count = update_review_count(place.memory_count, previous_status, status)

@@ -2,6 +2,7 @@
   "city": {
     "id": "wroclaw",
     "name": "Wrocław",
+    "region": "Dolnośląskie",
     "lat": 51.1079,
     "lon": 17.0385,
     "default_zoom": 13,
@@ -12,7 +13,7 @@
     {
       "slug": "rynek-wroclaw",
       "title": "Rynek Wrocław",
-      "description": "Historyczne centrum miasta z ratuszem, kamienicami i najbardziej rozpoznawalnym rytmem starego Wrocławia.",
+      "description": "Historyczne centrum miasta z ratuszem, kamienicami i charakterystycznym rytmem starego Wrocławia.",
       "local_comment": "Najlepszy punkt startowy: dużo ludzi, światła i detali, ale najciekawsze kadry często są w bocznych przejściach, nie na środku placu.",
       "article_blocks": [
         {
@@ -21,7 +22,7 @@
         },
         {
           "type": "paragraph",
-          "text": "Rynek jest najprostszym miejscem startu, bo od razu pokazuje skalę Wrocławia: ratusz, pierzeje kamienic, restauracyjne ogródki, przejścia i ruch ludzi. W PhotoMap nie traktujemy go jednak jak jednego pocztówkowego punktu, tylko jak gęsty obszar z wieloma drobnymi decyzjami: gdzie wejść, kiedy zejść z głównej osi i które detale zostawić jako własny ślad."
+          "text": "Rynek jest najbardziej naturalnym miejscem, by zacząć zwiedzanie, bo od razu pokazuje skalę Wrocławia: ratusz, pierzeje kamienic, restauracyjne ogródki, przejścia i ruch ludzi. W PhotoMap nie traktujemy go jednak jak jednego pocztówkowego punktu, tylko jak gęsty obszar z wieloma drobnymi decyzjami: którędy wejść, kiedy odejść od głównej osi i które detale zabrać ze sobą w pamięci."
         },
         {
           "type": "subheading",
@@ -32,7 +33,7 @@
           "text": "Najlepiej zacząć szeroko, a potem zejść do bram, szyldów i przejść przy krawędziach placu. To tam miasto robi się mniej oczywiste: zmienia się światło, hałas słabnie, a jeden krótki odcinek potrafi powiedzieć więcej niż kolejny widok ratusza z tego samego kąta."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1097,
       "lon": 17.0325,
       "weight": 5.0,
@@ -61,7 +62,7 @@
           "text": "Najwięcej klimatu jest wieczorem, gdy zapalają się latarnie i katedra odbija się w Odrze. Wtedy miejsce przestaje być tylko zabytkiem, a zaczyna działać jak spokojna trasa przez starszą warstwę miasta."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1143,
       "lon": 17.0466,
       "weight": 4.8,
@@ -133,7 +134,7 @@
     {
       "slug": "hydropolis",
       "title": "Hydropolis",
-      "description": "Centrum wiedzy o wodzie w dawnym zbiorniku, popularne muzeum z mocną architekturą i industrialnym kontekstem.",
+      "description": "Centrum wiedzy o wodzie w dawnym zbiorniku, popularna atrakcja z wyrazistą architekturą i industrialnym kontekstem.",
       "local_comment": "Najlepiej działa jako kontrast dla historycznego centrum: cegła, infrastruktura, światło przy Oławie i nowoczesna ekspozycja.",
       "article_blocks": [
         {
@@ -154,7 +155,7 @@
     {
       "slug": "kolejkowo",
       "title": "Kolejkowo",
-      "description": "Duża makieta kolejowa i miniaturowy Dolny Śląsk, popularna atrakcja rodzinna pod dachem.",
+      "description": "Rozbudowana makieta kolejowa i miniaturowy Dolny Śląsk, popularna atrakcja rodzinna na każdą pogodę.",
       "local_comment": "To miejsce jest najbardziej fotogeniczne w detalach: ludzie, światła, małe sceny i skala, którą najlepiej ogląda się powoli.",
       "article_blocks": [
         {
@@ -175,7 +176,7 @@
     {
       "slug": "hala-stulecia",
       "title": "Hala Stulecia",
-      "description": "Modernistyczna ikona UNESCO, centrum spaceru po okolicach Pergoli, parku i fontanny.",
+      "description": "Modernistyczny obiekt wpisany na Listę światowego dziedzictwa UNESCO, centralny punkt spaceru po okolicach Pergoli, parku i fontanny.",
       "local_comment": "Najlepsze kadry łapią skalę kopuły, rytm kolumn i relację z zielenią oraz przestrzenią wokół Hali.",
       "article_blocks": [
         {
@@ -187,7 +188,7 @@
           "text": "Hala Stulecia jest jednym z najbardziej rozpoznawalnych zabytków Wrocławia poza ścisłym Starym Miastem. Działa dobrze jako punkt docelowy i jako część większej trasy: Pergola, Fontanna Multimedialna, Ogród Japoński i Park Szczytnicki."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1069,
       "lon": 17.0770,
       "weight": 4.6,
@@ -196,7 +197,7 @@
     {
       "slug": "fontanna-multimedialna",
       "title": "Fontanna Multimedialna i Pergola",
-      "description": "Duża fontanna przy Hali Stulecia, pokazująca Wrocław od strony światła, wody i wieczornych spacerów.",
+      "description": "Fontanna przy Hali Stulecia, kojarzona z pokazami światła i wody oraz wieczornymi spacerami wokół Pergoli.",
       "local_comment": "To miejsce warto fotografować szeroko: z Pergolą, wodą, ludźmi i Halą Stulecia jako tłem.",
       "article_blocks": [
         {
@@ -208,7 +209,7 @@
           "text": "Fontanna Multimedialna jest jedną z najczęściej wymienianych atrakcji przy Hali Stulecia. Jej siła nie polega tylko na pokazach, ale też na tym, że porządkuje cały spacer po tej części miasta."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1067,
       "lon": 17.0785,
       "weight": 4.2,
@@ -217,7 +218,7 @@
     {
       "slug": "ogrod-japonski",
       "title": "Ogród Japoński",
-      "description": "Kameralny ogród przy Parku Szczytnickim, znany z mostków, wody, kompozycji roślin i sezonowego koloru.",
+      "description": "Kameralny ogród przy Parku Szczytnickim, znany z mostków, wody, kompozycji roślin i sezonowych barw.",
       "local_comment": "Najlepiej sprawdza się rano albo poza największym tłumem, gdy woda i rośliny mają spokojniejszy rytm.",
       "article_blocks": [
         {
@@ -229,7 +230,7 @@
           "text": "Ogród Japoński jest częstym wyborem turystów po Hali Stulecia i fontannie. Na mapie jest potrzebny jako spokojna przeciwwaga dla dużych atrakcji: ma skalę spaceru, detalu i sezonowego światła."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1090,
       "lon": 17.0804,
       "weight": 4.0,
@@ -250,7 +251,7 @@
           "text": "Park Szczytnicki spina kilka mocnych punktów turystycznych, ale sam też jest miejscem. W PhotoMap powinien działać jako większy obszar spacerowy, który pokazuje, że Wrocław nie kończy się na zabytkach w centrum."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1097,
       "lon": 17.0800,
       "weight": 3.5,
@@ -259,7 +260,7 @@
     {
       "slug": "ogrod-botaniczny",
       "title": "Ogród Botaniczny Uniwersytetu Wrocławskiego",
-      "description": "Historyczny ogród botaniczny przy Ostrowie Tumskim, dobry na spokojny spacer pośród roślin i wody.",
+      "description": "Historyczny ogród botaniczny przy Ostrowie Tumskim, dobre miejsce na spokojny spacer wśród roślin i wody.",
       "local_comment": "Najlepsze zdjęcia nie muszą być encyklopedyczne: szukaj światła na ścieżkach, szklarni, stawie i detalach sezonu.",
       "article_blocks": [
         {
@@ -271,7 +272,7 @@
           "text": "Ogród Botaniczny jest wysoko w turystycznych rankingach i naturalnie uzupełnia spacer po Ostrowie Tumskim. To miejsce ma spokojniejszy ton niż Rynek: więcej cienia, wody i rytmu roślin."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1150,
       "lon": 17.0453,
       "weight": 3.8,
@@ -301,7 +302,7 @@
     {
       "slug": "kosciol-sw-elzbiety",
       "title": "Kościół św. Elżbiety i wieża widokowa",
-      "description": "Gotycki kościół przy Rynku z jedną z najważniejszych panoram widokowych na Stare Miasto.",
+      "description": "Gotycki kościół przy Rynku z jednym z najciekawszych widoków na Stare Miasto.",
       "local_comment": "Na zdjęciach powinien działać pion: wieża, dachy, ciasne uliczki i widok z góry na miejski układ.",
       "article_blocks": [
         {
@@ -322,7 +323,7 @@
     {
       "slug": "mostek-pokutnic",
       "title": "Mostek Pokutnic",
-      "description": "Mostek między wieżami kościoła św. Marii Magdaleny, znany punkt widokowy i charakterystyczny detal Starego Miasta.",
+      "description": "Mostek między wieżami kościoła św. Marii Magdaleny, znany punkt widokowy i charakterystyczny element panoramy Starego Miasta.",
       "local_comment": "To miejsce wymaga kadrów z perspektywą: wieże, przejście nad ulicą i widok na centrum, a nie tylko frontalna fasada.",
       "article_blocks": [
         {
@@ -334,7 +335,7 @@
           "text": "Mostek Pokutnic jest mniejszy niż Rynek czy Panorama Racławicka, ale turystycznie bardzo wdzięczny. Daje prostą obietnicę: wejść wyżej, stanąć między wieżami i zobaczyć centrum z innego kąta."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1092,
       "lon": 17.0360,
       "weight": 3.0,
@@ -343,7 +344,7 @@
     {
       "slug": "muzeum-narodowe",
       "title": "Muzeum Narodowe we Wrocławiu",
-      "description": "Neorenesansowy gmach przy Odrze, blisko Panoramy Racławickiej i jednego z głównych spacerów muzealnych miasta.",
+      "description": "Neorenesansowy gmach przy Odrze, blisko Panoramy Racławickiej i jednego z głównych ciągów spacerowych w muzealnej części miasta.",
       "local_comment": "Fasada z zielenią, sezonowy bluszcz i sąsiedztwo rzeki dają mocniejsze kadry niż neutralne zdjęcie wejścia.",
       "article_blocks": [
         {
@@ -364,7 +365,7 @@
     {
       "slug": "hala-targowa",
       "title": "Hala Targowa",
-      "description": "Historyczna hala handlowa z charakterystyczną konstrukcją i codziennym rytmem miasta między centrum a Ostrowem Tumskim.",
+      "description": "Historyczna hala handlowa z charakterystyczną konstrukcją i codziennym rytmem handlu oraz spotkań między centrum a Ostrowem Tumskim.",
       "local_comment": "Najlepiej działa na zdjęciach, gdy widać i architekturę, i zwykły handel: kwiaty, stoiska, ludzi oraz betonową konstrukcję.",
       "article_blocks": [
         {
@@ -385,7 +386,7 @@
     {
       "slug": "bastion-sakwowy",
       "title": "Bastion Sakwowy",
-      "description": "Odnowiony punkt widokowy na Wzgórzu Partyzantów, blisko centrum i osi spacerowej przez Promenadę Staromiejską.",
+      "description": "Odnowiony punkt widokowy na Wzgórzu Partyzantów, blisko centrum i głównego ciągu spacerowego Promenady Staromiejskiej.",
       "local_comment": "To miejsce potrzebuje zdjęć z ruchem po schodach, kolumnadą i panoramą, bo sama lokalizacja jest bardziej doświadczeniem niż pojedynczym obiektem.",
       "article_blocks": [
         {
@@ -397,7 +398,7 @@
           "text": "Bastion Sakwowy wrócił do turystycznego obiegu po rewitalizacji. Jest ważny dla PhotoMap, bo pokazuje Wrocław mniej oczywisty: trochę monumentalny, trochę parkowy i bardzo blisko codziennego centrum."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1049,
       "lon": 17.0381,
       "weight": 2.8,
@@ -418,7 +419,7 @@
           "text": "Dzielnica Czterech Wyznań jest turystyczna, ale nie działa jak klasyczny zabytek. To raczej obszar nastroju: świątynie różnych tradycji, podwórka, kultura, restauracje i trasa, która naturalnie wydłuża spacer poza Rynek."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1078,
       "lon": 17.0258,
       "weight": 3.3,
@@ -481,7 +482,7 @@
           "text": "Sky Tower działa turystycznie jako kontrast wobec Starego Miasta: mniej historii, więcej panoramy i orientacji w przestrzeni. To prosty punkt dla osób, które chcą zobaczyć układ miasta z dystansu."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.0942,
       "lon": 17.0192,
       "weight": 3.0,
@@ -511,7 +512,7 @@
     {
       "slug": "dworzec-glowny",
       "title": "Dworzec Wrocław Główny",
-      "description": "Neogotycki dworzec kolejowy i jeden z najbardziej efektownych pierwszych kontaktów z miastem.",
+      "description": "Neogotycki dworzec kolejowy i jeden z najbardziej efektownych punktów pierwszego kontaktu z miastem.",
       "local_comment": "Najlepszy kadr pokazuje długą fasadę, plac i wejściowy rytm podróży, nie tylko pojedynczy detal.",
       "article_blocks": [
         {
@@ -544,7 +545,7 @@
           "text": "Narodowe Forum Muzyki dodaje do turystycznej mapy Wrocławia współczesną skalę i wydarzeniowy rytm. To punkt, który łączy spacer po centrum z koncertami, festiwalami i wieczornym miastem."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1075,
       "lon": 17.0260,
       "weight": 3.3,
@@ -565,7 +566,7 @@
           "text": "Opera Wrocławska jest łatwa do przeoczenia w szybkim marszu przez centrum, ale turystycznie działa jako elegancki punkt kultury między Rynkiem, parkiem i placem Wolności."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1060,
       "lon": 17.0327,
       "weight": 2.6,
@@ -607,7 +608,7 @@
           "text": "Ossolineum jest ważne kulturowo i dobrze wpisuje się w spacer od Hali Targowej do Ostrowa Tumskiego. To miejsce z innym tempem: mniej atrakcji na pokaz, więcej historii i architektury do odkrycia."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1132,
       "lon": 17.0374,
       "weight": 2.6,
@@ -658,7 +659,7 @@
     {
       "slug": "ogrod-staromiejski",
       "title": "Ogród Staromiejski",
-      "description": "Kameralny park przy Teatrze Lalek, z fontanną, alejkami i spokojnym przystankiem w centrum.",
+      "description": "Kameralny park przy Teatrze Lalek, z fontanną, alejkami i spokojnym miejscem odpoczynku w centrum.",
       "local_comment": "Najlepiej fotografować go jako krótki oddech w środku miasta: fontanna, zieleń i fasada teatru w tle.",
       "article_blocks": [
         {
@@ -670,7 +671,7 @@
           "text": "Ogród Staromiejski jest dobrym przystankiem między Rynkiem, Operą i Promenadą Staromiejską. Nie konkuruje skalą, tylko spokojem, dlatego dobrze uzupełnia gęstą mapę centrum."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1055,
       "lon": 17.0335,
       "weight": 2.4,
@@ -691,7 +692,7 @@
           "text": "Wyspa Słodowa jest jednym z najbardziej rozpoznawalnych miejsc spotkań w centrum. Turystycznie działa zwłaszcza wieczorem, gdy spacer po zabytkach przechodzi w odpoczynek nad Odrą."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1146,
       "lon": 17.0397,
       "weight": 2.8,
@@ -700,7 +701,7 @@
     {
       "slug": "most-tumski",
       "title": "Most Tumski",
-      "description": "Charakterystyczna przeprawa prowadząca na Ostrów Tumski, jeden z najbardziej romantycznych punktów spaceru.",
+      "description": "Charakterystyczna przeprawa prowadząca na Ostrów Tumski, jeden z najbardziej romantycznych punktów spacerowych.",
       "local_comment": "Najlepszy kadr ma pokazać konstrukcję mostu, wejście na Ostrów i światło katedry albo latarni.",
       "article_blocks": [
         {
@@ -712,7 +713,7 @@
           "text": "Most Tumski jest małym miejscem o dużej rozpoznawalności. Łączy praktyczną przeprawę z rytuałem spaceru, dlatego zasługuje na osobny punkt obok szerszego Ostrowa Tumskiego."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1146,
       "lon": 17.0434,
       "weight": 3.5,
@@ -721,7 +722,7 @@
     {
       "slug": "archikatedra-wroclawska",
       "title": "Archikatedra św. Jana Chrzciciela",
-      "description": "Dominanta Ostrowa Tumskiego, gotycka katedra z wieżami widocznymi z wielu punktów nad Odrą.",
+      "description": "Dominanta architektoniczna Ostrowa Tumskiego, gotycka katedra z wieżami widocznymi z wielu punktów nad Odrą.",
       "local_comment": "Warto odróżnić ją od ogólnego Ostrowa: osobny cover powinien pokazać samą fasadę albo skalę wież.",
       "article_blocks": [
         {
@@ -784,7 +785,7 @@
     {
       "slug": "neon-side-gallery",
       "title": "Neon Side Gallery",
-      "description": "Podwórko przy Ruskiej 46 z historycznymi neonami, street artem i wieczornym klimatem Dzielnicy Czterech Wyznań.",
+      "description": "Podwórko przy Ruskiej 46 z historycznymi neonami, sztuką uliczną i wieczornym klimatem Dzielnicy Czterech Wyznań.",
       "local_comment": "Zdjęcie musi być nocne albo przynajmniej pokazywać świecące neony; inaczej miejsce traci najważniejszy charakter.",
       "article_blocks": [
         {
@@ -796,7 +797,7 @@
           "text": "Neon Side Gallery jest mniejszym, ale bardzo zapamiętywalnym punktem Wrocławia. To miejsce dobre na wieczór, zdjęcia i przejście od klasycznego zwiedzania do bardziej miejskiej atmosfery."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.1076,
       "lon": 17.0246,
       "weight": 2.8,
@@ -842,6 +843,615 @@
       "lat": 51.0873,
       "lon": 17.0277,
       "weight": 2.4,
+      "status": "published"
+    },
+    {
+      "slug": "lesnica-zamek-park-lesnicki",
+      "title": "Zamek Leśnica i Park Leśnicki",
+      "description": "Zamek i park nad Bystrzycą, mocny zachodni punkt Wrocławia z historią Leśnicy i spokojnym spacerowym rytmem.",
+      "local_comment": "Najlepszy cover powinien złapać zamek od strony parku albo dziedzińca, żeby od razu było widać, że to zachodni biegun miasta z własnym charakterem.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Zachodni zamek Wrocławia"
+        },
+        {
+          "type": "paragraph",
+          "text": "Leśnica jest dobrym uzupełnieniem mapy, bo wyprowadza spacer daleko poza ścisłe centrum. Zamek przy placu Świętojańskim i park nad Bystrzycą pokazują Wrocław bardziej dzielnicowy: z dawną rezydencją, zielenią i miejscem kultury zamiast klasycznego miejskiego placu."
+        },
+        {
+          "type": "subheading",
+          "text": "Jak czytać to miejsce"
+        },
+        {
+          "type": "paragraph",
+          "text": "Najlepiej potraktować je jako spokojny cel wycieczki na zachód miasta. Warto szukać relacji między bryłą zamku, starymi drzewami i wodnym krajobrazem Bystrzycy, bo właśnie ten układ odróżnia Leśnicę od atrakcji bliżej Rynku."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 51.146253,
+      "lon": 16.872453,
+      "weight": 3.6,
+      "status": "published"
+    },
+    {
+      "slug": "nadodrze-kolorowe-podworka",
+      "title": "Kolorowe Podwórka na Nadodrzu",
+      "description": "Muralowe podwórka przy Roosevelta, lokalny i bardzo fotogeniczny punkt północnego Wrocławia.",
+      "local_comment": "To przestrzeń mieszkalna, więc zdjęcia muszą być neutralne i szanować prywatność: murale, przejścia, ściany i klimat dzielnicy, bez rozpoznawalnych mieszkańców w centrum kadru.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Nadodrze w skali podwórka"
+        },
+        {
+          "type": "paragraph",
+          "text": "Kolorowe Podwórka są dobrym miejscem na mapie, bo pokazują Wrocław mniej pomnikowy, a bardziej sąsiedzki. Zamiast jednego zabytku dostajemy bramy, ściany, murale i małą przestrzeń, która zmieniła zwykłe przejście w punkt miejskiego odkrywania."
+        },
+        {
+          "type": "subheading",
+          "text": "Ostrożny kadr"
+        },
+        {
+          "type": "paragraph",
+          "text": "Najlepiej oglądać je w dzień i z wyczuciem, bo to nadal czyjeś codzienne otoczenie. W PhotoMap powinny działać jako przystanek na Nadodrzu: szybki, barwny i bardzo lokalny, ale nie zamieniony w dekorację bez kontekstu."
+        }
+      ],
+      "category_ids": ["mural", "atmospheric_place"],
+      "lat": 51.122401,
+      "lon": 17.043519,
+      "weight": 3.3,
+      "status": "published"
+    },
+    {
+      "slug": "wuwa-osiedle-werkbundu",
+      "title": "WuWA - osiedle Werkbundu",
+      "description": "Modernistyczne osiedle wystawy Werkbundu z 1929 roku, ważny architektoniczny punkt wschodniego Wrocławia.",
+      "local_comment": "Zdjęcia powinny być architektoniczne i spokojne: elewacje, układ ulic, detale modernizmu, bez wchodzenia w prywatność mieszkańców.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Modernistyczny eksperyment miasta"
+        },
+        {
+          "type": "paragraph",
+          "text": "WuWA jest jednym z najmocniejszych miejsc dla osób, które chcą zobaczyć Wrocław przez architekturę XX wieku. Osiedle powstało wokół wystawy Werkbundu z 1929 roku i do dziś najlepiej działa jako spacer po idei nowoczesnego mieszkania, a nie jako pojedynczy budynek do odhaczenia."
+        },
+        {
+          "type": "subheading",
+          "text": "Spacer zamiast punktu"
+        },
+        {
+          "type": "paragraph",
+          "text": "Na miejscu warto porównać skale domów, proste bryły i zielone odstępy między zabudową. To żyjące osiedle, dlatego mapa powinna prowadzić do czytania układu ulic i fasad, a nie do zaglądania w prywatne półprzestrzenie."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 51.107591,
+      "lon": 17.084405,
+      "weight": 3.8,
+      "status": "published"
+    },
+    {
+      "slug": "stadion-olimpijski-zalesie",
+      "title": "Stadion Olimpijski",
+      "description": "Międzywojenny stadion na Zalesiu, duży sportowy i architektoniczny znak wschodniej części miasta.",
+      "local_comment": "Najlepsze kadry to bramy, wieża zegarowa, skala trybun i szeroka przestrzeń stadionu; w dni wydarzeń trzeba uważać na tłum oraz ograniczenia dostępu.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Sportowa skala Zalesia"
+        },
+        {
+          "type": "paragraph",
+          "text": "Stadion Olimpijski dodaje mapie Wrocławia duży, wschodni akcent. Łączy sport, międzywojenną architekturę i przestrzeń, którą inaczej odbiera się w dzień wydarzenia, a inaczej podczas spokojnego spaceru wokół obiektu."
+        },
+        {
+          "type": "subheading",
+          "text": "Co zobaczyć"
+        },
+        {
+          "type": "paragraph",
+          "text": "Najczytelniejsze są elementy skali: wejścia, rytm trybun, wieża i szerokie podejście od alei Paderewskiego. To miejsce warto pokazywać jako osobny punkt, ale też jako część większej trasy przez Zalesie, Sępolno i okolice Hali Stulecia."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 51.119444,
+      "lon": 17.096389,
+      "weight": 3.0,
+      "status": "published"
+    },
+    {
+      "slug": "park-brochowski",
+      "title": "Park Brochowski",
+      "description": "Zielony punkt Brochowa z Brochówką, stawem i labiryntem grabowym, dobry na spokojny spacer poza centrum.",
+      "local_comment": "Najlepsze zdjęcia powinny odróżniać park od anonimowej zieleni: Brochówka, labirynt, woda albo układ alejek są ważniejsze niż przypadkowy kadr trawnika.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Brochów w zielonej skali"
+        },
+        {
+          "type": "paragraph",
+          "text": "Park Brochowski jest dobrym miejscem dla południowo-wschodniej części mapy. Ma spokojny charakter, ale nie jest tylko zieloną plamą: Brochówka, staw i labirynt grabowy dają konkretne punkty, które można zapamiętać po spacerze."
+        },
+        {
+          "type": "subheading",
+          "text": "Kiedy działa najlepiej"
+        },
+        {
+          "type": "paragraph",
+          "text": "Najwięcej wizualnej siły ma od późnej wiosny do jesieni, gdy labirynt i drzewa budują własny rytm. Zimą warto szukać raczej układu parku, wody i mostków niż samej bujnej zieleni."
+        }
+      ],
+      "category_ids": ["atmospheric_place"],
+      "lat": 51.063136,
+      "lon": 17.071644,
+      "weight": 2.9,
+      "status": "published"
+    },
+    {
+      "slug": "park-poludniowy",
+      "title": "Park Południowy",
+      "description": "Elegancki park Borka i Krzyków z alejami, wodą i spokojniejszym rytmem południowego Wrocławia.",
+      "local_comment": "Cover powinien pokazywać park jako elegancką kompozycję: woda, mostek, altana albo szeroka aleja, nie losowy fragment zieleni.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Południowy oddech miasta"
+        },
+        {
+          "type": "paragraph",
+          "text": "Park Południowy dobrze równoważy intensywność centrum. Jest mniej oczywisty niż Rynek czy Hala Stulecia, ale daje bardzo potrzebny kadr południowego Wrocławia: spokojny, spacerowy, z wodą, alejami i elegancką zielenią."
+        },
+        {
+          "type": "subheading",
+          "text": "Miejsce na wolniejsze tempo"
+        },
+        {
+          "type": "paragraph",
+          "text": "Najlepiej sprawdza się jako punkt odpoczynku albo część spaceru po Borku i Krzykach. Dobre zdjęcie powinno pokazać nie tylko drzewa, ale też układ przestrzeni, który odróżnia ten park od zwykłego skweru."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 51.076997,
+      "lon": 17.010869,
+      "weight": 3.3,
+      "status": "published"
+    },
+    {
+      "slug": "wieza-cisnien-borek",
+      "title": "Wieża ciśnień Borek",
+      "description": "Charakterystyczna wieża ciśnień przy Sudeckiej i Wiśniowej, mocny pionowy znak południowego Wrocławia.",
+      "local_comment": "To miejsce najlepiej działa jako architektoniczny landmark; kadry muszą walczyć z ruchem ulicznym, autami i znakami, więc warto szukać czystej osi widoku.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Pionowy znak Borka"
+        },
+        {
+          "type": "paragraph",
+          "text": "Wieża ciśnień na Borku jest dobrym przykładem miejsca, które nie potrzebuje długiego zwiedzania, żeby zapisać się w pamięci. Jej bryła porządkuje fragment południowego Wrocławia i daje mapie mocny punkt orientacyjny poza centrum."
+        },
+        {
+          "type": "subheading",
+          "text": "Jak ją oglądać"
+        },
+        {
+          "type": "paragraph",
+          "text": "Najlepiej spojrzeć na nią z dystansu, bo wtedy widać skalę wieży i jej relację z ulicą. To nie jest spokojny parkowy kadr, tylko architektura wpisana w ruch miasta, co może być jej największą siłą wizualną."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 51.085278,
+      "lon": 17.0175,
+      "weight": 2.8,
+      "status": "published"
+    },
+    {
+      "slug": "park-grabiszynski-cmentarz-zolnierzy-wloskich",
+      "title": "Park Grabiszyński i Cmentarz Żołnierzy Włoskich",
+      "description": "Duży park Grabiszyna z osobnym miejscem pamięci, spokojny południowo-zachodni punkt miasta.",
+      "local_comment": "Galeria musi zachować powagę cmentarza: szerokie, spokojne kadry i czytelny kontekst pamięci, bez rekreacyjnego tonu na terenie nekropolii.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Park z warstwą pamięci"
+        },
+        {
+          "type": "paragraph",
+          "text": "Park Grabiszyński jest ważny nie tylko jako duża zielona przestrzeń, ale też jako miejsce, w którym współczesny spacer spotyka ślady pamięci. Cmentarz Żołnierzy Włoskich nadaje temu punktowi ciężar, którego nie ma większość parków miejskich."
+        },
+        {
+          "type": "subheading",
+          "text": "Ton miejsca"
+        },
+        {
+          "type": "paragraph",
+          "text": "W PhotoMap warto pokazywać je spokojnie: alejki, zieleń, pomniki i granice części pamięciowej. To wpis bardziej refleksyjny niż widowiskowy, ale dobrze rozkłada mapę na południowy zachód miasta."
+        }
+      ],
+      "category_ids": ["atmospheric_place"],
+      "lat": 51.088056,
+      "lon": 16.979167,
+      "weight": 2.7,
+      "status": "published"
+    },
+    {
+      "slug": "muzeum-wspolczesne-wroclaw-pociag-do-nieba",
+      "title": "Muzeum Współczesne Wrocław i Pociąg do Nieba",
+      "description": "Dawny schron przy placu Strzegomskim, sztuka współczesna i plenerowa lokomotywa jako mocny miejski znak.",
+      "local_comment": "Najlepszy cover pokazuje relację muzeum, placu i Pociągu do Nieba; sam detal lokomotywy jest mniej czytelny niż duet obiektu i przestrzeni.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Sztuka na placu Strzegomskim"
+        },
+        {
+          "type": "paragraph",
+          "text": "Muzeum Współczesne Wrocław i Pociąg do Nieba dobrze pokazują mniej oczywiste centrum. Dawny schron, plac i rzeźba lokomotywy tworzą punkt, który jest jednocześnie miejski, powojenny i bardzo rozpoznawalny."
+        },
+        {
+          "type": "subheading",
+          "text": "Dlaczego razem"
+        },
+        {
+          "type": "paragraph",
+          "text": "Najmocniejszy jest tu układ, a nie pojedynczy obiekt: pionowa lokomotywa, ciężka bryła muzeum i otwarta przestrzeń placu. Dzięki temu miejsce działa jako brama do współczesnej warstwy Wrocławia."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 51.113333,
+      "lon": 17.005,
+      "weight": 3.4,
+      "status": "published"
+    },
+    {
+      "slug": "synagoga-pod-bialym-bocianem",
+      "title": "Synagoga pod Białym Bocianem",
+      "description": "Historyczna synagoga przy Włodkowica, ważny punkt kultury, pamięci i życia Dzielnicy Czterech Wyznań.",
+      "local_comment": "To miejsce wymaga spokojnego tonu i bardzo ostrożnego wyboru zdjęć: bez wydarzeń, nabożeństw i osób w centrum kadru bez jasnej zgody.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Ciche centrum przy Włodkowica"
+        },
+        {
+          "type": "paragraph",
+          "text": "Synagoga pod Białym Bocianem zasługuje na osobny punkt mimo bliskości Dzielnicy Czterech Wyznań. Ma własną wagę historyczną, religijną i kulturalną, a dziedziniec przy Włodkowica pozwala zobaczyć centrum Wrocławia w spokojniejszej skali."
+        },
+        {
+          "type": "subheading",
+          "text": "Szacunek dla funkcji miejsca"
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie powinna działać jako miejsce pamięci i żywej kultury, nie jako zwykłe tło do zdjęcia. Najlepszy kadr porządkuje bryłę świątyni, wejście i dziedziniec bez naruszania prywatności uczestników wydarzeń."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 51.108445,
+      "lon": 17.025405,
+      "weight": 3.4,
+      "status": "published"
+    },
+    {
+      "slug": "most-olawski-nabrzeze-olawy",
+      "title": "Most Oławski i nabrzeże Oławy",
+      "description": "Most i spacerowe nabrzeże Oławy, dobry wodny punkt między centrum a Przedmieściem Oławskim.",
+      "local_comment": "Zdjęcia powinny pokazać wodę i nabrzeże, nie tylko konstrukcję mostu; najlepsze światło będzie rano albo pod wieczór.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Wrocław nad Oławą"
+        },
+        {
+          "type": "paragraph",
+          "text": "Most Oławski i nabrzeże Oławy dobrze domykają wodną opowieść miasta poza najbardziej oczywistymi kadrami Odry. To miejsce jest łatwe do włączenia w spacer, a jednocześnie pokazuje Przedmieście Oławskie bardziej miękko: przez rzekę, przejście i odnowione brzegi."
+        },
+        {
+          "type": "subheading",
+          "text": "Co łapać w kadrze"
+        },
+        {
+          "type": "paragraph",
+          "text": "Najlepiej działa połączenie mostu, wody i linii nabrzeża. Sam obiekt mostowy jest ważny, ale dopiero razem z rzeką tłumaczy, dlaczego ten punkt może być dobrym przystankiem między centrum a dalszym spacerem na wschód."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 51.105556,
+      "lon": 17.051667,
+      "weight": 3.0,
+      "status": "published"
+    },
+    {
+      "slug": "wyspa-opatowicka",
+      "title": "Wyspa Opatowicka",
+      "description": "Zielona wyspa przy Kanale Opatowickim, spokojny wschodni punkt na spacer, rower i wodny krajobraz.",
+      "local_comment": "To miejsce potrzebuje zdjęć z wodą, zielenią i dojściem przez infrastrukturę hydrotechniczną; przypadkowy leśny kadr nie powie, że to Wrocław.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Wschodni koniec spaceru nad wodą"
+        },
+        {
+          "type": "paragraph",
+          "text": "Wyspa Opatowicka nie działa jak klasyczna atrakcja z jednym wejściem i tablicą. Jest raczej zielonym punktem na dłuższy spacer albo rower, który pokazuje Wrocław od strony kanału, śluzy i spokojniejszego krajobrazu wodnego."
+        },
+        {
+          "type": "subheading",
+          "text": "Miejsce zależne od drogi"
+        },
+        {
+          "type": "paragraph",
+          "text": "Największą wartością jest tu dojście i poczucie oddalenia od centrum. W PhotoMap wyspa pomaga domknąć mapę na wschodzie i daje użytkownikowi powód, żeby zobaczyć miasto poza gęstą siatką głównych atrakcji."
+        }
+      ],
+      "category_ids": ["atmospheric_place"],
+      "lat": 51.1,
+      "lon": 17.121111,
+      "weight": 2.7,
+      "status": "published"
+    },
+    {
+      "slug": "pomnik-anonimowego-przechodnia",
+      "title": "Pomnik Anonimowego Przechodnia",
+      "description": "Rzeźby przechodniów przy Świdnickiej i Piłsudskiego, mały miejski znak codzienności w centrum.",
+      "local_comment": "Mikroatrakcja testowa dla najmniejszych kafli: cover musi pokazać postacie i przejście uliczne, nie tylko przypadkowy fragment chodnika.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Ludzie, którzy znikają pod ulicą"
+        },
+        {
+          "type": "paragraph",
+          "text": "Pomnik Anonimowego Przechodnia działa w skali chodnika. Nie konkuruje z Rynkiem ani Operą, ale dobrze łapie moment, w którym turystyczne centrum zmienia się w zwykły rytm miasta: przejście, ruch, czekanie na światła i figury wtopione w codzienność."
+        },
+        {
+          "type": "subheading",
+          "text": "Dlaczego jako mały kafel"
+        },
+        {
+          "type": "paragraph",
+          "text": "To punkt, który powinien pojawiać się dopiero bliżej i pomagać zagęścić spacer między Dworcem, Operą, Renomą i Rynkiem. Najlepiej działa jako drobne odkrycie po drodze."
+        }
+      ],
+      "category_ids": ["atmospheric_place"],
+      "lat": 51.101401,
+      "lon": 17.029537,
+      "weight": 0.5,
+      "status": "published"
+    },
+    {
+      "slug": "przejscie-garncarskie",
+      "title": "Przejście Garncarskie",
+      "description": "Wąskie przejście przy Rynku, dobre do złapania bocznego rytmu starego centrum.",
+      "local_comment": "Nie dublować Rynku: zdjęcia mają pokazać przejście, skalę pieszego skrótu i detal uliczki, a nie ogólny widok placu.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Boczny skrót przy Rynku"
+        },
+        {
+          "type": "paragraph",
+          "text": "Przejście Garncarskie jest dobrym przykładem miejsca, które nie potrzebuje dużej opowieści. Jego wartość polega na tym, że rozbija monumentalność Rynku na mały, pieszy kadr: ściany, witryny, detal i szybkie przejście między większymi punktami."
+        },
+        {
+          "type": "subheading",
+          "text": "Jak czytać ten punkt"
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie powinien działać jako mikrowskazówka: jeśli jesteś przy Rynku, warto zejść z głównej osi i sprawdzić, jak centrum wygląda w węższej skali."
+        }
+      ],
+      "category_ids": ["atmospheric_place"],
+      "lat": 51.110263,
+      "lon": 17.032191,
+      "weight": 0.5,
+      "status": "published"
+    },
+    {
+      "slug": "przejscie-zelaznicze",
+      "title": "Przejście Żelaźnicze",
+      "description": "Krótki pieszy łącznik przy Rynku, dobry mikro-punkt między fasadami i bocznymi trasami centrum.",
+      "local_comment": "Traktować jako mikroatrakcję, nie osobny klasyk. Cover powinien być czytelny jako przejście, z linią uliczki i kontekstem zabudowy.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Mała szczelina starego miasta"
+        },
+        {
+          "type": "paragraph",
+          "text": "Przejście Żelaźnicze ma sens jako drobna warstwa mapy: nie zatrzymuje na długo, ale pomaga zobaczyć, że stare centrum to nie tylko duże place i znane fasady. Takie krótkie łączniki tworzą prawdziwy rytm spaceru."
+        },
+        {
+          "type": "subheading",
+          "text": "Rola na mapie"
+        },
+        {
+          "type": "paragraph",
+          "text": "To punkt do testu małych kafli między dużymi atrakcjami. Powinien pojawiać się blisko, bez dominowania nad Rynkiem, kościołem św. Elżbiety czy Starymi Jatkami."
+        }
+      ],
+      "category_ids": ["atmospheric_place"],
+      "lat": 51.110124,
+      "lon": 17.032148,
+      "weight": 0.5,
+      "status": "published"
+    },
+    {
+      "slug": "most-piaskowy",
+      "title": "Most Piaskowy",
+      "description": "Historyczny most między centrum, Wyspą Piasek i drogą na Ostrów Tumski.",
+      "local_comment": "Mikro-punkt wodny: zdjęcia powinny pokazać most jako przejście w stronę Ostrowa Tumskiego, a nie tylko kratownicę z bliska.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Przejście na Wyspę Piasek"
+        },
+        {
+          "type": "paragraph",
+          "text": "Most Piaskowy jest niewielkim, ale ważnym przystankiem w spacerze między Halą Targową, Wyspą Piasek i Ostrowem Tumskim. Nie musi być dużą atrakcją, żeby porządkować mapę: pokazuje, którędy centrum przechodzi w starszą, wodną część miasta."
+        },
+        {
+          "type": "subheading",
+          "text": "Co ma pokazać kafel"
+        },
+        {
+          "type": "paragraph",
+          "text": "Najlepszy mały kafel złapie kształt mostu, wodę i kierunek przejścia. To ma być punkt orientacyjny pomiędzy większymi ikonami, nie osobna dominanta."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 51.113578,
+      "lon": 17.039831,
+      "weight": 0.5,
+      "status": "published"
+    },
+    {
+      "slug": "bulwar-dunikowskiego",
+      "title": "Bulwar Dunikowskiego",
+      "description": "Nadrzeczny odcinek spacerowy między Muzeum Narodowym, Odrą i widokiem na Ostrów Tumski.",
+      "local_comment": "Zdjęcia mają pokazać relację rzeki, promenady i widoku; sam fragment chodnika będzie zbyt neutralny jako cover.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Spacer po stronie Odry"
+        },
+        {
+          "type": "paragraph",
+          "text": "Bulwar Dunikowskiego jest dobrym mikro-punktem, bo nie konkuruje z Muzeum Narodowym ani Ostrowem Tumskim, tylko łączy je w spacerze. To miejsce daje oddech, wodę i perspektywę na centrum z poziomu rzeki."
+        },
+        {
+          "type": "subheading",
+          "text": "Dlaczego nie większy priorytet"
+        },
+        {
+          "type": "paragraph",
+          "text": "Jego siła polega na byciu pomiędzy. Na mapie powinien uzupełniać większe kafle i pojawiać się wtedy, gdy użytkownik przybliża trasę nad Odrą."
+        }
+      ],
+      "category_ids": ["atmospheric_place"],
+      "lat": 51.111302,
+      "lon": 17.047673,
+      "weight": 0.5,
+      "status": "published"
+    },
+    {
+      "slug": "most-zwierzyniecki",
+      "title": "Most Zwierzyniecki",
+      "description": "Most prowadzący w stronę Zoo, Hali Stulecia i Szczytnik, dobry łącznik wschodniej części spaceru.",
+      "local_comment": "Cover powinien pokazać most jako bramę do kompleksu Hala Stulecia - Zoo, najlepiej z wodą albo osią dojścia.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Brama w stronę Szczytnik"
+        },
+        {
+          "type": "paragraph",
+          "text": "Most Zwierzyniecki jest mniejszy od atrakcji, do których prowadzi, ale dla spaceru ma dużą wartość orientacyjną. Łączy miejski ruch z zielonym i wystawowym Wrocławiem po wschodniej stronie Odry."
+        },
+        {
+          "type": "subheading",
+          "text": "Rola małego kafla"
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie powinien działać jako łącznik między większymi punktami: Zoo, Halą Stulecia, Pergolą i Parkiem Szczytnickim. Niski priorytet pozwoli mu nie przykrywać głównych atrakcji."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 51.108186,
+      "lon": 17.069782,
+      "weight": 0.5,
+      "status": "published"
+    },
+    {
+      "slug": "park-tolpy",
+      "title": "Park Stanisława Tołpy",
+      "description": "Niewielki park na Ołbinie z wodą, zielenią i spokojnym rytmem poza najbardziej oczywistym centrum.",
+      "local_comment": "To test spokojnego, pobocznego miejsca: cover musi mieć wodę albo charakterystyczny układ parku, żeby nie wyglądał jak anonimowa zieleń.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Mały oddech Ołbina"
+        },
+        {
+          "type": "paragraph",
+          "text": "Park Stanisława Tołpy nie jest klasycznym magnesem turystycznym, ale dobrze pokazuje codzienny Wrocław poza głównymi trasami. Woda, zieleń i otaczające kamienice tworzą spokojny punkt między Nadodrzem, Ołbinem i drogą w stronę Ostrowa Tumskiego."
+        },
+        {
+          "type": "subheading",
+          "text": "Po co na mapie"
+        },
+        {
+          "type": "paragraph",
+          "text": "To miejsce pomaga sprawdzić, czy małe kafle potrafią wypełnić dzielnicowe przerwy bez udawania dużej atrakcji."
+        }
+      ],
+      "category_ids": ["atmospheric_place"],
+      "lat": 51.120668,
+      "lon": 17.053395,
+      "weight": 0.5,
+      "status": "published"
+    },
+    {
+      "slug": "dom-handlowy-renoma",
+      "title": "Dom Handlowy Renoma",
+      "description": "Modernistyczny dom handlowy przy Świdnickiej, dobry architektoniczny punkt między centrum a Dworcem.",
+      "local_comment": "Nie robić z tego dużej atrakcji na start: cover powinien czytać się jako fasada i narożnik miasta, a nie zwykły sklep.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Architektura przy Świdnickiej"
+        },
+        {
+          "type": "paragraph",
+          "text": "Renoma jest dobrym pobocznym punktem dla mapy, bo leży między dużymi węzłami: Operą, Dworcem Głównym, Promenadą Staromiejską i Rynkiem. To rozpoznawalna architektura, ale w tym eksperymencie ma działać jako drobny kafel porządkujący centrum."
+        },
+        {
+          "type": "subheading",
+          "text": "Jakiego kadru szukać"
+        },
+        {
+          "type": "paragraph",
+          "text": "Najlepiej sprawdzi się ujęcie fasady lub narożnika z ruchem ulicy. Taki kadr tłumaczy, dlaczego to nie jest tylko punkt handlowy, ale część miejskiej osi spaceru."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 51.1039,
+      "lon": 17.0303,
+      "weight": 0.5,
+      "status": "published"
+    },
+    {
+      "slug": "manhattan-plac-grunwaldzki",
+      "title": "Manhattan przy placu Grunwaldzkim",
+      "description": "Charakterystyczny zespół mieszkalno-usługowy przy placu Grunwaldzkim, mocny detal powojennego Wrocławia.",
+      "local_comment": "To mały kafel architektoniczny: zdjęcia powinny pokazać rozpoznawalne balkony i skalę placu, bez robienia z niego głównej atrakcji.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Powojenny znak placu Grunwaldzkiego"
+        },
+        {
+          "type": "paragraph",
+          "text": "Manhattan przy placu Grunwaldzkim jest charakterystyczny, ale najlepiej działa jako punkt dla osób, które już przybliżyły mapę. Pokazuje inny Wrocław niż Rynek i Ostrów Tumski: bardziej codzienny, powojenny, związany z uczelniami i ruchem dużego placu."
+        },
+        {
+          "type": "subheading",
+          "text": "Dlaczego niski priorytet"
+        },
+        {
+          "type": "paragraph",
+          "text": "Nie powinien dominować nad Mostem Grunwaldzkim, Politechniką ani trasą w stronę zoo. Jako mały kafel może jednak dobrze wypełnić przestrzeń między centrum akademickim a wschodem miasta."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 51.110914,
+      "lon": 17.056185,
+      "weight": 0.5,
       "status": "published"
     }
   ],

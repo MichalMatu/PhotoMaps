@@ -24,8 +24,8 @@ class MediaRetentionTarget:
     place_id: str
     status: str
     original_path: str
-    public_path: str
-    thumb_path: str
+    public_path: str | None
+    thumb_path: str | None
     created_at: datetime
     approved_at: datetime | None
 
@@ -131,6 +131,9 @@ def retain_approved_original(
     issues: list[dict[str, Any]],
 ) -> dict[str, Any]:
     private_path = images.storage_path(images.PRIVATE_STORAGE_DIR, target.original_path)
+    if target.public_path is None:
+        issues.append(issue("error", "approved_public_path_missing", target, "Approved media has no public path."))
+        return action("replace_approved_original", target, "", applied=False)
     public_path = images.public_storage_path(target.public_path)
     replacement_path = retained_private_path(target)
     replacement_relative = images.private_reference(replacement_path)

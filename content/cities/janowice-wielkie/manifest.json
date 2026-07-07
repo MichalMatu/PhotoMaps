@@ -2,6 +2,7 @@
   "city": {
     "id": "janowice-wielkie",
     "name": "Janowice Wielkie",
+    "region": "Dolnośląskie",
     "lat": 50.87828,
     "lon": 15.9208773,
     "default_zoom": 12,
@@ -24,7 +25,7 @@
           "text": "Sokolik i Krzyżna Góra są jednym z najłatwiejszych sposobów, żeby pokazać skalny charakter Rudaw Janowickich. To miejsce łączy krótki wysiłek, ekspozycję i widok, który dobrze sprzedaje region wizualnie."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.8653,
       "lon": 15.8681,
       "weight": 4.3,
@@ -45,10 +46,35 @@
           "text": "Zamek Bolczów uzupełnia Rudawy Janowickie o bardziej tajemniczą warstwę: ruiny, kamień, las i dojście szlakiem. Na mapie dobrze równoważy widokowe Sokoliki miejscem o bardziej średniowiecznym klimacie."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.8607429,
       "lon": 15.912149,
       "weight": 4.2,
+      "status": "published"
+    },
+    {
+      "slug": "schronisko-szwajcarka",
+      "title": "Schronisko PTTK Szwajcarka",
+      "description": "Zabytkowe drewniane schronisko w Górach Sokolich, położone przy węźle szlaków pod Krzyżną Górą i Sokolikiem.",
+      "local_comment": "Cover powinien pokazać drewnianą, tyrolską bryłę schroniska i leśny kontekst Gór Sokolich. Dobrze, jeśli widać też szlakowy charakter miejsca.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Drewniany przystanek pod Sokolikami"
+        },
+        {
+          "type": "paragraph",
+          "text": "Schronisko Szwajcarka jest naturalnym punktem odpoczynku przed wejściem na Sokolik i Krzyżną Górę. Drewniana architektura, położenie przy szlakach i bliskość skał sprawiają, że miejsce działa nie tylko jako nocleg, ale jako znak całych Gór Sokolich."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie dobrze uzupełnia widokowe Sokoliki: pokazuje ludzką, turystyczną bazę wyprawy, zanim ścieżka przejdzie w schody, skały i ekspozycję."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.863369,
+      "lon": 15.872467,
+      "weight": 3.9,
       "status": "published"
     }
   ],

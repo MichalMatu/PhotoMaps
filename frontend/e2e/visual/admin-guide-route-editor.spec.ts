@@ -21,6 +21,10 @@ async function routeEditorZoom(page: Page) {
   return zoom;
 }
 
+async function waitForRouteEditorZoom(page: Page, expectedZoom: number) {
+  await expect.poll(() => routeEditorZoom(page)).toBe(expectedZoom);
+}
+
 test("admin route editor preserves zoom while adding and moving route points", async ({ page }) => {
   await page.setViewportSize({ height: 920, width: 1360 });
   await mockAdminApi(page);
@@ -40,6 +44,7 @@ test("admin route editor preserves zoom while adding and moving route points", a
   await map.locator(".leaflet-control-zoom-in").click();
   await map.locator(".leaflet-control-zoom-in").click();
   await expect.poll(() => routeEditorZoom(page)).toBeGreaterThan(initialZoom);
+  await expect.poll(() => routeEditorZoom(page)).toBeGreaterThanOrEqual(initialZoom + 2);
 
   const zoomBeforeAdd = await routeEditorZoom(page);
   const mapBox = await map.boundingBox();
@@ -48,8 +53,7 @@ test("admin route editor preserves zoom while adding and moving route points", a
   }
   await page.mouse.click(mapBox.x + mapBox.width * 0.7, mapBox.y + mapBox.height * 0.62);
   await expect(dialog.getByText("4 punktów")).toBeVisible();
-  await page.waitForTimeout(700);
-  expect(await routeEditorZoom(page)).toBe(zoomBeforeAdd);
+  await waitForRouteEditorZoom(page, zoomBeforeAdd);
 
   const zoomBeforeDrag = await routeEditorZoom(page);
   const firstMarkerBox = await map.locator(".guide-route-editor-marker").first().boundingBox();
@@ -66,6 +70,5 @@ test("admin route editor preserves zoom while adding and moving route points", a
     },
   );
   await page.mouse.up();
-  await page.waitForTimeout(700);
-  expect(await routeEditorZoom(page)).toBe(zoomBeforeDrag);
+  await waitForRouteEditorZoom(page, zoomBeforeDrag);
 });

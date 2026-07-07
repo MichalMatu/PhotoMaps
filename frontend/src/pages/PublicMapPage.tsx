@@ -2,19 +2,13 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { getAppConfig } from "../api/appConfig";
-import { getCities } from "../api/cities";
-import { getMapPlacesForCities } from "../api/places";
+import { getMapPlaces } from "../api/places";
 import { AppShell } from "../components/layout/AppShell";
 import {
   filterMapPlacesByCategories,
   getMapCategoryFilterItems,
   toggleMapCategoryFilter,
 } from "../components/map/mapCategoryFilters";
-import {
-  mapCityForPlaceContent,
-  mapFallbackForPlaceContent,
-  selectDefaultMapCity,
-} from "../components/map/mapCityContext";
 import {
   countMapLayerPlaces,
   DEFAULT_MAP_LAYER_STATE,
@@ -26,11 +20,13 @@ import {
   type MapLayerControlId,
   toggleMapLayer,
 } from "../components/map/mapLayers";
+import { MAP_DISPLAY_CONFIG } from "../components/map/mapDisplayConfig";
 import { getPlacePreviewVisual } from "../components/map/placePreview";
 import { PlaceMap } from "../components/map/PlaceMap";
 
 export function PublicMapPage() {
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+  const [isAudioAutoplayEnabled, setIsAudioAutoplayEnabled] = useState(false);
   const [isPinnedMediaVisible, setIsPinnedMediaVisible] = useState(true);
   const [mapLayerState, setMapLayerState] = useState(DEFAULT_MAP_LAYER_STATE);
   const appConfigQuery = useQuery({
@@ -38,29 +34,12 @@ export function PublicMapPage() {
     queryFn: getAppConfig,
     staleTime: 300_000,
   });
-  const citiesQuery = useQuery({
-    queryKey: ["cities"],
-    queryFn: getCities,
-    staleTime: 60_000,
-  });
-  const activeCities = useMemo(
-    () => (citiesQuery.data ?? []).filter((city) => city.status === "active"),
-    [citiesQuery.data],
-  );
-  const activeCityIds = useMemo(() => activeCities.map((city) => city.id).join("|"), [activeCities]);
-  const mapCity = useMemo(() => selectDefaultMapCity(activeCities), [activeCities]);
   const placesQuery = useQuery({
-    queryKey: ["places-map", activeCityIds],
-    queryFn: () => getMapPlacesForCities(activeCities),
-    enabled: activeCities.length > 0,
+    queryKey: ["places-map", "all"],
+    queryFn: () => getMapPlaces(),
     staleTime: 60_000,
   });
   const mapPlaces = useMemo(() => placesQuery.data ?? [], [placesQuery.data]);
-  const effectiveMapCity = useMemo(() => mapCityForPlaceContent(mapCity, mapPlaces), [mapCity, mapPlaces]);
-  const effectiveMapFallback = useMemo(
-    () => (appConfigQuery.data ? mapFallbackForPlaceContent(appConfigQuery.data.map, mapPlaces) : null),
-    [appConfigQuery.data, mapPlaces],
-  );
   const layerPlaces = useMemo(() => filterMapPlaces(mapPlaces, mapLayerState), [mapLayerState, mapPlaces]);
   const visiblePlaces = useMemo(
     () => filterMapPlacesByCategories(layerPlaces, selectedCategoryIds),
@@ -74,8 +53,10 @@ export function PublicMapPage() {
   const layerCounts = useMemo(() => countMapLayerPlaces(mapPlaces), [mapPlaces]);
   const isAllLayerActive = isAllMapLayerPresetActive(mapLayerState);
   const hasAnyLayerActive = hasAnyMapLayerActive(mapLayerState);
-  const isMapLoading = placesQuery.isLoading || citiesQuery.isLoading || appConfigQuery.isLoading;
-  const isMapError = placesQuery.isError || citiesQuery.isError || appConfigQuery.isError;
+  const mapFallback = appConfigQuery.data?.map ?? MAP_DISPLAY_CONFIG.fallback.emptyCountryMap;
+  const placeCustomFieldDefinitions = appConfigQuery.data?.place_custom_fields ?? [];
+  const isMapLoading = placesQuery.isLoading || appConfigQuery.isLoading;
+  const isMapError = placesQuery.isError;
   const hasActiveFilters =
     selectedCategoryIds.length > 0 ||
     (!isAllLayerActive && hasAnyLayerActive) ||
@@ -86,6 +67,11 @@ export function PublicMapPage() {
   return (
     <AppShell
       activeSection="map"
+      mapAudioControl={{
+        active: isAudioAutoplayEnabled,
+        label: "Audio",
+        onToggle: () => setIsAudioAutoplayEnabled((currentValue) => !currentValue),
+      }}
       mapCategoryControls={{
         items: categoryFilterItems.map((category) => ({
           ...category,
@@ -144,15 +130,15 @@ export function PublicMapPage() {
             ) : null}
           </div>
         ) : null}
-        {appConfigQuery.data && effectiveMapFallback && !isMapError ? (
+        {!isMapLoading && !isMapError ? (
           <div className="map-frame">
             <PlaceMap
-              mapCity={effectiveMapCity}
-              mapFallback={effectiveMapFallback}
+              isAudioAutoplayEnabled={isAudioAutoplayEnabled}
+              mapFallback={mapFallback}
               markerPlaces={markerPlaces}
               onPinnedMediaVisibleChange={setIsPinnedMediaVisible}
               pinnedMediaPlaces={mapPlaces}
-              placeCustomFieldDefinitions={appConfigQuery.data.place_custom_fields}
+              placeCustomFieldDefinitions={placeCustomFieldDefinitions}
               showPinnedMedia={isPinnedMediaVisible}
             />
           </div>

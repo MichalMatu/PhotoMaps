@@ -9,6 +9,7 @@ import type {
   MediaRedactionReport,
   Memory,
   MemoryClaimRead,
+  MemorySubmission,
   MemoryUpdatePayload,
   Photo,
   PhotoUpdatePayload,
@@ -55,13 +56,35 @@ const adminPhoto: AdminPhoto = {
 };
 
 const adminMemory: AdminMemory = {
-  ...publicMemory,
+  admin_audio: null,
+  admin_public_path: "/api/admin/memories/memory-1/media/image",
+  admin_thumb_path: "/api/admin/memories/memory-1/media/thumb",
   approved_at: null,
+  audio: null,
+  author_city: null,
+  author_name: null,
+  caption: "Pamiatka",
   consent_confirmed: true,
   created_at: "2026-06-10T00:00:00",
+  id: "memory-1",
+  memory_text: "Krotki opis",
   paid: false,
+  place_id: "place-1",
+  public_path: "/media/memories/memory-1.jpg",
   share_slug: "memory-share",
   status: "approved",
+  thumb_path: "/media/memories/memory-1-thumb.jpg",
+};
+
+const memorySubmission: MemorySubmission = {
+  author_city: null,
+  author_name: null,
+  caption: "Pamiatka",
+  created_at: "2026-06-10T00:00:00",
+  id: "memory-1",
+  memory_text: "Krotki opis",
+  place_id: "place-1",
+  status: "pending",
 };
 
 function publicPhotoConsent(photo: Photo) {
@@ -74,6 +97,11 @@ function publicMemoryConsent(memory: Memory) {
   return memory.consent_confirmed;
 }
 
+function memorySubmissionPublicPath(submission: MemorySubmission) {
+  // @ts-expect-error Pending memory submission receipts must not expose public media paths.
+  return submission.public_path;
+}
+
 function invalidReportReason() {
   // @ts-expect-error Report reason must stay aligned with the backend enum.
   const reason: ReportReason = "bad";
@@ -84,6 +112,7 @@ describe("media API DTO types", () => {
   it("keeps admin consent fields out of public media DTOs", () => {
     expect(publicPhotoConsent(publicPhoto)).toBeUndefined();
     expect(publicMemoryConsent(publicMemory)).toBeUndefined();
+    expect(memorySubmissionPublicPath(memorySubmission)).toBeUndefined();
     expect(adminPhoto.consent_confirmed).toBe(true);
     expect(adminMemory.consent_confirmed).toBe(true);
   });

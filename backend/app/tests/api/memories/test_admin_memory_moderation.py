@@ -231,6 +231,7 @@ def test_admin_can_redact_memory_by_polygon(client_session, tmp_path: Path) -> N
     )
     memory = session.get(Memory, upload_response.json()["id"])
     assert memory is not None
+    private_file = tmp_path / "private" / memory.original_path
 
     response = client.post(
         f"/api/admin/memories/{memory.id}/redaction",
@@ -247,12 +248,23 @@ def test_admin_can_redact_memory_by_polygon(client_session, tmp_path: Path) -> N
             ],
         },
     )
+    assert response.status_code == 200
+    assert response.json()["summary"]["actions"]["applied"] == 1
+    assert response.json()["actions"][0]["action"] == "redact_image"
+    assert response.json()["actions"][0]["label"] == "private_original"
+    assert response.json()["issues"] == []
+    assert_blurred_pixel(image_pixel(private_file, (16, 16)))
+
+    review_response = client.post(
+        f"/api/admin/memories/{memory.id}/review",
+        headers=ADMIN_HEADERS,
+        json={"status": "approved"},
+    )
+    session.refresh(memory)
+    assert memory.public_path is not None
     public_file = tmp_path / "public" / memory.public_path.removeprefix("/media/")
 
-    assert response.status_code == 200
-    assert response.json()["summary"]["actions"]["applied"] == 3
-    assert response.json()["actions"][0]["action"] == "redact_image"
-    assert response.json()["issues"] == []
+    assert review_response.status_code == 200
     assert_blurred_pixel(image_pixel(public_file, (16, 16)))
 
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { mediaUrl } from "../api/http";
@@ -34,6 +34,29 @@ function memoryCountLabel(count: number) {
   });
 }
 
+function absoluteBrowserUrl(path: string) {
+  if (typeof window === "undefined") {
+    return path;
+  }
+  return new URL(path, window.location.origin).toString();
+}
+
+function placeStructuredData(place: PlaceDetail, photo: Photo | null) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Place",
+    name: place.title,
+    description: place.description ?? undefined,
+    url: absoluteBrowserUrl(`/places/${encodeURIComponent(place.slug)}`),
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: place.lat,
+      longitude: place.lon,
+    },
+    image: photo ? absoluteBrowserUrl(mediaUrl(photo.public_path)) : undefined,
+  };
+}
+
 function PlaceHeroMedia({ photo, place }: { photo: Photo | null; place: PlaceDetail }) {
   if (!photo) {
     return <span className="place-detail-media place-detail-media--empty" aria-hidden="true" />;
@@ -66,6 +89,7 @@ export function PlaceDetailPage() {
   });
   const photos = photosQuery.data ?? [];
   const heroPhoto = photos[0] ?? null;
+  const structuredData = useMemo(() => (place ? placeStructuredData(place, heroPhoto) : null), [heroPhoto, place]);
   const leadText = place?.description ?? null;
   const ttsText = place ? articleTextForTts(place.article_blocks, [place.description]) : "";
   const activeError =
@@ -114,6 +138,7 @@ export function PlaceDetailPage() {
 
           {place ? (
             <>
+              {structuredData ? <script type="application/ld+json">{JSON.stringify(structuredData)}</script> : null}
               <div className="place-detail-hero">
                 <div className="place-detail-copy">
                   <div className="place-detail-title-block">

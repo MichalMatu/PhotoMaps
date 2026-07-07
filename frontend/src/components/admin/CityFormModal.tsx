@@ -14,12 +14,14 @@ type Props = {
   lon: string;
   mapFallback: AppConfigMap | null;
   name: string;
+  region: string;
   onCityIdChange: (value: string) => void;
   onClose: () => void;
   onConfirm: () => void;
   onLatChange: (value: string) => void;
   onLonChange: (value: string) => void;
   onNameChange: (value: string) => void;
+  onRegionChange: (value: string) => void;
   onSortOrderChange: (value: string) => void;
   onStatusChange: (value: CityStatus) => void;
   onZoomChange: (value: string) => void;
@@ -56,12 +58,14 @@ export function CityFormModal({
   lon,
   mapFallback,
   name,
+  region,
   onCityIdChange,
   onClose,
   onConfirm,
   onLatChange,
   onLonChange,
   onNameChange,
+  onRegionChange,
   onSortOrderChange,
   onStatusChange,
   onZoomChange,
@@ -113,6 +117,10 @@ export function CityFormModal({
         <label>
           Nazwa
           <input value={name} onChange={(event) => onNameChange(event.target.value)} required />
+        </label>
+        <label>
+          Województwo
+          <input value={region} onChange={(event) => onRegionChange(event.target.value)} required />
         </label>
         <label>
           Szerokość

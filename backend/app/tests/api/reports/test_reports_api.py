@@ -1,6 +1,7 @@
 from datetime import UTC, datetime
 
-from app.models.guide import Guide
+from app.models.city import City
+from app.models.guide import Guide, PlaceGuide
 from app.models.memory import Memory
 from app.models.photo import Photo
 from app.models.report import Report
@@ -133,20 +134,45 @@ def test_report_rejects_missing_target(client_session) -> None:
 
 def test_public_report_rejects_non_public_place(client_session) -> None:
     client, session = client_session
+    session.add(City(id="archived-city", name="Archived", lat=50.06, lon=19.94, status="archived"))
+    session.commit()
     draft_place = create_place(session, slug="draft-place", status="draft", title="Draft")
+    archived_place = create_place(
+        session,
+        city_id="archived-city",
+        slug="archived-place",
+        title="Archived",
+        lat=50.06,
+        lon=19.94,
+    )
 
-    response = client.post(
+    draft_response = client.post(
         "/api/reports",
         json={"target_type": "place", "target_id": draft_place.id, "reason": "wrong_data"},
     )
+    archived_response = client.post(
+        "/api/reports",
+        json={"target_type": "place", "target_id": archived_place.id, "reason": "wrong_data"},
+    )
 
-    assert response.status_code == 404
+    assert draft_response.status_code == 404
+    assert archived_response.status_code == 404
 
 
 def test_public_report_requires_public_photo_target(client_session) -> None:
     client, session = client_session
+    session.add(City(id="archived-city", name="Archived", lat=50.06, lon=19.94, status="archived"))
+    session.commit()
     public_place = create_place(session)
     draft_place = create_place(session, slug="draft-place", status="draft", title="Draft")
+    archived_place = create_place(
+        session,
+        city_id="archived-city",
+        slug="archived-place",
+        title="Archived",
+        lat=50.06,
+        lon=19.94,
+    )
     pending_photo = Photo(
         place_id=public_place.id,
         original_path="photos/pending-private.jpg",
@@ -161,6 +187,13 @@ def test_public_report_requires_public_photo_target(client_session) -> None:
         thumb_path="/media/photos/hidden-thumb.jpg",
         status="approved",
     )
+    archived_photo = Photo(
+        place_id=archived_place.id,
+        original_path="photos/archived-private.jpg",
+        public_path="/media/photos/archived.jpg",
+        thumb_path="/media/photos/archived-thumb.jpg",
+        status="approved",
+    )
     public_photo = Photo(
         place_id=public_place.id,
         original_path="photos/public-private.jpg",
@@ -170,10 +203,12 @@ def test_public_report_requires_public_photo_target(client_session) -> None:
     )
     session.add(pending_photo)
     session.add(hidden_photo)
+    session.add(archived_photo)
     session.add(public_photo)
     session.commit()
     session.refresh(pending_photo)
     session.refresh(hidden_photo)
+    session.refresh(archived_photo)
     session.refresh(public_photo)
 
     pending_response = client.post(
@@ -184,6 +219,10 @@ def test_public_report_requires_public_photo_target(client_session) -> None:
         "/api/reports",
         json={"target_type": "photo", "target_id": hidden_photo.id, "reason": "wrong_data"},
     )
+    archived_response = client.post(
+        "/api/reports",
+        json={"target_type": "photo", "target_id": archived_photo.id, "reason": "wrong_data"},
+    )
     public_response = client.post(
         "/api/reports",
         json={"target_type": "photo", "target_id": public_photo.id, "reason": "wrong_data"},
@@ -191,13 +230,24 @@ def test_public_report_requires_public_photo_target(client_session) -> None:
 
     assert pending_response.status_code == 404
     assert hidden_response.status_code == 404
+    assert archived_response.status_code == 404
     assert public_response.status_code == 201
 
 
 def test_public_report_requires_public_memory_target(client_session) -> None:
     client, session = client_session
+    session.add(City(id="archived-city", name="Archived", lat=50.06, lon=19.94, status="archived"))
+    session.commit()
     public_place = create_place(session)
     draft_place = create_place(session, slug="draft-place", status="draft", title="Draft")
+    archived_place = create_place(
+        session,
+        city_id="archived-city",
+        slug="archived-place",
+        title="Archived",
+        lat=50.06,
+        lon=19.94,
+    )
     pending_memory = Memory(
         place_id=public_place.id,
         caption="Pending",
@@ -218,6 +268,16 @@ def test_public_report_requires_public_memory_target(client_session) -> None:
         status="approved",
         claim_token_hash=claim_token_hash("hidden-token"),
     )
+    archived_memory = Memory(
+        place_id=archived_place.id,
+        caption="Archived",
+        memory_text="Archived text",
+        original_path="memories/archived-private.jpg",
+        public_path="/media/memories/archived.jpg",
+        thumb_path="/media/memories/archived-thumb.jpg",
+        status="approved",
+        claim_token_hash=claim_token_hash("archived-token"),
+    )
     public_memory = Memory(
         place_id=public_place.id,
         caption="Public",
@@ -230,10 +290,12 @@ def test_public_report_requires_public_memory_target(client_session) -> None:
     )
     session.add(pending_memory)
     session.add(hidden_memory)
+    session.add(archived_memory)
     session.add(public_memory)
     session.commit()
     session.refresh(pending_memory)
     session.refresh(hidden_memory)
+    session.refresh(archived_memory)
     session.refresh(public_memory)
 
     pending_response = client.post(
@@ -244,6 +306,10 @@ def test_public_report_requires_public_memory_target(client_session) -> None:
         "/api/reports",
         json={"target_type": "memory", "target_id": hidden_memory.id, "reason": "wrong_data"},
     )
+    archived_response = client.post(
+        "/api/reports",
+        json={"target_type": "memory", "target_id": archived_memory.id, "reason": "wrong_data"},
+    )
     public_response = client.post(
         "/api/reports",
         json={"target_type": "memory", "target_id": public_memory.id, "reason": "wrong_data"},
@@ -251,22 +317,44 @@ def test_public_report_requires_public_memory_target(client_session) -> None:
 
     assert pending_response.status_code == 404
     assert hidden_response.status_code == 404
+    assert archived_response.status_code == 404
     assert public_response.status_code == 201
 
 
 def test_public_report_rejects_non_public_guide(client_session) -> None:
     client, session = client_session
+    session.add(City(id="archived-city", name="Archived", lat=50.06, lon=19.94, status="archived"))
+    session.commit()
+    public_place = create_place(session)
+    archived_place = create_place(
+        session,
+        city_id="archived-city",
+        slug="archived-place",
+        title="Archived",
+        lat=50.06,
+        lon=19.94,
+    )
     draft_guide = Guide(slug="draft-guide", title="Draft guide", status="draft")
     public_guide = Guide(slug="public-guide", title="Public guide", status="published")
+    archived_guide = Guide(slug="archived-guide", title="Archived guide", status="published")
     session.add(draft_guide)
     session.add(public_guide)
+    session.add(archived_guide)
     session.commit()
     session.refresh(draft_guide)
     session.refresh(public_guide)
+    session.refresh(archived_guide)
+    session.add(PlaceGuide(guide_id=public_guide.id, place_id=public_place.id))
+    session.add(PlaceGuide(guide_id=archived_guide.id, place_id=archived_place.id))
+    session.commit()
 
     draft_response = client.post(
         "/api/reports",
         json={"target_type": "guide", "target_id": draft_guide.id, "reason": "wrong_data"},
+    )
+    archived_response = client.post(
+        "/api/reports",
+        json={"target_type": "guide", "target_id": archived_guide.id, "reason": "wrong_data"},
     )
     public_response = client.post(
         "/api/reports",
@@ -274,4 +362,5 @@ def test_public_report_rejects_non_public_guide(client_session) -> None:
     )
 
     assert draft_response.status_code == 404
+    assert archived_response.status_code == 404
     assert public_response.status_code == 201

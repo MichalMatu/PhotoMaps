@@ -119,6 +119,48 @@ python3 scripts/redact_media_image.py --apply --kind photo --id <photo-id> --rec
 
 Używaj tego do ręcznego ukrycia twarzy, tablic, przypadkowych osób albo prywatnych szczegółów. Skrypt nie zgaduje regionów automatycznie.
 
+## Eksport Research Opisów
+
+Eksport research tworzy tekstowe paczki ZIP z opisami miejsc: opis miejsca, `article_blocks`,
+`local_comment`, podpisy i `description_blocks` istniejących zdjęć, czytelny `review.md`,
+prompt `PROMPT.md`, `tts-guidelines.md` z aktualnym standardem TTS z `docs/create_tts.md`
+i `requested_changes.template.json` do późniejszego zwrotu poprawek tekstowych.
+Paczki nie zawierają zdjęć, prywatnych oryginałów ani EXIF.
+Prompt wymaga porównania obecnej i proponowanej wersji oraz zwrotu finalnego
+`requested_changes.json` z tekstami gotowymi do późniejszego zapisu w bazie. `description_blocks`
+są traktowane jako tekst widoczny w aplikacji i materiał do TTS, więc audyt nie powinien
+skracać ich mechanicznie do streszczeń. Wynik audytu ma być wklejony bezpośrednio w czacie,
+bez linków i plików do pobrania.
+
+```bash
+make export-place-research
+make export-place-research QUERY="Rynek"
+make export-place-research CITY="Wrocław" PLACE="Rynek"
+make export-city-research CITY="Wrocław"
+make export-all-research ARGS="--yes"
+```
+
+Wyszukiwanie miasta i miejsca jest case-insensitive oraz ignoruje polskie znaki. Jeśli jest kilka wyników
+albo tylko podobne nazwy, skrypt pokazuje listę wyboru.
+
+Eksport trafia do czytelnej struktury katalogów:
+
+```txt
+research-exports/
+  miejsca/{place-slug}.zip
+  miasta/{city-slug}.zip
+  wszystkie/wszystkie.zip
+```
+
+Paczka pojedynczego miejsca, np. `miejsca/rynek-wroclaw.zip`, zawiera pliki opisu bez dodatkowych katalogów.
+Paczka miasta, np. `miasta/walbrzych.zip`, zawiera jeden wspólny `PROMPT.md` w głównym katalogu ZIP
+i osobne katalogi miejsc w środku. Paczka `wszystkie/wszystkie.zip` zawiera katalogi miast, a w nich katalogi miejsc.
+Każdy eksport odświeża też `research-exports/prompt.txt` z krótką instrukcją do skopiowania
+do czatu razem z załączonym ZIP-em.
+
+`research-exports/` jest ignorowane przez Git. Paczki są lokalnym artefaktem roboczym i nie powinny
+trafiać do commita.
+
 ## Tryby CLI
 
 Skrypty operacyjne, które tylko raportują stan, obsługują `--json`, `--output-json` i `--strict`. Skrypty, które mogą zmieniać dane albo pliki, obsługują dodatkowo `--dry-run` i `--apply`.

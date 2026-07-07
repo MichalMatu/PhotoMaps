@@ -107,6 +107,16 @@ def storage_files(root: Path) -> list[Path]:
     return sorted(path for path in root.rglob("*") if path.is_file())
 
 
+def storage_empty_dirs(root: Path) -> list[Path]:
+    if not root.exists():
+        return []
+    return sorted(
+        (path for path in root.rglob("*") if path.is_dir() and not any(path.iterdir())),
+        key=lambda path: len(path.parts),
+        reverse=True,
+    )
+
+
 def total_bytes(paths: list[Path]) -> int:
     total = 0
     for path in paths:

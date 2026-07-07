@@ -22,7 +22,7 @@ def list_places(session: Session = Depends(get_session)) -> list[PlaceRead]:
 
 @router.get("/map", response_model=list[PlaceMapRead])
 def list_map_places(
-    city_id: str = Query(..., min_length=1),
+    city_id: str | None = Query(default=None, min_length=1),
     session: Session = Depends(get_session),
 ) -> list[PlaceMapRead]:
     return list_public_map_places(session, city_id)

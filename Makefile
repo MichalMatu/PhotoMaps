@@ -1,42 +1,68 @@
-.PHONY: help start stop restart status logs check api-flow api-contract e2e smoke perf-smoke quality dev health server-start server-stop server-restart server-status server-logs tunnel-start tunnel-stop tunnel-status tunnel-logs autostart autostart-start autostart-stop autostart-status serwerstart serwerstop
+.PHONY: help scripts scripts-readme start stop restart status logs check api-flow api-contract e2e smoke perf-smoke quality dev health server-start server-stop server-restart server-status server-logs tunnel-start tunnel-stop tunnel-status tunnel-logs autostart autostart-start autostart-stop autostart-status serwerstart serwerstop diagnose-data diagnose-architecture schema-check backup backup-apply cleanup-media cleanup-media-apply retain-originals retain-originals-apply import-city import-city-apply audit-prompt place-inventory export-place-research export-city-research export-all-research reset-dev-data redact-media
+
+PYTHON ?= $(shell if [ -x backend/.venv/bin/python ]; then printf '%s' backend/.venv/bin/python; else printf '%s' python3; fi)
+MANIFEST ?= content/cities/wroclaw/manifest.json
+ARGS ?=
+QUERY ?=
+CITY ?=
+PLACE ?=
 
 help:
+	@bash scripts/help_menu.sh
+
+scripts:
 	@printf '%s\n' \
-		'PhotoMap - dostępne komendy:' \
+		'PhotoMap - scripts/: szybki spis' \
 		'' \
-		'Dev:' \
-		'  make start             Uruchom backend i frontend.' \
-		'  make stop              Zatrzymaj lokalny backend i frontend.' \
-		'  make restart           Restart lokalnego dev; nie restartuje publicznego runtime.' \
-		'  make status            Pokaż PID-y, porty i stan usług.' \
-		'  make logs              Pokaż ostatnie logi backendu i frontendu.' \
-		'  make dev               Alias dla make start.' \
-		'  make health            Alias dla make status.' \
+		'Najczęściej:' \
+		'  make start / stop / restart / status / logs' \
+		'  make check' \
+		'  make backup-apply' \
+		'  make audit-prompt' \
+		'  make place-inventory' \
+		'  make import-city MANIFEST=content/cities/wroclaw/manifest.json' \
+		'  make export-place-research' \
 		'' \
-		'Publiczny runtime:' \
-		'  make server-start      Zbuduj frontend i uruchom jeden proces PhotoMap.' \
-		'  make server-stop       Zatrzymaj publiczny runtime.' \
-		'  make server-restart    Restart publicznego runtime dla photomap.pl.' \
-		'  make server-status     Pokaż PID, port i health publicznego runtime.' \
-		'  make server-logs       Pokaż logi publicznego runtime.' \
-		'  make tunnel-start      Uruchom lokalny Cloudflare tunnel.' \
-		'  make tunnel-stop       Zatrzymaj lokalny Cloudflare tunnel.' \
-		'  make tunnel-status     Pokaż status tunelu.' \
-		'  make tunnel-logs       Pokaż logi tunelu.' \
-		'  make autostart         Alias dla make autostart-status.' \
-		'  make autostart-start   Włącz autostart, runtime i tunnel.' \
-		'  make autostart-stop    Wyłącz autostart i zatrzymaj runtime oraz tunnel.' \
-		'  make serwerstart       Alias dla make autostart-start.' \
-		'  make serwerstop        Alias dla make autostart-stop.' \
+		'Dane lokalne i storage:' \
+		'  make diagnose-data            diagnostyka lokalnej bazy i storage' \
+		'  make backup                   dry-run backupu' \
+		'  make backup-apply             realny backup do backups/local-*' \
+		'  make cleanup-media            dry-run usuwania osieroconych mediów' \
+		'  make cleanup-media-apply      realne usunięcie osieroconych mediów' \
+		'  make retain-originals         dry-run retencji prywatnych oryginałów' \
+		'  make retain-originals-apply   realna retencja prywatnych oryginałów' \
+		'  make reset-dev-data           reset lokalnej bazy i storage dev' \
 		'' \
-		'Jakość:' \
-		'  make check             Uruchom pełny check projektu.' \
-		'  make api-flow          Sprawdź pełny flow produktu przez backend API.' \
-		'  make api-contract      Sprawdź kontrakt publicznego API.' \
-		'  make smoke             Uruchom szybki smoke test backendu i frontendu.' \
-		'  make perf-smoke        Wykonaj podstawowy test wydajności endpointów.' \
-		'  make e2e               Uruchom testy E2E w Chromium.' \
-		'  make quality           Uruchom wszystkie checki i testy jakościowe.'
+		'Audyt opisów i research:' \
+		'  make audit-prompt CITY="Wrocław" PLACE="Rynek"' \
+		'  make audit-prompt CITY="Wrocław" ARGS="--scope city --audit tts --fields all"' \
+		'  make place-inventory' \
+		'  make place-inventory ARGS="--place-status all"' \
+		'  make export-place-research QUERY="Rynek"' \
+		'  make export-city-research CITY="Wrocław"' \
+		'  make export-all-research ARGS="--yes"' \
+		'' \
+		'Content pipeline:' \
+		'  make import-city MANIFEST=content/cities/wroclaw/manifest.json' \
+		'  make import-city-apply MANIFEST=content/cities/wroclaw/manifest.json' \
+		'' \
+		'Diagnostyka:' \
+		'  make schema-check' \
+		'  make diagnose-architecture' \
+		'  make api-flow / api-contract / smoke / perf-smoke / e2e' \
+		'' \
+		'Parametry:' \
+		'  MANIFEST=... wybiera manifest dla import-city/import-city-apply.' \
+		'  QUERY=...    przekazuje jedno pole wyszukiwania do export-place-research.' \
+		'  CITY=...     zawęża audit-prompt/export-place-research do miasta.' \
+		'  PLACE=...    zawęża audit-prompt/export-place-research do miejsca.' \
+		'  PYTHON=...   nadpisuje interpreter; domyślnie backend/.venv/bin/python, jeśli istnieje.' \
+		'  ARGS="..."   przekazuje dodatkowe flagi do targetów skryptowych.' \
+		'' \
+		'Pełny opis: scripts/README.md'
+
+scripts-readme:
+	@sed -n '1,260p' scripts/README.md
 
 start:
 	@./scripts/devctl.sh start
@@ -76,6 +102,64 @@ quality: check api-flow api-contract smoke perf-smoke e2e
 dev: start
 
 health: status
+
+diagnose-data:
+	@$(PYTHON) scripts/diagnose_local_data.py
+
+diagnose-architecture:
+	@$(PYTHON) scripts/diagnose_architecture.py
+
+schema-check:
+	@$(PYTHON) scripts/check_schema.py
+
+backup:
+	@./scripts/backup_local_data.sh --dry-run
+
+backup-apply:
+	@./scripts/backup_local_data.sh --apply
+
+cleanup-media:
+	@$(PYTHON) scripts/cleanup_orphan_media.py --dry-run
+
+cleanup-media-apply:
+	@$(PYTHON) scripts/cleanup_orphan_media.py --apply
+
+retain-originals:
+	@$(PYTHON) scripts/retain_private_originals.py --dry-run
+
+retain-originals-apply:
+	@$(PYTHON) scripts/retain_private_originals.py --apply
+
+import-city:
+	@$(PYTHON) scripts/content/import_city.py --dry-run "$(MANIFEST)"
+
+import-city-apply:
+	@$(PYTHON) scripts/content/import_city.py --apply "$(MANIFEST)"
+
+audit-prompt:
+	@$(PYTHON) scripts/generate_audit_prompt.py $(if $(strip $(CITY)),--city "$(CITY)") $(if $(strip $(PLACE)),--place "$(PLACE)") $(ARGS)
+
+place-inventory:
+	@$(PYTHON) scripts/export_place_inventory.py $(ARGS)
+
+export-place-research:
+	@$(PYTHON) scripts/export_place_research.py --scope place $(if $(strip $(QUERY)),--query "$(QUERY)") $(if $(strip $(CITY)),--city "$(CITY)") $(if $(strip $(PLACE)),--place "$(PLACE)") $(ARGS)
+
+export-city-research:
+	@$(PYTHON) scripts/export_place_research.py --scope city $(if $(strip $(QUERY)),--query "$(QUERY)") $(if $(strip $(CITY)),--city "$(CITY)") $(ARGS)
+
+export-all-research:
+	@$(PYTHON) scripts/export_place_research.py --scope all $(ARGS)
+
+reset-dev-data:
+	@./scripts/reset_dev_data.sh
+
+redact-media:
+	@if [ -z "$(strip $(ARGS))" ]; then \
+		printf '%s\n' 'Użycie: make redact-media ARGS="--dry-run --kind photo --id <id> --rect 0.1,0.1,0.4,0.3"'; \
+		exit 2; \
+	fi
+	@$(PYTHON) scripts/redact_media_image.py $(ARGS)
 
 server-start:
 	@./scripts/serverctl.sh start

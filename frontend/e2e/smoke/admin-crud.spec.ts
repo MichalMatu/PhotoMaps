@@ -24,6 +24,9 @@ test("admin can upload an approved place photo through UI", async ({ page, reque
   await page.getByRole("button", { name: "Dodaj zdjęcie" }).click();
   const uploadDialog = page.getByRole("dialog", { name: "Dodaj zdjęcie" });
   await expect(uploadDialog).toBeVisible();
+  await uploadDialog.getByLabel("Miasto").selectOption(place.city_id);
+  await expect(uploadDialog.getByLabel("Miejsce")).toBeEnabled();
+  await expect(uploadDialog.getByLabel("Miejsce")).toContainText(place.title);
   await uploadDialog.getByLabel("Miejsce").selectOption({ label: place.title });
   await uploadDialog.getByLabel("Zdjęcie").setInputFiles({
     buffer: PHOTO_BUFFER,
@@ -35,6 +38,9 @@ test("admin can upload an approved place photo through UI", async ({ page, reque
   await expect(uploadDialog).toBeHidden();
 
   await openStatusTab(page, /Zatwierdzone/);
+  const approvedCityGroup = page.getByRole("button", { name: /Pokaż media miasta Wrocław/ });
+  await expect(approvedCityGroup).toContainText("1 zdjęcie");
+  await approvedCityGroup.click();
   const approvedAlbum = page.locator(".admin-media-album-summary").filter({ hasText: place.title });
   await expect(approvedAlbum).toContainText("1 zdjęcie");
   await approvedAlbum.click();
@@ -136,12 +142,12 @@ test("admin can create category, place and guide through UI", async ({ page, req
   await expandPlaceCityGroup(page, "Wrocław");
   const placeRow = page.locator(".place-table .table-row").filter({ hasText: placeTitle });
   await expect(placeRow).toContainText(categoryLabel);
-  await expect(placeRow).toContainText("opublikowane");
   await expect(placeRow).toContainText("1.8");
 
   await placeRow.getByRole("button", { name: "Edytuj" }).click();
   const editPlaceDialog = page.getByRole("dialog", { name: "Edytuj miejsce" });
   await expect(editPlaceDialog).toBeVisible();
+  await expect(editPlaceDialog.getByLabel("Status")).toHaveValue("published");
   await expect(editPlaceDialog.getByLabel("Priorytet redakcji")).toHaveValue("1.8");
   await editPlaceDialog.getByLabel("Nazwa").fill(editedPlaceTitle);
   await editPlaceDialog.getByRole("button", { name: "Zapisz zmiany" }).click();
@@ -151,13 +157,13 @@ test("admin can create category, place and guide through UI", async ({ page, req
   await expect(editedPlaceRow).toContainText(categoryLabel);
 
   await adminTabs.getByRole("button", { name: /Trasy/ }).click();
-  await page.locator(".guide-manager .admin-toolbar").getByRole("button", { name: "Dodaj trasę" }).click();
-  const guideDialog = page.getByRole("dialog", { name: "Dodaj trasę" });
+  await page.locator(".guide-manager .admin-toolbar").getByRole("button", { name: "Dodaj trasę lub kolekcję" }).click();
+  const guideDialog = page.getByRole("dialog", { name: "Dodaj trasę lub kolekcję" });
   await expect(guideDialog).toBeVisible();
   await guideDialog.getByLabel("Tytuł").fill(guideTitle);
   await guideDialog.getByLabel("Opis").fill("Trasa dodana przez e2e");
   await guideDialog.getByLabel("Status").selectOption("published");
-  await guideDialog.getByRole("button", { name: "Dodaj trasę" }).click();
+  await guideDialog.getByRole("button", { name: "Dodaj" }).click();
   await expect(guideDialog).toBeHidden();
 
   const guideRow = page.locator(".guide-row").filter({ hasText: guideTitle });
