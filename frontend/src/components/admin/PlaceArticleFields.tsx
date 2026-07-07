@@ -19,6 +19,7 @@ export function PlaceArticleFields({
   return (
     <ContentBlockEditor
       blocks={articleBlocks}
+      idPrefix="place-article"
       legend="Pełny opis miejsca"
       onAddBlock={onAddBlock}
       onRemoveBlock={onRemoveBlock}

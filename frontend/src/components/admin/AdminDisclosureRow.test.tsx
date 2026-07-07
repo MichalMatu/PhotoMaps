@@ -18,6 +18,7 @@ function guide(overrides: Partial<Guide> = {}): Guide {
     description: "Opis trasy",
     article_blocks: [],
     id: "guide-1",
+    kind: "route",
     place_count: 0,
     preview_places: [],
     route_points: [],
@@ -79,7 +80,7 @@ describe("GuideManager disclosure rows", () => {
 
     expect(markup).toContain('aria-controls="guide-place-panel-guide-1"');
     expect(markup).toContain('aria-expanded="false"');
-    expect(markup).toContain('aria-label="Pokaż miejsca trasy Na deszcz"');
+    expect(markup).toContain('aria-label="Pokaż miejsca Na deszcz"');
     expect(markup).toContain('aria-label="Edytuj trasę Na deszcz"');
     expect(markup).toContain('aria-label="Usuń trasę Na deszcz"');
   });

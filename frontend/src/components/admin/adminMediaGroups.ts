@@ -4,7 +4,8 @@ export type AdminMediaItem = {
   id: string;
   place_id: string;
   status: ReviewStatus;
-  thumb_path: string;
+  thumb_path?: string | null;
+  admin_thumb_path?: string;
 };
 
 export type AdminMediaPlaceGroup<TItem extends AdminMediaItem> = {

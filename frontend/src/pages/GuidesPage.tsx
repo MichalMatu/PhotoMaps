@@ -22,9 +22,9 @@ function currentGuideSlug() {
 
 function guideCountLabel(count: number) {
   return polishCountLabel(count, {
-    few: "trasy",
-    many: "tras",
-    one: "trasa",
+    few: "pozycje",
+    many: "pozycji",
+    one: "pozycja",
   });
 }
 
@@ -59,7 +59,10 @@ function GuidePreviewPlaces({ guide }: { guide: PublicGuide }) {
   if (guide.preview_places.length === 0) return null;
 
   return (
-    <span className="guide-card-preview-list" aria-label="Miejsca w trasie">
+    <span
+      className="guide-card-preview-list"
+      aria-label={guide.kind === "collection" ? "Miejsca w kolekcji" : "Miejsca w trasie"}
+    >
       {guide.preview_places.slice(0, 4).map((place) => (
         <span className="guide-card-preview-item" key={place.id}>
           {place.title}
@@ -92,7 +95,7 @@ function GuidePlaceCard({ index, place }: { index: number; place: PublicGuidePla
 }
 
 function GuideActions({ guide, narrationText }: { guide: PublicGuideDetail; narrationText: string | null }) {
-  const googleMapsRouteUrl = buildGoogleMapsWalkingRouteUrl(guide.places);
+  const googleMapsRouteUrl = guide.kind === "route" ? buildGoogleMapsWalkingRouteUrl(guide.places) : null;
   if (!narrationText && !googleMapsRouteUrl) {
     return null;
   }
@@ -158,12 +161,12 @@ export function GuidesPage() {
           <section className="content-panel guide-list-view">
             <div className="guide-page-heading">
               <div className="guide-page-title">
-                <h1>Trasy</h1>
-                <p>Gotowe sekwencje miejsc do przejścia, oglądania i zapisywania własnych kadrów.</p>
+                <h1>Trasy i kolekcje</h1>
+                <p>Gotowe zestawy miejsc do przejścia, oglądania i zapisywania własnych kadrów.</p>
               </div>
               <span className="guide-page-count">{guideCountLabel(guidesQuery.data?.length ?? 0)}</span>
             </div>
-            {guidesQuery.isLoading ? <p className="ui-empty">Ładowanie tras...</p> : null}
+            {guidesQuery.isLoading ? <p className="ui-empty">Ładowanie tras i kolekcji...</p> : null}
             <div className="guide-card-grid">
               {guides.map((guide) => (
                 <a className="ui-card guide-card" href={`/guides/${guide.slug}`} key={guide.id}>
@@ -180,16 +183,16 @@ export function GuidesPage() {
               ))}
             </div>
             {!guidesQuery.isLoading && guides.length === 0 ? (
-              <p className="ui-empty">Brak opublikowanych tras.</p>
+              <p className="ui-empty">Brak opublikowanych tras i kolekcji.</p>
             ) : null}
           </section>
         ) : (
           <section className="content-panel guide-detail-view">
-            {guideQuery.isLoading ? <p className="ui-empty">Ładowanie trasy...</p> : null}
+            {guideQuery.isLoading ? <p className="ui-empty">Ładowanie...</p> : null}
             {guide ? (
               <>
                 <a className="ghost-link" href="/guides">
-                  Wszystkie trasy
+                  Wszystkie trasy i kolekcje
                 </a>
                 <div className="guide-detail-hero">
                   <div className="guide-detail-copy">
@@ -212,14 +215,20 @@ export function GuidesPage() {
                 </div>
                 <ContentBlocks blocks={guide.article_blocks} className="place-article guide-article" />
                 <div className="guide-place-section-heading">
-                  <h2>Miejsca na trasie</h2>
+                  <h2>{guide.kind === "collection" ? "Miejsca w kolekcji" : "Miejsca na trasie"}</h2>
                 </div>
                 <div className="guide-place-grid">
                   {guide.places.map((place, index) => (
                     <GuidePlaceCard index={index} key={place.id} place={place} />
                   ))}
                 </div>
-                {guide.places.length === 0 ? <p className="ui-empty">Ta trasa nie ma jeszcze miejsc.</p> : null}
+                {guide.places.length === 0 ? (
+                  <p className="ui-empty">
+                    {guide.kind === "collection"
+                      ? "Ta kolekcja nie ma jeszcze miejsc."
+                      : "Ta trasa nie ma jeszcze miejsc."}
+                  </p>
+                ) : null}
               </>
             ) : null}
           </section>

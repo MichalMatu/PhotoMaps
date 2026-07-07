@@ -107,6 +107,8 @@ def photo_to_map_preview(photo: Photo) -> PlaceMapPhotoPreviewItem:
 
 
 def memory_to_map_preview(memory: Memory) -> PlaceMapMemoryPreviewItem:
+    if memory.public_path is None or memory.thumb_path is None:
+        raise ValueError("Public memory media is not published")
     return PlaceMapMemoryPreviewItem(
         id=memory.id,
         kind="memory",

@@ -156,6 +156,9 @@ export function AdminPlacesModalLayer({
           editingPlacePhotoCount={editingPlacePhotoCount}
           editingPlaceView={editingPlaceView}
           onClose={closePlaceEditor}
+          onLocationAutoSave={
+            editingPlace ? (location) => placeManagement.savePlaceLocation(editingPlace, location) : undefined
+          }
           onManageCategories={onCategoryManagerOpen}
           onOpenPhotoPreview={openPhotoPreview}
           onSubmit={handleSubmitPlace}

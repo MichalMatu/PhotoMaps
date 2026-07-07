@@ -10,6 +10,7 @@ function city(id: string, sortOrder = 10): City {
     lat: 51.1,
     lon: 17.03,
     name: id,
+    region: "Dolnośląskie",
     sort_order: sortOrder,
     status: "active",
   };
@@ -99,6 +100,51 @@ describe("limitMapMarkersByDensity", () => {
     expect(wroclawPlaces[0].id).toBe("place-10");
   });
 
+  it("adds same-city detail through the city zoom ramp after city representatives", () => {
+    const walbrzych = city("walbrzych", 10);
+    const places = [
+      place(1, { city: walbrzych, score: 50, title: "Zamek Książ", weight: 5 }),
+      place(2, { city: walbrzych, score: 22.5, title: "Stara Kopalnia w Wałbrzychu", weight: 4.5 }),
+      place(3, { city: city("swidnica", 20), score: 1, weight: 1 }),
+      place(4, { city: city("jedlina", 30), score: 1, weight: 1 }),
+      place(5, { city: city("gluszyca", 40), score: 1, weight: 1 }),
+      place(6, { city: city("bolkow", 50), score: 1, weight: 1 }),
+    ];
+
+    const visiblePlaces = limitMapMarkersByDensity(places, { viewportHeight: 1024, viewportWidth: 2048, zoom: 12.5 });
+
+    expect(visiblePlaces).toHaveLength(6);
+    expect(visiblePlaces.map((item) => item.title)).toEqual([
+      "Zamek Książ",
+      "Stara Kopalnia w Wałbrzychu",
+      "Place 3",
+      "Place 4",
+      "Place 5",
+      "Place 6",
+    ]);
+  });
+
+  it("does not fill unused regional budget from one city before the city detail ramp", () => {
+    const places = Array.from({ length: 40 }, (_, index) => place(index));
+
+    expect(limitMapMarkersByDensity(places, { viewportHeight: 1024, viewportWidth: 2048, zoom: 11 })).toHaveLength(1);
+  });
+
+  it("keeps the whole city set when it fits the density budget at city detail zoom", () => {
+    const places = Array.from({ length: 2 }, (_, index) => place(index));
+
+    expect(limitMapMarkersByDensity(places, { viewportHeight: 820, viewportWidth: 1280, zoom: 13 })).toHaveLength(2);
+  });
+
+  it("keeps one-city detail gradual at the default city zoom", () => {
+    const places = Array.from({ length: 40 }, (_, index) => place(index));
+
+    const visiblePlaces = limitMapMarkersByDensity(places, { viewportHeight: 820, viewportWidth: 1280, zoom: 13 });
+
+    expect(visiblePlaces).toHaveLength(16);
+    expect(visiblePlaces.length).toBeLessThan(places.length);
+  });
+
   it("opens city detail gradually after the regional zoom range", () => {
     const places = Array.from({ length: 40 }, (_, index) =>
       place(index, {
@@ -109,7 +155,7 @@ describe("limitMapMarkersByDensity", () => {
 
     const visiblePlaces = limitMapMarkersByDensity(places, { viewportHeight: 820, viewportWidth: 1280, zoom: 12.5 });
 
-    expect(visiblePlaces).toHaveLength(3);
+    expect(visiblePlaces).toHaveLength(10);
     expect(visiblePlaces.map((item) => item.id)).toContain("place-30");
     expect(visiblePlaces.map((item) => item.id)).toContain("place-10");
     expect(visiblePlaces.map((item) => item.id)).toEqual(
@@ -123,22 +169,75 @@ describe("limitMapMarkersByDensity", () => {
     );
   });
 
-  it("adds city detail through several zoom layers before showing the full city set", () => {
+  it("adds city detail smoothly through several zoom layers before showing the full city set", () => {
     const places = Array.from({ length: 40 }, (_, index) => place(index));
 
     expect(limitMapMarkersByDensity(places, { viewportHeight: 820, viewportWidth: 1280, zoom: 11.5 })).toHaveLength(1);
-    expect(limitMapMarkersByDensity(places, { viewportHeight: 820, viewportWidth: 1280, zoom: 12 })).toHaveLength(1);
-    expect(limitMapMarkersByDensity(places, { viewportHeight: 820, viewportWidth: 1280, zoom: 12.5 })).toHaveLength(3);
-    expect(limitMapMarkersByDensity(places, { viewportHeight: 820, viewportWidth: 1280, zoom: 13 })).toHaveLength(6);
-    expect(limitMapMarkersByDensity(places, { viewportHeight: 820, viewportWidth: 1280, zoom: 13.5 })).toHaveLength(9);
-    expect(limitMapMarkersByDensity(places, { viewportHeight: 820, viewportWidth: 1280, zoom: 14 })).toHaveLength(14);
-    expect(limitMapMarkersByDensity(places, { viewportHeight: 820, viewportWidth: 1280, zoom: 14.5 })).toHaveLength(19);
+    expect(limitMapMarkersByDensity(places, { viewportHeight: 820, viewportWidth: 1280, zoom: 12 })).toHaveLength(5);
+    expect(limitMapMarkersByDensity(places, { viewportHeight: 820, viewportWidth: 1280, zoom: 12.5 })).toHaveLength(10);
+    expect(limitMapMarkersByDensity(places, { viewportHeight: 820, viewportWidth: 1280, zoom: 12.75 })).toHaveLength(
+      13,
+    );
+    expect(limitMapMarkersByDensity(places, { viewportHeight: 820, viewportWidth: 1280, zoom: 13 })).toHaveLength(16);
+    expect(limitMapMarkersByDensity(places, { viewportHeight: 820, viewportWidth: 1280, zoom: 13.5 })).toHaveLength(22);
+    expect(limitMapMarkersByDensity(places, { viewportHeight: 820, viewportWidth: 1280, zoom: 14 })).toHaveLength(28);
+    expect(limitMapMarkersByDensity(places, { viewportHeight: 820, viewportWidth: 1280, zoom: 14.5 })).toHaveLength(34);
+    expect(limitMapMarkersByDensity(places, { viewportHeight: 820, viewportWidth: 1280, zoom: 15 })).toHaveLength(40);
+  });
+
+  it("does not jump from sparse to full one-city detail around zoom 13", () => {
+    const places = Array.from({ length: 40 }, (_, index) => place(index));
+    const beforeThresholdCount = limitMapMarkersByDensity(places, {
+      viewportHeight: 820,
+      viewportWidth: 1280,
+      zoom: 12.75,
+    }).length;
+    const afterThresholdCount = limitMapMarkersByDensity(places, {
+      viewportHeight: 820,
+      viewportWidth: 1280,
+      zoom: 13,
+    }).length;
+
+    expect(afterThresholdCount - beforeThresholdCount).toBeLessThanOrEqual(4);
+    expect(afterThresholdCount).toBeLessThan(places.length);
   });
 
   it("reduces marker density on small viewports before collision layout runs", () => {
     const places = Array.from({ length: 40 }, (_, index) => place(index));
 
-    expect(limitMapMarkersByDensity(places, { viewportHeight: 780, viewportWidth: 390, zoom: 13 })).toHaveLength(6);
+    expect(limitMapMarkersByDensity(places, { viewportHeight: 780, viewportWidth: 390, zoom: 13 })).toHaveLength(5);
+  });
+
+  it("uses runtime density settings to show fewer or more visible marker tiles", () => {
+    const places = Array.from({ length: 60 }, (_, index) => place(index, { city: city(`city-${index}`, index) }));
+    const denseLimit = getMapMarkerDensityLimit(places, {
+      markerDensity: {
+        full_density_zoom: 15,
+        marker_viewport_area: 12_000,
+        max_zoom_fill_ratio: 1,
+        min_zoom: 6,
+        min_zoom_fill_ratio: 0.2,
+        zoom_curve: 1.1,
+      },
+      viewportHeight: 820,
+      viewportWidth: 1280,
+      zoom: 13,
+    });
+    const sparseLimit = getMapMarkerDensityLimit(places, {
+      markerDensity: {
+        full_density_zoom: 15,
+        marker_viewport_area: 48_000,
+        max_zoom_fill_ratio: 0.7,
+        min_zoom: 6,
+        min_zoom_fill_ratio: 0.08,
+        zoom_curve: 1.8,
+      },
+      viewportHeight: 820,
+      viewportWidth: 1280,
+      zoom: 13,
+    });
+
+    expect(denseLimit).toBeGreaterThan(sparseLimit);
   });
 
   it("shows the full city set on desktop when zoomed into a city", () => {
@@ -167,5 +266,27 @@ describe("limitMapMarkersByDensity", () => {
     const higherWeightPlace = place(2, { photo_count: 1, score: 16, weight: 5 });
 
     expect(getMapPlacePriority(higherWeightPlace)).toBeGreaterThan(getMapPlacePriority(lowerWeightPlace));
+  });
+
+  it("uses runtime ranking weights when editorial and score priorities need different tuning", () => {
+    const editorialPlace = place(1, { score: 5, weight: 5 });
+    const scorePlace = place(2, { score: 80, weight: 1 });
+
+    expect(getMapPlacePriority(editorialPlace)).toBeGreaterThan(getMapPlacePriority(scorePlace));
+    expect(
+      getMapPlacePriority(scorePlace, {
+        editorial_weight_multiplier: 1,
+        memory_count_multiplier: 0,
+        photo_count_sqrt_multiplier: 0,
+        score_multiplier: 2,
+      }),
+    ).toBeGreaterThan(
+      getMapPlacePriority(editorialPlace, {
+        editorial_weight_multiplier: 1,
+        memory_count_multiplier: 0,
+        photo_count_sqrt_multiplier: 0,
+        score_multiplier: 2,
+      }),
+    );
   });
 });

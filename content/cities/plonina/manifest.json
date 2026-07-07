@@ -2,6 +2,7 @@
   "city": {
     "id": "plonina",
     "name": "Płonina",
+    "region": "Dolnośląskie",
     "lat": 50.9041,
     "lon": 16.0038,
     "default_zoom": 13,

@@ -38,13 +38,18 @@ def test_memory_claim_update_and_delete_use_same_token(client_session, tmp_path:
     memory = session.get(Memory, memory_id)
     assert memory is not None
     private_file = tmp_path / "private" / memory.original_path
-    public_file = tmp_path / "public" / memory.public_path.removeprefix("/media/")
-    thumb_file = tmp_path / "public" / memory.thumb_path.removeprefix("/media/")
+    private_dir = private_file.parent
     review_response = client.post(
         f"/api/admin/memories/{memory_id}/review",
         headers=ADMIN_HEADERS,
         json={"status": "approved"},
     )
+    session.refresh(memory)
+    assert memory.public_path is not None
+    assert memory.thumb_path is not None
+    public_file = tmp_path / "public" / memory.public_path.removeprefix("/media/")
+    thumb_file = tmp_path / "public" / memory.thumb_path.removeprefix("/media/")
+    public_dir = public_file.parent
 
     rejected_claim = client.post(
         f"/api/places/{place.id}/memories/{memory_id}/claim",
@@ -88,6 +93,8 @@ def test_memory_claim_update_and_delete_use_same_token(client_session, tmp_path:
     assert not private_file.exists()
     assert not public_file.exists()
     assert not thumb_file.exists()
+    assert not private_dir.exists()
+    assert not public_dir.exists()
 
 
 def test_memory_claim_rejects_missing_stored_hash(client_session) -> None:

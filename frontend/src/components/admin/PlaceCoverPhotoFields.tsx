@@ -2,6 +2,8 @@ import type { ContentBlock, ContentBlockType } from "../../api/types";
 import { ContentBlockEditor } from "../content/ContentBlockEditor";
 import { AUDIO_FILE_ACCEPT } from "../ui/audioAttachment";
 import { FileInputControl } from "../ui/FileInputControl";
+import { SettingField } from "../ui/SettingField";
+import { ADMIN_MEDIA_FIELD_HELP } from "./adminMediaFieldHelp";
 import { PHOTO_CAPTION_MAX_LENGTH } from "./adminMediaUi";
 import { PhotoAttributionFields } from "./PhotoAttributionFields";
 import type { PhotoAttributionDraft } from "./placePhotoPanelState";
@@ -45,39 +47,58 @@ export function PlaceCoverPhotoFields({
     <fieldset className="cover-photo-fieldset">
       <legend>Zdjęcie główne</legend>
       <div className="cover-photo-grid">
-        <label>
-          Plik
+        <SettingField
+          id="place-cover-photo-file"
+          label="Plik"
+          hint={ADMIN_MEDIA_FIELD_HELP["photo-file"]}
+          describedByProp="describedBy"
+        >
           <FileInputControl accept="image/*" file={file} inputKey={`image-${inputKey}`} onChange={onFileChange} />
-        </label>
-        <label>
-          Audio
+        </SettingField>
+        <SettingField
+          id="place-cover-audio-file"
+          label="Audio"
+          hint={ADMIN_MEDIA_FIELD_HELP["audio-file"]}
+          describedByProp="describedBy"
+          footer={
+            audioError ? (
+              <span className="field-error" id="place-cover-audio-error">
+                {audioError}
+              </span>
+            ) : null
+          }
+        >
           <FileInputControl
             accept={AUDIO_FILE_ACCEPT}
+            describedBy={audioError ? "place-cover-audio-error" : undefined}
             file={audioFile}
             inputKey={`audio-${inputKey}`}
             isInvalid={Boolean(audioError)}
             onChange={onAudioFileChange}
           />
-          {audioError ? <span className="field-error">{audioError}</span> : null}
-        </label>
-        <label>
-          Podpis
+        </SettingField>
+        <SettingField id="place-cover-caption" label="Podpis" hint={ADMIN_MEDIA_FIELD_HELP.caption}>
           <input
             maxLength={PHOTO_CAPTION_MAX_LENGTH}
             value={caption}
             onChange={(event) => onCaptionChange(event.target.value)}
           />
-        </label>
+        </SettingField>
       </div>
       <ContentBlockEditor
         blocks={descriptionBlocks}
+        idPrefix="place-cover-description"
         legend="Opis zdjęcia"
         onAddBlock={onAddDescriptionBlock}
         onRemoveBlock={onRemoveDescriptionBlock}
         onUpdateBlock={onUpdateDescriptionBlock}
         onUpdateBlockType={onUpdateDescriptionBlockType}
       />
-      <PhotoAttributionFields draft={attributionDraft} onChange={onAttributionDraftChange} />
+      <PhotoAttributionFields
+        draft={attributionDraft}
+        idPrefix="place-cover-attribution"
+        onChange={onAttributionDraftChange}
+      />
     </fieldset>
   );
 }

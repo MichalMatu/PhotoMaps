@@ -104,6 +104,13 @@ function overlapsCandidate(left: MarkerCollisionCandidate, right: MarkerCollisio
   );
 }
 
+function overlapsLayout(left: MarkerCollisionLayout, right: MarkerCollisionLayout, gap: number) {
+  return (
+    Math.abs(right.point.x - left.point.x) < (left.width + right.width) / 2 + gap &&
+    Math.abs(right.point.y - left.point.y) < (left.height + right.height) / 2 + gap
+  );
+}
+
 function overlapsEarlierCandidate(
   candidate: MarkerCollisionCandidate,
   index: number,
@@ -243,4 +250,23 @@ export function resolveMapMarkerCollisions(
       width: marker.width,
     };
   });
+}
+
+export function hasMapMarkerCollisionOverlaps(layouts: MarkerCollisionLayout[], gap = 0) {
+  return mapMarkerCollisionOverlapIds(layouts, gap).size > 0;
+}
+
+export function mapMarkerCollisionOverlapIds(layouts: MarkerCollisionLayout[], gap = 0) {
+  const overlappingIds = new Set<string>();
+
+  for (let leftIndex = 0; leftIndex < layouts.length; leftIndex += 1) {
+    for (let rightIndex = leftIndex + 1; rightIndex < layouts.length; rightIndex += 1) {
+      if (overlapsLayout(layouts[leftIndex], layouts[rightIndex], gap)) {
+        overlappingIds.add(layouts[leftIndex].id);
+        overlappingIds.add(layouts[rightIndex].id);
+      }
+    }
+  }
+
+  return overlappingIds;
 }

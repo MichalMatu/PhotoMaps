@@ -106,6 +106,7 @@ export function AdminPlaceCityGroup({
           {city ? (
             <span className={`ui-status ui-status--${city.status}`}>{adminCityStatusLabel(city.status)}</span>
           ) : null}
+          {city ? <span className="admin-list-group-meta-item">{city.region}</span> : null}
           {city ? (
             <span className="admin-list-group-meta-item place-city-meta-item--zoom">
               Startowy zoom: {city.default_zoom}

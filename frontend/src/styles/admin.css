@@ -397,11 +397,22 @@
   grid-template-columns: minmax(220px, 0.9fr) minmax(260px, 1fr) minmax(340px, 1.35fr) minmax(220px, 0.9fr);
 }
 
+.admin-config-grid--application {
+  grid-template-columns: minmax(220px, 0.9fr) minmax(260px, 1fr) minmax(340px, 1.35fr);
+}
+
 .admin-config-panel {
   align-content: start;
   display: grid;
   gap: var(--space-4);
   padding: var(--space-4);
+}
+
+.admin-config-map-settings {
+  align-items: start;
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
 }
 
 .admin-config-labels {
@@ -542,6 +553,10 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .admin-config-map-settings {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .admin-config-labels {
     grid-column: 1 / -1;
   }
@@ -560,7 +575,8 @@
 
   .admin-config-grid,
   .admin-config-field-main,
-  .admin-config-label-group {
+  .admin-config-label-group,
+  .admin-config-map-settings {
     grid-template-columns: 1fr;
   }
 

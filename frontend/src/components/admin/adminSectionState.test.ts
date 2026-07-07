@@ -70,6 +70,9 @@ const PHOTOS: AdminPhoto[] = [
 
 const MEMORIES: AdminMemory[] = [
   {
+    admin_audio: null,
+    admin_public_path: "/api/admin/memories/1/media/image",
+    admin_thumb_path: "/api/admin/memories/1/media/thumb",
     approved_at: null,
     audio: null,
     author_city: null,
@@ -81,12 +84,15 @@ const MEMORIES: AdminMemory[] = [
     memory_text: "one",
     paid: false,
     place_id: "p1",
-    public_path: "",
+    public_path: null,
     share_slug: "one",
     status: "pending",
-    thumb_path: "",
+    thumb_path: null,
   },
   {
+    admin_audio: null,
+    admin_public_path: "/api/admin/memories/2/media/image",
+    admin_thumb_path: "/api/admin/memories/2/media/thumb",
     approved_at: "",
     audio: null,
     author_city: "Wroclaw",

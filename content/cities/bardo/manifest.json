@@ -1,0 +1,36 @@
+{
+  "city": {
+    "id": "bardo",
+    "name": "Bardo",
+    "region": "Dolnośląskie",
+    "lat": 50.5058333,
+    "lon": 16.7397222,
+    "default_zoom": 13,
+    "sort_order": 155,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "sanktuarium-bardo",
+      "title": "Sanktuarium w Bardzie",
+      "description": "Barokowa bazylika Nawiedzenia Najświętszej Maryi Panny, centralny punkt pielgrzymkowego Barda i jeden z mocnych znaków Ziemi Kłodzkiej.",
+      "local_comment": "Zdjęcia powinny zachować spokojny, sakralny ton: bryła od placu, wnętrze jeśli licencja i zasady miejsca na to pozwalają, detal i relacja z miasteczkiem.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Bardo jako miasto pielgrzymkowe"
+        },
+        {
+          "type": "paragraph",
+          "text": "Sanktuarium w Bardzie jest miejscem, które nadaje miasteczku bardzo wyraźną tożsamość. Na mapie działa jako punkt skupienia: plac, bazylika, ruch pielgrzymów i bliskość przełomu Nysy Kłodzkiej tworzą spokojną, rozpoznawalną scenę."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.5057435,
+      "lon": 16.7402081,
+      "weight": 4.0,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

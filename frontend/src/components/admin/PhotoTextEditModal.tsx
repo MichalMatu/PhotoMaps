@@ -2,7 +2,9 @@ import type { FormEvent } from "react";
 
 import type { AdminPhoto, ContentBlock, ContentBlockType } from "../../api/types";
 import { ContentBlockEditor } from "../content/ContentBlockEditor";
+import { SettingField } from "../ui/SettingField";
 import { SystemModal } from "./SystemModal";
+import { ADMIN_MEDIA_FIELD_HELP } from "./adminMediaFieldHelp";
 import { PHOTO_CAPTION_MAX_LENGTH } from "./adminMediaUi";
 import { PhotoAttributionFields } from "./PhotoAttributionFields";
 import type { PhotoAttributionDraft } from "./placePhotoPanelState";
@@ -56,23 +58,27 @@ export function PhotoTextEditModal({
       onConfirm={() => onSave(photo)}
     >
       <form id="photo-text-edit-form" className="ui-form admin-photo-text-form" onSubmit={handleSubmit}>
-        <label>
-          Podpis
+        <SettingField id="photo-text-caption" label="Podpis" hint={ADMIN_MEDIA_FIELD_HELP.caption}>
           <input
             maxLength={PHOTO_CAPTION_MAX_LENGTH}
             value={captionDraft}
             onChange={(event) => onCaptionDraftChange(event.target.value)}
           />
-        </label>
+        </SettingField>
         <ContentBlockEditor
           blocks={descriptionDraftBlocks}
+          idPrefix="photo-text-description"
           legend="Opis zdjęcia"
           onAddBlock={onAddDescriptionDraftBlock}
           onRemoveBlock={onRemoveDescriptionDraftBlock}
           onUpdateBlock={onUpdateDescriptionDraftBlock}
           onUpdateBlockType={onUpdateDescriptionDraftBlockType}
         />
-        <PhotoAttributionFields draft={attributionDraft} onChange={onAttributionDraftChange} />
+        <PhotoAttributionFields
+          draft={attributionDraft}
+          idPrefix="photo-text-attribution"
+          onChange={onAttributionDraftChange}
+        />
       </form>
     </SystemModal>
   );

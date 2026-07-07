@@ -7,6 +7,7 @@ import type {
   MediaRedactionPayload,
   MediaRedactionReport,
   MemoryClaimRead,
+  MemorySubmission,
   Memory,
   MemoryUpdatePayload,
   Photo,
@@ -104,7 +105,7 @@ export function uploadPlaceMemory(
     file: File;
     memoryText: string;
   },
-): Promise<Memory> {
+): Promise<MemorySubmission> {
   const formData = new FormData();
   formData.append("file", payload.file);
   if (payload.audioFile) {
@@ -121,7 +122,7 @@ export function uploadPlaceMemory(
     formData.append("author_city", payload.authorCity.trim());
   }
 
-  return request<Memory>(`/api/places/${placeId}/memories`, {
+  return request<MemorySubmission>(`/api/places/${placeId}/memories`, {
     method: "POST",
     body: formData,
   });

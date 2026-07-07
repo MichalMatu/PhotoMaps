@@ -7,7 +7,7 @@ from app.main import app
 
 schema = schemathesis.openapi.from_asgi("/openapi.json", app).include(
     method="GET",
-    path_regex=r"^/(health|api/(app-config|categories|cities|places|guides))",
+    path_regex=r"^/(health|api/(app-config|categories|cities|places|guides|public))",
 )
 
 

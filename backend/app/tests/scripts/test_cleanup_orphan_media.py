@@ -47,8 +47,10 @@ def configure_storage_roots(module, monkeypatch, tmp_path: Path) -> tuple[Path, 
         module,
         "ORPHAN_CODES",
         {
-            "orphan_private_file": ("private", private_root),
-            "orphan_public_file": ("public", public_root),
+            "orphan_private_file": ("private", private_root, "delete_file"),
+            "orphan_public_file": ("public", public_root, "delete_file"),
+            "orphan_private_empty_dir": ("private", private_root, "delete_empty_dir"),
+            "orphan_public_empty_dir": ("public", public_root, "delete_empty_dir"),
         },
     )
     return private_root, public_root
@@ -102,10 +104,14 @@ def test_cleanup_report_apply_deletes_only_orphans_when_diagnostics_has_no_error
     private_root, public_root = configure_storage_roots(module, monkeypatch, tmp_path)
     private_file = private_root / "photos" / "place-1" / "orphan-original.jpg"
     public_file = public_root / "photos" / "place-1" / "orphan.jpg"
+    private_empty_dir = private_root / "memories" / "stale-place"
+    public_empty_dir = public_root / "memories" / "stale-place"
     kept_file = public_root / "photos" / "keep.jpg"
     for path in (private_file, public_file, kept_file):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(b"image")
+    private_empty_dir.mkdir(parents=True)
+    public_empty_dir.mkdir(parents=True)
 
     before = diagnostics_report(
         {
@@ -120,6 +126,18 @@ def test_cleanup_report_apply_deletes_only_orphans_when_diagnostics_has_no_error
             "target": "public:photos/place-1/orphan.jpg",
             "message": "Unused public file.",
         },
+        {
+            "severity": "warning",
+            "code": "orphan_private_empty_dir",
+            "target": "private:memories/stale-place",
+            "message": "Unused private directory.",
+        },
+        {
+            "severity": "warning",
+            "code": "orphan_public_empty_dir",
+            "target": "public:memories/stale-place",
+            "message": "Unused public directory.",
+        },
     )
     after = diagnostics_report(status="ok")
     reports = [before, after]
@@ -133,6 +151,8 @@ def test_cleanup_report_apply_deletes_only_orphans_when_diagnostics_has_no_error
     assert {action["status"] for action in report["actions"]} == {"deleted"}
     assert not private_file.exists()
     assert not public_file.exists()
+    assert not private_empty_dir.exists()
+    assert not public_empty_dir.exists()
     assert kept_file.exists()
 
 

@@ -2,6 +2,7 @@
   "city": {
     "id": "lomnica",
     "name": "Łomnica",
+    "region": "Dolnośląskie",
     "lat": 50.8759386,
     "lon": 15.8096435,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Pałac Łomnica pokazuje Dolny Śląsk jako region małych podróży między rezydencjami. Jest blisko Wojanowa, ale ma własny charakter: park, zabudowania gospodarcze i spokojniejszą skalę zwiedzania."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.8759386,
       "lon": 15.8096435,
       "weight": 4.1,

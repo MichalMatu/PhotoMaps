@@ -1,10 +1,6 @@
 import { request } from "./http";
 import type { City, CityPayload, CityUpdatePayload } from "./types";
 
-export function getCities(): Promise<City[]> {
-  return request<City[]>("/api/cities");
-}
-
 export function getAdminCities(): Promise<City[]> {
   return request<City[]>("/api/admin/cities");
 }

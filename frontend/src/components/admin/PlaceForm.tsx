@@ -6,6 +6,7 @@ import { PlaceCoverPhotoFields } from "./PlaceCoverPhotoFields";
 import { PlaceCustomFields } from "./PlaceCustomFields";
 import { usePlaceFormDraft } from "./usePlaceFormDraft";
 import type { PlaceFormPayload } from "./useAdminPlaceManagement";
+import type { PlaceLocation } from "./placeLocationAutoSave";
 
 type Props = {
   categories: Category[];
@@ -20,6 +21,7 @@ type Props = {
     onClick: () => void;
   };
   onCancel?: () => void;
+  onLocationAutoSave?: (location: PlaceLocation) => Promise<void>;
   onManageCategories?: () => void;
   onSubmit: (payload: PlaceFormPayload) => Promise<void>;
 };
@@ -30,6 +32,7 @@ export function PlaceForm({
   className = "ui-form admin-form",
   mapFallback,
   onCancel,
+  onLocationAutoSave,
   onManageCategories,
   onSubmit,
   place,
@@ -40,6 +43,7 @@ export function PlaceForm({
     categories,
     cities,
     mapFallback,
+    onLocationAutoSave,
     onSubmit,
     place,
     placeCustomFieldDefinitions,
@@ -53,6 +57,7 @@ export function PlaceForm({
         description={draft.description}
         localComment={draft.localComment}
         location={draft.location}
+        locationAutoSaveStatus={draft.locationAutoSaveStatus}
         selectedCityName={draft.selectedCityName}
         status={draft.status}
         title={draft.title}

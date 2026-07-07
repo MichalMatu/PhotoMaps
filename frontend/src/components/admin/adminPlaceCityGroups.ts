@@ -24,28 +24,40 @@ export type PlaceCityGroup = {
   sortOrder: number;
 };
 
-export function getPlaceCityGroups(cities: City[], places: AdminPlace[]): PlaceCityGroup[] {
-  const groupsByCityId = new Map<string, PlaceCityGroup>();
+type PlaceCityGroupOptions = {
+  includeEmptyCities?: boolean;
+};
 
-  for (const city of cities) {
-    groupsByCityId.set(city.id, {
-      city,
-      cityId: city.id,
-      cityName: city.name,
-      places: [],
-      sortOrder: city.sort_order,
-    });
+export function getPlaceCityGroups(
+  cities: City[],
+  places: AdminPlace[],
+  { includeEmptyCities = true }: PlaceCityGroupOptions = {},
+): PlaceCityGroup[] {
+  const groupsByCityId = new Map<string, PlaceCityGroup>();
+  const citiesById = new Map(cities.map((city) => [city.id, city]));
+
+  if (includeEmptyCities) {
+    for (const city of cities) {
+      groupsByCityId.set(city.id, {
+        city,
+        cityId: city.id,
+        cityName: city.name,
+        places: [],
+        sortOrder: city.sort_order,
+      });
+    }
   }
 
   for (const place of places) {
+    const city = citiesById.get(place.city_id) ?? null;
     const group =
       groupsByCityId.get(place.city_id) ??
       ({
-        city: null,
+        city,
         cityId: place.city_id,
-        cityName: place.city_id,
+        cityName: city?.name ?? place.city_id,
         places: [],
-        sortOrder: Number.MAX_SAFE_INTEGER,
+        sortOrder: city?.sort_order ?? Number.MAX_SAFE_INTEGER,
       } satisfies PlaceCityGroup);
     group.places.push(place);
     groupsByCityId.set(place.city_id, group);

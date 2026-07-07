@@ -107,24 +107,25 @@ def redact_media_image(
             }
         )
 
-    public_ready = public_path.exists()
-    thumb_ready = thumb_path.exists()
-    if not public_ready:
+    requires_public_derivatives = media.status == "approved"
+    public_ready = public_path is not None and public_path.exists()
+    thumb_ready = thumb_path is not None and thumb_path.exists()
+    if requires_public_derivatives and not public_ready:
         issues.append(
             {
                 "severity": "error",
                 "code": "public_missing",
                 "message": "Media derivative is missing.",
-                "path": public_path.as_posix(),
+                "path": public_path.as_posix() if public_path is not None else "",
             }
         )
-    if not thumb_ready:
+    if requires_public_derivatives and not thumb_ready:
         issues.append(
             {
                 "severity": "error",
                 "code": "thumb_missing",
                 "message": "Media derivative is missing.",
-                "path": thumb_path.as_posix(),
+                "path": thumb_path.as_posix() if thumb_path is not None else "",
             }
         )
 
@@ -134,9 +135,9 @@ def redact_media_image(
     if private_path.exists():
         actions.append(redact_path(private_path, "private_original", shapes, apply_changes))
 
-    if public_ready:
+    if public_ready and public_path is not None:
         actions.append(redact_path(public_path, "public", shapes, apply_changes))
-    if public_ready and thumb_ready:
+    if public_ready and thumb_ready and public_path is not None and thumb_path is not None:
         actions.append(regenerate_thumb_path(public_path, thumb_path, apply_changes))
 
     return redaction_report(kind, media_id, apply_changes, actions, issues)
@@ -150,11 +151,11 @@ def media_for(session: Session, kind: str, media_id: str) -> Photo | Memory | No
     raise ValueError("Unsupported media kind")
 
 
-def media_paths(media: Photo | Memory) -> dict[str, Path]:
+def media_paths(media: Photo | Memory) -> dict[str, Path | None]:
     return {
         "private_original": images.storage_path(images.PRIVATE_STORAGE_DIR, media.original_path),
-        "public": images.public_storage_path(media.public_path),
-        "thumb": images.public_storage_path(media.thumb_path),
+        "public": images.public_storage_path(media.public_path) if media.public_path is not None else None,
+        "thumb": images.public_storage_path(media.thumb_path) if media.thumb_path is not None else None,
     }
 
 

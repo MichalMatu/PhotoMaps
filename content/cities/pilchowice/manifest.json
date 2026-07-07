@@ -2,6 +2,7 @@
   "city": {
     "id": "pilchowice",
     "name": "Pilchowice",
+    "region": "Dolnośląskie",
     "lat": 50.9637743,
     "lon": 15.6451895,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Most Pilchowicki dodaje do mapy techniczny, krajobrazowy punkt zachodniej części regionu. Jest atrakcyjny wizualnie nie tylko jako zabytek infrastruktury, ale też jako widok nad jeziorem."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.9650266,
       "lon": 15.6582352,
       "weight": 4.1,
@@ -45,7 +46,7 @@
           "text": "Zapora Pilchowicka jest jednym z najmocniejszych obiektów hydrotechnicznych Dolnego Śląska. Razem z mostem tworzy świetny zestaw widokowy, ale jako miejsce ma własną skalę i własny rytm zwiedzania."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.9637743,
       "lon": 15.6451895,
       "weight": 4.0,

@@ -8,6 +8,33 @@ const emptyCountryMapFallback: AppConfigMap = {
     lon: 19.4803,
   },
   fallback_zoom: 6,
+  marker_density: {
+    full_density_zoom: 15,
+    marker_viewport_area: 18_000,
+    max_zoom_fill_ratio: 1,
+    min_zoom: 6,
+    min_zoom_fill_ratio: 0.12,
+    zoom_curve: 1.35,
+  },
+  marker_priority: {
+    editorial_weight_multiplier: 12,
+    memory_count_multiplier: 2,
+    photo_count_sqrt_multiplier: 3.2,
+    score_multiplier: 0.28,
+  },
+  marker_scale: {
+    base_size: {
+      height: 58,
+      width: 72,
+    },
+    max_render_scale: 1.9,
+    min_render_scale: 0.55,
+    priority: {
+      curve: 1.12,
+      max_scale: 1.9,
+      min_scale: 0.72,
+    },
+  },
 };
 
 const placeCenterPanOptions: PanOptions = {
@@ -69,14 +96,13 @@ export const MAP_DISPLAY_CONFIG = {
     zoomControlPosition: "bottomright",
   },
   markerDensity: {
-    cityDetailZoomCurve: 1.8,
+    cityDetailZoomCurve: 1.15,
     cityDetailZoomStart: 11.5,
     cityRepresentativeViewportArea: 90_000,
     defaultZoom: 13,
     fullCityDetailZoom: 15,
     fullDensityZoom: 15,
     markerViewportArea: 18_000,
-    maxCityRepresentativesBeforeDetail: 24,
     maxZoomFillRatio: 1,
     minViewportSize: 1,
     minZoom: 6,

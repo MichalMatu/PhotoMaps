@@ -2,6 +2,7 @@
   "city": {
     "id": "kowary",
     "name": "Kowary",
+    "region": "Dolnośląskie",
     "lat": 50.7939,
     "lon": 15.835,
     "default_zoom": 13,

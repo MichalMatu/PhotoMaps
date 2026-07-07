@@ -26,6 +26,40 @@ vi.mock("./GuideRoutePointEditor", () => ({
 
 const noop = () => undefined;
 
+function mapFallback(): AppConfigMap {
+  return {
+    fallback_center: { lat: 51.1079, lon: 17.0385 },
+    fallback_zoom: 13,
+    marker_density: {
+      full_density_zoom: 15,
+      marker_viewport_area: 18_000,
+      max_zoom_fill_ratio: 1,
+      min_zoom: 6,
+      min_zoom_fill_ratio: 0.12,
+      zoom_curve: 1.35,
+    },
+    marker_priority: {
+      editorial_weight_multiplier: 12,
+      memory_count_multiplier: 2,
+      photo_count_sqrt_multiplier: 3.2,
+      score_multiplier: 0.28,
+    },
+    marker_scale: {
+      base_size: {
+        height: 58,
+        width: 72,
+      },
+      max_render_scale: 1.9,
+      min_render_scale: 0.55,
+      priority: {
+        curve: 1.12,
+        max_scale: 1.9,
+        min_scale: 0.72,
+      },
+    },
+  };
+}
+
 function category(overrides: Partial<Category> = {}): Category {
   return {
     description: null,
@@ -45,6 +79,7 @@ function city(overrides: Partial<City> = {}): City {
     lat: 51.1079,
     lon: 17.0385,
     name: "Wrocław",
+    region: "Dolnośląskie",
     sort_order: 1,
     status: "active",
     ...overrides,
@@ -58,6 +93,7 @@ function guide(overrides: Partial<Guide> = {}): Guide {
     description: "Opis",
     article_blocks: [],
     id: "guide-1",
+    kind: "route",
     place_count: 0,
     preview_places: [],
     route_points: [],
@@ -121,7 +157,6 @@ describe("admin modal forms", () => {
   });
 
   it("renders city modal fields in a real submit form", () => {
-    const mapFallback: AppConfigMap = { fallback_center: { lat: 51.1079, lon: 17.0385 }, fallback_zoom: 13 };
     const markup = renderToStaticMarkup(
       <CityFormModal
         canSave
@@ -130,14 +165,16 @@ describe("admin modal forms", () => {
         isSaving={false}
         lat="51.1079"
         lon="17.0385"
-        mapFallback={mapFallback}
+        mapFallback={mapFallback()}
         name="Wrocław"
+        region="Dolnośląskie"
         onCityIdChange={noop}
         onClose={noop}
         onConfirm={noop}
         onLatChange={noop}
         onLonChange={noop}
         onNameChange={noop}
+        onRegionChange={noop}
         onSortOrderChange={noop}
         onStatusChange={noop}
         onZoomChange={noop}
@@ -160,10 +197,12 @@ describe("admin modal forms", () => {
         generatedSlug="na-deszcz"
         isSaving={false}
         isRoutePlacesLoading={false}
+        kind="route"
         onAddArticleBlock={noop}
         onClose={noop}
         onConfirm={noop}
         onDescriptionChange={noop}
+        onKindChange={noop}
         onRemoveArticleBlock={noop}
         onRoutePointsChange={noop}
         onStatusChange={noop}
@@ -180,6 +219,37 @@ describe("admin modal forms", () => {
     expect(markup).toContain('<form id="guide-form-modal"');
     expect(markup).toContain('form="guide-form-modal" type="submit"');
     expect(markup).toContain('data-testid="guide-route-point-editor"');
+  });
+
+  it("hides route geometry fields for collection guides", () => {
+    const markup = renderToStaticMarkup(
+      <GuideFormModal
+        description="Opis"
+        articleBlocks={[]}
+        editingGuide={guide({ kind: "collection" })}
+        generatedSlug="kolekcja"
+        isSaving={false}
+        isRoutePlacesLoading={false}
+        kind="collection"
+        onAddArticleBlock={noop}
+        onClose={noop}
+        onConfirm={noop}
+        onDescriptionChange={noop}
+        onKindChange={noop}
+        onRemoveArticleBlock={noop}
+        onRoutePointsChange={noop}
+        onStatusChange={noop}
+        onTitleChange={noop}
+        onUpdateArticleBlock={noop}
+        onUpdateArticleBlockType={noop}
+        routePlaces={[]}
+        routePoints={[]}
+        status="published"
+        title="Kolekcja"
+      />,
+    );
+
+    expect(markup).not.toContain('data-testid="guide-route-point-editor"');
   });
 
   it("renders photo upload modal fields in a real submit form", () => {

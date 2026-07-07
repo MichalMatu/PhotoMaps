@@ -1,7 +1,8 @@
 .photo-detail-content {
   --photo-detail-nav-offset-block: 50%;
   --photo-detail-nav-offset-inline: var(--media-overlay-padding, var(--space-5));
-  --photo-detail-nav-size: var(--media-control-size, var(--control-hit-target));
+  --photo-detail-nav-icon-size: var(--media-control-icon-size, var(--media-modal-control-icon-size));
+  --photo-detail-nav-size: calc(var(--media-control-size, var(--control-hit-target)) - var(--space-1));
   --photo-detail-overlay-padding: var(--media-overlay-padding, var(--media-modal-overlay-padding));
 
   height: 100%;
@@ -59,15 +60,20 @@
 
 .photo-detail-nav-button {
   align-items: center;
+  aspect-ratio: 1 / 1;
   background: var(--surface-media-control);
   backdrop-filter: var(--blur-media-glass);
   border: 1px solid var(--border-media-control);
   border-radius: var(--radius-full);
+  box-sizing: border-box;
   box-shadow: var(--shadow-media-glass-action);
   color: var(--content-media-control);
   display: inline-flex;
+  flex: 0 0 var(--photo-detail-nav-size);
   height: var(--photo-detail-nav-size);
   justify-content: center;
+  min-height: var(--photo-detail-nav-size);
+  min-width: var(--photo-detail-nav-size);
   opacity: 0.82;
   padding: 0;
   position: absolute;
@@ -83,8 +89,8 @@
 }
 
 .photo-detail-nav-button svg {
-  height: calc(var(--photo-detail-nav-size) - var(--space-5));
-  width: calc(var(--photo-detail-nav-size) - var(--space-5));
+  height: var(--photo-detail-nav-icon-size);
+  width: var(--photo-detail-nav-icon-size);
 }
 
 .photo-detail-nav-button--previous {
@@ -482,6 +488,7 @@
 @media (max-width: 760px) {
   .photo-detail-content {
     --photo-detail-nav-offset-inline: var(--space-3);
+    --photo-detail-nav-size: var(--control-height-small);
   }
 
   .photo-detail-overlay {

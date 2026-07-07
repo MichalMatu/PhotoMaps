@@ -25,6 +25,7 @@ from app.api.routes import (
     memories,
     photos,
     places,
+    public_discovery,
     reports,
 )
 from app.core.config import API_TITLE, FRONTEND_ORIGINS, PUBLIC_STORAGE_DIR
@@ -65,6 +66,7 @@ app.include_router(photos.router)
 app.include_router(memories.router)
 app.include_router(guides.router)
 app.include_router(reports.router)
+app.include_router(public_discovery.router)
 app.include_router(admin_app_config.router)
 app.include_router(admin_categories.router)
 app.include_router(admin_cities.router)

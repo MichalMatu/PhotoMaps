@@ -115,6 +115,38 @@ export async function request<T>(path: string, options?: RequestInit): Promise<T
   return response.json() as Promise<T>;
 }
 
+export async function requestBlob(path: string, options?: RequestInit): Promise<Blob> {
+  const headers = new Headers(options?.headers);
+  if (path.startsWith("/api/admin")) {
+    const token = getStoredAdminToken();
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      headers,
+    });
+  } catch {
+    throw new ApiError(`Backend API nie odpowiada pod ${API_BASE_URL}. Uruchom ./scripts/dev_backend.sh.`, 0);
+  }
+
+  if (!response.ok) {
+    const body = await response.text();
+    const requestId = response.headers.get("X-Request-ID") ?? apiRequestIdFromBody(body);
+    throw new ApiError(
+      apiErrorMessageFromBody(body, `Request failed: ${response.status}`),
+      response.status,
+      requestId ?? undefined,
+    );
+  }
+
+  return response.blob();
+}
+
 function getMediaCacheRevision(): string {
   if (typeof window === "undefined" || !window.localStorage) {
     return "";

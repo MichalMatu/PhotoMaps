@@ -28,6 +28,17 @@ class StoredImage:
     thumb_path: str
 
 
+@dataclass(frozen=True)
+class StoredPrivateImage:
+    original_path: str
+
+
+@dataclass(frozen=True)
+class StoredPublicImage:
+    public_path: str
+    thumb_path: str
+
+
 def public_url(path: Path) -> str:
     relative_path = path.relative_to(PUBLIC_STORAGE_DIR)
     return f"/media/{relative_path.as_posix()}"
@@ -52,15 +63,27 @@ def public_storage_path(public_url_path: str) -> Path:
     return storage_path(PUBLIC_STORAGE_DIR, public_url_path.removeprefix(media_prefix))
 
 
-def delete_stored_image(original_path: str, public_path: str, thumb_path: str) -> None:
+def delete_stored_image(original_path: str, public_path: str | None, thumb_path: str | None) -> None:
     paths = [
         storage_path(PRIVATE_STORAGE_DIR, original_path),
-        public_storage_path(public_path),
-        public_storage_path(thumb_path),
     ]
+    if public_path is not None:
+        paths.append(public_storage_path(public_path))
+    if thumb_path is not None:
+        paths.append(public_storage_path(thumb_path))
 
     for path in paths:
-        path.unlink(missing_ok=True)
+        cleanup_paths(path)
+
+
+def delete_public_image(public_path: str | None, thumb_path: str | None) -> None:
+    paths = []
+    if public_path is not None:
+        paths.append(public_storage_path(public_path))
+    if thumb_path is not None:
+        paths.append(public_storage_path(thumb_path))
+
+    cleanup_paths(*paths)
 
 
 def original_suffix(filename: str | None) -> str:
@@ -110,6 +133,24 @@ def save_thumbnail_image(image: Image.Image, path: Path, output_format: str) -> 
 def cleanup_paths(*paths: Path) -> None:
     for path in paths:
         path.unlink(missing_ok=True)
+    cleanup_empty_storage_parent_dirs(*paths)
+
+
+def cleanup_empty_storage_parent_dirs(*paths: Path) -> None:
+    roots = [PRIVATE_STORAGE_DIR.resolve(), PUBLIC_STORAGE_DIR.resolve()]
+    for path in paths:
+        directory = path.parent
+        while True:
+            resolved_directory = directory.resolve()
+            if resolved_directory in roots:
+                break
+            if not any(root in resolved_directory.parents for root in roots):
+                break
+            try:
+                directory.rmdir()
+            except OSError:
+                break
+            directory = directory.parent
 
 
 def ensure_media_kind(media_kind: str) -> None:
@@ -123,6 +164,83 @@ def ensure_image_size(image: Image.Image) -> None:
         raise HTTPException(status_code=422, detail="Image dimensions are invalid")
     if width * height > MAX_IMAGE_PIXELS:
         raise HTTPException(status_code=413, detail="Image dimensions are too large")
+
+
+def validate_image_content(content: bytes) -> None:
+    try:
+        with Image.open(BytesIO(content)) as image:
+            ensure_image_size(image)
+            image.load()
+    except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
+        raise HTTPException(status_code=422, detail="Unsupported image file") from exc
+
+
+def store_private_image_bytes(
+    content: bytes, original_filename: str | None, place_id: str, media_kind: str
+) -> StoredPrivateImage:
+    ensure_media_kind(media_kind)
+    if not content:
+        raise HTTPException(status_code=422, detail="Image file is empty")
+    if len(content) > MAX_IMAGE_BYTES:
+        raise HTTPException(status_code=413, detail="Image file is too large")
+
+    validate_image_content(content)
+
+    image_id = str(uuid4())
+    private_dir = PRIVATE_STORAGE_DIR / media_kind / place_id
+    private_dir.mkdir(parents=True, exist_ok=True)
+    original_path = private_dir / f"{image_id}-original{original_suffix(original_filename)}"
+
+    try:
+        original_path.write_bytes(content)
+    except OSError as exc:
+        cleanup_paths(original_path)
+        raise HTTPException(status_code=422, detail="Image file could not be processed") from exc
+
+    return StoredPrivateImage(original_path=private_reference(original_path))
+
+
+def public_image_paths_for_original(original_path: str, output_format: str) -> tuple[Path, Path]:
+    relative_path = Path(original_path)
+    media_kind = relative_path.parts[0] if relative_path.parts else ""
+    ensure_media_kind(media_kind)
+
+    stem = relative_path.stem
+    base_name = stem[: -len("-original")] if stem.endswith("-original") else stem
+    public_dir = storage_path(PUBLIC_STORAGE_DIR, relative_path.parent.as_posix())
+    public_dir.mkdir(parents=True, exist_ok=True)
+    output_suffix = public_image_suffix(output_format)
+    return public_dir / f"{base_name}{output_suffix}", public_dir / f"{base_name}-thumb{output_suffix}"
+
+
+def publish_image_derivatives(original_path: str) -> StoredPublicImage:
+    private_path = storage_path(PRIVATE_STORAGE_DIR, original_path)
+    if not private_path.exists():
+        raise HTTPException(status_code=422, detail="Image original is missing")
+
+    public_path: Path | None = None
+    thumb_path: Path | None = None
+    try:
+        with Image.open(private_path) as image:
+            ensure_image_size(image)
+            output_format = public_image_format(image)
+            public_path, thumb_path = public_image_paths_for_original(original_path, output_format)
+            public_image = normalized_public_image(image, output_format)
+            save_public_image(public_image, public_path, output_format)
+            thumb_image = ImageOps.fit(
+                public_image,
+                THUMB_SIZE,
+                method=Image.Resampling.LANCZOS,
+                centering=(0.5, 0.5),
+            )
+            save_thumbnail_image(thumb_image, thumb_path, output_format)
+    except (HTTPException, UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
+        cleanup_paths(*[path for path in (public_path, thumb_path) if path is not None])
+        if isinstance(exc, HTTPException):
+            raise
+        raise HTTPException(status_code=422, detail="Image file could not be processed") from exc
+
+    return StoredPublicImage(public_path=public_url(public_path), thumb_path=public_url(thumb_path))
 
 
 def store_image_bytes(content: bytes, original_filename: str | None, place_id: str, media_kind: str) -> StoredImage:

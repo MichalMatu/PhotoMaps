@@ -2,6 +2,7 @@
   "city": {
     "id": "swidnica",
     "name": "Świdnica",
+    "region": "Dolnośląskie",
     "lat": 50.8431,
     "lon": 16.4877,
     "default_zoom": 14,
@@ -32,6 +33,56 @@
       "lat": 50.8431,
       "lon": 16.4877,
       "weight": 4.8,
+      "status": "published"
+    },
+    {
+      "slug": "katedra-swidnica",
+      "title": "Katedra św. Stanisława i św. Wacława w Świdnicy",
+      "description": "Gotycka katedra z jedną z najwyższych wież kościelnych w Polsce, ważny punkt panoramy i starego miasta Świdnicy.",
+      "local_comment": "Cover powinien pokazać pion wieży i skalę ceglanej bryły. Nie dublować Kościoła Pokoju wnętrzami; tutaj najważniejsza jest miejska, gotycka dominanta.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Gotycki pion starego miasta"
+        },
+        {
+          "type": "paragraph",
+          "text": "Katedra świdnicka działa inaczej niż Kościół Pokoju: jest miejska, ceglana i bardzo pionowa. Jej wieża porządkuje panoramę centrum, a sama bryła pokazuje, że Świdnica ma więcej niż jeden wybitny zabytek sakralny."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie tworzy naturalną parę z rynkiem i Kościołem Pokoju, prowadząc użytkownika przez historyczne centrum zamiast do pojedynczego punktu UNESCO."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.8411,
+      "lon": 16.4919,
+      "weight": 4.4,
+      "status": "published"
+    },
+    {
+      "slug": "rynek-ratusz-swidnica",
+      "title": "Rynek i ratusz w Świdnicy",
+      "description": "Historyczny rynek z ratuszem i odbudowaną wieżą ratuszową, miejski punkt spacerowy między katedrą a Kościołem Pokoju.",
+      "local_comment": "Cover powinien pokazać plac, ratusz i rytm kamienic. To ma być miejskie centrum Świdnicy, nie tylko sama wieża ratuszowa jako detal.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Miejski środek Świdnicy"
+        },
+        {
+          "type": "paragraph",
+          "text": "Rynek i ratusz w Świdnicy dodają miastu codzienny, spacerowy punkt odniesienia. To tutaj najlepiej widać układ centrum: kamienice, ratusz, wieża i przejścia prowadzące dalej do katedry oraz Kościoła Pokoju."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie miejsce buduje kontekst dla dwóch mocnych zabytków sakralnych, pokazując Świdnicę jako zwarte miasto do chodzenia, a nie tylko zbiór pojedynczych obiektów."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.8428,
+      "lon": 16.4867,
+      "weight": 4.0,
       "status": "published"
     }
   ],

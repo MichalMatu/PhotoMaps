@@ -27,7 +27,7 @@ class Place(SQLModel, table=True):
     custom_fields: dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON, nullable=False, default=dict))
     photo_count: int = 0
     memory_count: int = 0
-    cover_photo_id: str | None = None
+    cover_photo_id: str | None = Field(default=None, foreign_key="photo.id", index=True)
     created_at: datetime = Field(default_factory=utc_now)
     updated_at: datetime = Field(default_factory=utc_now)
 
@@ -36,5 +36,5 @@ class PlaceCategory(SQLModel, table=True):
     __tablename__ = "place_category"
 
     place_id: str = Field(foreign_key="place.id", primary_key=True)
-    category_id: str = Field(foreign_key="category.id", primary_key=True)
+    category_id: str = Field(foreign_key="category.id", primary_key=True, index=True)
     sort_order: int = 0

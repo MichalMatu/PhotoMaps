@@ -5,6 +5,7 @@ import type { ContentBlock, PlacePayload } from "../../api/types";
 import type { AdminPlace } from "../../api/types";
 import { errorDetails, type OperationError } from "../ui/ErrorModal";
 import { uploadAndApproveAdminPlacePhoto } from "./adminPhotoUpload";
+import { placeLocationUpdatePayload, type PlaceLocation } from "./placeLocationAutoSave";
 import { photoPayloadFromDraft, type PhotoAttributionDraft } from "./placePhotoPanelState";
 
 type Options = {
@@ -39,6 +40,7 @@ export type AdminPlaceManagement = {
   placeToDelete: AdminPlace | null;
   requestArchivePlace: (place: AdminPlace) => void;
   requestDeletePlace: (place: AdminPlace) => void;
+  savePlaceLocation: (place: AdminPlace, location: PlaceLocation) => Promise<void>;
   submitPlace: (payload: PlaceFormPayload) => Promise<void>;
 };
 
@@ -175,6 +177,21 @@ export function useAdminPlaceManagement({
     }
   }
 
+  async function savePlaceLocation(place: AdminPlace, location: PlaceLocation) {
+    setOperationError(null);
+    try {
+      await updatePlace(place.id, placeLocationUpdatePayload(location));
+      await onPlacesChanged();
+    } catch (reason) {
+      setOperationError({
+        details: errorDetails(reason),
+        message: "Nie udało się zapisać nowej pozycji pinezki. Spróbuj przesunąć ją jeszcze raz.",
+        title: "Nie udało się zapisać pozycji",
+      });
+      throw reason;
+    }
+  }
+
   async function confirmArchivePlace() {
     if (!placeToArchive) {
       return;
@@ -246,6 +263,7 @@ export function useAdminPlaceManagement({
     placeToDelete,
     requestArchivePlace: setPlaceToArchive,
     requestDeletePlace: setPlaceToDelete,
+    savePlaceLocation,
     submitPlace,
   };
 }

@@ -2,6 +2,7 @@
   "city": {
     "id": "staniszow",
     "name": "Staniszów",
+    "region": "Dolnośląskie",
     "lat": 50.8442549,
     "lon": 15.7416865,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Pałac Staniszów wzmacnia pałacową warstwę Kotliny Jeleniogórskiej i dodaje mapie miejsce bardziej nastrojowe niż oczywiste. Dobrze spina trasę między Karpaczem, Jelenią Górą i Doliną Pałaców."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.8442549,
       "lon": 15.7416865,
       "weight": 4.0,
@@ -49,7 +50,7 @@
           "text": "Na mapie uzupełnia pałacową warstwę Staniszowa o bardziej terenową atrakcję, stojącą między architekturą, punktem widokowym i lokalną legendą."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.8352975,
       "lon": 15.7233411,
       "weight": 3.9,

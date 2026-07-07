@@ -15,6 +15,18 @@ import { filterGuidesByStatus, type GuideStatusFilter } from "./guideActionsStat
 import { filterSelectableGuidePlaces, firstGuideCityId } from "./guidePlaceSelection";
 import { useGuideActions } from "./useGuideActions";
 
+function guideKindLabel(kind: Guide["kind"]) {
+  return kind === "collection" ? "kolekcja" : "trasa";
+}
+
+function guideKindActionLabel(kind: Guide["kind"]) {
+  return kind === "collection" ? "kolekcję" : "trasę";
+}
+
+function guideRowDetail(guide: Guide) {
+  return guide.kind === "collection" ? `${guide.place_count} miejsc` : `${guide.route_points.length} pkt przebiegu`;
+}
+
 type Props = {
   cities: City[];
   guides: Guide[];
@@ -63,7 +75,7 @@ export function GuideManager({ cities, guides, places, onChanged }: Props) {
           primary: (
             <AdminActionIconButton
               icon={Plus}
-              label="Dodaj trasę"
+              label="Dodaj trasę lub kolekcję"
               tone="primary"
               onClick={guideActions.openCreateGuideModal}
             />
@@ -81,13 +93,13 @@ export function GuideManager({ cities, guides, places, onChanged }: Props) {
                 <>
                   <AdminActionIconButton
                     icon={Pencil}
-                    label={`Edytuj trasę ${guide.title}`}
+                    label={`Edytuj ${guideKindActionLabel(guide.kind)} ${guide.title}`}
                     tone="primary"
                     onClick={() => guideActions.openEditGuideModal(guide)}
                   />
                   <AdminActionIconButton
                     icon={Trash2}
-                    label={`Usuń trasę ${guide.title}`}
+                    label={`Usuń ${guideKindActionLabel(guide.kind)} ${guide.title}`}
                     tone="danger"
                     onClick={() => guideActions.requestDeleteGuide(guide)}
                   />
@@ -95,13 +107,13 @@ export function GuideManager({ cities, guides, places, onChanged }: Props) {
               }
               actionsClassName="guide-actions"
               className="ui-panel guide-row"
-              collapseLabel={`Zwiń miejsca trasy ${guide.title}`}
+              collapseLabel={`Zwiń miejsca ${guide.title}`}
               element="article"
-              expandLabel={`Pokaż miejsca trasy ${guide.title}`}
+              expandLabel={`Pokaż miejsca ${guide.title}`}
               headerClassName="guide-row-summary"
               isExpanded={isExpanded}
               key={guide.id}
-              meta={adminGuideStatusLabel(guide.status)}
+              meta={`${adminGuideStatusLabel(guide.status)} · ${guideKindLabel(guide.kind)}`}
               metaClassName={`guide-row-status ui-status ui-status--${guide.status}`}
               panelClassName="guide-detail-panel"
               panelId={panelId}
@@ -109,7 +121,7 @@ export function GuideManager({ cities, guides, places, onChanged }: Props) {
                 <>
                   <strong className="guide-row-title">{guide.title}</strong>
                   <span className="guide-row-slug">
-                    {guide.slug} · {guide.route_points.length} pkt przebiegu
+                    {guide.slug} · {guideRowDetail(guide)}
                   </span>
                 </>
               }
@@ -137,9 +149,11 @@ export function GuideManager({ cities, guides, places, onChanged }: Props) {
             </AdminDisclosureRow>
           );
         })}
-        {guides.length === 0 ? <p className="ui-empty">Brak tras. Dodaj pierwszą trasę przyciskiem powyżej.</p> : null}
+        {guides.length === 0 ? (
+          <p className="ui-empty">Brak tras i kolekcji. Dodaj pierwszą pozycję przyciskiem powyżej.</p>
+        ) : null}
         {guides.length > 0 && visibleGuides.length === 0 ? (
-          <p className="ui-empty">Brak tras dla wybranego statusu.</p>
+          <p className="ui-empty">Brak tras i kolekcji dla wybranego statusu.</p>
         ) : null}
       </div>
 
@@ -151,6 +165,7 @@ export function GuideManager({ cities, guides, places, onChanged }: Props) {
           generatedSlug={guideActions.generatedSlug}
           isSaving={guideActions.isGuideSaving}
           isRoutePlacesLoading={isEditingGuidePlacesLoading}
+          kind={guideActions.kind}
           routePlaces={editingGuideRoutePlaces}
           routePoints={guideActions.routePoints}
           status={guideActions.status}
@@ -159,6 +174,7 @@ export function GuideManager({ cities, guides, places, onChanged }: Props) {
           onClose={guideActions.closeGuideModal}
           onConfirm={guideActions.saveGuide}
           onDescriptionChange={guideActions.setDescription}
+          onKindChange={guideActions.setKind}
           onRemoveArticleBlock={guideActions.removeArticleBlock}
           onRoutePointsChange={guideActions.setRoutePoints}
           onStatusChange={guideActions.setStatus}

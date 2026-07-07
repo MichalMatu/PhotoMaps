@@ -2,6 +2,7 @@
   "city": {
     "id": "lubiaz",
     "name": "Lubiąż",
+    "region": "Dolnośląskie",
     "lat": 51.2620546,
     "lon": 16.4673748,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Opactwo w Lubiążu jest miejscem, które mocno poszerza skalę mapy regionu. To nie jest tylko lokalny zabytek, ale ogromna architektoniczna scena, która dobrze pokazuje ambicję dawnego Dolnego Śląska."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.2620546,
       "lon": 16.4673748,
       "weight": 4.7,

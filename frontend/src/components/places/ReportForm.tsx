@@ -4,6 +4,8 @@ import { DEFAULT_REPORT_REASON, REPORT_REASON_OPTIONS } from "../../api/reportRe
 import { createReport } from "../../api/reports";
 import type { ReportReason, ReportTargetType } from "../../api/types";
 import { ErrorModal, errorDetails, type OperationError } from "../ui/ErrorModal";
+import { SettingField } from "../ui/SettingField";
+import { PUBLIC_PLACE_INTERACTION_HELP } from "./publicPlaceInteractionHelp";
 
 type Props = {
   showHeading?: boolean;
@@ -51,8 +53,12 @@ export function ReportForm({ showHeading = true, targetId, targetType }: Props) 
           <h3>Zgłoś problem</h3>
         </div>
       ) : null}
-      <label>
-        Powód
+      <SettingField
+        id="report-reason"
+        label="Powód"
+        hint={PUBLIC_PLACE_INTERACTION_HELP["report-reason"]}
+        helpMode="inline"
+      >
         <select value={reason} onChange={(event) => setReason(event.target.value as ReportReason)}>
           {REPORT_REASON_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
@@ -60,11 +66,15 @@ export function ReportForm({ showHeading = true, targetId, targetType }: Props) 
             </option>
           ))}
         </select>
-      </label>
-      <label>
-        Wiadomość
+      </SettingField>
+      <SettingField
+        id="report-message"
+        label="Wiadomość"
+        hint={PUBLIC_PLACE_INTERACTION_HELP["report-message"]}
+        helpMode="inline"
+      >
         <textarea value={message} onChange={(event) => setMessage(event.target.value)} rows={3} />
-      </label>
+      </SettingField>
       <button type="submit" disabled={isSaving}>
         {isSaving ? "Wysyłanie..." : "Wyślij zgłoszenie"}
       </button>

@@ -5,6 +5,7 @@ import { getPlacePreviewVisual } from "../map/placePreview";
 import { AdminPlaceFilterModal } from "./AdminPlaceFilterModal";
 import {
   DEFAULT_ADMIN_PLACE_FILTERS,
+  countActiveAdminPlaceFilters,
   countActiveAdminPlaceModalFilters,
   filterAdminPlaces,
   type AdminPlaceFilters,
@@ -66,7 +67,11 @@ export function AdminPlacesSection({
   );
   const visiblePlaces = useMemo(() => filterAdminPlaces(places, filters), [filters, places]);
   const activeFilterCount = countActiveAdminPlaceModalFilters(filters);
-  const placeCityGroups = useMemo(() => getPlaceCityGroups(cities, visiblePlaces), [cities, visiblePlaces]);
+  const hasNarrowingFilters = countActiveAdminPlaceFilters(filters) > 0;
+  const placeCityGroups = useMemo(
+    () => getPlaceCityGroups(cities, visiblePlaces, { includeEmptyCities: !hasNarrowingFilters }),
+    [cities, hasNarrowingFilters, visiblePlaces],
+  );
 
   function toggleCity(cityId: string) {
     setExpandedCityIds((currentIds) => {

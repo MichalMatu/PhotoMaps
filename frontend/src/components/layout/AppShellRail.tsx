@@ -1,10 +1,12 @@
 import { RailAdminAction } from "./AppShellAdminAction";
+import { RailMapAudioControl } from "./AppShellMapAudioControl";
 import { RailMapCategoryControls } from "./AppShellMapCategoryControls";
 import { RailMapLayerControls } from "./AppShellMapLayerControls";
 import { RailPinnedMediaControl } from "./AppShellPinnedMediaControl";
 import type {
   AppSection,
   AppShellAdminAction,
+  AppShellMapAudioControl,
   AppShellMapCategoryControls,
   AppShellMapLayerControls,
   AppShellMapPinnedMediaControl,
@@ -15,6 +17,7 @@ type Props = {
   activeSection: AppSection;
   adminAction?: AppShellAdminAction;
   isOpen: boolean;
+  mapAudioControl?: AppShellMapAudioControl;
   mapCategoryControls?: AppShellMapCategoryControls;
   mapLayerControls?: AppShellMapLayerControls;
   mapPinnedMediaControl?: AppShellMapPinnedMediaControl;
@@ -27,6 +30,7 @@ export function AppShellRail({
   activeSection,
   adminAction,
   isOpen,
+  mapAudioControl,
   mapCategoryControls,
   mapLayerControls,
   mapPinnedMediaControl,
@@ -54,6 +58,7 @@ export function AppShellRail({
 
       {isMapSection && mapLayerControls ? <RailMapLayerControls controls={mapLayerControls} /> : null}
       {isMapSection && mapPinnedMediaControl ? <RailPinnedMediaControl control={mapPinnedMediaControl} /> : null}
+      {isMapSection && mapAudioControl ? <RailMapAudioControl control={mapAudioControl} /> : null}
       {isMapSection && mapCategoryControls ? (
         <RailMapCategoryControls controls={mapCategoryControls} onOpenDrawer={onOpenDrawer} />
       ) : null}

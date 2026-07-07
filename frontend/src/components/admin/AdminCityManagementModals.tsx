@@ -22,6 +22,7 @@ export function AdminCityManagementModals({ appConfig, cityActions }: Props) {
           lon={cityActions.lon}
           mapFallback={appConfig?.map ?? null}
           name={cityActions.name}
+          region={cityActions.region}
           sortOrder={cityActions.sortOrder}
           status={cityActions.status}
           zoom={cityActions.zoom}
@@ -31,6 +32,7 @@ export function AdminCityManagementModals({ appConfig, cityActions }: Props) {
           onLatChange={cityActions.setLat}
           onLonChange={cityActions.setLon}
           onNameChange={cityActions.setName}
+          onRegionChange={cityActions.setRegion}
           onSortOrderChange={cityActions.setSortOrder}
           onStatusChange={cityActions.setStatus}
           onZoomChange={cityActions.setZoom}

@@ -2,6 +2,7 @@
   "city": {
     "id": "szczytna",
     "name": "Szczytna",
+    "region": "Dolnośląskie",
     "lat": 50.4628776,
     "lon": 16.4117461,
     "default_zoom": 12,
@@ -24,7 +25,7 @@
           "text": "Skalne Grzyby dodają do mapy bardziej rozproszoną, terenową warstwę Gór Stołowych. To miejsce jest mniej pocztówkowe niż Szczeliniec, ale świetnie pokazuje charakter skalnych lasów regionu."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.4628776,
       "lon": 16.4117461,
       "weight": 4.0,
@@ -45,7 +46,7 @@
           "text": "Leśna Skała działa jako połączenie zamku i punktu widokowego. Nie ma monumentalnej skali Książa, ale ma mocny lokalny charakter: kamienną bryłę, wyniesienie i szerokie spojrzenie na okolicę."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.4122837,
       "lon": 16.4577531,
       "weight": 3.9,

@@ -137,7 +137,7 @@ def format_cleanup_report(report: dict[str, Any]) -> str:
     lines = [
         f"PhotoMap orphan media cleanup ({report['mode']})",
         f"Status: {str(report['status']).upper()}",
-        f"Orphan files: {len(actions)}",
+        f"Orphan targets: {len(actions)}",
         f"Deleted: {applied}",
     ]
     if actions:

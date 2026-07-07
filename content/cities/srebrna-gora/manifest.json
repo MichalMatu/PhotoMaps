@@ -2,6 +2,7 @@
   "city": {
     "id": "srebrna-gora",
     "name": "Srebrna Góra",
+    "region": "Dolnośląskie",
     "lat": 50.574,
     "lon": 16.654,
     "default_zoom": 13,

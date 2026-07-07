@@ -69,6 +69,7 @@ def guide_to_read(
     return GuideRead(
         id=guide.id,
         slug=guide.slug,
+        kind=guide.kind,
         title=guide.title,
         description=guide.description,
         article_blocks=guide.article_blocks or [],
@@ -101,6 +102,7 @@ def guide_to_public_read(
     return PublicGuideRead(
         id=guide.id,
         slug=guide.slug,
+        kind=guide.kind,
         title=guide.title,
         description=guide.description,
         article_blocks=guide.article_blocks or [],

@@ -210,20 +210,14 @@ describe("uploadPlaceMemory", () => {
     const fetchMock = vi.fn<typeof fetch>(async () => {
       return new Response(
         JSON.stringify({
-          approved_at: null,
-          audio: null,
           author_city: "Wrocław",
           author_name: "Marta",
           caption: "Kwiatuszek",
           created_at: "2026-06-10T00:00:00",
           id: "memory-1",
           memory_text: "Było spokojnie",
-          paid: false,
           place_id: "place-1",
-          public_path: "/media/memories/memory-1.jpg",
-          share_slug: "memory-share",
           status: "pending",
-          thumb_path: "/media/memories/memory-1-thumb.jpg",
         }),
         { headers: { "Content-Type": "application/json" }, status: 201 },
       );
@@ -258,20 +252,14 @@ describe("uploadPlaceMemory", () => {
     const fetchMock = vi.fn<typeof fetch>(async () => {
       return new Response(
         JSON.stringify({
-          approved_at: null,
-          audio: null,
           author_city: null,
           author_name: null,
           caption: "Kwiatuszek",
           created_at: "2026-06-10T00:00:00",
           id: "memory-1",
           memory_text: "Było spokojnie",
-          paid: false,
           place_id: "place-1",
-          public_path: "/media/memories/memory-1.jpg",
-          share_slug: "memory-share",
           status: "pending",
-          thumb_path: "/media/memories/memory-1-thumb.jpg",
         }),
         { headers: { "Content-Type": "application/json" }, status: 201 },
       );

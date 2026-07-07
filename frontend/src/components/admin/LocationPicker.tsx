@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
 
 import { SystemModal } from "./SystemModal";
+import { placeLocationAutoSaveLabel, type PlaceLocationAutoSaveStatus } from "./placeLocationAutoSave";
 
 type Position = {
   lat: number;
@@ -22,6 +23,7 @@ type Props = {
   modalTitle?: string;
   previewLabel?: string;
   lookupErrorMessage?: string;
+  saveStatus?: PlaceLocationAutoSaveStatus;
 };
 
 type LookupState =
@@ -212,20 +214,26 @@ function LocationReadout({
   lookup,
   position,
   previewLabel,
+  saveStatus = "idle",
 }: {
   lookup: LookupState;
   position: Position;
   previewLabel?: string;
+  saveStatus?: PlaceLocationAutoSaveStatus;
 }) {
   const lookupPreview = getLookupPreview(lookup);
   const title = lookupPreview?.title ?? previewLabel ?? "Pozycja";
   const details = lookupPreview?.details;
   const positionLabel = getPositionLabel(position);
+  const saveStatusLabel = placeLocationAutoSaveLabel(saveStatus);
 
   return (
     <div className="location-readout">
       <strong>{title}</strong>
       {details ? <span>{details}</span> : null}
+      {saveStatusLabel ? (
+        <span className={`location-save-status location-save-status--${saveStatus}`}>{saveStatusLabel}</span>
+      ) : null}
       <small>{positionLabel}</small>
     </div>
   );
@@ -246,11 +254,19 @@ function LargeLocationPickerModal({
   onClose,
   onLookup,
   position,
+  saveStatus = "idle",
 }: LargeLocationPickerModalProps) {
+  const saveStatusLabel = placeLocationAutoSaveLabel(saveStatus);
+
   return (
     <SystemModal eyebrow={modalEyebrow} showActions={false} size="large" title={modalTitle} onClose={onClose}>
       <div className="location-modal-body">
-        <p className="location-modal-readout">{getPositionLabel(position)}</p>
+        <p className="location-modal-readout">
+          <span>{getPositionLabel(position)}</span>
+          {saveStatusLabel ? (
+            <span className={`location-save-status location-save-status--${saveStatus}`}>{saveStatusLabel}</span>
+          ) : null}
+        </p>
         <div className="location-modal-map">
           <LocationMap position={position} onChange={onChange} zoom={largeZoom} />
         </div>
@@ -275,6 +291,7 @@ export function LocationPicker({
   onChange,
   position,
   previewLabel,
+  saveStatus,
 }: Props) {
   const [isLargeMapOpen, setIsLargeMapOpen] = useState(false);
   const [lookup, setLookup] = useState<LookupState>({ status: "idle" });
@@ -303,7 +320,7 @@ export function LocationPicker({
         </div>
       ) : null}
       <div className="location-picker-footer">
-        <LocationReadout lookup={lookup} position={position} previewLabel={previewLabel} />
+        <LocationReadout lookup={lookup} position={position} previewLabel={previewLabel} saveStatus={saveStatus} />
         <button className="location-expand-button" type="button" onClick={() => setIsLargeMapOpen(true)}>
           <Maximize2 aria-hidden="true" size={16} />
           Duża mapa
@@ -317,6 +334,7 @@ export function LocationPicker({
           modalEyebrow={modalEyebrow}
           modalTitle={modalTitle}
           position={position}
+          saveStatus={saveStatus}
           lookupErrorMessage={lookupErrorMessage}
           onChange={handleChange}
           onClose={() => setIsLargeMapOpen(false)}

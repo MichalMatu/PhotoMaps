@@ -11,7 +11,8 @@ import { AdminSectionTabs } from "../components/admin/AdminSectionTabs";
 import { useCityActions } from "../components/admin/useCityActions";
 import { useAdminPanelData } from "../components/admin/useAdminPanelData";
 import { useAdminPlaceManagement } from "../components/admin/useAdminPlaceManagement";
-import { useAdminRefreshGraph } from "../components/admin/useAdminRefreshGraph";
+import { useAdminModerationRefreshActions } from "../components/admin/useAdminModerationRefreshActions";
+import { useAdminPlaceRefreshActions } from "../components/admin/useAdminPlaceRefreshActions";
 import { useAdminSectionState } from "../components/admin/useAdminSectionState";
 
 export function AdminPlacesPage() {
@@ -81,22 +82,31 @@ export function AdminPlacesPage() {
     photos,
     reports,
   });
-  const refreshGraph = useAdminRefreshGraph({
+  const placeRefreshActions = useAdminPlaceRefreshActions({
     activeSection,
     adminToken,
     appConfig,
+    photoStatusFilter,
     refreshCategories,
     refreshMapPlaces,
+    refreshModerationCounts,
+    refreshPhotos,
+    refreshPlaces,
+  });
+  const moderationRefreshActions = useAdminModerationRefreshActions({
+    memoryStatusFilter,
+    photoStatusFilter,
     refreshMemories,
     refreshModerationCounts,
     refreshPhotos,
     refreshPlaces,
     refreshReports,
+    reportStatusFilter,
   });
   const placeManagement = useAdminPlaceManagement({
     isSessionActive: Boolean(adminToken),
-    onPhotosChanged: () => refreshGraph.refreshPhotosPlacesAndPublicPreview(photoStatusFilter),
-    onPlacesChanged: refreshGraph.refreshPlacesAndPublicPreview,
+    onPhotosChanged: placeRefreshActions.refreshPhotosPlacesAndPublicPreview,
+    onPlacesChanged: placeRefreshActions.refreshPlacesAndPublicPreview,
   });
   const cityActions = useCityActions({ cities, mapFallback: appConfig?.map ?? null, onChanged: refreshCities, places });
 
@@ -160,7 +170,7 @@ export function AdminPlacesPage() {
               onPhotoPreviewPlaceIdChange={setPhotoPreviewPlaceId}
               onPublicPreviewPlaceIdChange={setPublicPreviewPlaceId}
               onRefreshCategories={refreshCategories}
-              onRefreshPhotosAndPlaces={() => refreshGraph.refreshPhotosAndPlaces(photoStatusFilter)}
+              onRefreshPhotosAndPlaces={placeRefreshActions.refreshPhotosAndPlaces}
             />
           ) : null}
         </main>
@@ -251,12 +261,12 @@ export function AdminPlacesPage() {
               reports={visibleReports}
               reportStatusCounts={reportStatusCounts}
               reportStatusFilter={reportStatusFilter}
-              onMemoryReviewed={() => refreshGraph.refreshMemoriesAndPlaces(memoryStatusFilter)}
+              onMemoryReviewed={moderationRefreshActions.refreshMemoriesAndPlaces}
               onMemoryStatusFilterChange={handleMemoryStatusFilterChange}
               onModerationFiltersChange={setModerationFilters}
-              onPhotoReviewed={() => refreshGraph.refreshPhotosAndPlaces(photoStatusFilter)}
+              onPhotoReviewed={moderationRefreshActions.refreshPhotosAndPlaces}
               onPhotoStatusFilterChange={handlePhotoStatusFilterChange}
-              onReportChanged={() => refreshGraph.refreshReportsAndModerationCounts(reportStatusFilter)}
+              onReportChanged={moderationRefreshActions.refreshReportsAndModerationCounts}
               onReportStatusFilterChange={handleReportStatusFilterChange}
               onSectionChange={setActiveModerationSection}
             />
@@ -297,8 +307,8 @@ export function AdminPlacesPage() {
             setPhotoPreviewPlaceId(null);
             setPublicPreviewPlaceId(placeId);
           }}
-          onRefreshCategories={refreshGraph.refreshCategoriesAndPublicPreview}
-          onRefreshPhotosAndPlaces={() => refreshGraph.refreshPhotosPlacesAndPublicPreview(photoStatusFilter)}
+          onRefreshCategories={placeRefreshActions.refreshCategoriesAndPublicPreview}
+          onRefreshPhotosAndPlaces={placeRefreshActions.refreshPhotosPlacesAndPublicPreview}
         />
       </main>
     </AppShell>

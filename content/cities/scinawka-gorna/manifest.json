@@ -1,0 +1,40 @@
+{
+  "city": {
+    "id": "scinawka-gorna",
+    "name": "Ścinawka Górna",
+    "region": "Dolnośląskie",
+    "lat": 50.546054,
+    "lon": 16.462248,
+    "default_zoom": 13,
+    "sort_order": 442,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "zamek-sarny",
+      "title": "Zamek Sarny",
+      "description": "Renesansowo-barokowy zespół pałacowo-folwarczny w Sarnach, położony na skarpie między Górami Sowimi a Stołowymi.",
+      "local_comment": "Cover powinien pokazać zespół jako żywe miejsce: pałac, zabudowania folwarczne, bramę albo parkowy kontekst. Nie ograniczać galerii do ruin bez skali.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Zamek między górami i doliną"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zamek Sarny jest jednym z tych dolnośląskich miejsc, które dobrze pokazują warstwowość regionu: dawną rezydencję, folwark, park i współczesne próby przywracania życia zabytkowi. Leży poza głównym ruchem turystycznym, ale ma bardzo wyraźny charakter."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie uzupełnia popularne zamki o bardziej kameralną, odkrywczą destynację ziemi kłodzkiej, dobrą na spokojny przystanek między Górami Stołowymi, Sowimi i Kotliną Kłodzką."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.546054,
+      "lon": 16.462248,
+      "weight": 4.0,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

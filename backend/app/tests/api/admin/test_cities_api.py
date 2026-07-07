@@ -42,6 +42,7 @@ def test_admin_can_create_city(client_session) -> None:
         json={
             "id": "krakow",
             "name": "Kraków",
+            "region": "Małopolskie",
             "lat": 50.0614,
             "lon": 19.9366,
             "default_zoom": 13,
@@ -54,6 +55,7 @@ def test_admin_can_create_city(client_session) -> None:
     assert response.json() == {
         "id": "krakow",
         "name": "Kraków",
+        "region": "Małopolskie",
         "lat": 50.0614,
         "lon": 19.9366,
         "default_zoom": 13,
@@ -75,6 +77,7 @@ def test_admin_create_city_rejects_duplicate_id(client_session) -> None:
         json={
             "id": "wroclaw",
             "name": "Wrocław 2",
+            "region": "Dolnośląskie",
             "lat": 51.1079,
             "lon": 17.0385,
             "default_zoom": 13,
@@ -97,6 +100,7 @@ def test_admin_can_update_city(client_session) -> None:
         headers=ADMIN_HEADERS,
         json={
             "name": "Kraków centrum",
+            "region": "Małopolskie",
             "lat": 50.0615,
             "lon": 19.9367,
             "default_zoom": 14,
@@ -109,6 +113,7 @@ def test_admin_can_update_city(client_session) -> None:
     assert response.json() == {
         "id": "krakow",
         "name": "Kraków centrum",
+        "region": "Małopolskie",
         "lat": 50.0615,
         "lon": 19.9367,
         "default_zoom": 14,

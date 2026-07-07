@@ -2,6 +2,7 @@
   "city": {
     "id": "miedzianka",
     "name": "Miedzianka",
+    "region": "Dolnośląskie",
     "lat": 50.8776846,
     "lon": 15.9440726,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Miedzianka dodaje do mapy miejsce o bardziej opowieściowym charakterze. Nie działa jak klasyczny zabytek, ale dobrze pokazuje dolnośląską historię zanikania, górnictwa i ponownego odkrywania małych miejscowości."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.8776846,
       "lon": 15.9440726,
       "weight": 3.8,

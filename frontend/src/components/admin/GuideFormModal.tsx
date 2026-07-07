@@ -1,6 +1,6 @@
 import type { FormEvent } from "react";
 
-import type { ContentBlock, ContentBlockType, Guide, GuideRoutePoint, GuideStatus } from "../../api/types";
+import type { ContentBlock, ContentBlockType, Guide, GuideKind, GuideRoutePoint, GuideStatus } from "../../api/types";
 import { ContentBlockEditor } from "../content/ContentBlockEditor";
 import { ADMIN_GUIDE_STATUS_OPTIONS } from "./adminStatusUi";
 import { GuideRoutePointEditor } from "./GuideRoutePointEditor";
@@ -20,10 +20,12 @@ type Props = {
   generatedSlug: string;
   isSaving: boolean;
   isRoutePlacesLoading: boolean;
+  kind: GuideKind;
   onAddArticleBlock: (type: ContentBlockType) => void;
   onClose: () => void;
   onConfirm: () => void;
   onDescriptionChange: (value: string) => void;
+  onKindChange: (value: GuideKind) => void;
   onRemoveArticleBlock: (index: number) => void;
   onRoutePointsChange: (points: GuideRoutePoint[]) => void;
   onStatusChange: (value: GuideStatus) => void;
@@ -43,10 +45,12 @@ export function GuideFormModal({
   generatedSlug,
   isSaving,
   isRoutePlacesLoading,
+  kind,
   onAddArticleBlock,
   onClose,
   onConfirm,
   onDescriptionChange,
+  onKindChange,
   onRemoveArticleBlock,
   onRoutePointsChange,
   onStatusChange,
@@ -59,6 +63,9 @@ export function GuideFormModal({
   title,
 }: Props) {
   const canSubmit = Boolean(title.trim() && (editingGuide || generatedSlug));
+  const isCollection = kind === "collection";
+  const contentDescriptionLabel = isCollection ? "kolekcji" : "trasy";
+  const actionObjectLabel = isCollection ? "kolekcję" : "trasę";
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -74,11 +81,11 @@ export function GuideFormModal({
       cancelLabel="Zamknij"
       confirmDisabled={!canSubmit}
       confirmFormId="guide-form-modal"
-      confirmLabel={editingGuide ? "Zapisz trasę" : "Dodaj trasę"}
-      eyebrow="Trasy"
+      confirmLabel={editingGuide ? "Zapisz" : "Dodaj"}
+      eyebrow="Trasy i kolekcje"
       size="large"
       isBusy={isSaving}
-      title={editingGuide ? "Edytuj trasę" : "Dodaj trasę"}
+      title={editingGuide ? `Edytuj ${actionObjectLabel}` : "Dodaj trasę lub kolekcję"}
       onClose={onClose}
       onConfirm={onConfirm}
     >
@@ -91,9 +98,17 @@ export function GuideFormModal({
           Krótki opis
           <textarea value={description} onChange={(event) => onDescriptionChange(event.target.value)} rows={4} />
         </label>
+        <label>
+          Typ
+          <select value={kind} onChange={(event) => onKindChange(event.target.value as GuideKind)}>
+            <option value="route">Trasa</option>
+            <option value="collection">Kolekcja</option>
+          </select>
+        </label>
         <ContentBlockEditor
           blocks={articleBlocks}
-          legend="Pełny opis trasy"
+          idPrefix="guide-article"
+          legend={`Pełny opis ${contentDescriptionLabel}`}
           onAddBlock={onAddArticleBlock}
           onRemoveBlock={onRemoveArticleBlock}
           onUpdateBlock={onUpdateArticleBlock}
@@ -109,12 +124,14 @@ export function GuideFormModal({
             ))}
           </select>
         </label>
-        <GuideRoutePointEditor
-          isPlacesLoading={isRoutePlacesLoading}
-          places={routePlaces}
-          points={routePoints}
-          onChange={onRoutePointsChange}
-        />
+        {isCollection ? null : (
+          <GuideRoutePointEditor
+            isPlacesLoading={isRoutePlacesLoading}
+            places={routePlaces}
+            points={routePoints}
+            onChange={onRoutePointsChange}
+          />
+        )}
       </form>
     </SystemModal>
   );

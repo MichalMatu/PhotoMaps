@@ -2,6 +2,7 @@
   "city": {
     "id": "chelmsko-slaskie",
     "name": "Chełmsko Śląskie",
+    "region": "Dolnośląskie",
     "lat": 50.666083,
     "lon": 16.0725027,
     "default_zoom": 13,

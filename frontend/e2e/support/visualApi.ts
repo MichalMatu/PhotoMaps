@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import type { AdminMemory, AdminModerationCounts, AdminPhoto, Report } from "../../src/api/types";
+import type { AdminMemory, AdminModerationCounts, AdminPhoto, City, PlaceMapItem, Report } from "../../src/api/types";
 
 import {
   adminGuides,
@@ -17,6 +17,9 @@ import {
   rynekSide,
 } from "../fixtures/visualData";
 import { API_URL } from "./config";
+
+type SharedMapPlace = (typeof places)[number] | PlaceMapItem;
+type SharedCity = typeof city | City;
 
 function imageSvg(url: string) {
   const isSecondary = url.includes("nadodrze") || url.includes("side");
@@ -60,18 +63,23 @@ function pagedQueueItems<TItem extends { status: string }>(requestUrl: string, i
   return filteredItems.slice(offset, offset + limit);
 }
 
-export async function mockSharedApi(page: Page, mapPlaces = places, guideList = guides, cityList = [city]) {
+export async function mockSharedApi(
+  page: Page,
+  mapPlaces: SharedMapPlace[] = places,
+  guideList = guides,
+  cityList: SharedCity[] = [city],
+) {
   await page.route("https://*.tile.openstreetmap.org/**", (route) =>
     route.fulfill({ body: tileSvg(), contentType: "image/svg+xml" }),
   );
   await page.route(`${API_URL}/media/**`, (route) =>
     route.fulfill({ body: imageSvg(route.request().url()), contentType: "image/svg+xml" }),
   );
-  for (const mapCity of cityList) {
-    await page.route(`${API_URL}/api/places/map?city_id=${encodeURIComponent(mapCity.id)}`, (route) =>
-      route.fulfill({ json: mapPlaces.filter((place) => place.city_id === mapCity.id) }),
-    );
-  }
+  await page.route(apiListPath("/api/places/map"), (route) => {
+    const url = new URL(route.request().url());
+    const cityId = url.searchParams.get("city_id");
+    route.fulfill({ json: cityId ? mapPlaces.filter((place) => place.city_id === cityId) : mapPlaces });
+  });
   await page.route(`${API_URL}/api/places/${places[0].slug}`, (route) => route.fulfill({ json: placeDetail }));
   await page.route(`${API_URL}/api/places/${places[0].id}/photos`, (route) =>
     route.fulfill({ json: [rynekCover, rynekSide] }),

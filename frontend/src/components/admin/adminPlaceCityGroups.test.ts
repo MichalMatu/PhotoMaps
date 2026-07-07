@@ -9,6 +9,7 @@ const WROCLAW: City = {
   lat: 51.1079,
   lon: 17.0385,
   name: "Wrocław",
+  region: "Dolnośląskie",
   sort_order: 10,
   status: "active",
 };
@@ -19,6 +20,7 @@ const KRAKOW: City = {
   lat: 50.0614,
   lon: 19.9366,
   name: "Kraków",
+  region: "Małopolskie",
   sort_order: 20,
   status: "active",
 };
@@ -57,11 +59,31 @@ describe("getPlaceCityGroups", () => {
     ]);
   });
 
+  it("hides cities without matching places when empty city groups are disabled", () => {
+    const groups = getPlaceCityGroups([KRAKOW, WROCLAW], [place("p1", "wroclaw")], {
+      includeEmptyCities: false,
+    });
+
+    expect(
+      groups.map((group) => [group.cityId, group.cityName, group.places.map((groupPlace) => groupPlace.id)]),
+    ).toEqual([["wroclaw", "Wrocław", ["p1"]]]);
+  });
+
   it("keeps places with missing city records visible after configured cities", () => {
     const groups = getPlaceCityGroups([WROCLAW], [place("p1", "missing-city")]);
 
     expect(groups.map((group) => [group.cityId, group.cityName, group.city?.id ?? null])).toEqual([
       ["wroclaw", "Wrocław", "wroclaw"],
+      ["missing-city", "missing-city", null],
+    ]);
+  });
+
+  it("keeps places with missing city records visible when empty city groups are disabled", () => {
+    const groups = getPlaceCityGroups([WROCLAW], [place("p1", "missing-city")], {
+      includeEmptyCities: false,
+    });
+
+    expect(groups.map((group) => [group.cityId, group.cityName, group.city?.id ?? null])).toEqual([
       ["missing-city", "missing-city", null],
     ]);
   });

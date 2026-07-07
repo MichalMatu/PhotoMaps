@@ -1,4 +1,7 @@
+import type { CSSProperties } from "react";
+
 import type { AdminPhoto, City, Place } from "../../api/types";
+import { placePhotoModalWidthPx } from "./placePhotoPanelLayout";
 import { PlacePhotoPanel } from "./PlacePhotoPanel";
 import { SystemModal } from "./SystemModal";
 
@@ -12,8 +15,19 @@ type Props = {
 };
 
 export function AdminPlacePhotoPreviewModal({ cities, isLoading, onChanged, onClose, photos, place }: Props) {
+  const modalStyle = {
+    "--system-modal-width": `${placePhotoModalWidthPx(photos.length)}px`,
+  } as CSSProperties;
+
   return (
-    <SystemModal eyebrow="" showActions={false} size="large" title="Zdjęcia miejsca" onClose={onClose}>
+    <SystemModal
+      eyebrow=""
+      showActions={false}
+      size="large"
+      style={modalStyle}
+      title="Zdjęcia miejsca"
+      onClose={onClose}
+    >
       {isLoading ? (
         <p className="ui-help" role="status">
           Ładowanie zdjęć miejsca...

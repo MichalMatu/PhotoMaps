@@ -1,0 +1,36 @@
+{
+  "city": {
+    "id": "przesieka",
+    "name": "Przesieka",
+    "region": "Dolnośląskie",
+    "lat": 50.804,
+    "lon": 15.676,
+    "default_zoom": 14,
+    "sort_order": 145,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "wodospad-podgornej",
+      "title": "Wodospad Podgórnej",
+      "description": "Karkonoska potrójna kaskada w Przesiece, jeden z najbardziej nastrojowych wodospadów w okolicy Jeleniej Góry i Karpacza.",
+      "local_comment": "To miejsce wymaga kadrów z wodą i lasem, ale też ze skalą zejścia. Najlepszy cover powinien być czytelny jako wodospad nawet w małej miniaturze.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Cichszy wodospad Karkonoszy"
+        },
+        {
+          "type": "paragraph",
+          "text": "Wodospad Podgórnej jest dobrym kontrapunktem dla bardziej obleganych karkonoskich punktów. Ma krótszą skalę zwiedzania, ale dużo klimatu: las, skały, chłodne powietrze i kaskadę, która dobrze buduje zdjęciową pamięć miejsca."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.80391,
+      "lon": 15.66847,
+      "weight": 4.0,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

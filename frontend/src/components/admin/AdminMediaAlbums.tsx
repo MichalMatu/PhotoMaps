@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-import { mediaUrl } from "../../api/http";
 import type { AdminMediaItem, AdminMediaPlaceGroup } from "./adminMediaGroups";
+import { AdminMediaImage } from "./AdminAuthenticatedMedia";
 import { AdminDisclosureRow } from "./AdminDisclosureRow";
 
 type Props<TItem extends AdminMediaItem> = {
@@ -44,12 +44,12 @@ export function AdminMediaAlbums<TItem extends AdminMediaItem>({
             panelId={panelId}
             summary={
               <>
-                <img
+                <AdminMediaImage
                   className="admin-media-album-cover"
                   alt={group.title}
                   decoding="async"
                   loading="lazy"
-                  src={mediaUrl(group.coverItem.thumb_path)}
+                  src={group.coverItem.admin_thumb_path ?? group.coverItem.thumb_path ?? ""}
                 />
                 <span className="admin-media-album-meta">
                   <strong className="admin-media-album-title">{group.title}</strong>

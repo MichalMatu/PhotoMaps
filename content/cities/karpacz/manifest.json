@@ -2,6 +2,7 @@
   "city": {
     "id": "karpacz",
     "name": "Karpacz",
+    "region": "Dolnośląskie",
     "lat": 50.7359,
     "lon": 15.7397,
     "default_zoom": 12,
@@ -28,7 +29,7 @@
           "text": "Zdjęcia powinny pokazywać zarówno sam szczyt, jak i drogę do niego, bo to właśnie rytm dojścia buduje pamięć z tego miejsca."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.7359,
       "lon": 15.7397,
       "weight": 4.9,
@@ -49,7 +50,7 @@
           "text": "Świątynia Wang jest jednym z tych miejsc, które natychmiast odróżniają Karpacz od typowego górskiego kurortu. Drewniana bryła, detale konstrukcji i położenie przy szlakach tworzą mocny punkt startowy do dalszego spaceru."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.7773866,
       "lon": 15.7241515,
       "weight": 4.7,
@@ -70,7 +71,7 @@
           "text": "Mały Staw i Samotnia pokazują górski charakter Karpacza bez miejskiego szumu. To dobry kontrapunkt dla Śnieżki: mniej symbolu, więcej krajobrazu, ciszy i poczucia dojścia do miejsca."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.7490439,
       "lon": 15.7027131,
       "weight": 4.6,
@@ -91,10 +92,52 @@
           "text": "Strzecha Akademicka dodaje do Karpacza kolejny punkt, który nie jest tylko celem, ale częścią przejścia przez góry. Dobrze łączy się z Samotnią, Śnieżką i zimowym charakterem Karkonoszy."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.750787,
       "lon": 15.7083198,
       "weight": 4.1,
+      "status": "published"
+    },
+    {
+      "slug": "dziki-wodospad",
+      "title": "Dziki Wodospad",
+      "description": "Kamienna zapora przeciwrumoszowa i kaskada na Łomnicy, jeden z najłatwiej dostępnych, bardzo fotograficznych punktów Karpacza.",
+      "local_comment": "To dobry cover dla Karpacza poza klasycznym widokiem gór. Szukaj kadrów z wodą, kamieniem, mostkiem i zielenią, ale bez przepełnionego pierwszego planu.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Woda przy górnym Karpaczu"
+        },
+        {
+          "type": "paragraph",
+          "text": "Dziki Wodospad działa jako krótki, mocny przystanek przed wejściem wyżej w Karkonosze. Nie wymaga długiego marszu, a od razu daje użytkownikowi jasny obraz miejsca: spiętrzona Łomnica, kamienna konstrukcja i chłodny, górski charakter."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.76887,
+      "lon": 15.72843,
+      "weight": 4.0,
+      "status": "published"
+    },
+    {
+      "slug": "zapora-na-lomnicy",
+      "title": "Zapora na Łomnicy",
+      "description": "Kamienna zapora i niewielki zalew blisko centrum Karpacza, dobry na krótki spacer z widokiem na wodę i strome zbocza.",
+      "local_comment": "Nie dublować Dzikiego Wodospadu samą wodą. Tutaj najważniejsze są kamienna korona zapory, spokojniejszy zalew i spacerowy kontekst miasta.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Spacerowa konstrukcja nad Łomnicą"
+        },
+        {
+          "type": "paragraph",
+          "text": "Zapora na Łomnicy pokazuje Karpacz w skali bliższej miasta niż wysokich szlaków. To miejsce dobre na spokojny przystanek: woda, kamień, krótka pętla spacerowa i widok, który uzupełnia bardziej górskie punkty w okolicy."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.776963,
+      "lon": 15.7448,
+      "weight": 3.6,
       "status": "published"
     }
   ],

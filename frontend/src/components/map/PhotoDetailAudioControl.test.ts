@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { audioControlPlaybackStateAfterEvent } from "./PhotoDetailAudioControl";
+import { ambientAudioVolumeAtElapsedMs, audioControlPlaybackStateAfterEvent } from "./PhotoDetailAudioControl";
 
 describe("audioControlPlaybackStateAfterEvent", () => {
   it("keeps the audio menu visible when playback is paused by native controls", () => {
@@ -29,5 +29,28 @@ describe("audioControlPlaybackStateAfterEvent", () => {
       isExpanded: true,
       isPlaying: true,
     });
+  });
+
+  it("keeps ambient autoplay hidden when playback starts", () => {
+    expect(
+      audioControlPlaybackStateAfterEvent("play", {
+        isExpanded: false,
+        isPlaying: false,
+        playbackMode: "ambient",
+      }),
+    ).toEqual({
+      isExpanded: false,
+      isPlaying: true,
+      playbackMode: "ambient",
+    });
+  });
+});
+
+describe("ambientAudioVolumeAtElapsedMs", () => {
+  it("ramps volume from silence to the ambient target", () => {
+    expect(ambientAudioVolumeAtElapsedMs(-100)).toBe(0);
+    expect(ambientAudioVolumeAtElapsedMs(2000)).toBeCloseTo(0.11);
+    expect(ambientAudioVolumeAtElapsedMs(4000)).toBeCloseTo(0.22);
+    expect(ambientAudioVolumeAtElapsedMs(8000)).toBeCloseTo(0.22);
   });
 });

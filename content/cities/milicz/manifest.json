@@ -2,6 +2,7 @@
   "city": {
     "id": "milicz",
     "name": "Milicz",
+    "region": "Dolnośląskie",
     "lat": 51.5302859,
     "lon": 17.2669513,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Pałac Maltzanów w Miliczu pozwala pokazać północno-wschodnią część Dolnego Śląska nie tylko przez przyrodę. Ruiny i park dodają miastu własny punkt wizualny i historyczny."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.5302859,
       "lon": 17.2669513,
       "weight": 3.7,

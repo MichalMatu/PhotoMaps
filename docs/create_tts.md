@@ -322,10 +322,14 @@ Nie uzywaj listy mozliwosci typu "legenda, przemyslowy slad albo miejski rytual"
 
 Opis musi dobrze brzmiec po odczytaniu na glos:
 
-- traktuj liczbe slow jako dolny prog jakosci, nie jako gorny limit; jesli historia jest ciekawa, konkretna i dobrze udokumentowana, nie skracaj jej tylko po to, zeby zmiescic sie w arbitralnym zakresie,
-- zwykle zdjecie ma miec minimum 900 slow, chyba ze po rzetelnym researchu naprawde brakuje materialu,
-- prosty detal albo zdjecie z bardzo ubogim kontekstem ma miec minimum 650 slow, ale tylko wtedy, gdy research naprawde nie daje materialu na pelniejsza opowiesc,
-- cover albo mocny kadr miejsca ma miec minimum 1200 slow i moze byc duzo dluzszy, jesli obraz niesie wiecej informacji i sa dobre zrodla,
+- traktuj liczbe slow jako diagnostyke, nie jako cel sam w sobie; dobra dlugosc wynika z konkretu, researchu, roli zdjecia w galerii i tego, ile nowej opowiesci da sie uczciwie dodac,
+- nie ma gornego limitu slow: jesli historia jest ciekawa, konkretna, dobrze udokumentowana i dobrze brzmi w TTS, moze byc dluzsza,
+- nie stosuj sztywnego minimum dla kazdego zdjecia. Zbyt twardy prog prowokuje dopisywanie akapitow "pod licznik", a dlugi pusty opis jest gorszy niz krotszy, uczciwy i konkretny,
+- dla covera albo najmocniejszego zdjecia miejsca celuj zwykle w 1000+ slow, jezeli sa dobre zrodla i obraz niesie szeroka historie miejsca,
+- dla standardowego zdjecia z osobnym watkiem celuj zwykle w 650-1000+ slow: opis ma miec pelny luk, ale nie musi sztucznie powtarzac kontekstu znanego z innych zdjec tego samego miejsca,
+- dla prostego detalu, bardzo podobnego ujecia pomocniczego albo zdjecia z ubogim kontekstem dopuszczalne jest 450-700 slow, jesli tekst nadal ma konkretny detal, zrodlowy fakt, scene ludzka, wskazowke obserwacyjna i jasna puentę,
+- jesli opis jest krotszy niz orientacyjny zakres, powodem ma byc uczciwy brak materialu albo decyzja antyduplikacyjna, nie lenistwo researchowe; jesli jest dluzszy, kazdy dodatkowy segment musi wniesc nowa scene, osobe, fakt, kontrast, legende, brakujacy slad albo praktyczna wskazowke,
+- nigdy nie poprawiaj opisu przez samo wydluzanie. Najpierw dodaj brakujacy fakt, scene, detal, konflikt, osobe albo lokalny trop. Jesli nie da sie dodac nic konkretnego, zostaw krocej i oznacz luke w notatce roboczej,
 - dziel tekst na tyle blokow narracyjnych, ile potrzebuje historia; przy pelnym opisie zwykle zaczynaj od co najmniej 7 blokow, zeby overlay i TTS mialy naturalny rytm,
 - pierwszy segment, czyli `heading` i pierwsze 2-3 bloki, musi dzialac jak samodzielna miniopowiesc: ma nazwac miejsce, dac haczyk, odpowiedziec "dlaczego to wazne" i zostawic powod, zeby sluchac dalej,
 - dalsze segmenty maja byc poglebieniem, nie dopisywaniem tej samej mysli innymi slowami; kazdy segment powinien wniesc nowa scene, osobe, konflikt, detal, brakujacy slad albo puente,
@@ -338,11 +342,11 @@ Opis musi dobrze brzmiec po odczytaniu na glos:
 - unikaj nawiasow, skrotow, list w srodku akapitu i zdan z duza liczba nazw wlasnych,
 - akapity traktuj jak pauzy: kazdy powinien byc zamknieta czescia narracji.
 
-Profesjonalne audioprzewodniki czesto trzymaja pojedynczy stop bardzo krotko, bo sluchacz stoi w tlumie i latwo traci koncentracje. PhotoMap ma inny cel: opis jest dluzsza karta przewodnicka do czytania i sluchania. Dlatego nie wprowadzamy gornego limitu slow, ale wymagamy warstwowej budowy. Uzytkownik powinien dostac wartosc po pierwszym segmencie, a jesli slucha dalej, kazdy kolejny segment ma mu dac nowy powod, nie tylko wiecej tekstu.
+Profesjonalne audioprzewodniki czesto trzymaja pojedynczy stop bardzo krotko, bo sluchacz stoi w tlumie i latwo traci koncentracje. PhotoMap ma inny cel: opis jest dluzsza karta przewodnicka do czytania i sluchania. Dlatego nie wprowadzamy gornego limitu slow ani jednego sztywnego minimum dla wszystkich zdjec, ale wymagamy warstwowej budowy. Uzytkownik powinien dostac wartosc po pierwszym segmencie, a jesli slucha dalej, kazdy kolejny segment ma mu dac nowy powod, nie tylko wiecej tekstu.
 
 Przegladarkowy TTS dzieli tekst na mniejsze fragmenty, wiec dobrze dzialaja domkniete zdania, naturalne pauzy miedzy blokami i brak zdan, ktore niosa zbyt wiele informacji naraz.
 
-Opis nie moze sprawiac wrazenia, ze historia dopiero sie zaczyna i nagle konczy. Musi miec pelny luk:
+Opis nie moze sprawiac wrazenia, ze historia dopiero sie zaczyna i nagle konczy. Dlugosc ma sluzyc pelnemu lukowi, a nie odwrotnie. Tekst musi zawierac:
 
 1. wejscie w konkretne miejsce,
 2. przyczyne powstania albo znaczenia miejsca,
@@ -498,8 +502,10 @@ Nie poprawiaj slabego opisu przez samo wydluzanie. Najpierw dodaj brakujacy fakt
 - `description_blocks` nie sa puste, jesli zdjecie ma miec TTS.
 - Kazdy blok ma niepusty `text`.
 - Tekst czyta sie naturalnie na glos.
-- Pelny opis zwyklego zdjecia ma minimum 900 slow i nie jest tylko rozpoczeciem historii bez rozwiniecia.
+- Dlugosc wynika z roli zdjecia i jakosci materialu: cover albo najmocniejsze ujecie zwykle ma 1000+ slow, standardowe zdjecie z osobnym watkiem zwykle 650-1000+ slow, a prosty detal albo ujecie pomocnicze moze byc krotsze, jesli jest konkretne i nie dubluje innych opisow.
 - Nie ma gornego limitu slow: jesli opis jest konkretny, ciekawy, dobrze udokumentowany i dobrze brzmi w TTS, moze byc dluzszy.
+- Opis nie zostal wydluzony tylko po to, zeby dobic do liczby slow; kazdy dodatkowy blok wnosi nowy fakt, scene, osobe, kontrast, legende, brakujacy slad, instrukcje terenowa albo puentę.
+- Krotki opis nie jest tylko rozpoczeciem historii bez rozwiniecia: ma pelny luk narracyjny albo jawnie wynika z ubogiego, uczciwie sprawdzonego materialu.
 - Pierwszy segment, czyli `heading` i pierwsze 2-3 bloki, dziala samodzielnie i daje uzytkownikowi wartosc nawet wtedy, gdy przerwie sluchanie.
 - Przed opisem sprawdzono zrodla online dla danego miejsca, a legendy nie sa pomylone z faktami.
 - Najwazniejsze fakty maja przypisana wiarygodnosc zrodel; luki i sprzecznosci nie zostaly zamienione w pewniki.
@@ -558,5 +564,5 @@ Kazda ogolna teza musi miec natychmiastowy lokalny przyklad. Nie pisz "zamki zwy
 Nie wymyslaj faktow spoza danych i zrodel, nie mieszaj legendy z pewna historia i nie powtarzaj atrybucji.
 Przed zwroceniem wyniku zrob reaudyt: test zamiany nazwy miejsca, test pierwszych 20 sekund, test przewodnika w terenie, test faktow, test sceny ludzkiej, test antyduplikacji i test czytania na glos.
 Zwroc wynik w strukturze JSON zgodnej z polami `caption` oraz `description_blocks`.
-Styl: edutainment turystyczny, ciekawy, wiarygodny, historyczno-opisowy, czasem wydarzeniowy albo zabawny, lekki w odbiorze, minimum 900 slow dla zwyklego zdjecia, minimum 1200 slow dla mocnego covera, bez gornego limitu, zdania dobre do czytania na glos.
+Styl: edutainment turystyczny, ciekawy, wiarygodny, historyczno-opisowy, czasem wydarzeniowy albo zabawny, lekki w odbiorze, bez gornego limitu slow i bez jednego sztywnego minimum dla wszystkich zdjec. Dlugosc ma wynikac z roli zdjecia, bogactwa zrodel i unikalnosci watku: cover albo najmocniejsze ujecie zwykle 1000+ slow, standardowe zdjecie z osobnym watkiem zwykle 650-1000+ slow, prosty detal albo ujecie pomocnicze moze byc krotsze, jesli ma pelny luk narracyjny i nie dubluje innych opisow. Nie wydluzaj tekstu pod licznik; kazdy dodatkowy blok musi wniesc nowa wartosc.
 ```

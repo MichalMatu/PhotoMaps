@@ -2,6 +2,7 @@
   "city": {
     "id": "jedlina-zdroj",
     "name": "Jedlina-Zdrój",
+    "region": "Dolnośląskie",
     "lat": 50.7204,
     "lon": 16.3464,
     "default_zoom": 12,
@@ -24,7 +25,7 @@
           "text": "Pałac Jedlinka łączy pałacową architekturę z górskim sąsiedztwem i historią regionu. Dobrze uzupełnia podziemne miejsca Riese, bo pokazuje bardziej cywilną, rezydencjonalną warstwę tej części Dolnego Śląska."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.7133,
       "lon": 16.3586,
       "weight": 4.0,
@@ -45,7 +46,7 @@
           "text": "Borowa dodaje do mapy nowoczesny punkt widokowy blisko Wałbrzycha. Jej wartością jest połączenie krótkiej górskiej trasy, wyraźnej konstrukcji i szerokiego widoku na kilka pasm Sudetów."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.723,
       "lon": 16.304611,
       "weight": 3.9,

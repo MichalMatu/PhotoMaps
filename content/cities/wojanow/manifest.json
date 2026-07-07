@@ -2,6 +2,7 @@
   "city": {
     "id": "wojanow",
     "name": "Wojanów",
+    "region": "Dolnośląskie",
     "lat": 50.875483,
     "lon": 15.8149461,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Pałac Wojanów jest jednym z najmocniejszych punktów Doliny Pałaców i Ogrodów. Łączy architekturę rezydencjonalną, parkowy spacer i poczucie, że region da się zwiedzać spokojniej niż tylko przez szczyty i zamki."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.875483,
       "lon": 15.8149461,
       "weight": 4.3,

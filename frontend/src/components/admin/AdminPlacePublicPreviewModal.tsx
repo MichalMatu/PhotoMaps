@@ -57,6 +57,7 @@ export function AdminPlacePublicPreviewModal({ customFieldDefinitions, onClose, 
     <>
       <PhotoDetailModal
         customFieldDefinitions={customFieldDefinitions}
+        isAudioAutoplayEnabled={false}
         item={previewItemWithDetails}
         navigationItems={galleryItems.filter((item) => item.kind === "photo")}
         place={place}

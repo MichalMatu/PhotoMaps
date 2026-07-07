@@ -2,6 +2,7 @@
   "city": {
     "id": "zagorze-slaskie",
     "name": "Zagórze Śląskie",
+    "region": "Dolnośląskie",
     "lat": 50.7542326,
     "lon": 16.4049248,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Grodno jest ważnym uzupełnieniem dolnośląskich zamków, bo nie działa tylko architekturą. Jego siła jest w położeniu: nad wodą, lasem i stromym podejściem."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.7493775,
       "lon": 16.4104756,
       "weight": 4.3,

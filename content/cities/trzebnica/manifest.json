@@ -2,6 +2,7 @@
   "city": {
     "id": "trzebnica",
     "name": "Trzebnica",
+    "region": "Dolnośląskie",
     "lat": 51.3095347,
     "lon": 17.0670118,
     "default_zoom": 13,

@@ -13,12 +13,17 @@ from app.schemas.app_config import (
     AppConfigBranding,
     AppConfigMap,
     AppConfigMapCenter,
+    AppConfigMapMarkerDensity,
+    AppConfigMapMarkerPriority,
+    AppConfigMapMarkerScale,
     AppConfigRead,
     AppConfigUpdate,
     PlaceCustomFieldDefinition,
 )
 
 APP_CONFIG_ID = "default"
+DEFAULT_MAP_CENTER = AppConfigMapCenter(lat=51.1079, lon=17.0385)
+DEFAULT_MAP_ZOOM = 13
 REQUIRED_LABEL_KEYS = ("place", "places", "category", "categories", "guide", "guides")
 SELECT_OPTION_TYPES = {"select"}
 
@@ -64,7 +69,13 @@ def default_app_config() -> AppConfigRead:
             "guides": "kolekcje miejsc",
         },
         branding=AppConfigBranding(primary_color="#2563eb"),
-        map=AppConfigMap(fallback_center=AppConfigMapCenter(lat=52.0, lon=19.0), fallback_zoom=13),
+        map=AppConfigMap(
+            fallback_center=DEFAULT_MAP_CENTER,
+            fallback_zoom=DEFAULT_MAP_ZOOM,
+            marker_density=AppConfigMapMarkerDensity(),
+            marker_priority=AppConfigMapMarkerPriority(),
+            marker_scale=AppConfigMapMarkerScale(),
+        ),
         place_custom_fields=sorted(BOOTSTRAP_PLACE_CUSTOM_FIELDS, key=lambda field: field.sort_order),
     )
 

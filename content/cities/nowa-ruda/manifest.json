@@ -1,0 +1,86 @@
+{
+  "city": {
+    "id": "nowa-ruda",
+    "name": "Nowa Ruda",
+    "region": "Dolnośląskie",
+    "lat": 50.5801,
+    "lon": 16.5015,
+    "default_zoom": 13,
+    "sort_order": 175,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "dawna-kopalnia-nowa-ruda",
+      "title": "Dawna Kopalnia w Nowej Rudzie",
+      "description": "Muzeum górnictwa i podziemna trasa turystyczna w dawnej kopalni węgla, z maszynami, korytarzami i górniczą kolejką.",
+      "local_comment": "Galeria powinna pokazać przemysłową fakturę miejsca: wejście, maszyny, chodniki, kolejkę i surowe światło. Unikać powtarzania klimatu Starej Kopalni z Wałbrzycha.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Górnictwo w skali bliskiej człowiekowi"
+        },
+        {
+          "type": "paragraph",
+          "text": "Dawna Kopalnia w Nowej Rudzie opowiada o Dolnym Śląsku od strony pracy pod ziemią. Jest mniej monumentalna niż wielkie zamki, ale właśnie dlatego może być bardzo mocnym miejscem na mapie: ciężka infrastruktura, historia regionu i doświadczenie zejścia do dawnego pola górniczego."
+        }
+      ],
+      "category_ids": ["local_classic"],
+      "lat": 50.5887929,
+      "lon": 16.5173031,
+      "weight": 4.1,
+      "status": "published"
+    },
+    {
+      "slug": "wieza-gora-wszystkich-swietych",
+      "title": "Wieża na Górze Wszystkich Świętych",
+      "description": "Kamienna wieża widokowa z czerwonego piaskowca nad Nową Rudą-Słupcem, z panoramą Wzgórz Włodzickich i okolicznych pasm.",
+      "local_comment": "Cover powinien pokazać czerwony piaskowiec, pion wieży i leśno-górski kontekst. Nie wybierać kadru, który wygląda jak zwykła kapliczka albo detal muru.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Czerwony punkt widokowy nad Słupcem"
+        },
+        {
+          "type": "paragraph",
+          "text": "Wieża na Górze Wszystkich Świętych dodaje Nowej Rudzie łatwy, krajobrazowy cel poza ścisłym centrum. Jej piaskowcowa bryła dobrze łączy lokalną geologię, historię dawnych punktów widokowych i prostą obietnicę panoramy po krótkim podejściu."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie to naturalne uzupełnienie Dawnej Kopalni: po industrialnej historii miasta pojawia się miejsce lżejsze, spacerowe i mocno osadzone w Wzgórzach Włodzickich."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.550853,
+      "lon": 16.519997,
+      "weight": 3.8,
+      "status": "published"
+    },
+    {
+      "slug": "wlodzicka-gora-wieza-widokowa",
+      "title": "Włodzicka Góra i wieża widokowa",
+      "description": "Najwyższy szczyt Wzgórz Włodzickich z odbudowaną wieżą widokową, dobry na spokojną trasę z panoramą Gór Sowich.",
+      "local_comment": "Najlepszy cover powinien łączyć wieżę z leśnym albo zimowym pejzażem szczytu. Ważne, żeby miejsce nie zlewało się wizualnie z innymi wieżami w regionie.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Wieża na najwyższym wzgórzu pasma"
+        },
+        {
+          "type": "paragraph",
+          "text": "Włodzicka Góra jest spokojniejszym, bardziej szlakowym punktem w okolicach Nowej Rudy. Odbudowana wieża na szczycie porządkuje ją jako cel wycieczki: dojście przez las, krótki finał i widok na Góry Sowie, Wałbrzyskie oraz Kamienne."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie warto ją mieć obok Góry Wszystkich Świętych, bo pokazuje cały mikroregion Wzgórz Włodzickich jako sieć niedużych, ale charakterystycznych punktów widokowych."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.625803,
+      "lon": 16.435869,
+      "weight": 3.7,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

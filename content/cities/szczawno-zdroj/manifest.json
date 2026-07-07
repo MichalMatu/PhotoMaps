@@ -1,0 +1,90 @@
+{
+  "city": {
+    "id": "szczawno-zdroj",
+    "name": "Szczawno-Zdrój",
+    "region": "Dolnośląskie",
+    "lat": 50.8033,
+    "lon": 16.2566,
+    "default_zoom": 13,
+    "sort_order": 426,
+    "status": "active"
+  },
+  "places": [
+    {
+      "slug": "chelmiec-wieza-widokowa",
+      "title": "Chełmiec i wieża widokowa",
+      "description": "Szczyt Gór Wałbrzyskich nad Wałbrzychem i Szczawnem-Zdrojem, z kamienną wieżą widokową i szeroką panoramą Sudetów.",
+      "local_comment": "Cover powinien pokazać kamienną wieżę albo szczyt jako rozpoznawalny punkt nad miastem. Dobre będą też kadry z panoramą, ale nie kosztem identyfikowalności miejsca.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Wieża nad Kotliną Wałbrzyską"
+        },
+        {
+          "type": "paragraph",
+          "text": "Chełmiec jest jednym z najbardziej rozpoznawalnych punktów Gór Wałbrzyskich. Szczyt dominuje nad okolicą, a kamienna wieża widokowa porządkuje go jako cel spaceru, nie tylko górę oglądaną z dołu."
+        },
+        {
+          "type": "paragraph",
+          "text": "To dobre uzupełnienie wałbrzyskiej warstwy mapy: mniej industrialne niż Stara Kopalnia, bardziej terenowe niż uzdrowisko i nadal blisko miasta."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.779167,
+      "lon": 16.210278,
+      "weight": 4.0,
+      "status": "published"
+    },
+    {
+      "slug": "wzgorze-gedymina-wieza-widokowa",
+      "title": "Wieża widokowa na Wzgórzu Gedymina",
+      "description": "Nowoczesna wieża widokowa na Górze Parkowej w Szczawnie-Zdroju, z łagodną spiralną pochylnią i panoramą Gór Wałbrzyskich.",
+      "local_comment": "To miejsce powinno wyglądać bardziej lekko i spacerowo niż Chełmiec. Najlepsze kadry pokazują spiralną konstrukcję, drewniane pomosty, las i relację z uzdrowiskiem.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Spacerowa wieża nad uzdrowiskiem"
+        },
+        {
+          "type": "paragraph",
+          "text": "Wieża na Wzgórzu Gedymina dodaje Szczawnu-Zdrojowi współczesny punkt widokowy blisko parku i zabudowy uzdrowiskowej. Nie wymaga górskiej wyprawy, ale daje poczucie wyjścia ponad miasto i las."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie dobrze równoważy Chełmiec: zamiast surowego szczytu pojawia się dostępna, spiralna konstrukcja z widokiem na Wałbrzych, Góry Wałbrzyskie i dalsze pasma Sudetów."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.794097,
+      "lon": 16.270186,
+      "weight": 3.9,
+      "status": "published"
+    },
+    {
+      "slug": "hala-spacerowa-pijalnia-szczawno",
+      "title": "Hala Spacerowa i Pijalnia Wód w Szczawnie-Zdroju",
+      "description": "Uzdrowiskowy zespół spacerowy w centrum Szczawna-Zdroju, z historyczną halą, pijalnią wód i parkowym rytmem kurortu.",
+      "local_comment": "To miejsce powinno pokazać klasyczny klimat uzdrowiska: halę, pijalnię, detale drewnianej konstrukcji, kuracjuszy i parkowy kontekst. Nie rozbijać tego na osobne duplikaty pijalni i hali.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Uzdrowiskowe serce Szczawna"
+        },
+        {
+          "type": "paragraph",
+          "text": "Hala Spacerowa i Pijalnia Wód są najbardziej rozpoznawalnym, codziennym rytmem Szczawna-Zdroju. To miejsce działa przez architekturę kurortu, spacer pod zadaszeniem, wodę mineralną i bliskość Parku Zdrojowego."
+        },
+        {
+          "type": "paragraph",
+          "text": "Na mapie domyka Szczawno od strony uzdrowiskowej: Chełmiec i Wzgórze Gedymina pokazują widoki, a hala z pijalnią pokazuje centrum pobytu, odpoczynku i powolnego chodzenia po zdroju."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.802778,
+      "lon": 16.256111,
+      "weight": 4.1,
+      "status": "published"
+    }
+  ],
+  "guides": []
+}

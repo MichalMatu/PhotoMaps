@@ -2,6 +2,7 @@
   "city": {
     "id": "glogow",
     "name": "Głogów",
+    "region": "Dolnośląskie",
     "lat": 51.6672511,
     "lon": 16.0908097,
     "default_zoom": 13,

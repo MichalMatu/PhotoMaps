@@ -2,6 +2,7 @@
   "city": {
     "id": "miedzylesie",
     "name": "Międzylesie",
+    "region": "Dolnośląskie",
     "lat": 50.1482314,
     "lon": 16.6663857,
     "default_zoom": 13,

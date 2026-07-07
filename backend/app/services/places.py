@@ -1,6 +1,7 @@
 from datetime import UTC, datetime
 
 from fastapi import HTTPException
+from sqlalchemy import func, or_
 from sqlmodel import Session, select
 
 from app.models.city import City
@@ -163,30 +164,91 @@ def delete_admin_place(session: Session, place_id: str, *, force: bool) -> Place
     return serialize_admin_place(session, place)
 
 
-def approved_photos_by_place_id(session: Session, place_ids: list[str]) -> dict[str, list[Photo]]:
+def approved_photos_by_place_id(
+    session: Session,
+    places: list[Place],
+    limit_per_place: int = MAP_PREVIEW_ITEMS_PER_PLACE,
+) -> dict[str, list[Photo]]:
+    place_ids = [place.id for place in places]
     photos_by_place_id: dict[str, list[Photo]] = {place_id: [] for place_id in place_ids}
-    photos = session.exec(
-        select(Photo)
+    if not place_ids:
+        return photos_by_place_id
+
+    cover_photo_ids = [place.cover_photo_id for place in places if place.cover_photo_id]
+    preview_rank = (
+        func.row_number()
+        .over(
+            partition_by=Photo.place_id,
+            order_by=(Photo.approved_at.desc(), Photo.created_at.desc(), Photo.id.desc()),
+        )
+        .label("preview_rank")
+    )
+    ranked_photos = (
+        select(Photo.id.label("photo_id"), preview_rank)
         .where(Photo.place_id.in_(place_ids))
         .where(Photo.status == "approved")
-        .order_by(Photo.approved_at.desc(), Photo.created_at.desc())
+        .subquery()
+    )
+    preview_filter = ranked_photos.c.preview_rank <= limit_per_place
+    if cover_photo_ids:
+        preview_filter = or_(preview_filter, Photo.id.in_(cover_photo_ids))
+    photos = session.exec(
+        select(Photo)
+        .join(ranked_photos, ranked_photos.c.photo_id == Photo.id)
+        .where(preview_filter)
+        .order_by(Photo.place_id, ranked_photos.c.preview_rank)
     ).all()
     for photo in photos:
         photos_by_place_id[photo.place_id].append(photo)
     return photos_by_place_id
 
 
-def approved_memories_by_place_id(session: Session, place_ids: list[str]) -> dict[str, list[Memory]]:
+def approved_memories_by_place_id(
+    session: Session,
+    place_ids: list[str],
+    limit_per_place: int = MAP_PREVIEW_ITEMS_PER_PLACE,
+) -> dict[str, list[Memory]]:
     memories_by_place_id: dict[str, list[Memory]] = {place_id: [] for place_id in place_ids}
-    memories = session.exec(
-        select(Memory)
+    if not place_ids:
+        return memories_by_place_id
+
+    preview_rank = (
+        func.row_number()
+        .over(
+            partition_by=Memory.place_id,
+            order_by=(Memory.approved_at.desc(), Memory.created_at.desc(), Memory.id.desc()),
+        )
+        .label("preview_rank")
+    )
+    ranked_memories = (
+        select(Memory.id.label("memory_id"), preview_rank)
         .where(Memory.place_id.in_(place_ids))
         .where(Memory.status == "approved")
-        .order_by(Memory.approved_at.desc(), Memory.created_at.desc())
+        .where(Memory.public_path.is_not(None), Memory.thumb_path.is_not(None))
+        .subquery()
+    )
+    memories = session.exec(
+        select(Memory)
+        .join(ranked_memories, ranked_memories.c.memory_id == Memory.id)
+        .where(ranked_memories.c.preview_rank <= limit_per_place)
+        .order_by(Memory.place_id, ranked_memories.c.preview_rank)
     ).all()
     for memory in memories:
         memories_by_place_id[memory.place_id].append(memory)
     return memories_by_place_id
+
+
+def list_public_place_photos(session: Session, place: Place) -> list[Photo]:
+    statement = (
+        select(Photo)
+        .where(Photo.place_id == place.id)
+        .where(Photo.status == "approved")
+        .order_by(Photo.approved_at.desc(), Photo.created_at.desc(), Photo.id.desc())
+    )
+    photos = list(session.exec(statement).all())
+    if place.cover_photo_id is not None:
+        photos.sort(key=lambda photo: photo.id != place.cover_photo_id)
+    return photos
 
 
 def map_preview_items_for_place(
@@ -205,19 +267,24 @@ def map_preview_items_for_place(
     return [*selected_items, *remaining_items][:limit]
 
 
-def list_public_map_places(session: Session, city_id: str) -> list[PlaceMapRead]:
-    city = ensure_public_map_city(session, city_id)
-    places = sort_places_for_public_map(
-        list(session.exec(public_places_statement().where(Place.city_id == city.id)).all())
-    )
+def list_public_map_places(session: Session, city_id: str | None = None) -> list[PlaceMapRead]:
+    city = ensure_public_map_city(session, city_id) if city_id is not None else None
+    statement = public_places_statement()
+    if city is not None:
+        statement = statement.where(Place.city_id == city.id)
+    places = sort_places_for_public_map(list(session.exec(statement).all()))
     if not places:
         return []
 
     place_ids = [place.id for place in places]
+    cities_by_id = {
+        city.id: city
+        for city in session.exec(select(City).where(City.id.in_({place.city_id for place in places}))).all()
+    }
     category_ids_by_place = category_ids_by_place_id(session, place_ids)
     categories_by_place = categories_by_place_id(session, place_ids)
     custom_field_definitions = get_place_custom_field_definitions(session)
-    photos_by_place_id = approved_photos_by_place_id(session, place_ids)
+    photos_by_place_id = approved_photos_by_place_id(session, places)
     memories_by_place_id = approved_memories_by_place_id(session, place_ids)
 
     for place in places:
@@ -233,7 +300,7 @@ def list_public_map_places(session: Session, city_id: str) -> list[PlaceMapRead]
         map_places.append(
             place_to_map_read(
                 place,
-                city,
+                cities_by_id[place.city_id],
                 categories_by_place.get(place.id, []),
                 category_ids_by_place.get(place.id, []),
                 cover_photo,

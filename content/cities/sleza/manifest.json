@@ -2,6 +2,7 @@
   "city": {
     "id": "sleza",
     "name": "Ślęza",
+    "region": "Dolnośląskie",
     "lat": 51.0346383,
     "lon": 16.9898716,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Zamek Topacz dobrze uzupełnia mapę wokół Wrocławia o miejsce krótkiej wycieczki. Ma czytelną bryłę, parkowy charakter i pozwala pokazać atrakcje poza ścisłym centrum miasta."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.0346383,
       "lon": 16.9898716,
       "weight": 3.9,

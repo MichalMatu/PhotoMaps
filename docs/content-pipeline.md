@@ -18,7 +18,7 @@ Manifest jest roboczym zrodlem wiekszych zmian. Zawiera definicje miasta, miejsc
 
 Jeden realny obiekt albo jedna realna atrakcja ma miec jeden rekord `place`. Przed dopisaniem nowego miejsca sprawdz aktualny manifest, adminowa liste miejsc, aliasy nazwy, adres i wspolrzedne. Jesli obiekt juz istnieje, aktualizuj istniejacy `place` zamiast tworzyc duplikat pod innym slugiem.
 
-Trasy moga miec opcjonalne `route_points`: liste punktow `{ "lat": ..., "lon": ... }`, ktora opisuje przebieg linii na mapie trasy. `places` nadal okresla przystanki i karty miejsc na trasie. Jesli `route_points` nie ma, frontend laczy przystanki prosta linia. Link do Google Maps i tak wylicza prawdziwa trase piesza po stronie Google, wiec `route_points` jest redakcyjnym ulepszeniem lokalnej mapki, nie silnikiem nawigacji.
+Trasy i kolekcje miejsc maja jawne `kind`: `route` albo `collection`. Trasy moga miec opcjonalne `route_points`: liste punktow `{ "lat": ..., "lon": ... }`, ktora opisuje przebieg linii na mapie trasy. Kolekcje nie uzywaja `route_points`. `places` nadal okresla przystanki trasy albo miejsca w kolekcji. Jesli trasa nie ma `route_points`, frontend laczy przystanki prosta linia. Link do Google Maps i tak wylicza prawdziwa trase piesza po stronie Google, wiec `route_points` jest redakcyjnym ulepszeniem lokalnej mapki, nie silnikiem nawigacji.
 
 Wroclaw jako przyklad:
 
@@ -41,6 +41,7 @@ Backup uruchamia najpierw `scripts/diagnose_local_data.py` i blokuje kopiowanie,
 Importer jest idempotentny po stabilnych kluczach:
 
 - `city.id`,
+- `city.region`,
 - `place.slug`,
 - `guide.slug`.
 
@@ -48,7 +49,7 @@ Ponowne uruchomienie na tym samym manifiescie ma aktualizowac istniejace rekordy
 
 ## Co Importer Robi
 
-- Tworzy albo aktualizuje miasto po `city.id`.
+- Tworzy albo aktualizuje miasto po `city.id`, lacznie z jawnym wojewodztwem w `city.region`.
 - Tworzy albo aktualizuje miejsca po `place.slug`.
 - Waliduje aktywne kategorie z `category_ids`.
 - Przypina wiele kategorii do miejsca.
@@ -57,7 +58,7 @@ Ponowne uruchomienie na tym samym manifiescie ma aktualizowac istniejace rekordy
 - Tworzy albo aktualizuje trasy/kolekcje po technicznym `guide.slug`.
 - Odbudowuje przypisania miejsc do tras/kolekcji.
 - Waliduje, ze trasy/kolekcje przypinaja tylko miejsca ze statusem `published`.
-- Waliduje i zapisuje opcjonalne `guide.route_points` jako przebieg linii mapy trasy.
+- Waliduje `guide.kind` oraz zapisuje opcjonalne `guide.route_points` jako przebieg linii mapy trasy; kolekcje musza miec puste `route_points`.
 
 Manifest nie importuje coverow ani ikon miejsc. Media widoczne jako covery mapy przechodza przez adminowy pipeline zdjec, prywatnego oryginalu, publicznej kopii i moderacji. Publiczna kopia zdjecia zachowuje rozdzielczosc wejscia po bezpiecznym przetworzeniu i nie jest sztucznie downsizowana; tylko osobna miniatura jest skalowana do lekkich widokow mapy i list. Limity bajtow i pikseli w pipeline sa wysokimi bezpiecznikami przed uszkodzonym albo ekstremalnym inputem, a nie limitem jakosci materialow redakcyjnych.
 

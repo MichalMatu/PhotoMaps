@@ -24,7 +24,6 @@ class Photo(SQLModel, table=True):
     source: str = Field(default="editorial", index=True)
     status: str = Field(default="pending", index=True)
     caption: str | None = None
-    description: str | None = Field(default=None, max_length=1200)
     description_blocks: list[dict[str, str]] = Field(
         default_factory=list, sa_column=Column(JSON, nullable=False, default=list)
     )

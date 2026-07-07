@@ -2,6 +2,7 @@
   "city": {
     "id": "kliczkow",
     "name": "Kliczków",
+    "region": "Dolnośląskie",
     "lat": 51.3315496,
     "lon": 15.4323132,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Kliczków domyka zachodnią część mapy regionu i pokazuje rezydencjonalny Dolny Śląsk poza najbardziej oczywistymi punktami. To miejsce potrzebuje dobrego covera z parkiem, żeby od razu odróżniało się od miejskich zabytków."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.3366802,
       "lon": 15.4345058,
       "weight": 4.0,

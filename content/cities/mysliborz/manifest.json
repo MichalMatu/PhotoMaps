@@ -2,6 +2,7 @@
   "city": {
     "id": "mysliborz",
     "name": "Myślibórz",
+    "region": "Dolnośląskie",
     "lat": 51.0159,
     "lon": 16.0932,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Wąwóz Myśliborski dodaje do mapy naturalne miejsce bez wielkiej infrastruktury. To spokojny, leśny kontrapunkt dla zamków i miast, dobry dla osób szukających krótszej trasy wśród skał i potoku."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.0167416,
       "lon": 16.0956407,
       "weight": 3.9,

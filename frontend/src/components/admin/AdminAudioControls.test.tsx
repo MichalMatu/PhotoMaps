@@ -22,6 +22,24 @@ describe("AdminAudioControls", () => {
     expect(markup).not.toContain("Usuń audio");
   });
 
+  it("keeps compact media controls free of field help chrome", () => {
+    const markup = renderToStaticMarkup(
+      <AdminAudioControls
+        audio={null}
+        inputKeyPrefix="photo-audio"
+        mode="compact"
+        onDeleteAudio={noop}
+        onError={() => undefined}
+        onSaveAudio={noop}
+      />,
+    );
+
+    expect(markup).toContain("admin-audio-controls--compact");
+    expect(markup).toContain("Dodaj audio");
+    expect(markup).not.toContain("Pokaż opis pola: Audio");
+    expect(markup).not.toContain("Audio do medium");
+  });
+
   it("renders replace and delete actions for an existing attachment", () => {
     const markup = renderToStaticMarkup(
       <AdminAudioControls

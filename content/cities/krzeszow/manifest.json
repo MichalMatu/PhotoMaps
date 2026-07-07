@@ -2,6 +2,7 @@
   "city": {
     "id": "krzeszow",
     "name": "Krzeszów",
+    "region": "Dolnośląskie",
     "lat": 50.7347,
     "lon": 16.069,
     "default_zoom": 13,
@@ -28,7 +29,7 @@
           "text": "Warto pokazywać go jako cel na świadome zwiedzanie, nie tylko szybki przystanek przy fasadzie."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.7347,
       "lon": 16.069,
       "weight": 4.0,

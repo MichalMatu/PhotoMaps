@@ -2,6 +2,7 @@
   "city": {
     "id": "swieradow-zdroj",
     "name": "Świeradów-Zdrój",
+    "region": "Dolnośląskie",
     "lat": 50.9093388,
     "lon": 15.3332153,
     "default_zoom": 13,
@@ -24,10 +25,31 @@
           "text": "Dom Zdrojowy w Świeradowie-Zdroju pokazuje uzdrowiskową warstwę regionu: architekturę, rytm kurortu i spokojny spacer pod dachem. To dobry kontrast dla górskich szlaków w okolicy."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.9063642,
       "lon": 15.3342277,
       "weight": 4.0,
+      "status": "published"
+    },
+    {
+      "slug": "sky-walk-swieradow",
+      "title": "Sky Walk Świeradów-Zdrój",
+      "description": "Wysoka wieża i ścieżka widokowa nad uzdrowiskiem, z panoramą Gór Izerskich i charakterystyczną spiralną konstrukcją.",
+      "local_comment": "To mocny, współczesny cover Świeradowa. Szukaj ujęć, które pokazują wysokość i konstrukcję, a nie tylko wejście albo tłum na platformie.",
+      "article_blocks": [
+        {
+          "type": "heading",
+          "text": "Uzdrowisko oglądane z góry"
+        },
+        {
+          "type": "paragraph",
+          "text": "Sky Walk dodaje Świeradowowi współczesny, bardzo wizualny punkt widokowy. Spiralna konstrukcja prowadzi wzrok w górę, a z platformy dobrze widać relację miasta, lasu i Gór Izerskich."
+        }
+      ],
+      "category_ids": ["local_classic", "atmospheric_place"],
+      "lat": 50.899833,
+      "lon": 15.337028,
+      "weight": 4.2,
       "status": "published"
     }
   ],

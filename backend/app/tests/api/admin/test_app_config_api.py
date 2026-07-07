@@ -10,8 +10,28 @@ def test_app_config_exposes_product_runtime_configuration(client_session) -> Non
     body = response.json()
     assert body["product_name"] == "PhotoMap"
     assert body["locale"] == "pl-PL"
-    assert body["map"]["fallback_center"] != {"lat": 51.1079, "lon": 17.0385}
+    assert body["map"]["fallback_center"] == {"lat": 51.1079, "lon": 17.0385}
     assert body["map"]["fallback_zoom"] == 13
+    assert body["map"]["marker_scale"] == {
+        "base_size": {"width": 72, "height": 58},
+        "min_render_scale": 0.55,
+        "max_render_scale": 1.9,
+        "priority": {"min_scale": 0.72, "max_scale": 1.9, "curve": 1.12},
+    }
+    assert body["map"]["marker_density"] == {
+        "marker_viewport_area": 18_000,
+        "min_zoom": 6,
+        "full_density_zoom": 15,
+        "min_zoom_fill_ratio": 0.12,
+        "max_zoom_fill_ratio": 1,
+        "zoom_curve": 1.35,
+    }
+    assert body["map"]["marker_priority"] == {
+        "editorial_weight_multiplier": 12,
+        "photo_count_sqrt_multiplier": 3.2,
+        "memory_count_multiplier": 2,
+        "score_multiplier": 0.28,
+    }
     assert [field["key"] for field in body["place_custom_fields"]] == [
         "opening_hours",
         "floor",
@@ -30,6 +50,11 @@ def test_admin_app_config_update_persists_and_public_endpoint_reads_it(client_se
     payload["labels"]["place"] = "lokal"
     payload["branding"]["primary_color"] = "#0f766e"
     payload["map"]["fallback_center"] = {"lat": 50.0, "lon": 20.0}
+    payload["map"]["marker_scale"]["base_size"] = {"width": 96, "height": 72}
+    payload["map"]["marker_scale"]["priority"]["max_scale"] = 2.2
+    payload["map"]["marker_density"]["marker_viewport_area"] = 24_000
+    payload["map"]["marker_density"]["min_zoom_fill_ratio"] = 0.2
+    payload["map"]["marker_priority"]["editorial_weight_multiplier"] = 18
     payload["place_custom_fields"].append(
         {
             "key": "unit_number",
@@ -50,8 +75,25 @@ def test_admin_app_config_update_persists_and_public_endpoint_reads_it(client_se
     assert body["labels"]["place"] == "lokal"
     assert body["branding"]["primary_color"] == "#0f766e"
     assert body["map"]["fallback_center"] == {"lat": 50.0, "lon": 20.0}
+    assert body["map"]["marker_scale"]["base_size"] == {"width": 96, "height": 72}
+    assert body["map"]["marker_scale"]["priority"]["max_scale"] == 2.2
+    assert body["map"]["marker_density"]["marker_viewport_area"] == 24_000
+    assert body["map"]["marker_density"]["min_zoom_fill_ratio"] == 0.2
+    assert body["map"]["marker_priority"]["editorial_weight_multiplier"] == 18
     assert [field["key"] for field in body["place_custom_fields"]][-1] == "unit_number"
     assert client.get("/api/app-config").json()["product_name"] == "MallMap"
+
+
+def test_admin_app_config_rejects_invalid_map_settings(client_session) -> None:
+    client, _session = client_session
+    payload = client.get("/api/admin/app-config", headers=ADMIN_HEADERS).json()
+    payload["map"]["marker_scale"]["priority"]["min_scale"] = 2.5
+    payload["map"]["marker_scale"]["priority"]["max_scale"] = 1
+
+    response = client.put("/api/admin/app-config", headers=ADMIN_HEADERS, json=payload)
+
+    assert response.status_code == 422
+    assert "Marker priority min scale cannot be greater than max scale" in str(response.json()["detail"])
 
 
 def test_admin_app_config_rejects_existing_custom_field_type_change(client_session) -> None:

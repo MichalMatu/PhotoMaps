@@ -1,4 +1,6 @@
 import type { AdminPhoto } from "../../api/types";
+import { SettingField } from "../ui/SettingField";
+import { ADMIN_MEDIA_FIELD_HELP } from "./adminMediaFieldHelp";
 import {
   PHOTO_ATTRIBUTION_AUTHOR_MAX_LENGTH,
   PHOTO_ATTRIBUTION_LICENSE_MAX_LENGTH,
@@ -8,10 +10,11 @@ import type { PhotoAttributionDraft } from "./placePhotoPanelState";
 
 type Props = {
   draft: PhotoAttributionDraft;
+  idPrefix?: string;
   onChange: (draft: PhotoAttributionDraft) => void;
 };
 
-export function PhotoAttributionFields({ draft, onChange }: Props) {
+export function PhotoAttributionFields({ draft, idPrefix = "photo-attribution", onChange }: Props) {
   function updateField(field: keyof PhotoAttributionDraft, value: string) {
     onChange({ ...draft, [field]: value });
   }
@@ -20,40 +23,44 @@ export function PhotoAttributionFields({ draft, onChange }: Props) {
     <fieldset className="photo-attribution-fields">
       <legend>Atrybucja</legend>
       <div className="photo-attribution-grid">
-        <label>
-          Autor
+        <SettingField id={`${idPrefix}-author`} label="Autor" hint={ADMIN_MEDIA_FIELD_HELP["attribution-author"]}>
           <input
             maxLength={PHOTO_ATTRIBUTION_AUTHOR_MAX_LENGTH}
             value={draft.attributionAuthor}
             onChange={(event) => updateField("attributionAuthor", event.target.value)}
           />
-        </label>
-        <label>
-          Licencja
+        </SettingField>
+        <SettingField id={`${idPrefix}-license`} label="Licencja" hint={ADMIN_MEDIA_FIELD_HELP["attribution-license"]}>
           <input
             maxLength={PHOTO_ATTRIBUTION_LICENSE_MAX_LENGTH}
             value={draft.attributionLicense}
             onChange={(event) => updateField("attributionLicense", event.target.value)}
           />
-        </label>
-        <label>
-          URL źródła
+        </SettingField>
+        <SettingField
+          id={`${idPrefix}-source-url`}
+          label="URL źródła"
+          hint={ADMIN_MEDIA_FIELD_HELP["attribution-source-url"]}
+        >
           <input
             maxLength={PHOTO_ATTRIBUTION_URL_MAX_LENGTH}
             type="url"
             value={draft.attributionSourceUrl}
             onChange={(event) => updateField("attributionSourceUrl", event.target.value)}
           />
-        </label>
-        <label>
-          URL licencji
+        </SettingField>
+        <SettingField
+          id={`${idPrefix}-license-url`}
+          label="URL licencji"
+          hint={ADMIN_MEDIA_FIELD_HELP["attribution-license-url"]}
+        >
           <input
             maxLength={PHOTO_ATTRIBUTION_URL_MAX_LENGTH}
             type="url"
             value={draft.attributionLicenseUrl}
             onChange={(event) => updateField("attributionLicenseUrl", event.target.value)}
           />
-        </label>
+        </SettingField>
       </div>
     </fieldset>
   );

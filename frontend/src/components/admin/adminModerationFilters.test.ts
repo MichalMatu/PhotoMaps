@@ -30,6 +30,14 @@ const photo = {
 } satisfies AdminPhoto;
 
 const memory = {
+  admin_audio: {
+    duration_seconds: 2,
+    mime_type: "audio/mpeg",
+    public_path: "/api/admin/memories/memory-1/media/audio",
+    size_bytes: 1000,
+  },
+  admin_public_path: "/api/admin/memories/memory-1/media/image",
+  admin_thumb_path: "/api/admin/memories/memory-1/media/thumb",
   approved_at: null,
   audio: { duration_seconds: 2, mime_type: "audio/mpeg", public_path: "/media/audio.mp3", size_bytes: 1000 },
   author_city: "Wrocław",

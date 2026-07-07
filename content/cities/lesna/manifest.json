@@ -2,6 +2,7 @@
   "city": {
     "id": "lesna",
     "name": "Leśna",
+    "region": "Dolnośląskie",
     "lat": 51.0309,
     "lon": 15.303,
     "default_zoom": 13,
@@ -28,7 +29,7 @@
           "text": "To dobra atrakcja na trasę po zachodniej części województwa, szczególnie gdy połączy się ją ze spacerem przy jeziorze."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.0309,
       "lon": 15.303,
       "weight": 4.6,
@@ -49,7 +50,7 @@
           "text": "Zapora Leśniańska jest naturalnym uzupełnieniem Zamku Czocha. Pokazuje zachodni Dolny Śląsk jako miejsce, gdzie historia, woda i infrastruktura tworzą wspólny krajobraz."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 51.0306373,
       "lon": 15.2907543,
       "weight": 3.9,

@@ -2,6 +2,7 @@
   "city": {
     "id": "wambierzyce",
     "name": "Wambierzyce",
+    "region": "Dolnośląskie",
     "lat": 50.4900304,
     "lon": 16.4558424,
     "default_zoom": 13,
@@ -24,7 +25,7 @@
           "text": "Wambierzyce są ważne nie tylko przez samą bazylikę, ale przez układ przestrzeni: schody, plac, fasadę i pielgrzymkowy charakter całej miejscowości."
         }
       ],
-      "category_ids": ["local_classic", "date_spot"],
+      "category_ids": ["local_classic", "atmospheric_place"],
       "lat": 50.4901273,
       "lon": 16.4547564,
       "weight": 4.1,

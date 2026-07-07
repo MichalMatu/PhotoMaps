@@ -196,6 +196,38 @@ def test_admin_can_upload_photo_with_audio(client_session, monkeypatch) -> None:
     assert photo.audio_public_path is not None
 
 
+def test_admin_can_upload_photo_with_flac_audio(client_session, monkeypatch) -> None:
+    client, session = client_session
+    place = create_place(session, status="draft")
+    monkeypatch.setattr(audio_service, "audio_duration_seconds", lambda _content: 2.0)
+    monkeypatch.setattr(audio_service, "strip_public_audio_metadata", lambda _path: None)
+
+    response = client.post(
+        f"/api/admin/places/{place.id}/photos",
+        headers=ADMIN_HEADERS,
+        files={
+            "file": image_upload("draft-place.jpg"),
+            "audio_file": audio_upload("rynek.flac", b"flac-audio", "application/octet-stream"),
+        },
+        data={"caption": "Gwar rynku"},
+    )
+    photo = session.exec(select(Photo)).one()
+
+    assert response.status_code == 201
+    body = response.json()
+    assert body["audio"] == {
+        "duration_seconds": 2.0,
+        "mime_type": "audio/flac",
+        "public_path": photo.audio_public_path,
+        "size_bytes": len(b"flac-audio"),
+    }
+    assert "audio_original_path" not in body
+    assert photo.audio_original_path is not None
+    assert photo.audio_original_path.endswith(".flac")
+    assert photo.audio_public_path is not None
+    assert photo.audio_public_path.endswith(".flac")
+
+
 def test_admin_png_photo_upload_preserves_public_png_alpha(client_session, tmp_path: Path) -> None:
     client, session = client_session
     place = create_place(session)

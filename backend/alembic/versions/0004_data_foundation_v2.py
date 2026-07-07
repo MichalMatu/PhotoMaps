@@ -49,6 +49,7 @@ def create_city_table() -> None:
         "city",
         sa.Column("id", sa.String(), primary_key=True),
         sa.Column("name", sa.String(), nullable=False),
+        sa.Column("region", sa.String(), nullable=False, server_default="Dolnośląskie"),
         sa.Column("lat", sa.Float(), nullable=False),
         sa.Column("lon", sa.Float(), nullable=False),
         sa.Column("default_zoom", sa.Integer(), nullable=False, server_default="13"),
@@ -62,8 +63,8 @@ def seed_wroclaw_city() -> None:
     op.get_bind().execute(
         sa.text(
             """
-            INSERT INTO city (id, name, lat, lon, default_zoom, sort_order, status)
-            SELECT 'wroclaw', 'Wrocław', 51.1079, 17.0385, 13, 10, 'active'
+            INSERT INTO city (id, name, region, lat, lon, default_zoom, sort_order, status)
+            SELECT 'wroclaw', 'Wrocław', 'Dolnośląskie', 51.1079, 17.0385, 13, 10, 'active'
             WHERE NOT EXISTS (SELECT 1 FROM city WHERE id = 'wroclaw')
             """
         )

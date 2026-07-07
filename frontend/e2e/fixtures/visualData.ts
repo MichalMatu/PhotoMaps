@@ -9,6 +9,7 @@ export const city = {
   lat: 51.1079,
   lon: 17.0385,
   name: "Wrocław",
+  region: "Dolnośląskie",
   sort_order: 10,
   status: "active",
 };
@@ -33,6 +34,33 @@ export const appConfig = {
       lon: city.lon,
     },
     fallback_zoom: city.default_zoom,
+    marker_density: {
+      full_density_zoom: 15,
+      marker_viewport_area: 18_000,
+      max_zoom_fill_ratio: 1,
+      min_zoom: 6,
+      min_zoom_fill_ratio: 0.12,
+      zoom_curve: 1.35,
+    },
+    marker_priority: {
+      editorial_weight_multiplier: 12,
+      memory_count_multiplier: 2,
+      photo_count_sqrt_multiplier: 3.2,
+      score_multiplier: 0.28,
+    },
+    marker_scale: {
+      base_size: {
+        height: 58,
+        width: 72,
+      },
+      max_render_scale: 1.9,
+      min_render_scale: 0.55,
+      priority: {
+        curve: 1.12,
+        max_scale: 1.9,
+        min_scale: 0.72,
+      },
+    },
   },
   place_custom_fields: [
     {
@@ -267,9 +295,11 @@ const adminGuidePreviewPlaces = [
 
 export const guides = [
   {
+    article_blocks: [],
     cover_photo: rynekCover,
     description: "Krótka trasa przez centrum i boczne przejścia z dobrymi kadrami.",
     id: "visual-guide",
+    kind: "route",
     place_count: 2,
     preview_places: guidePreviewPlaces,
     route_points: [
@@ -281,9 +311,11 @@ export const guides = [
     title: "Wizualny spacer po centrum",
   },
   {
+    article_blocks: [],
     cover_photo: nadodrzeCover,
     description: "Miejsca, gdzie woda, mosty i panoramy robią najwięcej pracy w kadrze.",
     id: "visual-guide-river",
+    kind: "collection",
     place_count: 2,
     preview_places: [...guidePreviewPlaces].reverse(),
     route_points: [],
@@ -291,9 +323,11 @@ export const guides = [
     title: "Kadry nad Odrą",
   },
   {
+    article_blocks: [],
     cover_photo: rynekSide,
     description: "Zestaw ciaśniejszych przejść, szyldów i detali do sprawdzania miejskiego rytmu.",
     id: "visual-guide-details",
+    kind: "collection",
     place_count: 2,
     preview_places: guidePreviewPlaces,
     route_points: [],

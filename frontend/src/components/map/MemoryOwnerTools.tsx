@@ -4,6 +4,8 @@ import {
   MEMORY_CAPTION_MAX_LENGTH,
   MEMORY_TEXT_MAX_LENGTH,
 } from "../places/memoryValidation";
+import { PUBLIC_PLACE_INTERACTION_HELP } from "../places/publicPlaceInteractionHelp";
+import { SettingField } from "../ui/SettingField";
 import { SystemModal } from "../ui/SystemModal";
 import type { MemoryOwnerToolsModel } from "./useMemoryOwnerTools";
 
@@ -30,8 +32,19 @@ export function MemoryOwnerTools({ tools }: Props) {
         >
           {!tools.isClaimVerified ? (
             <form className="ui-form memory-owner-form" noValidate onSubmit={tools.handleVerifyClaim}>
-              <label>
-                Token pamiątki
+              <SettingField
+                id="photo-detail-claim-token"
+                label="Token pamiątki"
+                hint={PUBLIC_PLACE_INTERACTION_HELP["memory-token"]}
+                helpMode="inline"
+                footer={
+                  tools.claimFieldErrors.claimToken ? (
+                    <span className="field-error" id="photo-detail-claim-token-error">
+                      {tools.claimFieldErrors.claimToken}
+                    </span>
+                  ) : null
+                }
+              >
                 <input
                   autoComplete="off"
                   aria-describedby={tools.claimFieldErrors.claimToken ? "photo-detail-claim-token-error" : undefined}
@@ -40,20 +53,26 @@ export function MemoryOwnerTools({ tools }: Props) {
                   value={tools.claimToken}
                   onChange={(event) => tools.setClaimToken(event.target.value)}
                 />
-                {tools.claimFieldErrors.claimToken ? (
-                  <span className="field-error" id="photo-detail-claim-token-error">
-                    {tools.claimFieldErrors.claimToken}
-                  </span>
-                ) : null}
-              </label>
+              </SettingField>
               <button type="submit" disabled={tools.isOwnerSaving}>
                 {tools.isOwnerSaving ? "Sprawdzanie..." : "Odblokuj"}
               </button>
             </form>
           ) : (
             <form className="ui-form memory-owner-form" noValidate onSubmit={tools.handleUpdateMemory}>
-              <label>
-                Podpis
+              <SettingField
+                id="photo-detail-caption"
+                label="Podpis"
+                hint={PUBLIC_PLACE_INTERACTION_HELP["memory-caption"]}
+                helpMode="inline"
+                footer={
+                  tools.editFieldErrors.caption ? (
+                    <span className="field-error" id="photo-detail-caption-error">
+                      {tools.editFieldErrors.caption}
+                    </span>
+                  ) : null
+                }
+              >
                 <input
                   aria-describedby={tools.editFieldErrors.caption ? "photo-detail-caption-error" : undefined}
                   aria-invalid={Boolean(tools.editFieldErrors.caption)}
@@ -62,14 +81,20 @@ export function MemoryOwnerTools({ tools }: Props) {
                   onChange={(event) => tools.setDraftCaption(event.target.value)}
                   required
                 />
-                {tools.editFieldErrors.caption ? (
-                  <span className="field-error" id="photo-detail-caption-error">
-                    {tools.editFieldErrors.caption}
-                  </span>
-                ) : null}
-              </label>
-              <label>
-                Myśl / wspomnienie
+              </SettingField>
+              <SettingField
+                id="photo-detail-memory-text"
+                label="Myśl / wspomnienie"
+                hint={PUBLIC_PLACE_INTERACTION_HELP["memory-text"]}
+                helpMode="inline"
+                footer={
+                  tools.editFieldErrors.memoryText ? (
+                    <span className="field-error" id="photo-detail-memory-text-error">
+                      {tools.editFieldErrors.memoryText}
+                    </span>
+                  ) : null
+                }
+              >
                 <textarea
                   aria-describedby={tools.editFieldErrors.memoryText ? "photo-detail-memory-text-error" : undefined}
                   aria-invalid={Boolean(tools.editFieldErrors.memoryText)}
@@ -79,15 +104,21 @@ export function MemoryOwnerTools({ tools }: Props) {
                   onChange={(event) => tools.setDraftMemoryText(event.target.value)}
                   required
                 />
-                {tools.editFieldErrors.memoryText ? (
-                  <span className="field-error" id="photo-detail-memory-text-error">
-                    {tools.editFieldErrors.memoryText}
-                  </span>
-                ) : null}
-              </label>
+              </SettingField>
               <div className="memory-owner-field-row">
-                <label>
-                  Imię
+                <SettingField
+                  id="photo-detail-author-name"
+                  label="Imię"
+                  hint={PUBLIC_PLACE_INTERACTION_HELP["memory-author-name"]}
+                  helpMode="inline"
+                  footer={
+                    tools.editFieldErrors.authorName ? (
+                      <span className="field-error" id="photo-detail-author-name-error">
+                        {tools.editFieldErrors.authorName}
+                      </span>
+                    ) : null
+                  }
+                >
                   <input
                     aria-describedby={tools.editFieldErrors.authorName ? "photo-detail-author-name-error" : undefined}
                     aria-invalid={Boolean(tools.editFieldErrors.authorName)}
@@ -95,14 +126,20 @@ export function MemoryOwnerTools({ tools }: Props) {
                     value={tools.draftAuthorName}
                     onChange={(event) => tools.setDraftAuthorName(event.target.value)}
                   />
-                  {tools.editFieldErrors.authorName ? (
-                    <span className="field-error" id="photo-detail-author-name-error">
-                      {tools.editFieldErrors.authorName}
-                    </span>
-                  ) : null}
-                </label>
-                <label>
-                  Miasto
+                </SettingField>
+                <SettingField
+                  id="photo-detail-author-city"
+                  label="Miasto"
+                  hint={PUBLIC_PLACE_INTERACTION_HELP["memory-author-city"]}
+                  helpMode="inline"
+                  footer={
+                    tools.editFieldErrors.authorCity ? (
+                      <span className="field-error" id="photo-detail-author-city-error">
+                        {tools.editFieldErrors.authorCity}
+                      </span>
+                    ) : null
+                  }
+                >
                   <input
                     aria-describedby={tools.editFieldErrors.authorCity ? "photo-detail-author-city-error" : undefined}
                     aria-invalid={Boolean(tools.editFieldErrors.authorCity)}
@@ -110,12 +147,7 @@ export function MemoryOwnerTools({ tools }: Props) {
                     value={tools.draftAuthorCity}
                     onChange={(event) => tools.setDraftAuthorCity(event.target.value)}
                   />
-                  {tools.editFieldErrors.authorCity ? (
-                    <span className="field-error" id="photo-detail-author-city-error">
-                      {tools.editFieldErrors.authorCity}
-                    </span>
-                  ) : null}
-                </label>
+                </SettingField>
               </div>
               <div className="memory-owner-actions">
                 <button type="submit" disabled={tools.isOwnerSaving}>

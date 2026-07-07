@@ -2,6 +2,7 @@
   "city": {
     "id": "kletno",
     "name": "Kletno",
+    "region": "Dolnośląskie",
     "lat": 50.2347,
     "lon": 16.8439,
     "default_zoom": 13,

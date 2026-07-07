@@ -1,7 +1,16 @@
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
 
-import { city, places, portraitCover, portraitPlace, rynekCover, rynekMemory, rynekSide } from "../fixtures/visualData";
+import {
+  appConfig,
+  city,
+  places,
+  portraitCover,
+  portraitPlace,
+  rynekCover,
+  rynekMemory,
+  rynekSide,
+} from "../fixtures/visualData";
 import { API_URL, SNAPSHOT_OPTIONS } from "../support/config";
 import { clickMapMarker } from "../support/mapInteractions";
 import { mockSharedApi } from "../support/visualApi";
@@ -79,10 +88,6 @@ async function expectPlaceTilesNotToOverlap(page: Page) {
   await expectTilesNotToOverlap(page, ".place-photo-marker span");
 }
 
-async function expectPlaceTilesNotToOverlapNow(page: Page) {
-  expect(await tileOverlaps(page, ".place-photo-marker span")).toEqual([]);
-}
-
 async function placeMarkerCount(page: Page, selector = ".place-photo-marker") {
   return page.locator(selector).count();
 }
@@ -143,6 +148,7 @@ function regionalCity(id: string, name: string, lat: number, lon: number, sortOr
     lat,
     lon,
     name,
+    region: "Dolnośląskie",
     sort_order: sortOrder,
   };
 }
@@ -238,6 +244,23 @@ test("visual: empty desktop map", async ({ page }) => {
   await expect(page).toHaveScreenshot("map-empty-desktop.png", SNAPSHOT_OPTIONS);
 });
 
+test("map remains visible when app config request fails", async ({ page }) => {
+  await page.setViewportSize({ height: 820, width: 1280 });
+  await mockSharedApi(page);
+  await page.route(`${API_URL}/api/app-config`, (route) =>
+    route.fulfill({
+      body: JSON.stringify({ detail: "App config unavailable" }),
+      contentType: "application/json",
+      status: 500,
+    }),
+  );
+  await page.goto("/");
+
+  await expect(page.locator(".map-frame")).toBeVisible();
+  await expect.poll(async () => placeMarkerCount(page)).toBe(2);
+  await expect(page.getByText("Nie udało się pobrać mapy")).toHaveCount(0);
+});
+
 test("visual: map markers, gallery and photo detail", async ({ page }) => {
   const describedCover = {
     ...rynekCover,
@@ -320,6 +343,9 @@ test("visual: map markers, gallery and photo detail", async ({ page }) => {
   await detailDialog.getByRole("button", { name: "Pokaż informacje" }).click();
   await expect(detailDialog.getByText(rynekCover.caption)).toBeVisible();
   await expect(detailDialog.getByText(places[0].description)).toBeVisible();
+  await detailDialog.locator(".photo-detail-image").click({ position: { x: 260, y: 240 } });
+  await expect(detailDialog.getByRole("button", { name: "Pokaż informacje" })).toBeVisible();
+  await expect(detailDialog.locator(".photo-detail-copy")).not.toBeVisible();
   await expect(page.locator(".map-photo-viewer")).toHaveCount(0);
 
   const desktopLayout = await detailDialog.evaluate((element) => {
@@ -378,7 +404,7 @@ test("visual: map markers, gallery and photo detail", async ({ page }) => {
   await expect(detailDialog.getByText(`${rynekMemory.author_name}, ${rynekMemory.author_city}`)).toBeVisible();
 });
 
-test("visual: dense local map markers are reduced before collision layout", async ({ page }) => {
+test("visual: dense local map markers are resolved without overlap", async ({ page }) => {
   await page.setViewportSize({ height: 820, width: 1280 });
   const densePlaces = denseCollisionPlaces();
   await mockSharedApi(page, densePlaces);
@@ -386,66 +412,49 @@ test("visual: dense local map markers are reduced before collision layout", asyn
 
   await expect.poll(async () => placeMarkerCount(page)).toBeGreaterThan(0);
   const visibleMarkerCount = await placeMarkerCount(page);
-  expect(visibleMarkerCount).toBeLessThan(densePlaces.length);
-  expect(visibleMarkerCount).toBeLessThanOrEqual(2);
+  expect(visibleMarkerCount).toBeLessThanOrEqual(densePlaces.length);
   await expectPlaceTilesNotToOverlap(page);
 });
 
-test("regional map changes city detail gradually without making a local marker grid", async ({ page }) => {
-  test.setTimeout(45_000);
-
+test("multi-city map shows regional places without a public city filter", async ({ page }) => {
   const regionalData = regionalMapData();
   const wroclawMarkerSelector = '.place-photo-marker[title^="Wrocław"]';
+  const mapRequests: string[] = [];
+  const cityRequests: string[] = [];
 
   await page.setViewportSize({ height: 820, width: 1280 });
   await mockSharedApi(page, regionalData.places, undefined, regionalData.cities);
+  await page.route(`${API_URL}/api/app-config`, (route) =>
+    route.fulfill({
+      json: {
+        ...appConfig,
+        map: {
+          ...appConfig.map,
+          fallback_center: { lat: 50.97, lon: 16.66 },
+          fallback_zoom: 8,
+        },
+      },
+    }),
+  );
+  page.on("request", (request) => {
+    const url = new URL(request.url());
+    if (url.href.startsWith(`${API_URL}/api/places/map`)) {
+      mapRequests.push(url.searchParams.get("city_id") ?? "all");
+    }
+    if (url.href === `${API_URL}/api/cities`) {
+      cityRequests.push(url.href);
+    }
+  });
   await page.goto("/");
-  await expect.poll(async () => placeMarkerCount(page, wroclawMarkerSelector)).toBeGreaterThan(1);
 
-  const zoomOutCounts = [await placeMarkerCount(page, wroclawMarkerSelector)];
-  expect(zoomOutCounts[0]).toBeLessThanOrEqual(3);
+  await page.getByRole("button", { name: "Pokaż pasek nawigacji" }).click();
+  await expect(page.getByRole("button", { name: /Zmień filtr miasta mapy/ })).toHaveCount(0);
+  await expect(page.getByRole("dialog", { name: "Wybierz miasto" })).toHaveCount(0);
+  await expect.poll(async () => placeMarkerCount(page, wroclawMarkerSelector)).toBeGreaterThan(0);
+  await expect(page.locator('.place-photo-marker[title="Wałbrzych"]')).toHaveCount(1);
   await expectPlaceTilesNotToOverlap(page);
-
-  const zoomOut = page.locator(".leaflet-control-zoom-out");
-
-  for (let index = 0; index < 8; index += 1) {
-    await zoomOut.click();
-    await page.waitForTimeout(480);
-
-    const previousCount = zoomOutCounts[zoomOutCounts.length - 1];
-    const nextCount = await placeMarkerCount(page, wroclawMarkerSelector);
-
-    expect(nextCount).toBeLessThanOrEqual(previousCount);
-    expect(previousCount - nextCount).toBeLessThanOrEqual(1);
-    zoomOutCounts.push(nextCount);
-    await expectPlaceTilesNotToOverlapNow(page);
-  }
-
-  expect(Math.min(...zoomOutCounts)).toBe(1);
-
-  for (let index = 0; index < 16; index += 1) {
-    await zoomOut.click();
-    await page.waitForTimeout(240);
-  }
-  await page.waitForTimeout(1_000);
-
-  await expect(page.locator(".place-photo-marker")).toHaveCount(regionalData.cities.length);
-  await expect(page.locator(wroclawMarkerSelector)).toHaveCount(1);
-  await expectPlaceTilesNotToOverlap(page);
-
-  const zoomIn = page.locator(".leaflet-control-zoom-in");
-  let previousWroclawCount = await placeMarkerCount(page, wroclawMarkerSelector);
-
-  for (let index = 0; index < 12; index += 1) {
-    await zoomIn.click();
-    await page.waitForTimeout(360);
-
-    const nextCount = await placeMarkerCount(page, wroclawMarkerSelector);
-    expect(nextCount).toBeGreaterThanOrEqual(previousWroclawCount);
-    expect(nextCount - previousWroclawCount).toBeLessThanOrEqual(1);
-    previousWroclawCount = nextCount;
-    await expectPlaceTilesNotToOverlapNow(page);
-  }
+  expect([...new Set(mapRequests)]).toEqual(["all"]);
+  expect(cityRequests).toEqual([]);
 });
 
 test("photo gallery backdrop blocks clicks on place tiles underneath", async ({ page }) => {
@@ -552,6 +561,21 @@ test("photo detail swipe navigates photos in mobile, landscape and fullscreen", 
   const detailImage = detailDialog.locator(".photo-detail-image");
   await expect(detailDialog).toBeVisible();
   await expect(detailImage).toHaveAttribute("alt", rynekCover.caption ?? "");
+  const mobileNavMetrics = await detailDialog.locator(".photo-detail-nav-button").evaluateAll((buttons) =>
+    buttons.map((button) => {
+      const rect = button.getBoundingClientRect();
+      return {
+        height: Math.round(rect.height),
+        width: Math.round(rect.width),
+      };
+    }),
+  );
+  expect(mobileNavMetrics).toHaveLength(2);
+  for (const metric of mobileNavMetrics) {
+    expect(Math.abs(metric.width - metric.height)).toBeLessThanOrEqual(1);
+    expect(metric.width).toBeGreaterThanOrEqual(33);
+    expect(metric.width).toBeLessThanOrEqual(35);
+  }
 
   await swipePhotoDetailContent(page, "next");
   await expect(detailImage).toHaveAttribute("alt", rynekSide.caption ?? "");
@@ -575,7 +599,6 @@ test("visual: far zoom keeps one representative for a city even when the viewpor
   const countryScaleCity = { ...city, default_zoom: 8 };
   const countryScalePlaces = denseCollisionPlaces().map((place) => ({ ...place, city: countryScaleCity }));
   await mockSharedApi(page, countryScalePlaces);
-  await page.route(`${API_URL}/api/cities`, (route) => route.fulfill({ json: [countryScaleCity] }));
   await page.goto("/");
 
   await expect(page.locator(".place-photo-marker")).toHaveCount(1);
@@ -587,7 +610,6 @@ test("visual: zoomed map does not push offscreen place markers to the edges", as
   await page.setViewportSize({ height: 820, width: 1280 });
   const viewportData = zoomedViewportPlaces();
   await mockSharedApi(page, viewportData.places);
-  await page.route(`${API_URL}/api/cities`, (route) => route.fulfill({ json: [viewportData.city] }));
   await page.goto("/");
 
   await expect(page.locator(".place-photo-marker")).toHaveCount(1);

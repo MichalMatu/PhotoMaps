@@ -24,6 +24,12 @@ export type AppShellMapPinnedMediaControl = {
   onToggle: () => void;
 };
 
+export type AppShellMapAudioControl = {
+  active: boolean;
+  label: string;
+  onToggle: () => void;
+};
+
 export type AppShellMapCategoryControls = {
   items: Array<{
     active: boolean;

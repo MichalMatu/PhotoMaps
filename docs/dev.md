@@ -11,6 +11,8 @@ cd <repo-root>
 ## Komendy
 
 ```bash
+make help     # pokaż główne menu
+make scripts  # pokaż spis skrótów do scripts/
 make start    # uruchom backend + frontend
 make stop     # zatrzymaj backend + frontend
 make restart  # zatrzymaj i uruchom oba procesy od nowa
@@ -20,6 +22,7 @@ make check    # pełny check projektu
 ```
 
 `make start` zapisuje PID-y i logi w `.dev/`. Ten katalog jest lokalny i nie jest commitowany.
+Pełny spis skrótów operacyjnych jest w [`scripts/README.md`](../scripts/README.md).
 
 ## Hooki jakości
 
@@ -86,11 +89,23 @@ PERF_ITERATIONS=10 PERF_MAX_MS=2000 PERF_AVG_MS=800 make perf-smoke
 
 Publiczne endpointy miejsc i tras nie zwracają pól redakcyjnych ani adminowych. `GET /api/places` i `GET /api/places/{slug}` nie zawierają `local_comment` ani `status`; pełny opis miejsca jest tylko w `article_blocks` szczegółu miejsca. Adminowe endpointy zachowują pełny kształt potrzebny do edycji.
 
-`GET /api/places/map?city_id={city_id}` jest lekkim kontraktem mapy dla jawnego miasta: miejsce, miasto, kategorie, score/liczniki, cover i kilka kuratorowanych `preview_items`. `city_id` jest wymaganym query parametrem; frontend wybiera go z `/api/cities`, a backend nie zwraca mapy bez jawnego kontekstu miasta. Ten payload nie dziedziczy pełnego `PlaceRead` i nie zawiera `cover_photo_id`, timestampów, `local_comment`, `status` ani `article_blocks`. `cover_photo` używa mapowego `PlaceMapPhotoRead` z `role`, `source` i opcjonalną atrybucją zdjęcia (`attribution_author`, `attribution_source_url`, `attribution_license`, `attribution_license_url`); `preview_items` to discriminated union po `kind`: `photo` ma `role`, `source` i atrybucję, a `memory` ich nie ma. Pierwszy widok mapy renderuje te lekkie preview, ale rozwinięty wachlarz miejsca po kliknięciu pobiera `GET /api/places/{place_id}/photos` i pokazuje wszystkie zatwierdzone zdjęcia miejsca. Opublikowane miejsce bez zatwierdzonego covera albo preview nie wraca na publiczną mapę jako klasyczna pinezka.
+Warstwa discovery dla agentów AI, crawlerów i prostych integracji jest jawna i publiczna:
 
-Publiczne `GET /api/places/{place_id}/photos` zwraca tylko zatwierdzone zdjęcia w odchudzonym kształcie: ścieżki publiczne, krótki podpis `caption`, opcjonalne bloki opisu/narracji `description_blocks`, opcjonalną atrybucję i opcjonalne audio. Publiczny modal zdjęcia pokazuje `description_blocks` jako osobny tekst na ekranie i udostępnia TTS, jeśli przeglądarka wspiera `speechSynthesis`; ikona audio pozostaje wyłącznie dla realnego pliku audio. Styl i format generowanych opisów zdjęć opisuje [`docs/create_tts.md`](create_tts.md). Upload zdjęcia miejsca jest wyłącznie adminowy przez `POST /api/admin/places/{place_id}/photos`, które przyjmuje `caption`, `description_blocks` jako JSON w polu formularza oraz pola atrybucji. Adminowy panel zdjęć konkretnego miejsca pobiera pełną listę tego miejsca przez `GET /api/admin/places/{place_id}/photos`; nie wolno opierać go na paginowanej kolejce moderacji `GET /api/admin/photos`, bo ta lista jest tylko globalnym widokiem pracy admina. Publiczne dodawanie treści użytkownika przechodzi przez pamiątki `POST /api/places/{place_id}/memories`.
+- `GET /llms.txt` opisuje, gdzie agent ma szukać miast, miejsc, opisów i publicznych mediów.
+- `GET /robots.txt` pozwala crawlerom indeksować publiczną stronę i wskazuje sitemapę.
+- `GET /sitemap.xml` zawiera realne strony publiczne: mapę, trasy i opublikowane strony miejsc.
+- `GET /api/public` zwraca indeks maszynowy aktualnych publicznych ścieżek.
+- `GET /api/public/cities` zwraca aktywne miasta.
+- `GET /api/public/cities/{city_id}/places` zwraca wszystkie opublikowane miejsca w aktywnym mieście, także bez covera, w lekkim indeksowym kształcie.
+- `GET /api/public/cities/{city_id}/places/{place_slug}` zwraca publiczny szczegół miejsca: opis wiodący, `article_blocks`, kategorie, współrzędne, publiczne pola niestandardowe oraz zatwierdzone zdjęcia z `description_blocks` i atrybucją.
 
-Publiczne `GET /api/guides` i `GET /api/guides/{slug}` zwracają trasy/kolekcje bez statusów i timestampów oraz z publicznymi preview miejsc. Pole `route_points` jest opcjonalną redakcyjną geometrią linii trasy na mapie; miejsca na trasie nadal wynikają z `places`. Adminowe `/api/admin/guides` używa osobnego kształtu z polami potrzebnymi do moderacji i edycji. Kolejność miejsc w trasie zmienia `PUT /api/admin/guides/{guide_id}/places/order` z pełną listą aktualnych przypięć `{places: [{place_id, sort_order}]}`; endpoint odrzuca brakujące, obce albo zdublowane miejsca, więc dodawanie i usuwanie miejsc pozostaje osobnym kontraktem.
+Endpointy discovery nie są kontraktem pierwszego renderu mapy. Nie zastępują lekkiego `GET /api/places/map`; służą do jednoznacznego pobrania treści przez agenta bez interpretowania Reacta, mapy i interakcji UI. Nie mogą ujawniać `local_comment`, statusu moderacyjnego miejsca, prywatnych oryginałów ani ścieżek private storage.
+
+`GET /api/places/map?city_id={city_id}` jest lekkim kontraktem mapy: miejsce, miasto, kategorie, score/liczniki, cover i kilka kuratorowanych `preview_items`. `city_id` jest jawnym filtrem miasta; bez niego backend zwraca publiczny map preview dla wszystkich aktywnych miast. Ten payload nie dziedziczy pełnego `PlaceRead` i nie zawiera `cover_photo_id`, timestampów, `local_comment`, `status` ani `article_blocks`. `cover_photo` używa mapowego `PlaceMapPhotoRead` z `role`, `source` i opcjonalną atrybucją zdjęcia (`attribution_author`, `attribution_source_url`, `attribution_license`, `attribution_license_url`); `preview_items` to discriminated union po `kind`: `photo` ma `role`, `source` i atrybucję, a `memory` ich nie ma. Pierwszy widok mapy renderuje te lekkie preview, ale rozwinięty wachlarz miejsca po kliknięciu pobiera `GET /api/places/{place_id}/photos` i pokazuje wszystkie zatwierdzone zdjęcia miejsca. Opublikowane miejsce bez zatwierdzonego covera albo preview nie wraca na publiczną mapę jako klasyczna pinezka.
+
+Publiczne `GET /api/places/{place_id}/photos` zwraca tylko zatwierdzone zdjęcia w odchudzonym kształcie: ścieżki publiczne, krótki podpis `caption`, opcjonalne bloki opisu/narracji `description_blocks`, opcjonalną atrybucję i opcjonalne audio. Publiczny modal zdjęcia pokazuje `description_blocks` jako osobny tekst na ekranie i udostępnia TTS, jeśli przeglądarka wspiera `speechSynthesis`; ikona audio pozostaje wyłącznie dla realnego pliku audio. Upload audio dla zdjęć i pamiątek przyjmuje MP3, M4A i FLAC do 12 MB oraz 180 sekund. Przełącznik `Audio` w menu mapy jest opt-in dla ambient autoplayu: po otwarciu medium z audio odtwarza je w pętli z łagodnym wejściem głośności, o ile przeglądarka pozwoli na odtworzenie po interakcji użytkownika. Styl i format generowanych opisów zdjęć opisuje [`docs/create_tts.md`](create_tts.md). Upload zdjęcia miejsca jest wyłącznie adminowy przez `POST /api/admin/places/{place_id}/photos`, które przyjmuje `caption`, `description_blocks` jako JSON w polu formularza oraz pola atrybucji. Adminowy panel zdjęć konkretnego miejsca pobiera pełną listę tego miejsca przez `GET /api/admin/places/{place_id}/photos`; nie wolno opierać go na paginowanej kolejce moderacji `GET /api/admin/photos`, bo ta lista jest tylko globalnym widokiem pracy admina. Publiczne dodawanie treści użytkownika przechodzi przez pamiątki `POST /api/places/{place_id}/memories`.
+
+Publiczne `GET /api/guides` i `GET /api/guides/{slug}` zwracają trasy/kolekcje bez statusów i timestampów oraz z publicznymi preview miejsc. Pole `kind` rozróżnia `route` i `collection`. Pole `route_points` jest opcjonalną redakcyjną geometrią linii trasy na mapie i jest puste dla kolekcji; miejsca nadal wynikają z `places`. Adminowe `/api/admin/guides` używa osobnego kształtu z polami potrzebnymi do moderacji i edycji. Kolejność miejsc w trasie albo kolekcji zmienia `PUT /api/admin/guides/{guide_id}/places/order` z pełną listą aktualnych przypięć `{places: [{place_id, sort_order}]}`; endpoint odrzuca brakujące, obce albo zdublowane miejsca, więc dodawanie i usuwanie miejsc pozostaje osobnym kontraktem.
 
 ## Admin Resources
 

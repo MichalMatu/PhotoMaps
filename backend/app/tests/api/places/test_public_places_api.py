@@ -136,7 +136,7 @@ def test_public_places_hide_places_from_archived_cities(client_session) -> None:
     assert client.get("/api/places/map?city_id=archived-city").status_code == 404
 
 
-def test_map_places_require_explicit_active_city_context(client_session) -> None:
+def test_map_places_default_to_all_active_cities_and_allow_city_filter(client_session) -> None:
     client, session = client_session
     session.add(City(id="poznan", name="Poznań", lat=52.4064, lon=16.9252, status="active", sort_order=20))
     wroclaw_place = Place(
@@ -153,15 +153,16 @@ def test_map_places_require_explicit_active_city_context(client_session) -> None
     add_approved_photo(session, wroclaw_place, "wroclaw-map-place", as_cover=True)
     add_approved_photo(session, poznan_place, "poznan-map-place", as_cover=True)
 
-    missing_response = client.get("/api/places/map")
+    all_response = client.get("/api/places/map")
     unknown_response = client.get("/api/places/map?city_id=missing")
     wroclaw_response = client.get("/api/places/map?city_id=wroclaw")
     poznan_response = client.get("/api/places/map?city_id=poznan")
 
-    assert missing_response.status_code == 422
+    assert all_response.status_code == 200
     assert unknown_response.status_code == 404
     assert wroclaw_response.status_code == 200
     assert poznan_response.status_code == 200
+    assert {place["slug"] for place in all_response.json()} == {"poznan-map-place", "wroclaw-map-place"}
     assert [place["slug"] for place in wroclaw_response.json()] == ["wroclaw-map-place"]
     assert [place["slug"] for place in poznan_response.json()] == ["poznan-map-place"]
 

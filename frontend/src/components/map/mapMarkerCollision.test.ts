@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { maxMarkerCollisionDrift, resolveMapMarkerCollisions, type MarkerCollisionLayout } from "./mapMarkerCollision";
+import {
+  hasMapMarkerCollisionOverlaps,
+  mapMarkerCollisionOverlapIds,
+  maxMarkerCollisionDrift,
+  resolveMapMarkerCollisions,
+  type MarkerCollisionLayout,
+} from "./mapMarkerCollision";
 
 function marker(index: number, overrides: Partial<Parameters<typeof resolveMapMarkerCollisions>[0][number]> = {}) {
   return {
@@ -138,6 +144,33 @@ describe("resolveMapMarkerCollisions", () => {
 
     expectNoOverlaps(layouts, 10);
     expect(layouts.every((layout) => !layout.isDisplaced)).toBe(true);
+  });
+
+  it("reports unresolved visual overlaps after layout", () => {
+    const layouts = [
+      {
+        height: 64,
+        id: "left",
+        isDisplaced: false,
+        offset: { x: 0, y: 0 },
+        point: { x: 100, y: 100 },
+        width: 82,
+      },
+      {
+        height: 64,
+        id: "right",
+        isDisplaced: false,
+        offset: { x: 0, y: 0 },
+        point: { x: 140, y: 100 },
+        width: 82,
+      },
+    ];
+
+    expect(hasMapMarkerCollisionOverlaps(layouts)).toBe(true);
+    expect(mapMarkerCollisionOverlapIds(layouts)).toEqual(new Set(["left", "right"]));
+    expect(hasMapMarkerCollisionOverlaps([{ ...layouts[0] }, { ...layouts[1], point: { x: 190, y: 100 } }])).toBe(
+      false,
+    );
   });
 
   it("does not turn compact regional city representatives into a detached matrix", () => {

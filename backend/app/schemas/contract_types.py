@@ -2,6 +2,7 @@ from typing import Literal
 
 CategoryStatus = Literal["active", "archived"]
 CityStatus = Literal["active", "archived"]
+GuideKind = Literal["route", "collection"]
 GuideStatus = Literal["draft", "published", "archived"]
 MapPreviewKind = Literal["photo", "memory"]
 PhotoRole = Literal["gallery"]

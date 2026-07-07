@@ -15,7 +15,7 @@ Ten dokument opisuje powtarzalny sposob dodawania nowych miast, miejsc i wysokie
 
 ## Kolejnosc Pracy
 
-1. Wybierz miasto i ustal jego jawny `city.id`, nazwe, srodek mapy, `default_zoom`, `sort_order` i status.
+1. Wybierz miasto i ustal jego jawny `city.id`, nazwe, `city.region`, srodek mapy, `default_zoom`, `sort_order` i status.
 2. Utworz albo zaktualizuj manifest `content/cities/{city}/manifest.json`.
 3. Dodaj miejsca do manifestu: stabilny `slug`, tytul, opis, `local_comment`, `article_blocks`, `category_ids`, wspolrzedne, wage i status.
 4. Przed dopisaniem kazdego miejsca sprawdz, czy ten sam obiekt juz nie istnieje w manifiescie albo adminie. Szukaj po tytule, aliasach, adresie, wspolrzednych i charakterze miejsca.
@@ -36,6 +36,7 @@ Minimalny szkic:
   "city": {
     "id": "krakow",
     "name": "Kraków",
+    "region": "Małopolskie",
     "lat": 50.0614,
     "lon": 19.9366,
     "default_zoom": 13,
@@ -47,7 +48,7 @@ Minimalny szkic:
 }
 ```
 
-`city.id` jest stabilnym kluczem importu. Nie zmieniaj go po imporcie bez migracji aktualnych danych. Nazwa miasta moze miec polskie znaki, ale `id` powinien byc prostym slugiem.
+`city.id` jest stabilnym kluczem importu. Nie zmieniaj go po imporcie bez migracji aktualnych danych. Nazwa miasta moze miec polskie znaki, ale `id` powinien byc prostym slugiem. `city.region` przechowuje wojewodztwo widoczne w publicznym wyborze miasta.
 
 ## Dodawanie Miejsc
 

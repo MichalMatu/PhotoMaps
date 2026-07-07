@@ -79,8 +79,8 @@ def reset_perf_storage(storage_root: Path) -> None:
 def ensure_perf_city(connection: sqlite3.Connection) -> None:
     connection.execute(
         """
-        INSERT INTO city (id, name, lat, lon, default_zoom, sort_order, status)
-        SELECT ?, 'Wrocław', 51.1079, 17.0385, 13, 10, 'active'
+        INSERT INTO city (id, name, region, lat, lon, default_zoom, sort_order, status)
+        SELECT ?, 'Wrocław', 'Dolnośląskie', 51.1079, 17.0385, 13, 10, 'active'
         WHERE NOT EXISTS (SELECT 1 FROM city WHERE id = ?)
         """,
         (CITY_ID, CITY_ID),
@@ -217,9 +217,9 @@ def seed_guides(connection: sqlite3.Connection, place_ids: list[str], now: str) 
         connection.execute(
             """
             INSERT INTO guide (
-                id, slug, title, description, article_blocks, route_points, status, created_at, updated_at
+                id, slug, kind, title, description, article_blocks, route_points, status, created_at, updated_at
             )
-            VALUES (?, ?, ?, ?, '[]', '[]', 'published', ?, ?)
+            VALUES (?, ?, 'route', ?, ?, '[]', '[]', 'published', ?, ?)
             """,
             (
                 guide_id,

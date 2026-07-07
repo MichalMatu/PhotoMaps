@@ -105,6 +105,89 @@ export function useAdminConfigDraft({ appConfig, onPlacesChanged, onSaved }: Use
     }));
   }
 
+  function updateMapMarkerBaseSize(axis: "height" | "width", value: number) {
+    setDraft((current) => ({
+      ...current,
+      map: {
+        ...current.map,
+        marker_scale: {
+          ...current.map.marker_scale,
+          base_size: {
+            ...current.map.marker_scale.base_size,
+            [axis]: value,
+          },
+        },
+      },
+    }));
+  }
+
+  function updateMapMarkerRenderScale(key: "max_render_scale" | "min_render_scale", value: number) {
+    setDraft((current) => ({
+      ...current,
+      map: {
+        ...current.map,
+        marker_scale: {
+          ...current.map.marker_scale,
+          [key]: value,
+        },
+      },
+    }));
+  }
+
+  function updateMapMarkerPriorityScale(key: "curve" | "max_scale" | "min_scale", value: number) {
+    setDraft((current) => ({
+      ...current,
+      map: {
+        ...current.map,
+        marker_scale: {
+          ...current.map.marker_scale,
+          priority: {
+            ...current.map.marker_scale.priority,
+            [key]: value,
+          },
+        },
+      },
+    }));
+  }
+
+  function updateMapMarkerDensity(
+    key:
+      | "full_density_zoom"
+      | "marker_viewport_area"
+      | "max_zoom_fill_ratio"
+      | "min_zoom"
+      | "min_zoom_fill_ratio"
+      | "zoom_curve",
+    value: number,
+  ) {
+    setDraft((current) => ({
+      ...current,
+      map: {
+        ...current.map,
+        marker_density: {
+          ...current.map.marker_density,
+          [key]: value,
+        },
+      },
+    }));
+  }
+
+  function updateMapMarkerPriority(
+    key: "editorial_weight_multiplier" | "memory_count_multiplier" | "photo_count_sqrt_multiplier" | "score_multiplier",
+    value: number,
+  ) {
+    setDraft((current) => ({
+      ...current,
+      map: {
+        ...current.map,
+        marker_priority: {
+          ...current.map.marker_priority,
+          [key]: value,
+        },
+      },
+    }));
+  }
+
   function updateCustomField(index: number, patch: Partial<AppConfigCustomFieldDraft>) {
     setDraft((current) => ({
       ...current,
@@ -212,6 +295,11 @@ export function useAdminConfigDraft({ appConfig, onPlacesChanged, onSaved }: Use
     updateLocale,
     updateLogoUrl,
     updateMapCenter,
+    updateMapMarkerBaseSize,
+    updateMapMarkerDensity,
+    updateMapMarkerPriority,
+    updateMapMarkerPriorityScale,
+    updateMapMarkerRenderScale,
     updateMapZoom,
     updatePrimaryColor,
     updateProductName,

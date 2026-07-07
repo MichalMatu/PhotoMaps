@@ -181,6 +181,7 @@ def audit_memories(
             expected_public=expected_public,
             issues=issues,
             check_images=check_images,
+            required=memory.status == "approved",
         )
         audit_public_media_path(
             media_kind="memory",
@@ -191,6 +192,7 @@ def audit_memories(
             expected_public=expected_public,
             issues=issues,
             check_images=check_images,
+            required=memory.status == "approved",
         )
         audit_audio_paths(
             media_kind="memory",
@@ -203,6 +205,7 @@ def audit_memories(
             expected_public=expected_public,
             issues=issues,
             required=memory.status != "rejected",
+            require_public=memory.status == "approved",
         )
     return {
         "records": len(memories),
@@ -334,16 +337,17 @@ def audit_audio_paths(
     expected_public: set[str],
     issues: IssueList,
     required: bool,
+    require_public: bool = True,
 ) -> None:
     if original_path is None and public_path is None:
         return
-    if original_path is None or public_path is None:
+    if original_path is None:
         add_issue(
             issues,
             "error",
             f"{media_kind}_incomplete_audio_paths",
             f"{media_kind}:{media_id}:audio",
-            "Audio attachment must have both private and public paths.",
+            "Audio attachment must have a private original path.",
         )
         return
     audit_private_audio_path(
@@ -355,6 +359,17 @@ def audit_audio_paths(
         issues=issues,
         required=required,
     )
+    if public_path is None and not require_public:
+        return
+    if public_path is None:
+        add_issue(
+            issues,
+            "error",
+            f"{media_kind}_incomplete_audio_paths",
+            f"{media_kind}:{media_id}:audio",
+            "Approved audio attachment must have a public path.",
+        )
+        return
     audit_public_audio_path(
         media_kind=media_kind,
         media_id=media_id,
@@ -375,10 +390,13 @@ def audit_public_media_path(
     expected_public: set[str],
     issues: IssueList,
     check_images: bool,
+    required: bool = True,
 ) -> None:
     target = f"{media_kind}:{media_id}:{field}"
     safe_rel = public_relative_path(url_path)
     if safe_rel is None:
+        if not required and url_path is None:
+            return
         add_issue(issues, "error", f"{media_kind}_unsafe_{field}", target, "Public media URL is not under /media/.")
         return
     expected_public.add(safe_rel)

@@ -2,6 +2,7 @@
   "city": {
     "id": "siedlecin",
     "name": "Siedlęcin",
+    "region": "Dolnośląskie",
     "lat": 50.9387107,
     "lon": 15.6905264,
     "default_zoom": 13,
