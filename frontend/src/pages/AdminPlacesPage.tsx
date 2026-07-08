@@ -29,26 +29,21 @@ export function AdminPlacesPage() {
     clearSession,
     guides,
     hasMoreMemories,
-    hasMorePhotos,
     hasMoreReports,
     isLoadingMoreMemories,
-    isLoadingMorePhotos,
     isLoadingMoreReports,
     loadMoreMemories,
-    loadMorePhotos,
     loadMoreReports,
     loadError,
     mapPlaces,
     memories,
     moderationCounts,
-    photos,
     places,
     refreshCities,
     refreshCategories,
     refreshGuides,
     refreshMapPlaces,
     refreshMemories,
-    refreshPhotos,
     refreshModerationCounts,
     refreshPlaces,
     refreshReports,
@@ -74,31 +69,25 @@ export function AdminPlacesPage() {
     setPhotoStatusFilter,
     setReportStatusFilter,
     visibleMemories,
-    visiblePhotos,
     visibleReports,
   } = useAdminSectionState({
     memories,
     moderationCounts,
-    photos,
     reports,
   });
   const placeRefreshActions = useAdminPlaceRefreshActions({
     activeSection,
     adminToken,
     appConfig,
-    photoStatusFilter,
     refreshCategories,
     refreshMapPlaces,
     refreshModerationCounts,
-    refreshPhotos,
     refreshPlaces,
   });
   const moderationRefreshActions = useAdminModerationRefreshActions({
     memoryStatusFilter,
-    photoStatusFilter,
     refreshMemories,
     refreshModerationCounts,
-    refreshPhotos,
     refreshPlaces,
     refreshReports,
     reportStatusFilter,
@@ -112,7 +101,6 @@ export function AdminPlacesPage() {
 
   function handlePhotoStatusFilterChange(status: typeof photoStatusFilter) {
     setPhotoStatusFilter(status);
-    refreshPhotos(status).catch(() => undefined);
   }
 
   function handleMemoryStatusFilterChange(status: typeof memoryStatusFilter) {
@@ -246,15 +234,11 @@ export function AdminPlacesPage() {
               memoryStatusFilter={memoryStatusFilter}
               moderationFilters={moderationFilters}
               hasMoreMemories={hasMoreMemories}
-              hasMorePhotos={hasMorePhotos}
               hasMoreReports={hasMoreReports}
               isLoadingMoreMemories={isLoadingMoreMemories}
-              isLoadingMorePhotos={isLoadingMorePhotos}
               isLoadingMoreReports={isLoadingMoreReports}
               onLoadMoreMemories={() => loadMoreMemories(memoryStatusFilter)}
-              onLoadMorePhotos={() => loadMorePhotos(photoStatusFilter)}
               onLoadMoreReports={() => loadMoreReports(reportStatusFilter)}
-              photos={visiblePhotos}
               photoStatusCounts={photoStatusCounts}
               photoStatusFilter={photoStatusFilter}
               places={places}

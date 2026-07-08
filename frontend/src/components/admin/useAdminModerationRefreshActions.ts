@@ -5,10 +5,8 @@ import { createAdminModerationRefreshActions } from "./adminRefreshActions";
 
 type Params = {
   memoryStatusFilter: ReviewStatus | "all";
-  photoStatusFilter: ReviewStatus | "all";
   refreshMemories: (status?: ReviewStatus | "all") => Promise<void>;
   refreshModerationCounts: () => Promise<void>;
-  refreshPhotos: (status?: ReviewStatus | "all") => Promise<void>;
   refreshPlaces: () => Promise<void>;
   refreshReports: (status?: ReportStatus | "all") => Promise<void>;
   reportStatusFilter: ReportStatus | "all";
@@ -16,10 +14,8 @@ type Params = {
 
 export function useAdminModerationRefreshActions({
   memoryStatusFilter,
-  photoStatusFilter,
   refreshMemories,
   refreshModerationCounts,
-  refreshPhotos,
   refreshPlaces,
   refreshReports,
   reportStatusFilter,
@@ -29,21 +25,17 @@ export function useAdminModerationRefreshActions({
       createAdminModerationRefreshActions({
         refreshMemories,
         refreshModerationCounts,
-        refreshPhotos,
         refreshPlaces,
         refreshReports,
       }),
-    [refreshMemories, refreshModerationCounts, refreshPhotos, refreshPlaces, refreshReports],
+    [refreshMemories, refreshModerationCounts, refreshPlaces, refreshReports],
   );
 
   const refreshMemoriesAndPlaces = useCallback(
     () => actions.refreshMemoriesAndPlaces(memoryStatusFilter),
     [actions, memoryStatusFilter],
   );
-  const refreshPhotosAndPlaces = useCallback(
-    () => actions.refreshPhotosAndPlaces(photoStatusFilter),
-    [actions, photoStatusFilter],
-  );
+  const refreshPhotosAndPlaces = useCallback(() => actions.refreshPhotosAndPlaces(), [actions]);
   const refreshReportsAndModerationCounts = useCallback(
     () => actions.refreshReportsAndModerationCounts(reportStatusFilter),
     [actions, reportStatusFilter],

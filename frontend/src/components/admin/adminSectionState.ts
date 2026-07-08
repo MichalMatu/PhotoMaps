@@ -10,7 +10,6 @@ import {
   DEFAULT_ADMIN_MODERATION_FILTERS,
   countActiveAdminModerationFilters,
   filterAdminModerationMemories,
-  filterAdminModerationPhotos,
   filterAdminModerationReports,
   type AdminModerationFilters,
 } from "./adminModerationFilters";
@@ -39,7 +38,6 @@ export {
   DEFAULT_ADMIN_MODERATION_FILTERS,
   countActiveAdminModerationFilters,
   filterAdminModerationMemories,
-  filterAdminModerationPhotos,
   filterAdminModerationReports,
 };
 export type { AdminModerationFilters };

@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import type { AdminPhoto, Category, City, Place } from "../../api/types";
-import { groupAdminMediaByPlace, groupAdminMediaPlaceGroupsByCity, selectPhotoAlbumCover } from "./adminMediaGroups";
+import {
+  groupAdminMediaByPlace,
+  groupAdminMediaPlaceGroupsByCity,
+  groupAdminPhotoAlbumsByPlace,
+  selectPhotoAlbumCover,
+} from "./adminMediaGroups";
 
 const category: Category = {
   description: null,
@@ -74,6 +79,7 @@ describe("groupAdminMediaByPlace", () => {
       {
         categoryLabel: "Sklepy",
         coverItem: { id: "photo-2" },
+        itemCount: 2,
         items: [{ id: "photo-1" }, { id: "photo-2" }],
         title: "Sklep",
       },
@@ -88,6 +94,25 @@ describe("groupAdminMediaByPlace", () => {
         items: [{ id: "photo-1" }],
         placeId: "place-1",
         title: "Sklep",
+      },
+    ]);
+  });
+});
+
+describe("groupAdminPhotoAlbumsByPlace", () => {
+  it("keeps album counts separate from lazily loaded photo items", () => {
+    expect(
+      groupAdminPhotoAlbumsByPlace(
+        [{ cover_photo: photo("photo-1"), photo_count: 7, place_id: place.id }],
+        [place],
+        [category],
+      ),
+    ).toMatchObject([
+      {
+        coverItem: { id: "photo-1" },
+        itemCount: 7,
+        items: [],
+        placeId: "place-1",
       },
     ]);
   });

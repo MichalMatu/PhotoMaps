@@ -22,13 +22,12 @@ describe("admin refresh actions", () => {
       refreshCategories: recorder.refresh("categories"),
       refreshMapPlaces: recorder.refresh("mapPlaces"),
       refreshModerationCounts: recorder.refresh("counts"),
-      refreshPhotos: recorder.refreshWithStatus("photos"),
       refreshPlaces: recorder.refresh("places"),
     });
 
-    await actions.refreshPhotosPlacesAndPublicPreview("approved");
+    await actions.refreshPhotosPlacesAndPublicPreview();
 
-    expect(recorder.calls).toEqual(["photos:approved", "places", "mapPlaces", "counts"]);
+    expect(recorder.calls).toEqual(["places", "mapPlaces", "counts"]);
   });
 
   it("refreshes place taxonomy changes with public preview only", async () => {
@@ -37,7 +36,6 @@ describe("admin refresh actions", () => {
       refreshCategories: recorder.refresh("categories"),
       refreshMapPlaces: recorder.refresh("mapPlaces"),
       refreshModerationCounts: recorder.refresh("counts"),
-      refreshPhotos: recorder.refreshWithStatus("photos"),
       refreshPlaces: recorder.refresh("places"),
     });
 
@@ -51,15 +49,14 @@ describe("admin refresh actions", () => {
     const actions = createAdminModerationRefreshActions({
       refreshMemories: recorder.refreshWithStatus("memories"),
       refreshModerationCounts: recorder.refresh("counts"),
-      refreshPhotos: recorder.refreshWithStatus("photos"),
       refreshPlaces: recorder.refresh("places"),
       refreshReports: recorder.refreshWithStatus("reports"),
     });
 
     await actions.refreshMemoriesAndPlaces("pending");
-    await actions.refreshPhotosAndPlaces("rejected");
+    await actions.refreshPhotosAndPlaces();
 
-    expect(recorder.calls).toEqual(["memories:pending", "places", "counts", "photos:rejected", "places", "counts"]);
+    expect(recorder.calls).toEqual(["memories:pending", "places", "counts", "places", "counts"]);
   });
 
   it("refreshes report moderation without reloading places or media queues", async () => {
@@ -67,7 +64,6 @@ describe("admin refresh actions", () => {
     const actions = createAdminModerationRefreshActions({
       refreshMemories: recorder.refreshWithStatus("memories"),
       refreshModerationCounts: recorder.refresh("counts"),
-      refreshPhotos: recorder.refreshWithStatus("photos"),
       refreshPlaces: recorder.refresh("places"),
       refreshReports: recorder.refreshWithStatus("reports"),
     });

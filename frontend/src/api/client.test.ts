@@ -6,6 +6,7 @@ import {
   bumpMediaCacheRevision,
   deleteAdminMemoryAudio,
   deleteAdminPhotoAudio,
+  getAdminPhotoAlbums,
   getAdminPlacePhotos,
   getAdminMemories,
   getAdminModerationCounts,
@@ -127,13 +128,19 @@ describe("admin queue requests", () => {
     await getAdminMemories({ limit: 25, status: "approved" });
     await getAdminReports({ limit: 20, status: "open" });
     await getAdminModerationCounts();
-    await getAdminPlacePhotos("place-1");
+    await getAdminPhotoAlbums({ audio: "with-audio", placeId: "place-1", query: "Most", status: "approved" });
+    await getAdminPlacePhotos("place-1", { audio: "without-audio", query: "Most", status: "approved" });
 
     expect(fetchMock.mock.calls[0][0]).toBe("http://127.0.0.1:8000/api/admin/photos?limit=25&status=pending");
     expect(fetchMock.mock.calls[1][0]).toBe("http://127.0.0.1:8000/api/admin/memories?limit=25&status=approved");
     expect(fetchMock.mock.calls[2][0]).toBe("http://127.0.0.1:8000/api/admin/reports?limit=20&status=open");
     expect(fetchMock.mock.calls[3][0]).toBe("http://127.0.0.1:8000/api/admin/moderation/counts");
-    expect(fetchMock.mock.calls[4][0]).toBe("http://127.0.0.1:8000/api/admin/places/place-1/photos");
+    expect(fetchMock.mock.calls[4][0]).toBe(
+      "http://127.0.0.1:8000/api/admin/photos/albums?status=approved&place_id=place-1&query=Most&audio=with-audio",
+    );
+    expect(fetchMock.mock.calls[5][0]).toBe(
+      "http://127.0.0.1:8000/api/admin/places/place-1/photos?status=approved&query=Most&audio=without-audio",
+    );
   });
 });
 

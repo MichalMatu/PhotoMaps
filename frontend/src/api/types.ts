@@ -171,6 +171,7 @@ export type AdminPlace = Place & {
 export type ReviewStatus = "pending" | "approved" | "rejected";
 export type ReviewFinalStatus = "approved" | "rejected";
 export type ReviewStatusCounts = Record<ReviewStatus | "all", number>;
+export type AdminMediaAudioFilter = "all" | "with-audio" | "without-audio";
 type PhotoRole = "gallery";
 type PhotoSource = "editorial";
 
@@ -202,6 +203,12 @@ export type AdminPhoto = Photo & {
   consent_confirmed: boolean;
   created_at: string;
   approved_at: string | null;
+};
+
+export type AdminPhotoAlbum = {
+  place_id: string;
+  photo_count: number;
+  cover_photo: AdminPhoto;
 };
 
 export type Memory = {

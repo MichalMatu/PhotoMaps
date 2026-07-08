@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo } from "react";
 
-import type { AppConfig, ReviewStatus } from "../../api/types";
+import type { AppConfig } from "../../api/types";
 import type { AdminSection } from "./adminSections";
 import { createAdminPlaceRefreshActions } from "./adminRefreshActions";
 
@@ -8,11 +8,9 @@ type Params = {
   activeSection: AdminSection;
   adminToken: string;
   appConfig: AppConfig | null;
-  photoStatusFilter: ReviewStatus | "all";
   refreshCategories: () => Promise<void>;
   refreshMapPlaces: () => Promise<void>;
   refreshModerationCounts: () => Promise<void>;
-  refreshPhotos: (status?: ReviewStatus | "all") => Promise<void>;
   refreshPlaces: () => Promise<void>;
 };
 
@@ -20,11 +18,9 @@ export function useAdminPlaceRefreshActions({
   activeSection,
   adminToken,
   appConfig,
-  photoStatusFilter,
   refreshCategories,
   refreshMapPlaces,
   refreshModerationCounts,
-  refreshPhotos,
   refreshPlaces,
 }: Params) {
   const actions = useMemo(
@@ -33,19 +29,15 @@ export function useAdminPlaceRefreshActions({
         refreshCategories,
         refreshMapPlaces,
         refreshModerationCounts,
-        refreshPhotos,
         refreshPlaces,
       }),
-    [refreshCategories, refreshMapPlaces, refreshModerationCounts, refreshPhotos, refreshPlaces],
+    [refreshCategories, refreshMapPlaces, refreshModerationCounts, refreshPlaces],
   );
 
-  const refreshPhotosAndPlaces = useCallback(
-    () => actions.refreshPhotosAndPlaces(photoStatusFilter),
-    [actions, photoStatusFilter],
-  );
+  const refreshPhotosAndPlaces = useCallback(() => actions.refreshPhotosAndPlaces(), [actions]);
   const refreshPhotosPlacesAndPublicPreview = useCallback(
-    () => actions.refreshPhotosPlacesAndPublicPreview(photoStatusFilter),
-    [actions, photoStatusFilter],
+    () => actions.refreshPhotosPlacesAndPublicPreview(),
+    [actions],
   );
 
   useEffect(() => {

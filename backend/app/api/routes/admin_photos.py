@@ -7,13 +7,15 @@ from app.api.redaction import redact_admin_media
 from app.db.session import get_session
 from app.schemas.contract_types import ReviewStatus
 from app.schemas.media_redaction import MediaRedactionPayload, MediaRedactionReport
-from app.schemas.photo import PhotoAdminRead, PhotoReview, PhotoUpdate
+from app.schemas.photo import PhotoAdminAlbumRead, PhotoAdminRead, PhotoReview, PhotoUpdate
 from app.schemas.place import PlaceAdminRead
 from app.serializers.photo import photo_to_admin_read
 from app.serializers.place import place_to_admin_read
 from app.services.admin_photos import (
+    AdminPhotoAudioFilter,
     delete_admin_photo,
     delete_admin_photo_audio,
+    list_admin_photo_album_rows,
     list_admin_photo_queue,
     replace_admin_photo_audio,
     review_admin_photo,
@@ -34,6 +36,21 @@ def list_admin_photos(
 ) -> list[PhotoAdminRead]:
     photos = list_admin_photo_queue(session, limit=limit, offset=offset, status=status)
     return [photo_to_admin_read(photo) for photo in photos]
+
+
+@router.get("/albums", response_model=list[PhotoAdminAlbumRead])
+def list_admin_photo_albums(
+    status: ReviewStatus | None = Query(default=None),
+    place_id: str | None = Query(default=None),
+    query: str | None = Query(default=None),
+    audio: AdminPhotoAudioFilter = Query(default="all"),
+    session: Session = Depends(get_session),
+) -> list[PhotoAdminAlbumRead]:
+    album_rows = list_admin_photo_album_rows(session, status=status, place_id=place_id, query=query, audio=audio)
+    return [
+        PhotoAdminAlbumRead(place_id=place_id, photo_count=photo_count, cover_photo=photo_to_admin_read(cover_photo))
+        for place_id, photo_count, cover_photo in album_rows
+    ]
 
 
 @router.post("/{photo_id}/review", response_model=PhotoAdminRead)

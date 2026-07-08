@@ -30,6 +30,12 @@ class PhotoAdminRead(PhotoRead):
     approved_at: datetime | None
 
 
+class PhotoAdminAlbumRead(SQLModel):
+    place_id: str
+    photo_count: int
+    cover_photo: PhotoAdminRead
+
+
 class PhotoReview(SQLModel):
     status: ReviewFinalStatus
 

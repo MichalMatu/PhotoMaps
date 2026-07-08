@@ -1,9 +1,8 @@
 import { Filter, ImagePlus } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import type {
   AdminMemory,
-  AdminPhoto,
   Category,
   City,
   Place,
@@ -35,17 +34,14 @@ type Props = {
   categories: Category[];
   cities: City[];
   hasMoreMemories: boolean;
-  hasMorePhotos: boolean;
   hasMoreReports: boolean;
   isLoadingMoreMemories: boolean;
-  isLoadingMorePhotos: boolean;
   isLoadingMoreReports: boolean;
   memories: AdminMemory[];
   memoryStatusCounts: ReviewStatusCounts;
   memoryStatusFilter: ReviewStatus | "all";
   moderationFilters: AdminModerationFilters;
   onLoadMoreMemories: () => Promise<void>;
-  onLoadMorePhotos: () => Promise<void>;
   onLoadMoreReports: () => Promise<void>;
   onMemoryReviewed: () => Promise<void>;
   onMemoryStatusFilterChange: (status: ReviewStatus | "all") => void;
@@ -55,7 +51,6 @@ type Props = {
   onReportChanged: () => Promise<void>;
   onReportStatusFilterChange: (status: ReportStatus | "all") => void;
   onSectionChange: (section: AdminModerationSectionKey) => void;
-  photos: AdminPhoto[];
   photoStatusCounts: ReviewStatusCounts;
   photoStatusFilter: ReviewStatus | "all";
   places: Place[];
@@ -70,17 +65,14 @@ export function AdminModerationSection({
   categories,
   cities,
   hasMoreMemories,
-  hasMorePhotos,
   hasMoreReports,
   isLoadingMoreMemories,
-  isLoadingMorePhotos,
   isLoadingMoreReports,
   memories,
   memoryStatusCounts,
   memoryStatusFilter,
   moderationFilters,
   onLoadMoreMemories,
-  onLoadMorePhotos,
   onLoadMoreReports,
   onMemoryReviewed,
   onMemoryStatusFilterChange,
@@ -90,7 +82,6 @@ export function AdminModerationSection({
   onReportChanged,
   onReportStatusFilterChange,
   onSectionChange,
-  photos,
   photoStatusCounts,
   photoStatusFilter,
   places,
@@ -99,9 +90,14 @@ export function AdminModerationSection({
   reportStatusFilter,
 }: Props) {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [photoRefreshKey, setPhotoRefreshKey] = useState(0);
   const [uploadErrorMessage, setUploadErrorMessage] = useState<string | null>(null);
+  const handlePhotoChanged = useCallback(async () => {
+    await onPhotoReviewed();
+    setPhotoRefreshKey((currentKey) => currentKey + 1);
+  }, [onPhotoReviewed]);
   const photoUpload = usePhotoUploadModal({
-    onReviewed: onPhotoReviewed,
+    onReviewed: handlePhotoChanged,
     setErrorMessage: setUploadErrorMessage,
   });
   const moderationSectionCounts = countModerationSections({
@@ -118,7 +114,7 @@ export function AdminModerationSection({
       ? { hasMore: hasMoreReports, isLoading: isLoadingMoreReports, onClick: onLoadMoreReports }
       : activeSection === "memories"
         ? { hasMore: hasMoreMemories, isLoading: isLoadingMoreMemories, onClick: onLoadMoreMemories }
-        : { hasMore: hasMorePhotos, isLoading: isLoadingMorePhotos, onClick: onLoadMorePhotos };
+        : null;
   const activeStatusTabs =
     activeSection === "reports" ? (
       <AdminSegmentedControl
@@ -195,9 +191,11 @@ export function AdminModerationSection({
         <AdminPhotosSection
           categories={categories}
           cities={cities}
-          photos={photos}
+          moderationFilters={moderationFilters}
           places={places}
-          onReviewed={onPhotoReviewed}
+          refreshKey={photoRefreshKey}
+          statusFilter={photoStatusFilter}
+          onChanged={handlePhotoChanged}
         />
       ) : null}
 
@@ -212,7 +210,7 @@ export function AdminModerationSection({
       ) : null}
 
       {activeSection === "reports" ? <AdminReportsSection reports={reports} onChanged={onReportChanged} /> : null}
-      {loadMore.hasMore ? (
+      {loadMore?.hasMore ? (
         <div className="admin-load-more">
           <button
             className="ui-button ui-button--secondary"

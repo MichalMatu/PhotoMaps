@@ -1,9 +1,11 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { bumpMediaCacheRevision } from "../../api/http";
 import {
   deleteAdminPhoto,
   deleteAdminPhotoAudio,
+  getAdminPhotoAlbums,
+  getAdminPlacePhotos,
   redactAdminPhoto,
   reviewPhoto,
   setCoverPhoto,
@@ -19,6 +21,7 @@ import type {
   ContentBlockType,
   Place,
   ReviewFinalStatus,
+  ReviewStatus,
 } from "../../api/types";
 import { emptyContentBlock } from "../content/contentBlocks";
 import { AdminMediaCityAlbums } from "./AdminMediaCityAlbums";
@@ -26,7 +29,8 @@ import { MediaRedactionModal } from "./MediaRedactionModal";
 import { PhotoQueueItem } from "./PhotoQueueItem";
 import { PhotoTextEditModal } from "./PhotoTextEditModal";
 import { SystemModal } from "./SystemModal";
-import { groupAdminMediaByPlace, groupAdminMediaPlaceGroupsByCity, selectPhotoAlbumCover } from "./adminMediaGroups";
+import { groupAdminMediaPlaceGroupsByCity, groupAdminPhotoAlbumsByPlace } from "./adminMediaGroups";
+import type { AdminModerationFilters } from "./adminModerationFilters";
 import type { RedactionPolygon } from "./mediaRedactionGeometry";
 import {
   EMPTY_PHOTO_ATTRIBUTION_DRAFT,
@@ -39,12 +43,23 @@ import { useAdminMediaExpansion } from "./useAdminMediaExpansion";
 type Props = {
   categories: Category[];
   cities: City[];
-  photos: AdminPhoto[];
+  moderationFilters: AdminModerationFilters;
+  onChanged: () => Promise<void>;
   places: Place[];
-  onReviewed: () => Promise<void>;
+  refreshKey: number;
+  statusFilter: ReviewStatus | "all";
 };
 
-export function PhotoQueue({ categories, cities, photos, places, onReviewed }: Props) {
+export function PhotoQueue({
+  categories,
+  cities,
+  moderationFilters,
+  onChanged,
+  places,
+  refreshKey,
+  statusFilter,
+}: Props) {
+  const [albums, setAlbums] = useState<Awaited<ReturnType<typeof getAdminPhotoAlbums>>>([]);
   const [captionDraft, setCaptionDraft] = useState("");
   const [descriptionDraftBlocks, setDescriptionDraftBlocks] = useState<ContentBlock[]>([]);
   const [attributionDraft, setAttributionDraft] = useState<PhotoAttributionDraft>({
@@ -52,14 +67,62 @@ export function PhotoQueue({ categories, cities, photos, places, onReviewed }: P
   });
   const [editingPhotoId, setEditingPhotoId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isAlbumsLoading, setIsAlbumsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isApplyingRedaction, setIsApplyingRedaction] = useState(false);
   const [isSavingCaption, setIsSavingCaption] = useState(false);
+  const [loadingPlaceIds, setLoadingPlaceIds] = useState<Set<string>>(() => new Set());
+  const [placePhotosById, setPlacePhotosById] = useState<Record<string, AdminPhoto[]>>({});
   const [photoToDelete, setPhotoToDelete] = useState<AdminPhoto | null>(null);
   const [photoToRedact, setPhotoToRedact] = useState<AdminPhoto | null>(null);
+  const photoFilterOptions = useMemo(
+    () => ({
+      audio: moderationFilters.audio,
+      placeId: moderationFilters.placeId,
+      query: moderationFilters.query,
+      status: statusFilter === "all" ? undefined : statusFilter,
+    }),
+    [moderationFilters.audio, moderationFilters.placeId, moderationFilters.query, statusFilter],
+  );
+
+  const loadAlbums = useCallback(async () => {
+    setIsAlbumsLoading(true);
+    try {
+      const nextAlbums = await getAdminPhotoAlbums(photoFilterOptions);
+      setAlbums(nextAlbums);
+    } catch (reason) {
+      setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się pobrać albumów zdjęć.");
+    } finally {
+      setIsAlbumsLoading(false);
+    }
+  }, [photoFilterOptions]);
+
+  const loadPlacePhotos = useCallback(
+    async (placeId: string) => {
+      setLoadingPlaceIds((currentIds) => new Set(currentIds).add(placeId));
+      try {
+        const nextPhotos = await getAdminPlacePhotos(placeId, photoFilterOptions);
+        setPlacePhotosById((currentPhotos) => ({ ...currentPhotos, [placeId]: nextPhotos }));
+      } catch (reason) {
+        setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się pobrać zdjęć miejsca.");
+      } finally {
+        setLoadingPlaceIds((currentIds) => {
+          const nextIds = new Set(currentIds);
+          nextIds.delete(placeId);
+          return nextIds;
+        });
+      }
+    },
+    [photoFilterOptions],
+  );
+
   const photoGroups = useMemo(
-    () => groupAdminMediaByPlace(photos, places, categories, selectPhotoAlbumCover),
-    [categories, photos, places],
+    () =>
+      groupAdminPhotoAlbumsByPlace(albums, places, categories).map((group) => ({
+        ...group,
+        items: placePhotosById[group.placeId] ?? [],
+      })),
+    [albums, categories, placePhotosById, places],
   );
   const cityGroups = useMemo(() => groupAdminMediaPlaceGroupsByCity(photoGroups, cities), [cities, photoGroups]);
   const [expandedCityId, setExpandedCityId] = useState<string | null>(null);
@@ -68,10 +131,16 @@ export function PhotoQueue({ categories, cities, photos, places, onReviewed }: P
     ? (photoGroups.flatMap((group) => group.items).find((photo) => photo.id === editingPhotoId) ?? null)
     : null;
 
+  useEffect(() => {
+    setPlacePhotosById({});
+    collapsePlace();
+    loadAlbums().catch(() => undefined);
+  }, [collapsePlace, loadAlbums, refreshKey]);
+
   async function handleReview(photoId: string, status: ReviewFinalStatus) {
     try {
       await reviewPhoto(photoId, status);
-      await onReviewed();
+      await onChanged();
     } catch (reason) {
       setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się zmienić statusu zdjęcia.");
     }
@@ -80,7 +149,7 @@ export function PhotoQueue({ categories, cities, photos, places, onReviewed }: P
   async function handleSetCover(photo: AdminPhoto) {
     try {
       await setCoverPhoto(photo.id);
-      await onReviewed();
+      await onChanged();
     } catch (reason) {
       setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się ustawić zdjęcia głównego.");
     }
@@ -89,7 +158,7 @@ export function PhotoQueue({ categories, cities, photos, places, onReviewed }: P
   async function handleClearCover(photo: AdminPhoto) {
     try {
       await updatePlaceCover(photo.place_id, null);
-      await onReviewed();
+      await onChanged();
     } catch (reason) {
       setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się zdjąć zdjęcia głównego.");
     }
@@ -98,6 +167,9 @@ export function PhotoQueue({ categories, cities, photos, places, onReviewed }: P
   function handleTogglePlace(placeId: string) {
     setEditingPhotoId(null);
     setDescriptionDraftBlocks([]);
+    if (expandedPlaceId !== placeId && !placePhotosById[placeId] && !loadingPlaceIds.has(placeId)) {
+      loadPlacePhotos(placeId).catch(() => undefined);
+    }
     togglePlace(placeId);
   }
 
@@ -124,7 +196,7 @@ export function PhotoQueue({ categories, cities, photos, places, onReviewed }: P
       setCaptionDraft("");
       setDescriptionDraftBlocks([]);
       setAttributionDraft({ ...EMPTY_PHOTO_ATTRIBUTION_DRAFT });
-      await onReviewed();
+      await onChanged();
     } catch (reason) {
       setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się zapisać podpisu zdjęcia.");
     } finally {
@@ -141,7 +213,7 @@ export function PhotoQueue({ categories, cities, photos, places, onReviewed }: P
     try {
       await deleteAdminPhoto(photoToDelete.id);
       setPhotoToDelete(null);
-      await onReviewed();
+      await onChanged();
     } catch (reason) {
       setPhotoToDelete(null);
       setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się trwale usunąć zdjęcia.");
@@ -163,7 +235,7 @@ export function PhotoQueue({ categories, cities, photos, places, onReviewed }: P
       });
       bumpMediaCacheRevision();
       setPhotoToRedact(null);
-      await onReviewed();
+      await onChanged();
     } catch (reason) {
       throw reason instanceof Error ? reason : new Error("Nie udało się zapisać redakcji zdjęcia.");
     } finally {
@@ -174,13 +246,13 @@ export function PhotoQueue({ categories, cities, photos, places, onReviewed }: P
   async function handleSaveAudio(photo: AdminPhoto, audioFile: File) {
     await updateAdminPhotoAudio(photo.id, audioFile);
     bumpMediaCacheRevision();
-    await onReviewed();
+    await onChanged();
   }
 
   async function handleDeleteAudio(photo: AdminPhoto) {
     await deleteAdminPhotoAudio(photo.id);
     bumpMediaCacheRevision();
-    await onReviewed();
+    await onChanged();
   }
 
   function addDescriptionDraftBlock(type: ContentBlockType) {
@@ -212,31 +284,61 @@ export function PhotoQueue({ categories, cities, photos, places, onReviewed }: P
   return (
     <>
       <div className="photo-queue">
-        <AdminMediaCityAlbums
-          countLabel={(count) => (count === 1 ? "1 zdjęcie" : `${count} zdjęć`)}
-          emptyMessage="Brak zdjęć dla wybranego statusu."
-          expandedCityId={expandedCityId}
-          expandedPlaceId={expandedPlaceId}
-          groups={cityGroups}
-          onToggleCity={handleToggleCity}
-          onTogglePlace={handleTogglePlace}
-          renderItem={(photo, group) => (
-            <PhotoQueueItem
-              group={group}
-              key={photo.id}
-              photo={photo}
-              onDelete={setPhotoToDelete}
-              onDeleteAudio={handleDeleteAudio}
-              onError={setErrorMessage}
-              onRedact={setPhotoToRedact}
-              onClearCover={handleClearCover}
-              onReview={handleReview}
-              onSaveAudio={handleSaveAudio}
-              onSetCover={handleSetCover}
-              onStartCaptionEdit={handleStartCaptionEdit}
-            />
-          )}
-        />
+        {isAlbumsLoading && albums.length === 0 ? <p className="ui-help">Ładowanie albumów zdjęć...</p> : null}
+        {!isAlbumsLoading || albums.length > 0 ? (
+          <AdminMediaCityAlbums
+            countLabel={(count) => (count === 1 ? "1 zdjęcie" : `${count} zdjęć`)}
+            emptyMessage="Brak zdjęć dla wybranego statusu."
+            expandedCityId={expandedCityId}
+            expandedPlaceId={expandedPlaceId}
+            groups={cityGroups}
+            onToggleCity={handleToggleCity}
+            onTogglePlace={handleTogglePlace}
+            renderItem={(photo, group) => (
+              <PhotoQueueItem
+                group={group}
+                key={photo.id}
+                photo={photo}
+                onDelete={setPhotoToDelete}
+                onDeleteAudio={handleDeleteAudio}
+                onError={setErrorMessage}
+                onRedact={setPhotoToRedact}
+                onClearCover={handleClearCover}
+                onReview={handleReview}
+                onSaveAudio={handleSaveAudio}
+                onSetCover={handleSetCover}
+                onStartCaptionEdit={handleStartCaptionEdit}
+              />
+            )}
+            renderPanel={(group) => {
+              if (loadingPlaceIds.has(group.placeId)) {
+                return <p className="ui-help">Ładowanie zdjęć miejsca...</p>;
+              }
+              if (!placePhotosById[group.placeId]) {
+                return null;
+              }
+              if (group.items.length === 0) {
+                return <p className="ui-empty">Brak zdjęć dla wybranego filtra.</p>;
+              }
+              return group.items.map((photo) => (
+                <PhotoQueueItem
+                  group={group}
+                  key={photo.id}
+                  photo={photo}
+                  onDelete={setPhotoToDelete}
+                  onDeleteAudio={handleDeleteAudio}
+                  onError={setErrorMessage}
+                  onRedact={setPhotoToRedact}
+                  onClearCover={handleClearCover}
+                  onReview={handleReview}
+                  onSaveAudio={handleSaveAudio}
+                  onSetCover={handleSetCover}
+                  onStartCaptionEdit={handleStartCaptionEdit}
+                />
+              ));
+            }}
+          />
+        ) : null}
       </div>
       {photoToDelete ? (
         <SystemModal

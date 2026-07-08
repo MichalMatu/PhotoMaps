@@ -15,6 +15,7 @@ type Props<TItem extends AdminMediaItem> = {
   onToggleCity: (cityId: string) => void;
   onTogglePlace: (placeId: string) => void;
   renderItem: (item: TItem, group: AdminMediaPlaceGroup<TItem>) => ReactNode;
+  renderPanel?: (group: AdminMediaPlaceGroup<TItem>) => ReactNode;
 };
 
 function placeCountLabel(count: number) {
@@ -34,6 +35,7 @@ export function AdminMediaCityAlbums<TItem extends AdminMediaItem>({
   onToggleCity,
   onTogglePlace,
   renderItem,
+  renderPanel,
 }: Props<TItem>) {
   if (groups.length === 0) {
     return <p className="ui-empty">{emptyMessage}</p>;
@@ -74,6 +76,7 @@ export function AdminMediaCityAlbums<TItem extends AdminMediaItem>({
               groups={group.placeGroups}
               onTogglePlace={onTogglePlace}
               renderItem={renderItem}
+              renderPanel={renderPanel}
             />
           </AdminDisclosureRow>
         );

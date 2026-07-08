@@ -1,6 +1,8 @@
 from datetime import UTC, datetime
+from typing import Literal
 
 from fastapi import HTTPException, UploadFile
+from sqlalchemy import String, cast, or_
 from sqlmodel import Session, select
 
 from app.models.photo import Photo
@@ -27,6 +29,7 @@ PHOTO_ATTRIBUTION_FIELDS = {
     "attribution_license_url",
     "attribution_source_url",
 }
+AdminPhotoAudioFilter = Literal["all", "with-audio", "without-audio"]
 
 
 def get_admin_photo(session: Session, photo_id: str) -> Photo:
@@ -50,14 +53,110 @@ def list_admin_photo_queue(
     offset: int,
     status: str | None,
 ) -> list[Photo]:
+    statement = admin_photo_statement(session, status=status).order_by(Photo.created_at.desc())
+    return list(session.exec(statement.offset(offset).limit(limit)).all())
+
+
+def list_admin_place_photos(
+    session: Session,
+    *,
+    place_id: str,
+    status: str | None = None,
+    query: str | None = None,
+    audio: AdminPhotoAudioFilter = "all",
+) -> list[Photo]:
+    statement = admin_photo_statement(session, status=status, place_id=place_id, query=query, audio=audio).order_by(
+        Photo.created_at.desc()
+    )
+    return list(session.exec(statement).all())
+
+
+def list_admin_photo_album_rows(
+    session: Session,
+    *,
+    status: str | None = None,
+    place_id: str | None = None,
+    query: str | None = None,
+    audio: AdminPhotoAudioFilter = "all",
+) -> list[tuple[str, int, Photo]]:
+    photos = list(
+        session.exec(
+            admin_photo_statement(session, status=status, place_id=place_id, query=query, audio=audio).order_by(
+                Photo.created_at.desc()
+            )
+        ).all()
+    )
+    if not photos:
+        return []
+
+    place_ids = sorted({photo.place_id for photo in photos})
+    places = session.exec(select(Place).where(Place.id.in_(place_ids))).all()
+    place_by_id = {place.id: place for place in places}
+    photos_by_place_id: dict[str, list[Photo]] = {}
+    for photo in photos:
+        if photo.place_id not in place_by_id:
+            continue
+        photos_by_place_id.setdefault(photo.place_id, []).append(photo)
+
+    album_rows: list[tuple[str, int, Photo]] = []
+    for current_place_id, place_photos in photos_by_place_id.items():
+        place = place_by_id[current_place_id]
+        cover_photo = select_album_cover_photo(place_photos, place)
+        album_rows.append((current_place_id, len(place_photos), cover_photo))
+
+    return sorted(album_rows, key=lambda row: (place_by_id[row[0]].title.lower(), row[0]))
+
+
+def admin_photo_statement(
+    session: Session,
+    *,
+    status: str | None = None,
+    place_id: str | None = None,
+    query: str | None = None,
+    audio: AdminPhotoAudioFilter = "all",
+):
     if status is not None:
         ensure_visible_review_status(status)
+    if audio not in {"all", "with-audio", "without-audio"}:
+        raise HTTPException(status_code=422, detail="Unsupported audio filter")
+    if place_id is not None and session.get(Place, place_id) is None:
+        raise HTTPException(status_code=404, detail="Place not found")
 
-    statement = select(Photo).join(Place, Photo.place_id == Place.id).order_by(Photo.created_at.desc())
+    statement = select(Photo).join(Place, Photo.place_id == Place.id)
     if status is not None:
         statement = statement.where(Photo.status == status)
+    if place_id is not None:
+        statement = statement.where(Photo.place_id == place_id)
+    if audio == "with-audio":
+        statement = statement.where(Photo.audio_public_path.is_not(None))
+    elif audio == "without-audio":
+        statement = statement.where(Photo.audio_public_path.is_(None))
 
-    return list(session.exec(statement.offset(offset).limit(limit)).all())
+    normalized_query = query.strip() if query else ""
+    if normalized_query:
+        pattern = f"%{normalized_query}%"
+        statement = statement.where(
+            or_(
+                Photo.id.ilike(pattern),
+                Photo.caption.ilike(pattern),
+                cast(Photo.description_blocks, String).ilike(pattern),
+                Photo.attribution_author.ilike(pattern),
+                Photo.attribution_source_url.ilike(pattern),
+                Photo.attribution_license.ilike(pattern),
+                Photo.attribution_license_url.ilike(pattern),
+            )
+        )
+
+    return statement
+
+
+def select_album_cover_photo(photos: list[Photo], place: Place) -> Photo:
+    if place.cover_photo_id is not None:
+        cover_photo = next((photo for photo in photos if photo.id == place.cover_photo_id), None)
+        if cover_photo is not None:
+            return cover_photo
+
+    return next((photo for photo in photos if photo.status == "approved"), photos[0])
 
 
 def review_admin_photo(session: Session, photo_id: str, status: str) -> Photo:

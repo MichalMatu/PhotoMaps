@@ -137,7 +137,6 @@ export function useAdminPanelData(): Result {
       refreshMemories(),
       refreshModerationCounts(),
       refreshPlaces(),
-      refreshPhotos(),
       refreshReports(),
     ]);
     setAccessMessage(null);
@@ -149,7 +148,6 @@ export function useAdminPanelData(): Result {
     refreshGuides,
     refreshMemories,
     refreshModerationCounts,
-    refreshPhotos,
     refreshPlaces,
     refreshReports,
   ]);

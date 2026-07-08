@@ -1,5 +1,13 @@
 import type { Page } from "@playwright/test";
-import type { AdminMemory, AdminModerationCounts, AdminPhoto, City, PlaceMapItem, Report } from "../../src/api/types";
+import type {
+  AdminMemory,
+  AdminModerationCounts,
+  AdminPhoto,
+  AdminPhotoAlbum,
+  City,
+  PlaceMapItem,
+  Report,
+} from "../../src/api/types";
 
 import {
   adminGuides,
@@ -20,6 +28,11 @@ import { API_URL } from "./config";
 
 type SharedMapPlace = (typeof places)[number] | PlaceMapItem;
 type SharedCity = typeof city | City;
+type AdminAlbumPlace = {
+  cover_photo_id: string | null;
+  id: string;
+  title: string;
+};
 
 function imageSvg(url: string) {
   const isSecondary = url.includes("nadodrze") || url.includes("side");
@@ -61,6 +74,64 @@ function pagedQueueItems<TItem extends { status: string }>(requestUrl: string, i
   const offset = Number(url.searchParams.get("offset") ?? 0);
   const filteredItems = status ? items.filter((item) => item.status === status) : items;
   return filteredItems.slice(offset, offset + limit);
+}
+
+function photoMatchesAdminFilters(photo: AdminPhoto, url: URL) {
+  const status = url.searchParams.get("status");
+  const placeId = url.searchParams.get("place_id");
+  const query = url.searchParams.get("query")?.trim().toLocaleLowerCase("pl") ?? "";
+  const audio = url.searchParams.get("audio");
+
+  if (status && photo.status !== status) return false;
+  if (placeId && photo.place_id !== placeId) return false;
+  if (audio === "with-audio" && !photo.audio) return false;
+  if (audio === "without-audio" && photo.audio) return false;
+  if (!query) return true;
+
+  return [
+    photo.caption,
+    photo.id,
+    photo.attribution_author,
+    photo.attribution_license,
+    photo.attribution_license_url,
+    photo.attribution_source_url,
+    photo.description_blocks.map((block) => block.text).join(" "),
+  ]
+    .filter(Boolean)
+    .some((value) => value?.toLocaleLowerCase("pl").includes(query));
+}
+
+function filteredAdminPhotos(requestUrl: string, items: AdminPhoto[]) {
+  const url = new URL(requestUrl);
+  return items.filter((photo) => photoMatchesAdminFilters(photo, url));
+}
+
+function adminPhotoAlbums(requestUrl: string, items: AdminPhoto[], placeList: AdminAlbumPlace[]): AdminPhotoAlbum[] {
+  const photosByPlaceId = new Map<string, AdminPhoto[]>();
+  for (const photo of filteredAdminPhotos(requestUrl, items)) {
+    const placePhotos = photosByPlaceId.get(photo.place_id) ?? [];
+    placePhotos.push(photo);
+    photosByPlaceId.set(photo.place_id, placePhotos);
+  }
+
+  return Array.from(photosByPlaceId.entries())
+    .map(([placeId, placePhotos]) => {
+      const place = placeList.find((item) => item.id === placeId);
+      const coverPhoto =
+        placePhotos.find((photo) => photo.id === place?.cover_photo_id) ??
+        placePhotos.find((photo) => photo.status === "approved") ??
+        placePhotos[0];
+      return {
+        cover_photo: coverPhoto,
+        photo_count: placePhotos.length,
+        place_id: placeId,
+      };
+    })
+    .sort((firstAlbum, secondAlbum) => {
+      const firstPlace = placeList.find((place) => place.id === firstAlbum.place_id);
+      const secondPlace = placeList.find((place) => place.id === secondAlbum.place_id);
+      return (firstPlace?.title ?? firstAlbum.place_id).localeCompare(secondPlace?.title ?? secondAlbum.place_id, "pl");
+    });
 }
 
 export async function mockSharedApi(
@@ -161,9 +232,14 @@ export async function mockAdminApi(page: Page, options: MockAdminApiOptions = {}
         .request()
         .url()
         .match(/\/api\/admin\/places\/([^/]+)\/photos/) ?? [];
+    const requestUrl = new URL(route.request().url());
+    requestUrl.searchParams.set("place_id", placeId);
     route.fulfill({
-      json: adminPhotoList.filter((photo) => photo.place_id === placeId),
+      json: filteredAdminPhotos(requestUrl.toString(), adminPhotoList),
     });
+  });
+  await page.route(apiListPath("/api/admin/photos/albums"), (route) => {
+    route.fulfill({ json: adminPhotoAlbums(route.request().url(), adminPhotoList, adminPlaceList) });
   });
   await page.route(apiListPath("/api/admin/photos"), (route) => {
     route.fulfill({ json: pagedQueueItems(route.request().url(), adminPhotoList) });

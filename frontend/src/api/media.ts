@@ -1,6 +1,8 @@
 import { request } from "./http";
 import type {
+  AdminMediaAudioFilter,
   AdminMemory,
+  AdminPhotoAlbum,
   AdminMemoryUpdatePayload,
   AdminPlace,
   AdminPhoto,
@@ -25,6 +27,13 @@ type AdminReviewQueueOptions = {
   status?: ReviewStatus;
 };
 
+type AdminPhotoFilterOptions = {
+  audio?: AdminMediaAudioFilter;
+  placeId?: string;
+  query?: string;
+  status?: ReviewStatus;
+};
+
 function adminReviewQueueQuery(options: AdminReviewQueueOptions = {}): string {
   const query = new URLSearchParams();
   query.set("limit", String(options.limit ?? ADMIN_REVIEW_QUEUE_LIMIT));
@@ -35,6 +44,25 @@ function adminReviewQueueQuery(options: AdminReviewQueueOptions = {}): string {
     query.set("status", options.status);
   }
   return `?${query.toString()}`;
+}
+
+function adminPhotoFilterQuery(options: AdminPhotoFilterOptions = {}): string {
+  const query = new URLSearchParams();
+  if (options.status) {
+    query.set("status", options.status);
+  }
+  if (options.placeId && options.placeId !== "all") {
+    query.set("place_id", options.placeId);
+  }
+  const normalizedQuery = options.query?.trim() ?? "";
+  if (normalizedQuery) {
+    query.set("query", normalizedQuery);
+  }
+  if (options.audio && options.audio !== "all") {
+    query.set("audio", options.audio);
+  }
+  const queryString = query.toString();
+  return queryString ? `?${queryString}` : "";
 }
 
 export function getPlaceMemories(placeId: string): Promise<Memory[]> {
@@ -73,8 +101,12 @@ export function uploadAdminPlacePhoto(
   });
 }
 
-export function getAdminPlacePhotos(placeId: string): Promise<AdminPhoto[]> {
-  return request<AdminPhoto[]>(`/api/admin/places/${placeId}/photos`);
+export function getAdminPlacePhotos(placeId: string, options: AdminPhotoFilterOptions = {}): Promise<AdminPhoto[]> {
+  return request<AdminPhoto[]>(`/api/admin/places/${placeId}/photos${adminPhotoFilterQuery(options)}`);
+}
+
+export function getAdminPhotoAlbums(options: AdminPhotoFilterOptions = {}): Promise<AdminPhotoAlbum[]> {
+  return request<AdminPhotoAlbum[]>(`/api/admin/photos/albums${adminPhotoFilterQuery(options)}`);
 }
 
 function appendOptionalFormField(formData: FormData, name: string, value: string | null | undefined) {

@@ -501,6 +501,100 @@ def test_admin_photo_list_applies_queue_limit(client_session) -> None:
     assert {photo["id"] for photo in response.json()}.isdisjoint({photo["id"] for photo in next_response.json()})
 
 
+def test_admin_photo_albums_cover_all_matching_places_without_queue_limit(client_session) -> None:
+    client, session = client_session
+    places = [create_place(session, slug=f"album-place-{index}", title=f"Album {index}") for index in range(3)]
+
+    photos = []
+    for index, place in enumerate(places):
+        photo = Photo(
+            place_id=place.id,
+            original_path=f"photos/album-{index}-original.jpg",
+            public_path=f"/media/photos/album-{index}.jpg",
+            thumb_path=f"/media/photos/album-{index}-thumb.jpg",
+            status="approved",
+            created_at=datetime(2026, 1, index + 1, tzinfo=UTC),
+        )
+        photos.append(photo)
+        session.add(photo)
+    session.commit()
+    for place, photo in zip(places, photos, strict=True):
+        place.cover_photo_id = photo.id
+        place.photo_count = 1
+        session.add(place)
+    session.commit()
+
+    limited_queue_response = client.get("/api/admin/photos?limit=2", headers=ADMIN_HEADERS)
+    album_response = client.get("/api/admin/photos/albums?status=approved", headers=ADMIN_HEADERS)
+
+    assert limited_queue_response.status_code == 200
+    assert len(limited_queue_response.json()) == 2
+    assert album_response.status_code == 200
+    assert {album["place_id"] for album in album_response.json()} == {place.id for place in places}
+    assert [album["photo_count"] for album in album_response.json()] == [1, 1, 1]
+    assert {album["cover_photo"]["id"] for album in album_response.json()} == {photo.id for photo in photos}
+
+
+def test_admin_place_photo_list_applies_lazy_album_filters(client_session) -> None:
+    client, session = client_session
+    place = create_place(session)
+    matching_photo = Photo(
+        place_id=place.id,
+        original_path="photos/matching-original.jpg",
+        public_path="/media/photos/matching.jpg",
+        thumb_path="/media/photos/matching-thumb.jpg",
+        audio_original_path="photos/matching-audio-original.mp3",
+        audio_public_path="/media/photos/matching-audio.mp3",
+        audio_mime_type="audio/mpeg",
+        audio_size_bytes=123,
+        audio_duration_seconds=4,
+        status="approved",
+        caption="Widok z Mostu",
+        created_at=datetime(2026, 1, 2, tzinfo=UTC),
+    )
+    session.add(matching_photo)
+    session.add(
+        Photo(
+            place_id=place.id,
+            original_path="photos/other-original.jpg",
+            public_path="/media/photos/other.jpg",
+            thumb_path="/media/photos/other-thumb.jpg",
+            status="approved",
+            caption="Inne ujęcie",
+            created_at=datetime(2026, 1, 1, tzinfo=UTC),
+        )
+    )
+    session.add(
+        Photo(
+            place_id=place.id,
+            original_path="photos/pending-original.jpg",
+            public_path="/media/photos/pending.jpg",
+            thumb_path="/media/photos/pending-thumb.jpg",
+            status="pending",
+            caption="Widok oczekujący",
+            created_at=datetime(2026, 1, 3, tzinfo=UTC),
+        )
+    )
+    session.commit()
+    session.refresh(matching_photo)
+
+    album_response = client.get(
+        "/api/admin/photos/albums?status=approved&query=Mostu&audio=with-audio",
+        headers=ADMIN_HEADERS,
+    )
+    photos_response = client.get(
+        f"/api/admin/places/{place.id}/photos?status=approved&query=Mostu&audio=with-audio",
+        headers=ADMIN_HEADERS,
+    )
+
+    assert album_response.status_code == 200
+    assert album_response.json()[0]["place_id"] == place.id
+    assert album_response.json()[0]["photo_count"] == 1
+    assert album_response.json()[0]["cover_photo"]["id"] == matching_photo.id
+    assert photos_response.status_code == 200
+    assert [photo["id"] for photo in photos_response.json()] == [matching_photo.id]
+
+
 def test_admin_place_photo_list_returns_selected_place_photos(client_session) -> None:
     client, session = client_session
     place = create_place(session)
