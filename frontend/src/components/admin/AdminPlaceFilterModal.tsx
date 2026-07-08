@@ -1,3 +1,5 @@
+import { type FormEvent, useEffect, useRef } from "react";
+
 import type { Category, City } from "../../api/types";
 import {
   DEFAULT_ADMIN_PLACE_FILTERS,
@@ -24,8 +26,29 @@ const COMPLETENESS_OPTIONS: Array<{ label: string; value: AdminPlaceCompleteness
 ];
 
 export function AdminPlaceFilterModal({ categories, cities, filters, onChange, onClose }: Props) {
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const focusTimer = window.setTimeout(() => {
+      const searchInput = searchInputRef.current;
+      if (!searchInput) {
+        return;
+      }
+      searchInput.focus({ preventScroll: true });
+      const cursorPosition = searchInput.value.length;
+      searchInput.setSelectionRange(cursorPosition, cursorPosition);
+    }, 0);
+
+    return () => window.clearTimeout(focusTimer);
+  }, []);
+
   function updateFilter(nextFilters: Partial<AdminPlaceFilters>) {
     onChange({ ...filters, ...nextFilters });
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    onClose();
   }
 
   return (
@@ -44,10 +67,11 @@ export function AdminPlaceFilterModal({ categories, cities, filters, onChange, o
       title="Filtry miejsc"
       onClose={onClose}
     >
-      <div className="ui-form admin-filter-form">
+      <form className="ui-form admin-filter-form" onSubmit={handleSubmit}>
         <label>
           Szukaj
           <input
+            ref={searchInputRef}
             value={filters.query}
             placeholder="Nazwa, slug albo opis"
             onChange={(event) => updateFilter({ query: event.target.value })}
@@ -88,7 +112,7 @@ export function AdminPlaceFilterModal({ categories, cities, filters, onChange, o
             ))}
           </select>
         </label>
-      </div>
+      </form>
     </SystemModal>
   );
 }

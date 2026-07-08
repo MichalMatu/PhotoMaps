@@ -85,6 +85,13 @@ export function AdminPlacesSection({
     });
   }
 
+  function closeFilterModal() {
+    setIsFilterModalOpen(false);
+    if (activeFilterCount > 0) {
+      setExpandedCityIds(new Set(placeCityGroups.map((group) => group.cityId)));
+    }
+  }
+
   return (
     <section className="admin-section admin-section-single places-manager">
       <AdminPlacesToolbar
@@ -134,7 +141,7 @@ export function AdminPlacesSection({
           cities={cities}
           filters={filters}
           onChange={setFilters}
-          onClose={() => setIsFilterModalOpen(false)}
+          onClose={closeFilterModal}
         />
       ) : null}
     </section>

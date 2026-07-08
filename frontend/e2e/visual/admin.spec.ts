@@ -331,6 +331,33 @@ test("admin place empty modal filter shows one empty state", async ({ page }) =>
   await expect(page.getByText("Brak miejsc w tym mieście.")).toHaveCount(0);
 });
 
+test("admin place filter search is focused and submits with Enter", async ({ page }) => {
+  await mockAdminApi(page);
+  await page.goto("/");
+  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
+  await page.goto("/admin");
+  await page
+    .getByRole("navigation", { name: "Sekcje panelu admina" })
+    .getByRole("button", { name: /Miejsca/ })
+    .click();
+
+  await page.getByRole("button", { name: "Filtry miejsc" }).click();
+  const filterDialog = page.getByRole("dialog", { name: "Filtry miejsc" });
+  const searchInput = filterDialog.getByLabel("Szukaj");
+  await expect(searchInput).toBeFocused();
+
+  await searchInput.fill("rynek");
+  await searchInput.press("Enter");
+
+  await expect(filterDialog).toBeHidden();
+  await expect(page.getByRole("button", { name: /Filtry miejsc, aktywne 1/ })).toBeVisible();
+  const cityToggle = page.locator(".place-city-toggle").filter({ hasText: city.name });
+  await expect(cityToggle).toHaveAttribute("aria-expanded", "true");
+  await expect(cityToggle).toContainText("1 miejsce");
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: adminPlaces[0].title })).toBeVisible();
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: adminPlaces[1].title })).toHaveCount(0);
+});
+
 test("admin moderation keeps inbox filters in the shared toolbar", async ({ page }) => {
   await mockAdminApi(page);
   await page.goto("/");
