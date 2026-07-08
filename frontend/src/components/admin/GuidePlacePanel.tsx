@@ -1,6 +1,7 @@
-import type { FormEvent } from "react";
+import { type FormEvent, useMemo } from "react";
 
 import type { City, Guide, GuideDetail, Place } from "../../api/types";
+import { sortAdminCitiesByName } from "./adminListSorting";
 import { adminPlaceStatusLabel } from "./adminStatusUi";
 import type { GuidePlaceMoveDirection } from "./guidePlaceSelection";
 
@@ -40,7 +41,10 @@ export function GuidePlacePanel({
   selectedGuide,
 }: Props) {
   const guidePlaces = guideDetail?.places ?? [];
-  const availableCities = cities.filter((city) => availablePlaces.some((place) => place.city_id === city.id));
+  const availableCities = useMemo(
+    () => sortAdminCitiesByName(cities.filter((city) => availablePlaces.some((place) => place.city_id === city.id))),
+    [availablePlaces, cities],
+  );
   const selectedCityName = cities.find((city) => city.id === selectedCityId)?.name ?? selectedCityId;
 
   return (

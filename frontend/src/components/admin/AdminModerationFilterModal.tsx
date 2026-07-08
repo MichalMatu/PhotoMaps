@@ -1,4 +1,7 @@
+import { useMemo } from "react";
+
 import type { Place } from "../../api/types";
+import { sortAdminPlacesByTitle } from "./adminListSorting";
 import {
   DEFAULT_ADMIN_MODERATION_FILTERS,
   type AdminModerationAudioFilter,
@@ -21,6 +24,8 @@ const AUDIO_OPTIONS: Array<{ label: string; value: AdminModerationAudioFilter }>
 ];
 
 export function AdminModerationFilterModal({ filters, onChange, onClose, places, showAudioFilter }: Props) {
+  const sortedPlaces = useMemo(() => sortAdminPlacesByTitle(places), [places]);
+
   function updateFilter(nextFilters: Partial<AdminModerationFilters>) {
     onChange({ ...filters, ...nextFilters });
   }
@@ -54,7 +59,7 @@ export function AdminModerationFilterModal({ filters, onChange, onClose, places,
           Miejsce
           <select value={filters.placeId} onChange={(event) => updateFilter({ placeId: event.target.value })}>
             <option value="all">Wszystkie miejsca</option>
-            {places.map((place) => (
+            {sortedPlaces.map((place) => (
               <option key={place.id} value={place.id}>
                 {place.title}
               </option>

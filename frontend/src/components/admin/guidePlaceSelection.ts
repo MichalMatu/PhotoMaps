@@ -1,4 +1,5 @@
-import type { GuidePlaceOrderPayload, Place } from "../../api/types";
+import type { City, GuidePlaceOrderPayload, Place } from "../../api/types";
+import { compareAdminPlacesByTitle, sortAdminCitiesByName } from "./adminListSorting";
 
 type SelectableGuidePlace = Pick<Place, "city_id" | "id" | "slug" | "status" | "title">;
 
@@ -21,11 +22,21 @@ export function filterSelectableGuidePlaces<TPlace extends SelectableGuidePlace>
       }
       return `${place.title} ${place.slug}`.toLowerCase().includes(normalizedQuery);
     })
-    .sort((firstPlace, secondPlace) => firstPlace.title.localeCompare(secondPlace.title, "pl"));
+    .sort(compareAdminPlacesByTitle);
 }
 
-export function firstGuideCityId<TPlace extends Pick<Place, "city_id" | "status">>(places: TPlace[]) {
-  return places.find((place) => place.status === "published")?.city_id ?? "";
+export function firstGuideCityId<TPlace extends Pick<Place, "city_id" | "status">>(
+  places: TPlace[],
+  cities: Array<Pick<City, "id" | "name">>,
+) {
+  const cityIds = new Set(places.filter((place) => place.status === "published").map((place) => place.city_id));
+  const configuredCities = cities.filter((city) => cityIds.has(city.id));
+  const configuredCityIds = new Set(configuredCities.map((city) => city.id));
+  const missingCities = Array.from(cityIds)
+    .filter((cityId) => !configuredCityIds.has(cityId))
+    .map((cityId) => ({ id: cityId, name: cityId }));
+
+  return [...sortAdminCitiesByName(configuredCities), ...sortAdminCitiesByName(missingCities)][0]?.id ?? "";
 }
 
 export function toggleGuidePlaceSelection(selectedPlaceIds: string[], placeId: string) {

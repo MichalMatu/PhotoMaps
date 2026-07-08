@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { Place } from "../../api/types";
 import {
   filterSelectableGuidePlaces,
+  firstGuideCityId,
   guidePlaceOrderPayload,
   moveGuidePlace,
   toggleGuidePlaceSelection,
@@ -41,6 +42,31 @@ describe("filterSelectableGuidePlaces", () => {
     );
 
     expect(selectablePlaces.map((place) => place.id)).toEqual(["nadodrze"]);
+  });
+
+  it("sorts selectable places alphabetically by title", () => {
+    const selectablePlaces = filterSelectableGuidePlaces(
+      [place("zoo", "Zoo"), place("arena", "Arena"), place("rynek", "Rynek")],
+      [],
+      "wroclaw",
+      "",
+    );
+
+    expect(selectablePlaces.map((selectablePlace) => selectablePlace.id)).toEqual(["arena", "rynek", "zoo"]);
+  });
+});
+
+describe("firstGuideCityId", () => {
+  it("uses the first published city alphabetically by city name", () => {
+    expect(
+      firstGuideCityId(
+        [place("wroclaw-place", "Wrocław place", "wroclaw"), place("krakow-place", "Kraków place", "krakow")],
+        [
+          { id: "wroclaw", name: "Wrocław" },
+          { id: "krakow", name: "Kraków" },
+        ],
+      ),
+    ).toBe("krakow");
   });
 });
 

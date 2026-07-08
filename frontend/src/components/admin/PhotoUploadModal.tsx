@@ -1,4 +1,4 @@
-import type { FormEvent } from "react";
+import { type FormEvent, useMemo } from "react";
 
 import type { City, ContentBlock, ContentBlockType, Place } from "../../api/types";
 import { ContentBlockEditor } from "../content/ContentBlockEditor";
@@ -7,6 +7,7 @@ import { FileInputControl } from "../ui/FileInputControl";
 import { SettingField } from "../ui/SettingField";
 import { SystemModal } from "./SystemModal";
 import { ADMIN_MEDIA_FIELD_HELP } from "./adminMediaFieldHelp";
+import { sortAdminCitiesByName, sortAdminPlacesByTitle } from "./adminListSorting";
 import { PHOTO_CAPTION_MAX_LENGTH } from "./adminMediaUi";
 import { PhotoAttributionFields } from "./PhotoAttributionFields";
 import type { PhotoAttributionDraft } from "./placePhotoPanelState";
@@ -68,7 +69,11 @@ export function PhotoUploadModal({
   places,
   placeId,
 }: Props) {
-  const cityPlaces = places.filter((place) => place.city_id === cityId);
+  const sortedCities = useMemo(() => sortAdminCitiesByName(cities), [cities]);
+  const cityPlaces = useMemo(
+    () => sortAdminPlacesByTitle(places.filter((place) => place.city_id === cityId)),
+    [cityId, places],
+  );
   const lockedCityName = lockedPlace
     ? (cities.find((city) => city.id === lockedPlace.city_id)?.name ?? lockedPlace.city_id)
     : "";
@@ -116,7 +121,7 @@ export function PhotoUploadModal({
             <SettingField id="photo-upload-city" label="Miasto" hint={ADMIN_MEDIA_FIELD_HELP.city}>
               <select value={cityId} onChange={(event) => onCityChange(event.target.value)} required>
                 <option value="">Wybierz miasto</option>
-                {cities.map((city) => (
+                {sortedCities.map((city) => (
                   <option value={city.id} key={city.id}>
                     {city.name}
                   </option>

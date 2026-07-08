@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useRef } from "react";
+import { type FormEvent, useEffect, useMemo, useRef } from "react";
 
 import type { Category, City } from "../../api/types";
 import {
@@ -6,6 +6,7 @@ import {
   type AdminPlaceCompletenessFilter,
   type AdminPlaceFilters,
 } from "./adminPlaceFilters";
+import { sortAdminCategoriesByLabel, sortAdminCitiesByName } from "./adminListSorting";
 import { SystemModal } from "./SystemModal";
 
 type Props = {
@@ -27,6 +28,8 @@ const COMPLETENESS_OPTIONS: Array<{ label: string; value: AdminPlaceCompleteness
 
 export function AdminPlaceFilterModal({ categories, cities, filters, onChange, onClose }: Props) {
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const sortedCities = useMemo(() => sortAdminCitiesByName(cities), [cities]);
+  const sortedCategories = useMemo(() => sortAdminCategoriesByLabel(categories), [categories]);
 
   useEffect(() => {
     const focusTimer = window.setTimeout(() => {
@@ -81,7 +84,7 @@ export function AdminPlaceFilterModal({ categories, cities, filters, onChange, o
           Miasto
           <select value={filters.cityId} onChange={(event) => updateFilter({ cityId: event.target.value })}>
             <option value="all">Wszystkie miasta</option>
-            {cities.map((city) => (
+            {sortedCities.map((city) => (
               <option key={city.id} value={city.id}>
                 {city.name}
               </option>
@@ -92,7 +95,7 @@ export function AdminPlaceFilterModal({ categories, cities, filters, onChange, o
           Kategoria
           <select value={filters.categoryId} onChange={(event) => updateFilter({ categoryId: event.target.value })}>
             <option value="all">Wszystkie kategorie</option>
-            {categories.map((category) => (
+            {sortedCategories.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.label}
               </option>

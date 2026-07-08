@@ -1,4 +1,5 @@
 import type { AdminPlace, City } from "../../api/types";
+import { compareAdminText, sortAdminPlacesByTitle } from "./adminListSorting";
 
 export type PlaceCityGroup = {
   city: City | null;
@@ -10,18 +11,6 @@ export type PlaceCityGroup = {
 type PlaceCityGroupOptions = {
   includeEmptyCities?: boolean;
 };
-
-function compareText(firstValue: string, secondValue: string) {
-  return firstValue.localeCompare(secondValue, "pl", { sensitivity: "base" });
-}
-
-function comparePlacesByTitle(firstPlace: AdminPlace, secondPlace: AdminPlace) {
-  return (
-    compareText(firstPlace.title, secondPlace.title) ||
-    compareText(firstPlace.slug, secondPlace.slug) ||
-    compareText(firstPlace.id, secondPlace.id)
-  );
-}
 
 export function getPlaceCityGroups(
   cities: City[],
@@ -65,11 +54,12 @@ export function getPlaceCityGroups(
         return 1;
       }
       return (
-        compareText(firstGroup.cityName, secondGroup.cityName) || compareText(firstGroup.cityId, secondGroup.cityId)
+        compareAdminText(firstGroup.cityName, secondGroup.cityName) ||
+        compareAdminText(firstGroup.cityId, secondGroup.cityId)
       );
     })
     .map((group) => ({
       ...group,
-      places: [...group.places].sort(comparePlacesByTitle),
+      places: sortAdminPlacesByTitle(group.places),
     }));
 }

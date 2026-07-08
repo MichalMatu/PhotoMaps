@@ -39,7 +39,7 @@ export function GuideManager({ cities, guides, places, onChanged }: Props) {
   const [statusFilter, setStatusFilter] = useState<GuideStatusFilter>("all");
   const visibleGuides = useMemo(() => filterGuidesByStatus(guides, statusFilter), [guides, statusFilter]);
   const availablePlaces = places.filter((place) => place.status === "published");
-  const selectedGuideCityId = guideActions.selectedCityId || firstGuideCityId(availablePlaces);
+  const selectedGuideCityId = guideActions.selectedCityId || firstGuideCityId(availablePlaces, cities);
   const editingGuideRoutePlaces =
     guideActions.editingGuide && guideActions.guideDetail?.id === guideActions.editingGuide.id
       ? guideActions.guideDetail.places

@@ -2,9 +2,14 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 import type { AppConfigMap, Category, City, Guide, Place } from "../../api/types";
+import { AdminModerationFilterModal } from "./AdminModerationFilterModal";
+import { DEFAULT_ADMIN_MODERATION_FILTERS } from "./adminModerationFilters";
+import { AdminPlaceFilterModal } from "./AdminPlaceFilterModal";
+import { DEFAULT_ADMIN_PLACE_FILTERS } from "./adminPlaceFilters";
 import { CategoryFormModal } from "./CategoryFormModal";
 import { CityFormModal } from "./CityFormModal";
 import { GuideFormModal } from "./GuideFormModal";
+import { PlaceForm } from "./PlaceForm";
 import { PhotoUploadModal } from "./PhotoUploadModal";
 
 vi.mock("./SystemModal", () => ({
@@ -25,6 +30,19 @@ vi.mock("./GuideRoutePointEditor", () => ({
 }));
 
 const noop = () => undefined;
+const asyncNoop = async () => undefined;
+
+function expectMarkupOrder(markup: string, orderedTexts: string[]) {
+  const indexes = orderedTexts.map((text) => {
+    const index = markup.indexOf(text);
+    expect(index).toBeGreaterThanOrEqual(0);
+    return index;
+  });
+
+  for (let index = 1; index < indexes.length; index += 1) {
+    expect(indexes[index - 1]).toBeLessThan(indexes[index]);
+  }
+}
 
 function mapFallback(): AppConfigMap {
   return {
@@ -252,6 +270,60 @@ describe("admin modal forms", () => {
     expect(markup).not.toContain('data-testid="guide-route-point-editor"');
   });
 
+  it("sorts city and category choices in the place form", () => {
+    const markup = renderToStaticMarkup(
+      <PlaceForm
+        categories={[
+          category({ id: "viewpoint", label: "Widok" }),
+          category({ id: "architecture", label: "Architektura" }),
+          category({ id: "coffee", label: "Kawa" }),
+        ]}
+        cities={[city({ id: "wroclaw", name: "Wrocław" }), city({ id: "krakow", name: "Kraków" })]}
+        mapFallback={mapFallback()}
+        placeCustomFieldDefinitions={[]}
+        onSubmit={asyncNoop}
+      />,
+    );
+
+    expectMarkupOrder(markup, ["Kraków", "Wrocław"]);
+    expectMarkupOrder(markup, ["Architektura", "Kawa", "Widok"]);
+  });
+
+  it("sorts place filter city and category choices", () => {
+    const markup = renderToStaticMarkup(
+      <AdminPlaceFilterModal
+        categories={[
+          category({ id: "viewpoint", label: "Widok" }),
+          category({ id: "architecture", label: "Architektura" }),
+        ]}
+        cities={[city({ id: "wroclaw", name: "Wrocław" }), city({ id: "krakow", name: "Kraków" })]}
+        filters={DEFAULT_ADMIN_PLACE_FILTERS}
+        onChange={noop}
+        onClose={noop}
+      />,
+    );
+
+    expectMarkupOrder(markup, ["Kraków", "Wrocław"]);
+    expectMarkupOrder(markup, ["Architektura", "Widok"]);
+  });
+
+  it("sorts moderation place filter choices", () => {
+    const markup = renderToStaticMarkup(
+      <AdminModerationFilterModal
+        filters={DEFAULT_ADMIN_MODERATION_FILTERS}
+        places={[
+          place({ id: "zoo", slug: "zoo", title: "Zoo" }),
+          place({ id: "arena", slug: "arena", title: "Arena" }),
+        ]}
+        showAudioFilter
+        onChange={noop}
+        onClose={noop}
+      />,
+    );
+
+    expectMarkupOrder(markup, ["Arena", "Zoo"]);
+  });
+
   it("renders photo upload modal fields in a real submit form", () => {
     const markup = renderToStaticMarkup(
       <PhotoUploadModal
@@ -290,5 +362,48 @@ describe("admin modal forms", () => {
 
     expect(markup).toContain('<form id="photo-upload-form-modal"');
     expect(markup).toContain('form="photo-upload-form-modal" type="submit"');
+  });
+
+  it("sorts photo upload city and place choices", () => {
+    const markup = renderToStaticMarkup(
+      <PhotoUploadModal
+        audioError={null}
+        audioFile={null}
+        attributionDraft={{
+          attributionAuthor: "",
+          attributionLicense: "",
+          attributionLicenseUrl: "",
+          attributionSourceUrl: "",
+        }}
+        canSubmit
+        caption=""
+        cities={[city({ id: "wroclaw", name: "Wrocław" }), city({ id: "krakow", name: "Kraków" })]}
+        cityId="wroclaw"
+        descriptionBlocks={[]}
+        file={null}
+        inputKey={1}
+        isUploading={false}
+        onAudioFileChange={noop}
+        onAddDescriptionBlock={noop}
+        onAttributionDraftChange={noop}
+        onCaptionChange={noop}
+        onCityChange={noop}
+        onClose={noop}
+        onConfirm={noop}
+        onFileChange={noop}
+        onRemoveDescriptionBlock={noop}
+        onUpdateDescriptionBlock={noop}
+        onUpdateDescriptionBlockType={noop}
+        onPlaceChange={noop}
+        placeId="arena"
+        places={[
+          place({ id: "zoo", slug: "zoo", title: "Zoo" }),
+          place({ id: "arena", slug: "arena", title: "Arena" }),
+        ]}
+      />,
+    );
+
+    expectMarkupOrder(markup, ["Kraków", "Wrocław"]);
+    expectMarkupOrder(markup, ["Arena", "Zoo"]);
   });
 });
