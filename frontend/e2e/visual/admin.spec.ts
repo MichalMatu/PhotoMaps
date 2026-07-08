@@ -185,6 +185,10 @@ test("visual: admin place table", async ({ page }) => {
   await expect(page.locator(".place-table .table-head")).toHaveCount(0);
   await expect(page.locator(".place-status-section")).toHaveCount(0);
   await expect(page.locator(".place-city-group .table-row")).toHaveCount(2);
+  await expect(page.locator(".place-city-group .table-cell--title")).toHaveText([
+    adminPlaces[1].title,
+    adminPlaces[0].title,
+  ]);
   await expect(page).toHaveScreenshot("admin-place-table-desktop.png", SNAPSHOT_OPTIONS);
 });
 

@@ -5,12 +5,23 @@ export type PlaceCityGroup = {
   cityId: string;
   cityName: string;
   places: AdminPlace[];
-  sortOrder: number;
 };
 
 type PlaceCityGroupOptions = {
   includeEmptyCities?: boolean;
 };
+
+function compareText(firstValue: string, secondValue: string) {
+  return firstValue.localeCompare(secondValue, "pl", { sensitivity: "base" });
+}
+
+function comparePlacesByTitle(firstPlace: AdminPlace, secondPlace: AdminPlace) {
+  return (
+    compareText(firstPlace.title, secondPlace.title) ||
+    compareText(firstPlace.slug, secondPlace.slug) ||
+    compareText(firstPlace.id, secondPlace.id)
+  );
+}
 
 export function getPlaceCityGroups(
   cities: City[],
@@ -27,7 +38,6 @@ export function getPlaceCityGroups(
         cityId: city.id,
         cityName: city.name,
         places: [],
-        sortOrder: city.sort_order,
       });
     }
   }
@@ -41,16 +51,25 @@ export function getPlaceCityGroups(
         cityId: place.city_id,
         cityName: city?.name ?? place.city_id,
         places: [],
-        sortOrder: city?.sort_order ?? Number.MAX_SAFE_INTEGER,
       } satisfies PlaceCityGroup);
     group.places.push(place);
     groupsByCityId.set(place.city_id, group);
   }
 
-  return Array.from(groupsByCityId.values()).sort((firstGroup, secondGroup) => {
-    if (firstGroup.sortOrder !== secondGroup.sortOrder) {
-      return firstGroup.sortOrder - secondGroup.sortOrder;
-    }
-    return firstGroup.cityName.localeCompare(secondGroup.cityName, "pl");
-  });
+  return Array.from(groupsByCityId.values())
+    .sort((firstGroup, secondGroup) => {
+      if (firstGroup.city && !secondGroup.city) {
+        return -1;
+      }
+      if (!firstGroup.city && secondGroup.city) {
+        return 1;
+      }
+      return (
+        compareText(firstGroup.cityName, secondGroup.cityName) || compareText(firstGroup.cityId, secondGroup.cityId)
+      );
+    })
+    .map((group) => ({
+      ...group,
+      places: [...group.places].sort(comparePlacesByTitle),
+    }));
 }
