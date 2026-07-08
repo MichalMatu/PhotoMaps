@@ -122,6 +122,7 @@ export function MemoryQueueItem({
             <AdminAudioControls
               audio={memory.admin_audio}
               inputKeyPrefix={`memory-audio-${memory.id}`}
+              mode="compact"
               onDeleteAudio={() => onDeleteAudio(memory)}
               onError={onError}
               onSaveAudio={(file) => onSaveAudio(memory, file)}

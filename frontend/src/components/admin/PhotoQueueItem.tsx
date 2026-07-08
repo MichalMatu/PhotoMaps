@@ -54,6 +54,7 @@ export function PhotoQueueItem({
         <AdminAudioControls
           audio={photo.audio}
           inputKeyPrefix={`photo-audio-${photo.id}`}
+          mode="compact"
           onDeleteAudio={() => onDeleteAudio(photo)}
           onError={onError}
           onSaveAudio={(file) => onSaveAudio(photo, file)}
