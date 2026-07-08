@@ -60,15 +60,6 @@ test("visitor can add a memory and admin can approve it through UI", async ({ pa
   await pendingItem.getByRole("button", { name: "Zatwierdź" }).click();
   await expect(pendingItem).toBeHidden();
 
-  await openStatusTab(page, /Zatwierdzone/);
-  const approvedAlbum = page.locator(".admin-media-album-summary").filter({ hasText: place.title });
-  await expect(approvedAlbum).toContainText("1 pamiątka");
-  await approvedAlbum.click();
-
-  const approvedItem = page.locator(".admin-media-item").filter({ hasText: caption });
-  await expect(approvedItem).toContainText("zatwierdzone");
-  await expect(approvedItem).toContainText(memoryText);
-
   await expect
     .poll(async () => {
       const mapPlaces = await getMapPlaces(request, place.city_id);

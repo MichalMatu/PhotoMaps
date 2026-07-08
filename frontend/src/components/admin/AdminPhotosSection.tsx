@@ -1,4 +1,5 @@
-import type { Category, City, Place, ReviewStatus } from "../../api/types";
+import type { Category, City, Place } from "../../api/types";
+import type { AdminModerationMediaStatus } from "./adminMediaUi";
 import type { AdminModerationFilters } from "./adminModerationFilters";
 import { PhotoQueue } from "./PhotoQueue";
 
@@ -9,7 +10,7 @@ type Props = {
   onChanged: () => Promise<void>;
   places: Place[];
   refreshKey: number;
-  statusFilter: ReviewStatus | "all";
+  statusFilter: AdminModerationMediaStatus;
 };
 
 export function AdminPhotosSection({

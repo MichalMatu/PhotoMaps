@@ -134,10 +134,10 @@ export function useAdminPanelData(): Result {
       refreshCategories(),
       refreshCities(),
       refreshGuides(),
-      refreshMemories(),
+      refreshMemories("pending"),
       refreshModerationCounts(),
       refreshPlaces(),
-      refreshReports(),
+      refreshReports("open"),
     ]);
     setAccessMessage(null);
     setLoadError(null);

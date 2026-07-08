@@ -4,12 +4,7 @@ import { ADMIN_MEDIA_STATUS_FILTERS, ADMIN_MEDIA_STATUS_LABELS, memoryCountLabel
 
 describe("admin media UI helpers", () => {
   it("keeps the shared status filter order stable", () => {
-    expect(ADMIN_MEDIA_STATUS_FILTERS.map((filter) => filter.value)).toEqual([
-      "all",
-      "pending",
-      "approved",
-      "rejected",
-    ]);
+    expect(ADMIN_MEDIA_STATUS_FILTERS.map((filter) => filter.value)).toEqual(["pending", "rejected"]);
     expect(ADMIN_MEDIA_STATUS_LABELS).toMatchObject({
       approved: "zatwierdzone",
       pending: "do sprawdzenia",

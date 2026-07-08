@@ -2,14 +2,15 @@ import { useCallback, useMemo } from "react";
 
 import type { ReportStatus, ReviewStatus } from "../../api/types";
 import { createAdminModerationRefreshActions } from "./adminRefreshActions";
+import type { AdminModerationMediaStatus } from "./adminMediaUi";
 
 type Params = {
-  memoryStatusFilter: ReviewStatus | "all";
+  memoryStatusFilter: AdminModerationMediaStatus;
   refreshMemories: (status?: ReviewStatus | "all") => Promise<void>;
   refreshModerationCounts: () => Promise<void>;
   refreshPlaces: () => Promise<void>;
   refreshReports: (status?: ReportStatus | "all") => Promise<void>;
-  reportStatusFilter: ReportStatus | "all";
+  reportStatusFilter: ReportStatus;
 };
 
 export function useAdminModerationRefreshActions({

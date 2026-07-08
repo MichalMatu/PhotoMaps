@@ -2,7 +2,15 @@ import { expect, test } from "@playwright/test";
 import type { Locator, Page } from "@playwright/test";
 import type { AdminPhoto } from "../../src/api/types";
 
-import { adminGuides, adminPlaces, categories, city, rynekCover, rynekSide } from "../fixtures/visualData";
+import {
+  adminGuides,
+  adminPlaces,
+  categories,
+  city,
+  nadodrzeCover,
+  rynekCover,
+  rynekSide,
+} from "../fixtures/visualData";
 import { ADMIN_TOKEN, SNAPSHOT_OPTIONS } from "../support/config";
 import { mockAdminApi } from "../support/visualApi";
 
@@ -323,7 +331,7 @@ test("admin place empty modal filter shows one empty state", async ({ page }) =>
   await expect(page.getByText("Brak miejsc w tym mieście.")).toHaveCount(0);
 });
 
-test("admin moderation keeps photo upload action in the shared toolbar", async ({ page }) => {
+test("admin moderation keeps inbox filters in the shared toolbar", async ({ page }) => {
   await mockAdminApi(page);
   await page.goto("/");
   await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
@@ -337,8 +345,11 @@ test("admin moderation keeps photo upload action in the shared toolbar", async (
     .locator(".admin-toolbar")
     .filter({ has: page.getByRole("tablist", { name: "Sekcje moderacji" }) });
   await expect(toolbar.getByRole("tab", { name: /Zdjęcia/ })).toBeVisible();
-  await expect(toolbar.getByRole("tab", { name: /Wszystkie/ })).toBeVisible();
-  await expect(toolbar.getByRole("button", { name: "Dodaj zdjęcie" })).toBeVisible();
+  await expect(toolbar.getByRole("tab", { name: /Do sprawdzenia/ })).toBeVisible();
+  await expect(toolbar.getByRole("tab", { name: /Odrzucone/ })).toBeVisible();
+  await expect(toolbar.getByRole("tab", { name: /Wszystkie/ })).toHaveCount(0);
+  await expect(toolbar.getByRole("tab", { name: /Zatwierdzone/ })).toHaveCount(0);
+  await expect(toolbar.getByRole("button", { name: "Dodaj zdjęcie" })).toHaveCount(0);
   await expect(page.locator(".photo-queue-toolbar")).toHaveCount(0);
 });
 
@@ -368,13 +379,13 @@ test("admin moderation badges use backend totals beyond loaded media page", asyn
   await clickAdminSection(page, /Moderacja/);
 
   const photoStatusTabs = page.getByRole("tablist", { name: "Status zdjęć" });
-  await expect(photoStatusTabs.getByRole("tab", { name: /Wszystkie 1176/ })).toBeVisible();
   await expect(photoStatusTabs.getByRole("tab", { name: /Do sprawdzenia 23/ })).toBeVisible();
-  await expect(photoStatusTabs.getByRole("tab", { name: /Zatwierdzone 1150/ })).toBeVisible();
   await expect(photoStatusTabs.getByRole("tab", { name: /Odrzucone 3/ })).toBeVisible();
+  await expect(photoStatusTabs.getByRole("tab", { name: /Wszystkie/ })).toHaveCount(0);
+  await expect(photoStatusTabs.getByRole("tab", { name: /Zatwierdzone/ })).toHaveCount(0);
 
   const moderationSections = page.getByRole("tablist", { name: "Sekcje moderacji" });
-  await expect(moderationSections.getByRole("tab", { name: /Zdjęcia 1176/ })).toBeVisible();
+  await expect(moderationSections.getByRole("tab", { name: /Zdjęcia 26/ })).toBeVisible();
   await expect(moderationSections.getByRole("tab", { name: /Zgłoszenia 2/ })).toBeVisible();
 
   await photoStatusTabs.getByRole("tab", { name: /Do sprawdzenia 23/ }).click();
@@ -383,7 +394,12 @@ test("admin moderation badges use backend totals beyond loaded media page", asyn
 });
 
 test("admin moderation media groups start collapsed", async ({ page }) => {
-  await mockAdminApi(page);
+  await mockAdminApi(page, {
+    adminPhotoList: [
+      { ...rynekCover, id: "pending-rynek-cover", status: "pending" as const },
+      { ...nadodrzeCover, id: "pending-nadodrze-cover", status: "pending" as const },
+    ],
+  });
   await unlockAdmin(page);
   await clickAdminSection(page, /Moderacja/);
 
@@ -414,7 +430,12 @@ test("visual: admin city lists share one panel and row contract", async ({ page 
     { height: 740, label: "mobile", width: 390 },
   ];
 
-  await mockAdminApi(page);
+  await mockAdminApi(page, {
+    adminPhotoList: [
+      { ...rynekCover, id: "pending-rynek-cover", status: "pending" as const },
+      { ...nadodrzeCover, id: "pending-nadodrze-cover", status: "pending" as const },
+    ],
+  });
   await unlockAdmin(page);
 
   for (const viewport of viewports) {
@@ -841,7 +862,7 @@ test("admin status pills keep stable geometry across sections and filters", asyn
       contentSelector: ".photo-queue",
       sectionName: /Moderacja/,
       statusTablistName: "Status zdjęć",
-      statusTabName: /Zatwierdzone/,
+      statusTabName: /Do sprawdzenia/,
     },
     {
       contentSelector: ".guide-list",
