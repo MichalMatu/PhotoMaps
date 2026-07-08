@@ -59,7 +59,7 @@ export function AdminPlaceFilterModal({ categories, cities, filters, onChange, o
         <button
           className="ui-button ui-button--ghost admin-filter-reset-button"
           type="button"
-          onClick={() => onChange(DEFAULT_ADMIN_PLACE_FILTERS)}
+          onClick={() => onChange({ ...DEFAULT_ADMIN_PLACE_FILTERS, status: filters.status })}
         >
           Wyczyść
         </button>

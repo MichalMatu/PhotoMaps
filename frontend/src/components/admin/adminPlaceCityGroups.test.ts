@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { AdminPlace, City } from "../../api/types";
-import { getPlaceCityGroups, getPlaceStatusGroups } from "./adminPlaceCityGroups";
+import { getPlaceCityGroups } from "./adminPlaceCityGroups";
 
 const WROCLAW: City = {
   default_zoom: 13,
@@ -86,21 +86,5 @@ describe("getPlaceCityGroups", () => {
     expect(groups.map((group) => [group.cityId, group.cityName, group.city?.id ?? null])).toEqual([
       ["missing-city", "missing-city", null],
     ]);
-  });
-
-  it("groups places by editorial status in the visible city order", () => {
-    const statusGroups = getPlaceStatusGroups([
-      place("archived", "wroclaw", "archived"),
-      place("published", "wroclaw", "published"),
-      place("draft", "wroclaw", "draft"),
-    ]);
-
-    expect(statusGroups.map((group) => [group.status, group.label, group.defaultExpanded, group.places[0].id])).toEqual(
-      [
-        ["published", "Opublikowane", true, "published"],
-        ["draft", "Szkice", false, "draft"],
-        ["archived", "Archiwalne", false, "archived"],
-      ],
-    );
   });
 });

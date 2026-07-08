@@ -6,16 +6,14 @@ import { AdminActionIconButton } from "./AdminActionIconButton";
 import { AdminStatusFilterTabs } from "./AdminStatusFilterTabs";
 import { AdminToolbar } from "./AdminToolbar";
 
-type PlaceStatusFilter = PlaceStatus | "all";
-
 type Props = {
   activeFilterCount: number;
-  activeStatusFilter: PlaceStatusFilter;
+  activeStatusFilter: PlaceStatus;
   onCreateCity: () => void;
   onCreatePlace: () => void;
   onManageCategories: () => void;
   onOpenFilters: () => void;
-  onStatusFilterChange: (status: PlaceStatusFilter) => void;
+  onStatusFilterChange: (status: PlaceStatus) => void;
   places: AdminPlace[];
   visiblePlaceCount: number;
 };
@@ -47,7 +45,6 @@ export function AdminPlacesToolbar({
           activeStatus={activeStatusFilter}
           ariaLabel="Status miejsc"
           options={[
-            { count: places.length, key: "all", label: "Wszystkie" },
             { count: placeStatusCounts.published, key: "published", label: "Opublikowane" },
             { count: placeStatusCounts.draft, key: "draft", label: "Szkice" },
             { count: placeStatusCounts.archived, key: "archived", label: "Archiwalne" },

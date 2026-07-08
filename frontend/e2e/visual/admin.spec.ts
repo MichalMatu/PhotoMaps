@@ -183,12 +183,12 @@ test("visual: admin place table", async ({ page }) => {
   await expect(cityToggle).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator(".place-table.ui-table-panel")).toBeVisible();
   await expect(page.locator(".place-table .table-head")).toHaveCount(0);
-  await expect(page.locator(".place-status-section--published .place-status-toggle")).toContainText("Opublikowane");
-  await expect(page.locator(".place-status-section--published .table-row")).toHaveCount(2);
+  await expect(page.locator(".place-status-section")).toHaveCount(0);
+  await expect(page.locator(".place-city-group .table-row")).toHaveCount(2);
   await expect(page).toHaveScreenshot("admin-place-table-desktop.png", SNAPSHOT_OPTIONS);
 });
 
-test("admin place status sections split city places", async ({ page }) => {
+test("admin place status tabs filter city places without nested sections", async ({ page }) => {
   const statusPlaces = [
     adminPlaces[0],
     {
@@ -218,31 +218,19 @@ test("admin place status sections split city places", async ({ page }) => {
 
   const cityToggle = page.locator(".place-city-toggle").filter({ hasText: city.name });
   await cityToggle.click();
-  const publishedSection = page.locator(".place-status-section--published");
-  const draftSection = page.locator(".place-status-section--draft");
-  const archivedSection = page.locator(".place-status-section--archived");
+  await expect(page.locator(".place-status-section")).toHaveCount(0);
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: adminPlaces[0].title })).toBeVisible();
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: "Miejsce szkicowe" })).toHaveCount(0);
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: "Miejsce archiwalne" })).toHaveCount(0);
 
-  await expect(publishedSection.getByRole("button", { name: /Opublikowane 1 miejsce/ })).toHaveAttribute(
-    "aria-expanded",
-    "true",
-  );
-  await expect(draftSection.getByRole("button", { name: /Szkice 1 miejsce/ })).toHaveAttribute(
-    "aria-expanded",
-    "false",
-  );
-  await expect(archivedSection.getByRole("button", { name: /Archiwalne 1 miejsce/ })).toHaveAttribute(
-    "aria-expanded",
-    "false",
-  );
-  await expect(publishedSection.locator(".table-row").filter({ hasText: adminPlaces[0].title })).toBeVisible();
-  await expect(draftSection.locator(".table-row").filter({ hasText: "Miejsce szkicowe" })).toHaveCount(0);
-  await expect(archivedSection.locator(".table-row").filter({ hasText: "Miejsce archiwalne" })).toHaveCount(0);
+  const statusTabs = page.getByRole("tablist", { name: "Status miejsc" });
+  await statusTabs.getByRole("tab", { name: /Szkice 1/ }).click();
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: "Miejsce szkicowe" })).toBeVisible();
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: adminPlaces[0].title })).toHaveCount(0);
 
-  await draftSection.getByRole("button", { name: /Szkice 1 miejsce/ }).click();
-  await expect(draftSection.locator(".table-row").filter({ hasText: "Miejsce szkicowe" })).toBeVisible();
-
-  await archivedSection.getByRole("button", { name: /Archiwalne 1 miejsce/ }).click();
-  await expect(archivedSection.locator(".table-row").filter({ hasText: "Miejsce archiwalne" })).toBeVisible();
+  await statusTabs.getByRole("tab", { name: /Archiwalne 1/ }).click();
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: "Miejsce archiwalne" })).toBeVisible();
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: "Miejsce szkicowe" })).toHaveCount(0);
 });
 
 test("admin place status tabs filter city groups", async ({ page }) => {
@@ -283,32 +271,26 @@ test("admin place status tabs filter city groups", async ({ page }) => {
     .click();
 
   const statusTabs = page.getByRole("tablist", { name: "Status miejsc" });
-  await expect(statusTabs.getByRole("tab", { name: /Wszystkie 3/ })).toBeVisible();
+  await expect(statusTabs.getByRole("tab", { name: /Wszystkie/ })).toHaveCount(0);
   await expect(statusTabs.getByRole("tab", { name: /Opublikowane 1/ })).toBeVisible();
   await expect(statusTabs.getByRole("tab", { name: /Szkice 1/ })).toBeVisible();
   await expect(statusTabs.getByRole("tab", { name: /Archiwalne 1/ })).toBeVisible();
 
   const cityToggle = page.locator(".place-city-toggle").filter({ hasText: city.name });
-  await expect(page.locator(".place-city-toggle")).toHaveCount(2);
+  await expect(page.locator(".place-city-toggle")).toHaveCount(1);
   await cityToggle.click();
 
   await statusTabs.getByRole("tab", { name: /Szkice 1/ }).click();
-  const draftSection = page.locator(".place-status-section--draft");
   await expect(page.locator(".place-city-toggle")).toHaveCount(1);
   await expect(page.locator(".place-city-toggle").filter({ hasText: emptyCity.name })).toHaveCount(0);
-  await expect(draftSection.getByRole("button", { name: /Szkice 1 miejsce/ })).toBeVisible();
-  await draftSection.getByRole("button", { name: /Szkice 1 miejsce/ }).click();
-  await expect(draftSection.locator(".table-row").filter({ hasText: "Miejsce szkicowe" })).toBeVisible();
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: "Miejsce szkicowe" })).toBeVisible();
   await expect(page.locator(".table-row").filter({ hasText: adminPlaces[0].title })).toHaveCount(0);
   await expect(page.locator(".table-row").filter({ hasText: "Miejsce archiwalne" })).toHaveCount(0);
 
   await statusTabs.getByRole("tab", { name: /Archiwalne 1/ }).click();
-  const archivedSection = page.locator(".place-status-section--archived");
   await expect(page.locator(".place-city-toggle")).toHaveCount(1);
   await expect(page.locator(".place-city-toggle").filter({ hasText: emptyCity.name })).toHaveCount(0);
-  await expect(archivedSection.getByRole("button", { name: /Archiwalne 1 miejsce/ })).toBeVisible();
-  await archivedSection.getByRole("button", { name: /Archiwalne 1 miejsce/ }).click();
-  await expect(archivedSection.locator(".table-row").filter({ hasText: "Miejsce archiwalne" })).toBeVisible();
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: "Miejsce archiwalne" })).toBeVisible();
   await expect(page.locator(".table-row").filter({ hasText: "Miejsce szkicowe" })).toHaveCount(0);
 });
 

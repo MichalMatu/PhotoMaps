@@ -1,21 +1,5 @@
 import type { AdminPlace, City } from "../../api/types";
 
-type PlaceStatusSectionDefinition = {
-  defaultExpanded: boolean;
-  label: string;
-  status: AdminPlace["status"];
-};
-
-export type PlaceStatusGroup = PlaceStatusSectionDefinition & {
-  places: AdminPlace[];
-};
-
-export const PLACE_STATUS_SECTIONS: PlaceStatusSectionDefinition[] = [
-  { defaultExpanded: true, label: "Opublikowane", status: "published" },
-  { defaultExpanded: false, label: "Szkice", status: "draft" },
-  { defaultExpanded: false, label: "Archiwalne", status: "archived" },
-];
-
 export type PlaceCityGroup = {
   city: City | null;
   cityId: string;
@@ -69,11 +53,4 @@ export function getPlaceCityGroups(
     }
     return firstGroup.cityName.localeCompare(secondGroup.cityName, "pl");
   });
-}
-
-export function getPlaceStatusGroups(places: AdminPlace[]): PlaceStatusGroup[] {
-  return PLACE_STATUS_SECTIONS.map((section) => ({
-    ...section,
-    places: places.filter((place) => place.status === section.status),
-  })).filter((section) => section.places.length > 0);
 }
