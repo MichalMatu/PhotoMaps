@@ -12,6 +12,7 @@ import { ErrorModal, errorDetails } from "../components/ui/ErrorModal";
 import { MediaImage } from "../components/ui/MediaImage";
 import { polishCountLabel } from "../components/ui/polishCountLabel";
 import { TtsButton } from "../components/ui/TtsButton";
+import { DEFAULT_SEO_DESCRIPTION, usePageSeo } from "../seo/pageSeo";
 
 function currentPlaceSlug() {
   const match = window.location.pathname.match(/^\/places\/([^/]+)$/);
@@ -89,6 +90,12 @@ export function PlaceDetailPage() {
   });
   const photos = photosQuery.data ?? [];
   const heroPhoto = photos[0] ?? null;
+  usePageSeo({
+    canonicalPath: slug ? `/places/${encodeURIComponent(slug)}` : "/",
+    description: place?.description ?? DEFAULT_SEO_DESCRIPTION,
+    imageUrl: heroPhoto ? mediaUrl(heroPhoto.public_path) : null,
+    title: place ? `${place.title} | PhotoMap` : "Miejsce | PhotoMap",
+  });
   const structuredData = useMemo(() => (place ? placeStructuredData(place, heroPhoto) : null), [heroPhoto, place]);
   const leadText = place?.description ?? null;
   const ttsText = place ? articleTextForTts(place.article_blocks, [place.description]) : "";

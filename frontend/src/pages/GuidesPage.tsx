@@ -14,6 +14,7 @@ import { ErrorModal, errorDetails } from "../components/ui/ErrorModal";
 import { MediaImage } from "../components/ui/MediaImage";
 import { polishCountLabel } from "../components/ui/polishCountLabel";
 import { TtsButton } from "../components/ui/TtsButton";
+import { usePageSeo } from "../seo/pageSeo";
 
 function currentGuideSlug() {
   const match = window.location.pathname.match(/^\/guides\/([^/]+)$/);
@@ -139,6 +140,13 @@ export function GuidesPage() {
   const guide = guideQuery.data ?? null;
   const guideIntroText = guide?.description ?? null;
   const guideNarrationText = guide ? contentBlocksTextForTts(guide.article_blocks, [guide.description]) : "";
+  usePageSeo({
+    canonicalPath: slug ? `/guides/${encodeURIComponent(slug)}` : "/guides",
+    description:
+      guide?.description ?? "Gotowe trasy i kolekcje miejsc we Wrocławiu: zdjęcia, opisy i punkty warte zobaczenia.",
+    imageUrl: guide?.cover_photo ? mediaUrl(guide.cover_photo.public_path) : null,
+    title: guide ? `${guide.title} | PhotoMap` : "Trasy i kolekcje miejsc | PhotoMap",
+  });
   const activeError =
     guidesQuery.isError && slug === null
       ? {

@@ -2,12 +2,9 @@ import React, { lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import { APP_NAME } from "./config/app";
 import { PublicMapPage } from "./pages/PublicMapPage";
 import { TtsProvider } from "./components/ui/TtsProvider";
 import "./styles/app.css";
-
-document.title = APP_NAME;
 
 const queryClient = new QueryClient();
 const AdminPlacesPage = lazy(() =>

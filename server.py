@@ -54,8 +54,9 @@ def create_app():
 
     from app.main import app
     from app.runtime import mount_frontend_dist
+    from app.services.frontend_seo import build_frontend_seo_metadata
 
-    return mount_frontend_dist(app, frontend_dist_dir())
+    return mount_frontend_dist(app, frontend_dist_dir(), build_frontend_seo_metadata)
 
 
 def main() -> int:

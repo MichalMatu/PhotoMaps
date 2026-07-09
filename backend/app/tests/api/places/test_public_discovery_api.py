@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 
 from app.models.category import Category
 from app.models.city import City
+from app.models.guide import Guide, PlaceGuide
 from app.models.photo import Photo
 from app.models.place import Place, PlaceCategory
 
@@ -147,6 +148,15 @@ def test_llms_robots_and_sitemap_expose_public_discovery_links(client_session) -
     session.add(place)
     session.add(draft_place)
     session.commit()
+    session.refresh(place)
+    guide = Guide(slug="weekend-we-wroclawiu", title="Weekend we Wrocławiu", status="published")
+    draft_guide = Guide(slug="draft-guide", title="Draft guide", status="draft")
+    session.add(guide)
+    session.add(draft_guide)
+    session.commit()
+    session.refresh(guide)
+    session.add(PlaceGuide(guide_id=guide.id, place_id=place.id, sort_order=0))
+    session.commit()
 
     discovery_response = client.get("/api/public")
     llms_response = client.get("/llms.txt")
@@ -157,13 +167,19 @@ def test_llms_robots_and_sitemap_expose_public_discovery_links(client_session) -
     assert discovery_response.json()["place_detail_path_template"] == "/api/public/cities/{city_id}/places/{place_slug}"
     assert llms_response.status_code == 200
     assert "/api/public/cities/wroclaw/places" in llms_response.text
+    assert "visual map of Wrocław with photos" in llms_response.text
+    assert "przewodnik po Wrocławiu ze zdjęciami" in llms_response.text
     assert "Private" not in llms_response.text
     assert robots_response.status_code == 200
     assert "Sitemap: http://testserver/sitemap.xml" in robots_response.text
+    assert "User-agent: OAI-SearchBot" in robots_response.text
+    assert "User-agent: PerplexityBot" in robots_response.text
     assert sitemap_response.status_code == 200
     assert sitemap_response.headers["content-type"].startswith("application/xml")
     assert "<loc>http://testserver/places/sitemap-place</loc>" in sitemap_response.text
+    assert "<loc>http://testserver/guides/weekend-we-wroclawiu</loc>" in sitemap_response.text
     assert "draft-place" not in sitemap_response.text
+    assert "draft-guide" not in sitemap_response.text
 
 
 def test_public_discovery_supports_head_for_crawler_diagnostics(client_session) -> None:

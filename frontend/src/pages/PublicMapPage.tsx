@@ -23,8 +23,14 @@ import {
 import { MAP_DISPLAY_CONFIG } from "../components/map/mapDisplayConfig";
 import { getPlacePreviewVisual } from "../components/map/placePreview";
 import { PlaceMap } from "../components/map/PlaceMap";
+import { DEFAULT_SEO_DESCRIPTION, DEFAULT_SEO_TITLE, usePageSeo } from "../seo/pageSeo";
 
 export function PublicMapPage() {
+  usePageSeo({
+    canonicalPath: "/",
+    description: DEFAULT_SEO_DESCRIPTION,
+    title: DEFAULT_SEO_TITLE,
+  });
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [isAudioAutoplayEnabled, setIsAudioAutoplayEnabled] = useState(false);
   const [isPinnedMediaVisible, setIsPinnedMediaVisible] = useState(true);

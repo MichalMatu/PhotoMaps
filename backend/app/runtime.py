@@ -1,7 +1,11 @@
+import json
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from html import escape
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse, HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 RESERVED_FRONTEND_PATHS = (
@@ -12,6 +16,23 @@ RESERVED_FRONTEND_PATHS = (
     "/redoc",
     "/openapi.json",
 )
+
+SEO_BLOCK_START = "<!-- photomap-seo:start -->"
+SEO_BLOCK_END = "<!-- photomap-seo:end -->"
+
+
+@dataclass(frozen=True)
+class FrontendSeoMetadata:
+    title: str
+    description: str
+    canonical_url: str
+    robots: str = "index,follow,max-image-preview:large"
+    image_url: str | None = None
+    structured_data: list[dict] = field(default_factory=list)
+    page_type: str = "website"
+
+
+FrontendSeoProvider = Callable[[str, Request], FrontendSeoMetadata | None]
 
 
 def frontend_static_file(dist_dir: Path, frontend_path: str) -> Path | None:
@@ -25,17 +46,67 @@ def frontend_static_file(dist_dir: Path, frontend_path: str) -> Path | None:
     return static_file
 
 
-def mount_frontend_dist(app: FastAPI, dist_dir: Path) -> FastAPI:
+def safe_json_for_script(data: dict) -> str:
+    return json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+
+
+def render_seo_head(metadata: FrontendSeoMetadata) -> str:
+    escaped_title = escape(metadata.title, quote=False)
+    escaped_description = escape(metadata.description)
+    escaped_canonical_url = escape(metadata.canonical_url, quote=True)
+    escaped_robots = escape(metadata.robots, quote=True)
+    twitter_card = "summary_large_image" if metadata.image_url else "summary"
+    tags = [
+        f"<title>{escaped_title}</title>",
+        f'<meta name="description" content="{escaped_description}" />',
+        f'<meta name="robots" content="{escaped_robots}" />',
+        '<meta name="application-name" content="PhotoMap" />',
+        '<meta name="theme-color" content="#0f5f7a" />',
+        '<meta property="og:site_name" content="PhotoMap" />',
+        f'<meta property="og:type" content="{escape(metadata.page_type, quote=True)}" />',
+        f'<meta property="og:title" content="{escape(metadata.title, quote=True)}" />',
+        f'<meta property="og:description" content="{escaped_description}" />',
+        f'<meta property="og:url" content="{escaped_canonical_url}" />',
+        f'<meta name="twitter:card" content="{twitter_card}" />',
+        f'<meta name="twitter:title" content="{escape(metadata.title, quote=True)}" />',
+        f'<meta name="twitter:description" content="{escaped_description}" />',
+        f'<link rel="canonical" href="{escaped_canonical_url}" />',
+    ]
+    if metadata.image_url:
+        escaped_image_url = escape(metadata.image_url, quote=True)
+        tags.insert(9, f'<meta property="og:image" content="{escaped_image_url}" />')
+        tags.insert(13, f'<meta name="twitter:image" content="{escaped_image_url}" />')
+    tags.extend(
+        f'<script type="application/ld+json">{safe_json_for_script(item)}</script>' for item in metadata.structured_data
+    )
+    return "\n".join(f"    {tag}" for tag in tags)
+
+
+def inject_frontend_seo(index_html: str, metadata: FrontendSeoMetadata | None) -> str:
+    if metadata is None or SEO_BLOCK_START not in index_html or SEO_BLOCK_END not in index_html:
+        return index_html
+
+    start_index = index_html.index(SEO_BLOCK_START) + len(SEO_BLOCK_START)
+    end_index = index_html.index(SEO_BLOCK_END)
+    return f"{index_html[:start_index]}\n{render_seo_head(metadata)}\n    {index_html[end_index:]}"
+
+
+def mount_frontend_dist(
+    app: FastAPI,
+    dist_dir: Path,
+    seo_provider: FrontendSeoProvider | None = None,
+) -> FastAPI:
     index_file = dist_dir / "index.html"
     if not index_file.is_file():
         raise FileNotFoundError(f"Missing frontend build: {index_file}")
+    index_html = index_file.read_text(encoding="utf-8")
 
     assets_dir = dist_dir / "assets"
     if assets_dir.is_dir():
         app.mount("/assets", StaticFiles(directory=assets_dir), name="frontend-assets")
 
-    @app.get("/{frontend_path:path}", include_in_schema=False)
-    def serve_frontend(frontend_path: str) -> FileResponse:
+    @app.get("/{frontend_path:path}", include_in_schema=False, response_model=None)
+    def serve_frontend(frontend_path: str, request: Request) -> Response:
         request_path = f"/{frontend_path}"
         if request_path.startswith(RESERVED_FRONTEND_PATHS):
             raise HTTPException(status_code=404, detail="Not found")
@@ -43,6 +114,11 @@ def mount_frontend_dist(app: FastAPI, dist_dir: Path) -> FastAPI:
         static_file = frontend_static_file(dist_dir, frontend_path)
         if static_file is not None:
             return FileResponse(static_file)
-        return FileResponse(index_file)
+
+        if seo_provider is None:
+            return FileResponse(index_file)
+
+        metadata = seo_provider(request_path, request)
+        return HTMLResponse(inject_frontend_seo(index_html, metadata))
 
     return app

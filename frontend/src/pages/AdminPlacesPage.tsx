@@ -14,8 +14,15 @@ import { useAdminPlaceManagement } from "../components/admin/useAdminPlaceManage
 import { useAdminModerationRefreshActions } from "../components/admin/useAdminModerationRefreshActions";
 import { useAdminPlaceRefreshActions } from "../components/admin/useAdminPlaceRefreshActions";
 import { useAdminSectionState } from "../components/admin/useAdminSectionState";
+import { usePageSeo } from "../seo/pageSeo";
 
 export function AdminPlacesPage() {
+  usePageSeo({
+    canonicalPath: "/admin",
+    description: "Prywatny panel korekt, moderacji i konfiguracji PhotoMap.",
+    robots: "noindex,nofollow",
+    title: "Panel admina | PhotoMap",
+  });
   const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
   const [photoPreviewPlaceId, setPhotoPreviewPlaceId] = useState<string | null>(null);
   const [publicPreviewPlaceId, setPublicPreviewPlaceId] = useState<string | null>(null);

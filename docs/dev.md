@@ -92,14 +92,16 @@ Publiczne endpointy miejsc i tras nie zwracają pól redakcyjnych ani adminowych
 Warstwa discovery dla agentów AI, crawlerów i prostych integracji jest jawna i publiczna:
 
 - `GET /llms.txt` opisuje, gdzie agent ma szukać miast, miejsc, opisów i publicznych mediów.
-- `GET /robots.txt` pozwala crawlerom indeksować publiczną stronę i wskazuje sitemapę.
-- `GET /sitemap.xml` zawiera realne strony publiczne: mapę, trasy i opublikowane strony miejsc.
+- `GET /robots.txt` pozwala crawlerom indeksować publiczną stronę, jawnie dopuszcza główne boty AI i wskazuje sitemapę.
+- `GET /sitemap.xml` zawiera realne strony publiczne: mapę, indeks tras, opublikowane trasy/kolekcje i opublikowane strony miejsc.
 - `GET /api/public` zwraca indeks maszynowy aktualnych publicznych ścieżek.
 - `GET /api/public/cities` zwraca aktywne miasta.
 - `GET /api/public/cities/{city_id}/places` zwraca wszystkie opublikowane miejsca w aktywnym mieście, także bez covera, w lekkim indeksowym kształcie.
 - `GET /api/public/cities/{city_id}/places/{place_slug}` zwraca publiczny szczegół miejsca: opis wiodący, `article_blocks`, kategorie, współrzędne, publiczne pola niestandardowe oraz zatwierdzone zdjęcia z `description_blocks` i atrybucją.
 
 Endpointy discovery nie są kontraktem pierwszego renderu mapy. Nie zastępują lekkiego `GET /api/places/map`; służą do jednoznacznego pobrania treści przez agenta bez interpretowania Reacta, mapy i interakcji UI. Nie mogą ujawniać `local_comment`, statusu moderacyjnego miejsca, prywatnych oryginałów ani ścieżek private storage.
+
+Publiczny runtime serwujący zbudowany frontend podmienia blok `photomap-seo` w `index.html` dla `/`, `/guides`, `/guides/{slug}` i `/places/{slug}`. W odpowiedzi HTML są opisowe `<title>`, `meta description`, canonical, Open Graph/Twitter oraz JSON-LD oparte wyłącznie o publiczne dane i publiczne ścieżki mediów. `/admin` dostaje `noindex,nofollow`. Favicon i manifest aplikacji są statycznymi assetami frontendu.
 
 `GET /api/places/map?city_id={city_id}` jest lekkim kontraktem mapy: miejsce, miasto, kategorie, score/liczniki, cover i kilka kuratorowanych `preview_items`. `city_id` jest jawnym filtrem miasta; bez niego backend zwraca publiczny map preview dla wszystkich aktywnych miast. Ten payload nie dziedziczy pełnego `PlaceRead` i nie zawiera `cover_photo_id`, timestampów, `local_comment`, `status` ani `article_blocks`. `cover_photo` używa mapowego `PlaceMapPhotoRead` z `role`, `source` i opcjonalną atrybucją zdjęcia (`attribution_author`, `attribution_source_url`, `attribution_license`, `attribution_license_url`); `preview_items` to discriminated union po `kind`: `photo` ma `role`, `source` i atrybucję, a `memory` ich nie ma. Pierwszy widok mapy renderuje te lekkie preview, ale rozwinięty wachlarz miejsca po kliknięciu pobiera `GET /api/places/{place_id}/photos` i pokazuje wszystkie zatwierdzone zdjęcia miejsca. Opublikowane miejsce bez zatwierdzonego covera albo preview nie wraca na publiczną mapę jako klasyczna pinezka.
 

@@ -6,7 +6,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.runtime import frontend_static_file, mount_frontend_dist
+from app.runtime import FrontendSeoMetadata, frontend_static_file, mount_frontend_dist
 
 ROOT_DIR = Path(__file__).resolve().parents[4]
 
@@ -32,6 +32,48 @@ def test_mount_frontend_dist_serves_spa_without_hiding_api_404(tmp_path: Path) -
     assert client.get("/places/ostrow-tumski").text == '<div id="root">PhotoMap</div>'
     assert client.get("/assets/app.js").text == "console.log('PhotoMap');"
     assert client.get("/api/missing").status_code == 404
+
+
+def test_mount_frontend_dist_can_inject_route_seo_metadata(tmp_path: Path) -> None:
+    dist_dir = tmp_path / "dist"
+    dist_dir.mkdir(parents=True)
+    (dist_dir / "index.html").write_text(
+        "\n".join(
+            [
+                "<html>",
+                "<head>",
+                "    <!-- photomap-seo:start -->",
+                "    <title>PhotoMap</title>",
+                "    <!-- photomap-seo:end -->",
+                "</head>",
+                '<body><div id="root"></div></body>',
+                "</html>",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    app = FastAPI()
+
+    def seo_provider(path, request):
+        return FrontendSeoMetadata(
+            title="Ostrów Tumski | PhotoMap",
+            description="Zobacz Ostrów Tumski w PhotoMap.",
+            canonical_url=f"{str(request.base_url).rstrip('/')}{path}",
+            image_url="http://testserver/media/photos/ostrow.jpg",
+            structured_data=[{"@context": "https://schema.org", "@type": "Place", "name": "Ostrów Tumski"}],
+        )
+
+    mount_frontend_dist(app, dist_dir, seo_provider)
+
+    response = TestClient(app).get("/places/ostrow-tumski")
+
+    assert response.status_code == 200
+    assert "<title>Ostrów Tumski | PhotoMap</title>" in response.text
+    assert 'content="Zobacz Ostrów Tumski w PhotoMap."' in response.text
+    assert 'property="og:image" content="http://testserver/media/photos/ostrow.jpg"' in response.text
+    assert '"@type":"Place"' in response.text
+    assert "<title>PhotoMap</title>" not in response.text
 
 
 def test_frontend_static_file_stays_inside_dist(tmp_path: Path) -> None:

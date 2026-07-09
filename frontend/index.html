@@ -3,13 +3,57 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="PhotoMap to wizualna mapa miejsc, zdjęć, pamiątek i prostych tras/kolekcji." />
-    <meta name="robots" content="index,follow" />
+    <!-- photomap-seo:start -->
+    <title>PhotoMap | Wizualna mapa Wrocławia</title>
+    <meta
+      name="description"
+      content="Odkrywaj Wrocław przez zdjęcia, pamiątki i krótkie trasy. PhotoMap pokazuje miejsca z klimatem jako wizualną mapę miniaturek."
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="application-name" content="PhotoMap" />
+    <meta name="theme-color" content="#0f5f7a" />
+    <meta property="og:site_name" content="PhotoMap" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="PhotoMap | Wizualna mapa Wrocławia" />
+    <meta
+      property="og:description"
+      content="Odkrywaj Wrocław przez zdjęcia, pamiątki i krótkie trasy. PhotoMap pokazuje miejsca z klimatem jako wizualną mapę miniaturek."
+    />
+    <meta property="og:url" content="https://photomap.pl/" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="PhotoMap | Wizualna mapa Wrocławia" />
+    <meta
+      name="twitter:description"
+      content="Odkrywaj Wrocław przez zdjęcia, pamiątki i krótkie trasy. PhotoMap pokazuje miejsca z klimatem jako wizualną mapę miniaturek."
+    />
+    <link rel="canonical" href="https://photomap.pl/" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "PhotoMap",
+        "alternateName": "photomap.pl",
+        "url": "https://photomap.pl/",
+        "description": "Wizualna mapa miejsc, zdjęć, pamiątek oraz krótkich tras i kolekcji."
+      }
+    </script>
+    <!-- photomap-seo:end -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
-    <title>PhotoMap</title>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <main>
+        <h1>PhotoMap</h1>
+        <p>Wizualna mapa miejsc, zdjęć, pamiątek oraz krótkich tras i kolekcji.</p>
+        <nav aria-label="Główne strony PhotoMap">
+          <a href="/">Mapa Wrocławia</a>
+          <a href="/guides">Trasy i kolekcje miejsc</a>
+        </nav>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
