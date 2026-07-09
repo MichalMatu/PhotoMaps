@@ -19,6 +19,7 @@ RESERVED_FRONTEND_PATHS = (
 
 SEO_BLOCK_START = "<!-- photomap-seo:start -->"
 SEO_BLOCK_END = "<!-- photomap-seo:end -->"
+FRONTEND_HTML_HEADERS = {"Cache-Control": "no-cache"}
 
 
 @dataclass(frozen=True)
@@ -99,7 +100,6 @@ def mount_frontend_dist(
     index_file = dist_dir / "index.html"
     if not index_file.is_file():
         raise FileNotFoundError(f"Missing frontend build: {index_file}")
-    index_html = index_file.read_text(encoding="utf-8")
 
     assets_dir = dist_dir / "assets"
     if assets_dir.is_dir():
@@ -113,12 +113,15 @@ def mount_frontend_dist(
 
         static_file = frontend_static_file(dist_dir, frontend_path)
         if static_file is not None:
+            if static_file == index_file.resolve():
+                return FileResponse(index_file, headers=FRONTEND_HTML_HEADERS)
             return FileResponse(static_file)
 
         if seo_provider is None:
-            return FileResponse(index_file)
+            return FileResponse(index_file, headers=FRONTEND_HTML_HEADERS)
 
         metadata = seo_provider(request_path, request)
-        return HTMLResponse(inject_frontend_seo(index_html, metadata))
+        index_html = index_file.read_text(encoding="utf-8")
+        return HTMLResponse(inject_frontend_seo(index_html, metadata), headers=FRONTEND_HTML_HEADERS)
 
     return app

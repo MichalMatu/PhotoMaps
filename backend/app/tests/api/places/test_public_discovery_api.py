@@ -167,8 +167,8 @@ def test_llms_robots_and_sitemap_expose_public_discovery_links(client_session) -
     assert discovery_response.json()["place_detail_path_template"] == "/api/public/cities/{city_id}/places/{place_slug}"
     assert llms_response.status_code == 200
     assert "/api/public/cities/wroclaw/places" in llms_response.text
-    assert "visual map of Wrocław with photos" in llms_response.text
-    assert "przewodnik po Wrocławiu ze zdjęciami" in llms_response.text
+    assert "visual map of places in Poland with photos" in llms_response.text
+    assert "przewodnik po miejscach w Polsce ze zdjęciami" in llms_response.text
     assert "Private" not in llms_response.text
     assert robots_response.status_code == 200
     assert "Sitemap: http://testserver/sitemap.xml" in robots_response.text

@@ -13,16 +13,16 @@ from app.services.guide_previews import approved_cover_photos_by_place
 from app.services.places import list_public_place_photos, public_places_statement
 from app.services.public_guides import public_guide_by_slug
 
-HOME_TITLE = "PhotoMap | Wizualna mapa Wrocławia"
+HOME_TITLE = "PhotoMap | Wizualna mapa miejsc w Polsce"
 HOME_DESCRIPTION = (
-    "Odkrywaj Wrocław przez zdjęcia, pamiątki i krótkie trasy. "
-    "PhotoMap pokazuje miejsca z klimatem jako wizualną mapę miniaturek."
+    "Odkrywaj miejsca w Polsce przez zdjęcia, pamiątki i krótkie trasy. "
+    "PhotoMap pokazuje lokalne atrakcje jako wizualną mapę miniaturek."
 )
 GUIDES_TITLE = "Trasy i kolekcje miejsc | PhotoMap"
-GUIDES_DESCRIPTION = "Gotowe trasy i kolekcje miejsc we Wrocławiu: zdjęcia, opisy i punkty warte zobaczenia."
+GUIDES_DESCRIPTION = "Gotowe trasy i kolekcje miejsc w Polsce: zdjęcia, opisy i punkty warte zobaczenia."
 ADMIN_TITLE = "Panel admina | PhotoMap"
 ADMIN_DESCRIPTION = "Prywatny panel korekt, moderacji i konfiguracji PhotoMap."
-PLACE_FALLBACK_DESCRIPTION = "Zobacz miejsce w PhotoMap: zdjęcia, pamiątki i kontekst na wizualnej mapie Wrocławia."
+PLACE_FALLBACK_DESCRIPTION = "Zobacz miejsce w PhotoMap: zdjęcia, pamiątki i kontekst na wizualnej mapie miejsc."
 GUIDE_FALLBACK_DESCRIPTION = "Zobacz trasę lub kolekcję miejsc w PhotoMap: punkty, zdjęcia i opis przejścia."
 UNKNOWN_TITLE = "Strona niedostępna | PhotoMap"
 UNKNOWN_DESCRIPTION = "Ta strona PhotoMap nie jest publicznie dostępna. Przejdź do mapy lub listy tras i kolekcji."

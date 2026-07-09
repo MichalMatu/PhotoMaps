@@ -23,14 +23,10 @@ import {
 import { MAP_DISPLAY_CONFIG } from "../components/map/mapDisplayConfig";
 import { getPlacePreviewVisual } from "../components/map/placePreview";
 import { PlaceMap } from "../components/map/PlaceMap";
-import { DEFAULT_SEO_DESCRIPTION, DEFAULT_SEO_TITLE, usePageSeo } from "../seo/pageSeo";
+import { SEOHead } from "../components/ui/SEOHead";
+import { DEFAULT_SEO_DESCRIPTION, DEFAULT_SEO_TITLE } from "../seo/pageSeo";
 
 export function PublicMapPage() {
-  usePageSeo({
-    canonicalPath: "/",
-    description: DEFAULT_SEO_DESCRIPTION,
-    title: DEFAULT_SEO_TITLE,
-  });
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [isAudioAutoplayEnabled, setIsAudioAutoplayEnabled] = useState(false);
   const [isPinnedMediaVisible, setIsPinnedMediaVisible] = useState(true);
@@ -71,85 +67,88 @@ export function PublicMapPage() {
   const showEmptyMapState = !isMapLoading && !isMapError && hasAnyLayerActive && markerPlaces.length === 0;
 
   return (
-    <AppShell
-      activeSection="map"
-      mapAudioControl={{
-        active: isAudioAutoplayEnabled,
-        label: "Audio",
-        onToggle: () => setIsAudioAutoplayEnabled((currentValue) => !currentValue),
-      }}
-      mapCategoryControls={{
-        items: categoryFilterItems.map((category) => ({
-          ...category,
-          active: selectedCategoryIds.includes(category.id),
-        })),
-        onClear: () => setSelectedCategoryIds([]),
-        onToggle: (categoryId) =>
-          setSelectedCategoryIds((currentCategoryIds) => toggleMapCategoryFilter(currentCategoryIds, categoryId)),
-        selectedCount: selectedCategoryIds.length,
-      }}
-      mapLayerControls={{
-        items: MAP_LAYER_CONTROLS.map((layer) => ({
-          ...layer,
-          active: isMapLayerControlActive(mapLayerState, layer.id),
-          count: layerCounts[layer.id],
-        })),
-        onToggle: (layerId) =>
-          setMapLayerState((currentState) => toggleMapLayer(currentState, layerId as MapLayerControlId)),
-      }}
-      mapPinnedMediaControl={{
-        active: isPinnedMediaVisible,
-        label: "Przypięte",
-        onToggle: () => setIsPinnedMediaVisible((currentValue) => !currentValue),
-      }}
-    >
-      <main className="page-shell map-page">
-        {isMapLoading || isMapError ? (
-          <div
-            className={isMapError ? "ui-panel map-status-panel map-status-panel--error" : "ui-panel map-status-panel"}
-            role="status"
-          >
-            {isMapLoading ? <p>Ładowanie mapy...</p> : null}
-            {isMapError ? <p className="error-text">Nie udało się pobrać mapy</p> : null}
-          </div>
-        ) : null}
-        {showEmptyMapState ? (
-          <div className="ui-panel map-empty-panel" role="status">
-            <p>
-              {hasActiveFilters
-                ? "Brak miejsc dla tych filtrów."
-                : hasPlacesWithoutMapMedia
-                  ? "Brak mediów do pokazania na mapie."
-                  : "Brak miejsc do pokazania na mapie."}
-            </p>
-            {hasActiveFilters ? (
-              <button
-                className="ui-button ui-button--secondary"
-                type="button"
-                onClick={() => {
-                  setSelectedCategoryIds([]);
-                  setMapLayerState(DEFAULT_MAP_LAYER_STATE);
-                }}
-              >
-                Wyczyść filtry
-              </button>
-            ) : null}
-          </div>
-        ) : null}
-        {!isMapLoading && !isMapError ? (
-          <div className="map-frame">
-            <PlaceMap
-              isAudioAutoplayEnabled={isAudioAutoplayEnabled}
-              mapFallback={mapFallback}
-              markerPlaces={markerPlaces}
-              onPinnedMediaVisibleChange={setIsPinnedMediaVisible}
-              pinnedMediaPlaces={mapPlaces}
-              placeCustomFieldDefinitions={placeCustomFieldDefinitions}
-              showPinnedMedia={isPinnedMediaVisible}
-            />
-          </div>
-        ) : null}
-      </main>
-    </AppShell>
+    <>
+      <SEOHead title={DEFAULT_SEO_TITLE} description={DEFAULT_SEO_DESCRIPTION} url="/" />
+      <AppShell
+        activeSection="map"
+        mapAudioControl={{
+          active: isAudioAutoplayEnabled,
+          label: "Audio",
+          onToggle: () => setIsAudioAutoplayEnabled((currentValue) => !currentValue),
+        }}
+        mapCategoryControls={{
+          items: categoryFilterItems.map((category) => ({
+            ...category,
+            active: selectedCategoryIds.includes(category.id),
+          })),
+          onClear: () => setSelectedCategoryIds([]),
+          onToggle: (categoryId) =>
+            setSelectedCategoryIds((currentCategoryIds) => toggleMapCategoryFilter(currentCategoryIds, categoryId)),
+          selectedCount: selectedCategoryIds.length,
+        }}
+        mapLayerControls={{
+          items: MAP_LAYER_CONTROLS.map((layer) => ({
+            ...layer,
+            active: isMapLayerControlActive(mapLayerState, layer.id),
+            count: layerCounts[layer.id],
+          })),
+          onToggle: (layerId) =>
+            setMapLayerState((currentState) => toggleMapLayer(currentState, layerId as MapLayerControlId)),
+        }}
+        mapPinnedMediaControl={{
+          active: isPinnedMediaVisible,
+          label: "Przypięte",
+          onToggle: () => setIsPinnedMediaVisible((currentValue) => !currentValue),
+        }}
+      >
+        <main className="page-shell map-page">
+          {isMapLoading || isMapError ? (
+            <div
+              className={isMapError ? "ui-panel map-status-panel map-status-panel--error" : "ui-panel map-status-panel"}
+              role="status"
+            >
+              {isMapLoading ? <p>Ładowanie mapy...</p> : null}
+              {isMapError ? <p className="error-text">Nie udało się pobrać mapy</p> : null}
+            </div>
+          ) : null}
+          {showEmptyMapState ? (
+            <div className="ui-panel map-empty-panel" role="status">
+              <p>
+                {hasActiveFilters
+                  ? "Brak miejsc dla tych filtrów."
+                  : hasPlacesWithoutMapMedia
+                    ? "Brak mediów do pokazania na mapie."
+                    : "Brak miejsc do pokazania na mapie."}
+              </p>
+              {hasActiveFilters ? (
+                <button
+                  className="ui-button ui-button--secondary"
+                  type="button"
+                  onClick={() => {
+                    setSelectedCategoryIds([]);
+                    setMapLayerState(DEFAULT_MAP_LAYER_STATE);
+                  }}
+                >
+                  Wyczyść filtry
+                </button>
+              ) : null}
+            </div>
+          ) : null}
+          {!isMapLoading && !isMapError ? (
+            <div className="map-frame">
+              <PlaceMap
+                isAudioAutoplayEnabled={isAudioAutoplayEnabled}
+                mapFallback={mapFallback}
+                markerPlaces={markerPlaces}
+                onPinnedMediaVisibleChange={setIsPinnedMediaVisible}
+                pinnedMediaPlaces={mapPlaces}
+                placeCustomFieldDefinitions={placeCustomFieldDefinitions}
+                showPinnedMedia={isPinnedMediaVisible}
+              />
+            </div>
+          ) : null}
+        </main>
+      </AppShell>
+    </>
   );
 }

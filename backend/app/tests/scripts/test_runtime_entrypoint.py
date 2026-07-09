@@ -76,6 +76,40 @@ def test_mount_frontend_dist_can_inject_route_seo_metadata(tmp_path: Path) -> No
     assert "<title>PhotoMap</title>" not in response.text
 
 
+def test_mount_frontend_dist_reloads_index_after_frontend_rebuild(tmp_path: Path) -> None:
+    dist_dir = tmp_path / "dist"
+    dist_dir.mkdir(parents=True)
+    index_file = dist_dir / "index.html"
+    index_file.write_text(
+        "<html><head><!-- photomap-seo:start --><title>Old</title><!-- photomap-seo:end --></head>"
+        '<body><script type="module" src="/assets/index-old.js"></script></body></html>',
+        encoding="utf-8",
+    )
+
+    app = FastAPI()
+
+    def seo_provider(path, request):
+        return FrontendSeoMetadata(
+            title="PhotoMap",
+            description="Wizualna mapa miejsc.",
+            canonical_url=f"{str(request.base_url).rstrip('/')}{path}",
+        )
+
+    mount_frontend_dist(app, dist_dir, seo_provider)
+    index_file.write_text(
+        "<html><head><!-- photomap-seo:start --><title>New</title><!-- photomap-seo:end --></head>"
+        '<body><script type="module" src="/assets/index-new.js"></script></body></html>',
+        encoding="utf-8",
+    )
+
+    response = TestClient(app).get("/places/rynek")
+
+    assert response.status_code == 200
+    assert response.headers["cache-control"] == "no-cache"
+    assert "/assets/index-new.js" in response.text
+    assert "/assets/index-old.js" not in response.text
+
+
 def test_frontend_static_file_stays_inside_dist(tmp_path: Path) -> None:
     dist_dir = tmp_path / "dist"
     dist_dir.mkdir()
