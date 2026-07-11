@@ -23,6 +23,8 @@ SUPPORTED_AUDIO_SUFFIX_BY_MIME_TYPE = {
     "audio/mpeg": ".mp3",
     "audio/mp4": ".m4a",
 }
+MP4_DURATION_BOX_TYPES = {"mvhd", "mdhd"}
+MP4_CONTAINER_BOX_TYPES = {"moov", "trak", "mdia"}
 
 
 @dataclass(frozen=True)
@@ -115,13 +117,71 @@ def audio_suffix(mime_type: str) -> str:
     return SUPPORTED_AUDIO_SUFFIX_BY_MIME_TYPE[mime_type]
 
 
+def mp4_box_duration_seconds(content: bytes) -> float | None:
+    durations: list[float] = []
+
+    def read_uint(offset: int, byte_count: int) -> int:
+        return int.from_bytes(content[offset : offset + byte_count], byteorder="big")
+
+    def read_box_duration(offset: int, box_end: int) -> float | None:
+        data_offset = offset + 8
+        if data_offset + 20 > box_end:
+            return None
+
+        version = content[data_offset]
+        if version == 1:
+            if data_offset + 32 > box_end:
+                return None
+            timescale = read_uint(data_offset + 20, 4)
+            duration = read_uint(data_offset + 24, 8)
+        else:
+            timescale = read_uint(data_offset + 12, 4)
+            duration = read_uint(data_offset + 16, 4)
+
+        if timescale <= 0 or duration <= 0:
+            return None
+        return duration / timescale
+
+    def walk_boxes(start: int, end: int) -> None:
+        offset = start
+        while offset + 8 <= end:
+            size = read_uint(offset, 4)
+            box_type = content[offset + 4 : offset + 8].decode("latin1")
+            header_size = 8
+            if size == 1:
+                if offset + 16 > end:
+                    return
+                size = read_uint(offset + 8, 8)
+                header_size = 16
+            elif size == 0:
+                size = end - offset
+
+            if size < header_size or offset + size > end:
+                return
+
+            box_end = offset + size
+            if box_type in MP4_DURATION_BOX_TYPES:
+                duration = read_box_duration(offset, box_end)
+                if duration is not None:
+                    durations.append(duration)
+            elif box_type in MP4_CONTAINER_BOX_TYPES:
+                walk_boxes(offset + header_size, box_end)
+
+            offset = box_end
+
+    walk_boxes(0, len(content))
+    return max(durations) if durations else None
+
+
 def audio_duration_seconds(content: bytes) -> float:
     try:
         audio = MutagenFile(BytesIO(content))
-    except Exception as exc:
-        raise HTTPException(status_code=422, detail="Unsupported audio file") from exc
+    except Exception:
+        audio = None
 
     duration = getattr(getattr(audio, "info", None), "length", None)
+    if duration is None or duration <= 0:
+        duration = mp4_box_duration_seconds(content)
     if duration is None or duration <= 0:
         raise HTTPException(status_code=422, detail="Unsupported audio file")
     if duration > MAX_AUDIO_DURATION_SECONDS:

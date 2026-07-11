@@ -1,4 +1,4 @@
-import type { Category, City, Place, ReviewStatus } from "../../api/types";
+import type { AdminPhotoAlbum, Category, City, Place, ReviewStatus } from "../../api/types";
 
 export type AdminMediaItem = {
   id: string;
@@ -11,6 +11,7 @@ export type AdminMediaItem = {
 export type AdminMediaPlaceGroup<TItem extends AdminMediaItem> = {
   categoryLabel: string;
   coverItem: TItem;
+  itemCount: number;
   items: TItem[];
   place: Place | null;
   placeId: string;
@@ -56,6 +57,7 @@ export function groupAdminMediaByPlace<TItem extends AdminMediaItem>(
       return {
         categoryLabel,
         coverItem: selectCoverItem(groupItems, place),
+        itemCount: groupItems.length,
         items: groupItems,
         place,
         placeId,
@@ -74,6 +76,37 @@ export function selectPhotoAlbumCover<TItem extends AdminMediaItem>(groupItems: 
   }
 
   return groupItems.find((item) => item.status === "approved") ?? groupItems[0];
+}
+
+export function groupAdminPhotoAlbumsByPlace(
+  albums: AdminPhotoAlbum[],
+  places: Place[],
+  categories: Category[],
+): AdminMediaPlaceGroup<AdminPhotoAlbum["cover_photo"]>[] {
+  const placeById = new Map(places.map((place) => [place.id, place]));
+  const categoryById = new Map(categories.map((category) => [category.id, category]));
+  const groups: Array<AdminMediaPlaceGroup<AdminPhotoAlbum["cover_photo"]>> = [];
+
+  for (const album of albums) {
+    const place = placeById.get(album.place_id);
+    if (!place) {
+      continue;
+    }
+    const categoryLabel = place.category_ids.length
+      ? place.category_ids.map((categoryId) => categoryById.get(categoryId)?.label ?? categoryId).join(", ")
+      : "Bez kategorii";
+    groups.push({
+      categoryLabel,
+      coverItem: album.cover_photo,
+      itemCount: album.photo_count,
+      items: [],
+      place,
+      placeId: place.id,
+      title: place.title,
+    });
+  }
+
+  return groups.sort((firstGroup, secondGroup) => firstGroup.title.localeCompare(secondGroup.title, "pl"));
 }
 
 export function groupAdminMediaPlaceGroupsByCity<TItem extends AdminMediaItem>(
@@ -97,7 +130,7 @@ export function groupAdminMediaPlaceGroupsByCity<TItem extends AdminMediaItem>(
         sortOrder: city?.sort_order ?? Number.MAX_SAFE_INTEGER,
       } satisfies AdminMediaCityGroup<TItem>);
 
-    group.itemCount += placeGroup.items.length;
+    group.itemCount += placeGroup.itemCount;
     group.placeGroups.push(placeGroup);
     groupsByCityId.set(cityId, group);
   }

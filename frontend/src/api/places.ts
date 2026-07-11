@@ -11,9 +11,13 @@ export function getMapPlaces(cityId?: string | null): Promise<PlaceMapItem[]> {
 }
 
 export async function getAdminMapPlacesForCities(cities: City[]): Promise<PlaceMapItem[]> {
-  const activeCities = cities.filter((city) => city.status === "active");
-  const cityResults = await Promise.all(activeCities.map((city) => getMapPlaces(city.id)));
-  return cityResults.flat();
+  const activeCityIds = new Set(cities.filter((city) => city.status === "active").map((city) => city.id));
+  if (activeCityIds.size === 0) {
+    return [];
+  }
+
+  const places = await getMapPlaces();
+  return places.filter((place) => activeCityIds.has(place.city_id));
 }
 
 export function getAdminPlaces(): Promise<AdminPlace[]> {

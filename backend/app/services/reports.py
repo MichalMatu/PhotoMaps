@@ -47,6 +47,7 @@ def ensure_public_report_target(session: Session, target_type: str, target_id: s
             .join(City, City.id == Place.city_id)
             .where(Photo.id == target_id)
             .where(Photo.status == "approved")
+            .where(Photo.public_path.is_not(None), Photo.thumb_path.is_not(None))
             .where(Place.status == "published", City.status == "active")
         )
         if session.exec(statement).first() is None:

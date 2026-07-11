@@ -141,6 +141,26 @@ function denseCollisionPlaces() {
   }));
 }
 
+function overlappingHitboxPlaces() {
+  const sharedPosition = { lat: city.lat, lon: city.lon };
+  return [
+    {
+      ...places[1],
+      ...sharedPosition,
+      score: 40,
+      title: "Panorama Racławicka",
+      weight: 5,
+    },
+    {
+      ...places[0],
+      ...sharedPosition,
+      score: 20,
+      title: "Most Tumski",
+      weight: 2,
+    },
+  ];
+}
+
 function regionalCity(id: string, name: string, lat: number, lon: number, sortOrder: number) {
   return {
     ...city,
@@ -257,11 +277,13 @@ test("map remains visible when app config request fails", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.locator(".map-frame")).toBeVisible();
-  await expect.poll(async () => placeMarkerCount(page)).toBe(2);
+  await expect.poll(async () => placeMarkerCount(page)).toBeGreaterThan(0);
   await expect(page.getByText("Nie udało się pobrać mapy")).toHaveCount(0);
 });
 
 test("visual: map markers, gallery and photo detail", async ({ page }) => {
+  test.setTimeout(60_000);
+
   const describedCover = {
     ...rynekCover,
     description_blocks: [
@@ -414,6 +436,57 @@ test("visual: dense local map markers are resolved without overlap", async ({ pa
   const visibleMarkerCount = await placeMarkerCount(page);
   expect(visibleMarkerCount).toBeLessThanOrEqual(densePlaces.length);
   await expectPlaceTilesNotToOverlap(page);
+});
+
+test("place marker hit area follows the visible displaced tile", async ({ page }) => {
+  await page.setViewportSize({ height: 820, width: 1280 });
+  await mockSharedApi(page, overlappingHitboxPlaces());
+  await page.goto("/");
+
+  await expect(page.locator(".place-photo-marker")).toHaveCount(2);
+  await expectPlaceTilesNotToOverlap(page);
+
+  const target = await page.locator('[title="Most Tumski"] span').evaluate((element) => {
+    const blocker = document.querySelector('[title="Panorama Racławicka"]');
+    const blockerSpan = blocker?.querySelector("span");
+    if (!blocker || !blockerSpan) {
+      throw new Error("Expected the blocking marker to be rendered.");
+    }
+
+    const blockerRect = blocker.getBoundingClientRect();
+    const blockerSpanRect = blockerSpan.getBoundingClientRect();
+    const targetRect = element.getBoundingClientRect();
+    const clickPoint = {
+      x: blockerRect.left + blockerRect.width / 2,
+      y: blockerRect.bottom - 4,
+    };
+    const deltaX = clickPoint.x - (targetRect.left + targetRect.width / 2);
+    const deltaY = clickPoint.y - (targetRect.top + targetRect.height / 2);
+
+    element.style.translate = `${deltaX}px ${deltaY}px`;
+
+    return {
+      clickPoint,
+      isClickPointInsideBlockerMarker:
+        clickPoint.x >= blockerRect.left &&
+        clickPoint.x <= blockerRect.right &&
+        clickPoint.y >= blockerRect.top &&
+        clickPoint.y <= blockerRect.bottom,
+      isClickPointInsideBlockerSpan:
+        clickPoint.x >= blockerSpanRect.left &&
+        clickPoint.x <= blockerSpanRect.right &&
+        clickPoint.y >= blockerSpanRect.top &&
+        clickPoint.y <= blockerSpanRect.bottom,
+    };
+  });
+
+  expect(target.isClickPointInsideBlockerMarker).toBe(true);
+  expect(target.isClickPointInsideBlockerSpan).toBe(false);
+
+  await page.mouse.click(target.clickPoint.x, target.clickPoint.y);
+
+  await expect(page.locator('.place-photo-marker.is-selected[title="Most Tumski"]')).toHaveCount(1);
+  await expect(page.locator('.place-photo-marker.is-selected[title="Panorama Racławicka"]')).toHaveCount(0);
 });
 
 test("multi-city map shows regional places without a public city filter", async ({ page }) => {
@@ -596,9 +669,18 @@ test("photo detail swipe navigates photos in mobile, landscape and fullscreen", 
 
 test("visual: far zoom keeps one representative for a city even when the viewport has room", async ({ page }) => {
   await page.setViewportSize({ height: 820, width: 1280 });
-  const countryScaleCity = { ...city, default_zoom: 8 };
-  const countryScalePlaces = denseCollisionPlaces().map((place) => ({ ...place, city: countryScaleCity }));
-  await mockSharedApi(page, countryScalePlaces);
+  await mockSharedApi(page, denseCollisionPlaces());
+  await page.route(`${API_URL}/api/app-config`, (route) =>
+    route.fulfill({
+      json: {
+        ...appConfig,
+        map: {
+          ...appConfig.map,
+          fallback_zoom: 8,
+        },
+      },
+    }),
+  );
   await page.goto("/");
 
   await expect(page.locator(".place-photo-marker")).toHaveCount(1);

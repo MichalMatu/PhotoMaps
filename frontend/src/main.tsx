@@ -2,12 +2,11 @@ import React, { lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import { APP_NAME } from "./config/app";
+import { HelmetProvider } from "react-helmet-async";
+
 import { PublicMapPage } from "./pages/PublicMapPage";
 import { TtsProvider } from "./components/ui/TtsProvider";
 import "./styles/app.css";
-
-document.title = APP_NAME;
 
 const queryClient = new QueryClient();
 const AdminPlacesPage = lazy(() =>
@@ -56,10 +55,12 @@ function App() {
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <TtsProvider>
-        <App />
-      </TtsProvider>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <TtsProvider>
+          <App />
+        </TtsProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   </React.StrictMode>,
 );

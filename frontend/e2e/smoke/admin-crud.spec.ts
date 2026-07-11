@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 import { PHOTO_BUFFER } from "../fixtures/media";
 import { API_URL } from "../support/config";
-import { expandPlaceCityGroup, openAdminModerationSection, openStatusTab, unlockAdmin } from "../support/adminUi";
+import { expandPlaceCityGroup, unlockAdmin } from "../support/adminUi";
 import { createCategory, createPlace, expectJson, getMapPlaces } from "../support/smokeApi";
 
 test("admin gate is reachable", async ({ page }) => {
@@ -18,16 +18,16 @@ test("admin can upload an approved place photo through UI", async ({ page, reque
   const category = await createCategory(request, suffix);
   const place = await createPlace(request, category.id, suffix);
 
-  const adminTabs = await unlockAdmin(page);
-  await openAdminModerationSection(page, adminTabs, /Zdjęcia/);
+  await unlockAdmin(page);
+  await expandPlaceCityGroup(page, "Wrocław");
+  const placeRow = page.locator(".place-city-group .table-row").filter({ hasText: place.title });
+  await placeRow.getByRole("button", { name: `Galeria zdjęć miejsca ${place.title}` }).click();
 
-  await page.getByRole("button", { name: "Dodaj zdjęcie" }).click();
+  const photoPanelDialog = page.getByRole("dialog", { name: "Zdjęcia miejsca" });
+  await expect(photoPanelDialog).toBeVisible();
+  await photoPanelDialog.getByRole("button", { name: "Dodaj zdjęcie" }).click();
   const uploadDialog = page.getByRole("dialog", { name: "Dodaj zdjęcie" });
   await expect(uploadDialog).toBeVisible();
-  await uploadDialog.getByLabel("Miasto").selectOption(place.city_id);
-  await expect(uploadDialog.getByLabel("Miejsce")).toBeEnabled();
-  await expect(uploadDialog.getByLabel("Miejsce")).toContainText(place.title);
-  await uploadDialog.getByLabel("Miejsce").selectOption({ label: place.title });
   await uploadDialog.getByLabel("Zdjęcie").setInputFiles({
     buffer: PHOTO_BUFFER,
     mimeType: "image/jpeg",
@@ -37,15 +37,7 @@ test("admin can upload an approved place photo through UI", async ({ page, reque
   await uploadDialog.getByRole("button", { name: "Dodaj zdjęcie" }).click();
   await expect(uploadDialog).toBeHidden();
 
-  await openStatusTab(page, /Zatwierdzone/);
-  const approvedCityGroup = page.getByRole("button", { name: /Pokaż media miasta Wrocław/ });
-  await expect(approvedCityGroup).toContainText("1 zdjęcie");
-  await approvedCityGroup.click();
-  const approvedAlbum = page.locator(".admin-media-album-summary").filter({ hasText: place.title });
-  await expect(approvedAlbum).toContainText("1 zdjęcie");
-  await approvedAlbum.click();
-
-  const approvedItem = page.locator(".admin-media-item").filter({ hasText: caption });
+  const approvedItem = photoPanelDialog.locator(".admin-media-item").filter({ hasText: caption });
   await expect(approvedItem).toContainText("zatwierdzone");
 
   await expect

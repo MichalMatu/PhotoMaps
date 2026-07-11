@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { clearAdminToken, getStoredAdminToken } from "../../api/auth";
+import { clearAdminSessionToken, getAdminSessionToken } from "../../api/auth";
 import { ApiError } from "../../api/http";
 import type {
   AdminMemory,
@@ -71,7 +71,7 @@ function adminLoadError(reason: unknown): OperationError {
 }
 
 export function useAdminPanelData(): Result {
-  const [adminToken, setAdminToken] = useState(() => getStoredAdminToken());
+  const [adminToken, setAdminToken] = useState(() => getAdminSessionToken());
   const [accessMessage, setAccessMessage] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<OperationError | null>(null);
   const {
@@ -121,7 +121,7 @@ export function useAdminPanelData(): Result {
   }, [resetGuides, resetModeration, resetPlaces, resetSettings]);
 
   const clearSession = useCallback(() => {
-    clearAdminToken();
+    clearAdminSessionToken();
     setAdminToken("");
     setAccessMessage(null);
     setLoadError(null);
@@ -134,11 +134,10 @@ export function useAdminPanelData(): Result {
       refreshCategories(),
       refreshCities(),
       refreshGuides(),
-      refreshMemories(),
+      refreshMemories("pending"),
       refreshModerationCounts(),
       refreshPlaces(),
-      refreshPhotos(),
-      refreshReports(),
+      refreshReports("open"),
     ]);
     setAccessMessage(null);
     setLoadError(null);
@@ -149,7 +148,6 @@ export function useAdminPanelData(): Result {
     refreshGuides,
     refreshMemories,
     refreshModerationCounts,
-    refreshPhotos,
     refreshPlaces,
     refreshReports,
   ]);
@@ -256,7 +254,7 @@ export function useAdminPanelData(): Result {
 
     refreshAll().catch((reason: unknown) => {
       if (reason instanceof ApiError && (reason.status === 401 || reason.status === 503)) {
-        clearAdminToken();
+        clearAdminSessionToken();
         setAdminToken("");
         setAccessMessage(reason.message);
         setLoadError(null);

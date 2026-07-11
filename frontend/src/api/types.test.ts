@@ -47,6 +47,9 @@ const publicMemory: Memory = {
 
 const adminPhoto: AdminPhoto = {
   ...publicPhoto,
+  admin_audio: null,
+  admin_public_path: "/api/admin/photos/photo-1/media/image",
+  admin_thumb_path: "/api/admin/photos/photo-1/media/thumb",
   approved_at: null,
   consent_confirmed: true,
   created_at: "2026-06-10T00:00:00",
@@ -114,6 +117,7 @@ describe("media API DTO types", () => {
     expect(publicMemoryConsent(publicMemory)).toBeUndefined();
     expect(memorySubmissionPublicPath(memorySubmission)).toBeUndefined();
     expect(adminPhoto.consent_confirmed).toBe(true);
+    expect(adminPhoto.admin_public_path).toBe("/api/admin/photos/photo-1/media/image");
     expect(adminMemory.consent_confirmed).toBe(true);
   });
 });

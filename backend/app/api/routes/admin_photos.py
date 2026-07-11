@@ -1,4 +1,9 @@
-from fastapi import APIRouter, Depends, File, Query, UploadFile
+from io import BytesIO
+from mimetypes import guess_type
+
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
+from fastapi.responses import FileResponse, Response
+from PIL import Image, ImageOps, UnidentifiedImageError
 from sqlmodel import Session
 
 from app.api.admin_auth import require_admin_token
@@ -7,22 +12,65 @@ from app.api.redaction import redact_admin_media
 from app.db.session import get_session
 from app.schemas.contract_types import ReviewStatus
 from app.schemas.media_redaction import MediaRedactionPayload, MediaRedactionReport
-from app.schemas.photo import PhotoAdminRead, PhotoReview, PhotoUpdate
+from app.schemas.photo import PhotoAdminAlbumRead, PhotoAdminRead, PhotoReview, PhotoUpdate
 from app.schemas.place import PlaceAdminRead
 from app.serializers.photo import photo_to_admin_read
 from app.serializers.place import place_to_admin_read
 from app.services.admin_photos import (
+    AdminPhotoAudioFilter,
     delete_admin_photo,
     delete_admin_photo_audio,
+    get_admin_photo,
+    list_admin_photo_album_rows,
     list_admin_photo_queue,
     replace_admin_photo_audio,
     review_admin_photo,
     set_admin_cover_photo,
     update_admin_photo,
 )
+from app.services.media import images
 from app.services.place_taxonomy import category_ids_by_place_id
 
 router = APIRouter(prefix="/api/admin/photos", tags=["admin photos"], dependencies=[Depends(require_admin_token)])
+
+
+def private_photo_image_path(photo_id: str, session: Session):
+    photo = get_admin_photo(session, photo_id)
+    path = images.storage_path(images.PRIVATE_STORAGE_DIR, photo.original_path)
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Photo media not found")
+    return path
+
+
+def photo_thumbnail_response(photo_id: str, session: Session) -> Response:
+    path = private_photo_image_path(photo_id, session)
+    try:
+        with Image.open(path) as image:
+            output_format = images.public_image_format(image)
+            output_image = images.normalized_public_image(image, output_format)
+            thumbnail = ImageOps.fit(
+                output_image,
+                images.THUMB_SIZE,
+                method=Image.Resampling.LANCZOS,
+                centering=(0.5, 0.5),
+            )
+            buffer = BytesIO()
+            if output_format == "PNG":
+                thumbnail.save(buffer, "PNG", optimize=True)
+                media_type = "image/png"
+            else:
+                thumbnail.save(
+                    buffer,
+                    "JPEG",
+                    quality=images.THUMB_IMAGE_QUALITY,
+                    subsampling=images.THUMB_JPEG_SUBSAMPLING,
+                    optimize=True,
+                )
+                media_type = "image/jpeg"
+    except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
+        raise HTTPException(status_code=422, detail="Photo media could not be processed") from exc
+
+    return Response(content=buffer.getvalue(), media_type=media_type)
 
 
 @router.get("", response_model=list[PhotoAdminRead])
@@ -34,6 +82,44 @@ def list_admin_photos(
 ) -> list[PhotoAdminRead]:
     photos = list_admin_photo_queue(session, limit=limit, offset=offset, status=status)
     return [photo_to_admin_read(photo) for photo in photos]
+
+
+@router.get("/albums", response_model=list[PhotoAdminAlbumRead])
+def list_admin_photo_albums(
+    status: ReviewStatus | None = Query(default=None),
+    place_id: str | None = Query(default=None),
+    query: str | None = Query(default=None),
+    audio: AdminPhotoAudioFilter = Query(default="all"),
+    session: Session = Depends(get_session),
+) -> list[PhotoAdminAlbumRead]:
+    album_rows = list_admin_photo_album_rows(session, status=status, place_id=place_id, query=query, audio=audio)
+    return [
+        PhotoAdminAlbumRead(place_id=place_id, photo_count=photo_count, cover_photo=photo_to_admin_read(cover_photo))
+        for place_id, photo_count, cover_photo in album_rows
+    ]
+
+
+@router.get("/{photo_id}/media/image")
+def get_photo_admin_image(photo_id: str, session: Session = Depends(get_session)) -> FileResponse:
+    path = private_photo_image_path(photo_id, session)
+    media_type = guess_type(path.name)[0] or "application/octet-stream"
+    return FileResponse(path, media_type=media_type)
+
+
+@router.get("/{photo_id}/media/thumb")
+def get_photo_admin_thumbnail(photo_id: str, session: Session = Depends(get_session)) -> Response:
+    return photo_thumbnail_response(photo_id, session)
+
+
+@router.get("/{photo_id}/media/audio")
+def get_photo_admin_audio(photo_id: str, session: Session = Depends(get_session)) -> FileResponse:
+    photo = get_admin_photo(session, photo_id)
+    if photo.audio_original_path is None:
+        raise HTTPException(status_code=404, detail="Photo audio not found")
+    path = images.storage_path(images.PRIVATE_STORAGE_DIR, photo.audio_original_path)
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Photo audio not found")
+    return FileResponse(path, media_type=photo.audio_mime_type or "application/octet-stream")
 
 
 @router.post("/{photo_id}/review", response_model=PhotoAdminRead)

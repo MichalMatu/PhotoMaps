@@ -23,6 +23,7 @@ def approved_cover_photos_by_place(session: Session, places: list[Place]) -> dic
         select(Photo.id.label("photo_id"), cover_rank)
         .where(Photo.place_id.in_(place_ids))
         .where(Photo.status == "approved")
+        .where(Photo.public_path.is_not(None), Photo.thumb_path.is_not(None))
         .subquery()
     )
     cover_filter = ranked_photos.c.cover_rank <= 1

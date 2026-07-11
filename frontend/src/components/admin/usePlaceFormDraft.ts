@@ -21,6 +21,7 @@ import {
   type PlaceCustomFieldFormValues,
 } from "../placeCustomFields";
 import { validateAudioFile } from "../ui/audioAttachment";
+import { sortAdminCategoriesByLabel, sortAdminCitiesByName } from "./adminListSorting";
 import { hasPlaceLocationChanged, type PlaceLocation, type PlaceLocationAutoSaveStatus } from "./placeLocationAutoSave";
 import { EMPTY_PHOTO_ATTRIBUTION_DRAFT, type PhotoAttributionDraft } from "./placePhotoPanelState";
 import type { PlaceFormPayload } from "./useAdminPlaceManagement";
@@ -69,11 +70,14 @@ export function usePlaceFormDraft({
 
   const generatedSlug = useMemo(() => slugify(title), [title]);
   const availableCities = useMemo(
-    () => cities.filter((city) => city.status === "active" || city.id === place?.city_id),
+    () => sortAdminCitiesByName(cities.filter((city) => city.status === "active" || city.id === place?.city_id)),
     [cities, place?.city_id],
   );
   const availableCategories = useMemo(
-    () => categories.filter((category) => category.status === "active" || categoryIds.includes(category.id)),
+    () =>
+      sortAdminCategoriesByLabel(
+        categories.filter((category) => category.status === "active" || categoryIds.includes(category.id)),
+      ),
     [categories, categoryIds],
   );
   const sortedCustomFields = useMemo(

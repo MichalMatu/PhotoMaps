@@ -10,6 +10,9 @@ import {
 
 function photo(id: string, status: AdminPhoto["status"], createdAt: string): AdminPhoto {
   return {
+    admin_audio: null,
+    admin_public_path: `/api/admin/photos/${id}/media/image`,
+    admin_thumb_path: `/api/admin/photos/${id}/media/thumb`,
     approved_at: status === "approved" ? createdAt : null,
     audio: null,
     attribution_author: null,

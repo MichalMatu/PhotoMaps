@@ -12,6 +12,8 @@ import { ErrorModal, errorDetails } from "../components/ui/ErrorModal";
 import { MediaImage } from "../components/ui/MediaImage";
 import { polishCountLabel } from "../components/ui/polishCountLabel";
 import { TtsButton } from "../components/ui/TtsButton";
+import { SEOHead } from "../components/ui/SEOHead";
+import { absoluteSeoUrl, DEFAULT_SEO_DESCRIPTION } from "../seo/pageSeo";
 
 function currentPlaceSlug() {
   const match = window.location.pathname.match(/^\/places\/([^/]+)$/);
@@ -34,26 +36,19 @@ function memoryCountLabel(count: number) {
   });
 }
 
-function absoluteBrowserUrl(path: string) {
-  if (typeof window === "undefined") {
-    return path;
-  }
-  return new URL(path, window.location.origin).toString();
-}
-
 function placeStructuredData(place: PlaceDetail, photo: Photo | null) {
   return {
     "@context": "https://schema.org",
     "@type": "Place",
     name: place.title,
     description: place.description ?? undefined,
-    url: absoluteBrowserUrl(`/places/${encodeURIComponent(place.slug)}`),
+    url: absoluteSeoUrl(`/places/${encodeURIComponent(place.slug)}`),
     geo: {
       "@type": "GeoCoordinates",
       latitude: place.lat,
       longitude: place.lon,
     },
-    image: photo ? absoluteBrowserUrl(mediaUrl(photo.public_path)) : undefined,
+    image: photo ? absoluteSeoUrl(mediaUrl(photo.public_path)) : undefined,
   };
 }
 
@@ -90,6 +85,7 @@ export function PlaceDetailPage() {
   const photos = photosQuery.data ?? [];
   const heroPhoto = photos[0] ?? null;
   const structuredData = useMemo(() => (place ? placeStructuredData(place, heroPhoto) : null), [heroPhoto, place]);
+  const canonicalPath = slug ? `/places/${encodeURIComponent(slug)}` : "/";
   const leadText = place?.description ?? null;
   const ttsText = place ? articleTextForTts(place.article_blocks, [place.description]) : "";
   const activeError =
@@ -122,51 +118,59 @@ export function PlaceDetailPage() {
           : null;
 
   return (
-    <AppShell activeSection="places">
-      <main className="page-shell place-page">
-        <section className="content-panel place-detail-shell place-detail-view">
-          <nav className="place-detail-links" aria-label="Nawigacja miejsca">
-            <a className="ghost-link" href="/">
-              Mapa
-            </a>
-            <a className="ghost-link" href="/guides">
-              Trasy
-            </a>
-          </nav>
+    <>
+      <SEOHead
+        title={place ? place.title : "Miejsce"}
+        description={place?.description ?? DEFAULT_SEO_DESCRIPTION}
+        image={heroPhoto ? mediaUrl(heroPhoto.public_path) : undefined}
+        url={canonicalPath}
+        schemaOrgJson={structuredData}
+      />
+      <AppShell activeSection="places">
+        <main className="page-shell place-page">
+          <section className="content-panel place-detail-shell place-detail-view">
+            <nav className="place-detail-links" aria-label="Nawigacja miejsca">
+              <a className="ghost-link" href="/">
+                Mapa
+              </a>
+              <a className="ghost-link" href="/guides">
+                Trasy
+              </a>
+            </nav>
 
-          {placeQuery.isLoading ? <p className="ui-empty">Ładowanie miejsca...</p> : null}
+            {placeQuery.isLoading ? <p className="ui-empty">Ładowanie miejsca...</p> : null}
 
-          {place ? (
-            <>
-              {structuredData ? <script type="application/ld+json">{JSON.stringify(structuredData)}</script> : null}
-              <div className="place-detail-hero">
-                <div className="place-detail-copy">
-                  <div className="place-detail-title-block">
-                    <h1>{place.title}</h1>
-                    <div className="place-detail-meta" aria-label="Zawartość miejsca">
-                      <span>{photoCountLabel(place.photo_count)}</span>
-                      <span>{memoryCountLabel(place.memory_count)}</span>
+            {place ? (
+              <>
+                <div className="place-detail-hero">
+                  <div className="place-detail-copy">
+                    <div className="place-detail-title-block">
+                      <h1>{place.title}</h1>
+                      <div className="place-detail-meta" aria-label="Zawartość miejsca">
+                        <span>{photoCountLabel(place.photo_count)}</span>
+                        <span>{memoryCountLabel(place.memory_count)}</span>
+                      </div>
                     </div>
+                    {leadText ? <p className="lead-text">{leadText}</p> : null}
+                    <TtsButton
+                      className="place-detail-tts-button"
+                      text={ttsText}
+                      ttsKey={`place:${place.slug}:article`}
+                    />
                   </div>
-                  {leadText ? <p className="lead-text">{leadText}</p> : null}
-                  <TtsButton
-                    className="place-detail-tts-button"
-                    text={ttsText}
-                    ttsKey={`place:${place.slug}:article`}
-                  />
+                  <PlaceHeroMedia photo={heroPhoto} place={place} />
                 </div>
-                <PlaceHeroMedia photo={heroPhoto} place={place} />
-              </div>
 
-              <PlaceArticle blocks={place.article_blocks} />
-            </>
-          ) : null}
+                <PlaceArticle blocks={place.article_blocks} />
+              </>
+            ) : null}
 
-          {activeError && dismissedErrorKey !== errorKey ? (
-            <ErrorModal {...activeError} onClose={() => setDismissedErrorKey(errorKey)} />
-          ) : null}
-        </section>
-      </main>
-    </AppShell>
+            {activeError && dismissedErrorKey !== errorKey ? (
+              <ErrorModal {...activeError} onClose={() => setDismissedErrorKey(errorKey)} />
+            ) : null}
+          </section>
+        </main>
+      </AppShell>
+    </>
   );
 }

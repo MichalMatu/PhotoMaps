@@ -2,7 +2,15 @@ import { expect, test } from "@playwright/test";
 import type { Locator, Page } from "@playwright/test";
 import type { AdminPhoto } from "../../src/api/types";
 
-import { adminGuides, adminPlaces, categories, city, rynekCover, rynekSide } from "../fixtures/visualData";
+import {
+  adminGuides,
+  adminPlaces,
+  categories,
+  city,
+  nadodrzeCover,
+  rynekCover,
+  rynekSide,
+} from "../fixtures/visualData";
 import { ADMIN_TOKEN, SNAPSHOT_OPTIONS } from "../support/config";
 import { mockAdminApi } from "../support/visualApi";
 
@@ -48,9 +56,10 @@ type AdminListStyleSnapshot = {
 };
 
 async function unlockAdmin(page: Page) {
-  await page.goto("/");
-  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
   await page.goto("/admin");
+  await page.getByLabel("Token").fill(ADMIN_TOKEN);
+  await page.getByRole("button", { name: "Wejdź do panelu" }).click();
+  await expect(page.getByRole("navigation", { name: "Sekcje panelu admina" })).toBeVisible();
 }
 
 async function clickAdminSection(page: Page, sectionName: RegExp) {
@@ -163,9 +172,7 @@ async function getAdminListStyleSnapshot(panel: Locator, rowSelector: string): P
 test("visual: admin place table", async ({ page }) => {
   await page.setViewportSize({ height: 820, width: 1280 });
   await mockAdminApi(page);
-  await page.goto("/");
-  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
-  await page.goto("/admin");
+  await unlockAdmin(page);
   await page
     .getByRole("navigation", { name: "Sekcje panelu admina" })
     .getByRole("button", { name: /Miejsca/ })
@@ -175,12 +182,16 @@ test("visual: admin place table", async ({ page }) => {
   await expect(cityToggle).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator(".place-table.ui-table-panel")).toBeVisible();
   await expect(page.locator(".place-table .table-head")).toHaveCount(0);
-  await expect(page.locator(".place-status-section--published .place-status-toggle")).toContainText("Opublikowane");
-  await expect(page.locator(".place-status-section--published .table-row")).toHaveCount(2);
+  await expect(page.locator(".place-status-section")).toHaveCount(0);
+  await expect(page.locator(".place-city-group .table-row")).toHaveCount(2);
+  await expect(page.locator(".place-city-group .table-cell--title")).toHaveText([
+    adminPlaces[1].title,
+    adminPlaces[0].title,
+  ]);
   await expect(page).toHaveScreenshot("admin-place-table-desktop.png", SNAPSHOT_OPTIONS);
 });
 
-test("admin place status sections split city places", async ({ page }) => {
+test("admin place status tabs filter city places without nested sections", async ({ page }) => {
   const statusPlaces = [
     adminPlaces[0],
     {
@@ -200,9 +211,7 @@ test("admin place status sections split city places", async ({ page }) => {
   ];
 
   await mockAdminApi(page, { adminPlaceList: statusPlaces });
-  await page.goto("/");
-  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
-  await page.goto("/admin");
+  await unlockAdmin(page);
   await page
     .getByRole("navigation", { name: "Sekcje panelu admina" })
     .getByRole("button", { name: /Miejsca/ })
@@ -210,31 +219,19 @@ test("admin place status sections split city places", async ({ page }) => {
 
   const cityToggle = page.locator(".place-city-toggle").filter({ hasText: city.name });
   await cityToggle.click();
-  const publishedSection = page.locator(".place-status-section--published");
-  const draftSection = page.locator(".place-status-section--draft");
-  const archivedSection = page.locator(".place-status-section--archived");
+  await expect(page.locator(".place-status-section")).toHaveCount(0);
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: adminPlaces[0].title })).toBeVisible();
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: "Miejsce szkicowe" })).toHaveCount(0);
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: "Miejsce archiwalne" })).toHaveCount(0);
 
-  await expect(publishedSection.getByRole("button", { name: /Opublikowane 1 miejsce/ })).toHaveAttribute(
-    "aria-expanded",
-    "true",
-  );
-  await expect(draftSection.getByRole("button", { name: /Szkice 1 miejsce/ })).toHaveAttribute(
-    "aria-expanded",
-    "false",
-  );
-  await expect(archivedSection.getByRole("button", { name: /Archiwalne 1 miejsce/ })).toHaveAttribute(
-    "aria-expanded",
-    "false",
-  );
-  await expect(publishedSection.locator(".table-row").filter({ hasText: adminPlaces[0].title })).toBeVisible();
-  await expect(draftSection.locator(".table-row").filter({ hasText: "Miejsce szkicowe" })).toHaveCount(0);
-  await expect(archivedSection.locator(".table-row").filter({ hasText: "Miejsce archiwalne" })).toHaveCount(0);
+  const statusTabs = page.getByRole("tablist", { name: "Status miejsc" });
+  await statusTabs.getByRole("tab", { name: /Szkice 1/ }).click();
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: "Miejsce szkicowe" })).toBeVisible();
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: adminPlaces[0].title })).toHaveCount(0);
 
-  await draftSection.getByRole("button", { name: /Szkice 1 miejsce/ }).click();
-  await expect(draftSection.locator(".table-row").filter({ hasText: "Miejsce szkicowe" })).toBeVisible();
-
-  await archivedSection.getByRole("button", { name: /Archiwalne 1 miejsce/ }).click();
-  await expect(archivedSection.locator(".table-row").filter({ hasText: "Miejsce archiwalne" })).toBeVisible();
+  await statusTabs.getByRole("tab", { name: /Archiwalne 1/ }).click();
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: "Miejsce archiwalne" })).toBeVisible();
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: "Miejsce szkicowe" })).toHaveCount(0);
 });
 
 test("admin place status tabs filter city groups", async ({ page }) => {
@@ -266,49 +263,39 @@ test("admin place status tabs filter city groups", async ({ page }) => {
   ];
 
   await mockAdminApi(page, { adminCityList: [city, emptyCity], adminPlaceList: statusPlaces });
-  await page.goto("/");
-  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
-  await page.goto("/admin");
+  await unlockAdmin(page);
   await page
     .getByRole("navigation", { name: "Sekcje panelu admina" })
     .getByRole("button", { name: /Miejsca/ })
     .click();
 
   const statusTabs = page.getByRole("tablist", { name: "Status miejsc" });
-  await expect(statusTabs.getByRole("tab", { name: /Wszystkie 3/ })).toBeVisible();
+  await expect(statusTabs.getByRole("tab", { name: /Wszystkie/ })).toHaveCount(0);
   await expect(statusTabs.getByRole("tab", { name: /Opublikowane 1/ })).toBeVisible();
   await expect(statusTabs.getByRole("tab", { name: /Szkice 1/ })).toBeVisible();
   await expect(statusTabs.getByRole("tab", { name: /Archiwalne 1/ })).toBeVisible();
 
   const cityToggle = page.locator(".place-city-toggle").filter({ hasText: city.name });
-  await expect(page.locator(".place-city-toggle")).toHaveCount(2);
+  await expect(page.locator(".place-city-toggle")).toHaveCount(1);
   await cityToggle.click();
 
   await statusTabs.getByRole("tab", { name: /Szkice 1/ }).click();
-  const draftSection = page.locator(".place-status-section--draft");
   await expect(page.locator(".place-city-toggle")).toHaveCount(1);
   await expect(page.locator(".place-city-toggle").filter({ hasText: emptyCity.name })).toHaveCount(0);
-  await expect(draftSection.getByRole("button", { name: /Szkice 1 miejsce/ })).toBeVisible();
-  await draftSection.getByRole("button", { name: /Szkice 1 miejsce/ }).click();
-  await expect(draftSection.locator(".table-row").filter({ hasText: "Miejsce szkicowe" })).toBeVisible();
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: "Miejsce szkicowe" })).toBeVisible();
   await expect(page.locator(".table-row").filter({ hasText: adminPlaces[0].title })).toHaveCount(0);
   await expect(page.locator(".table-row").filter({ hasText: "Miejsce archiwalne" })).toHaveCount(0);
 
   await statusTabs.getByRole("tab", { name: /Archiwalne 1/ }).click();
-  const archivedSection = page.locator(".place-status-section--archived");
   await expect(page.locator(".place-city-toggle")).toHaveCount(1);
   await expect(page.locator(".place-city-toggle").filter({ hasText: emptyCity.name })).toHaveCount(0);
-  await expect(archivedSection.getByRole("button", { name: /Archiwalne 1 miejsce/ })).toBeVisible();
-  await archivedSection.getByRole("button", { name: /Archiwalne 1 miejsce/ }).click();
-  await expect(archivedSection.locator(".table-row").filter({ hasText: "Miejsce archiwalne" })).toBeVisible();
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: "Miejsce archiwalne" })).toBeVisible();
   await expect(page.locator(".table-row").filter({ hasText: "Miejsce szkicowe" })).toHaveCount(0);
 });
 
 test("admin place empty modal filter shows one empty state", async ({ page }) => {
   await mockAdminApi(page, { adminPlaceList: [adminPlaces[0]] });
-  await page.goto("/");
-  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
-  await page.goto("/admin");
+  await unlockAdmin(page);
   await page
     .getByRole("navigation", { name: "Sekcje panelu admina" })
     .getByRole("button", { name: /Miejsca/ })
@@ -323,11 +310,34 @@ test("admin place empty modal filter shows one empty state", async ({ page }) =>
   await expect(page.getByText("Brak miejsc w tym mieście.")).toHaveCount(0);
 });
 
-test("admin moderation keeps photo upload action in the shared toolbar", async ({ page }) => {
+test("admin place filter search is focused and submits with Enter", async ({ page }) => {
   await mockAdminApi(page);
-  await page.goto("/");
-  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
-  await page.goto("/admin");
+  await unlockAdmin(page);
+  await page
+    .getByRole("navigation", { name: "Sekcje panelu admina" })
+    .getByRole("button", { name: /Miejsca/ })
+    .click();
+
+  await page.getByRole("button", { name: "Filtry miejsc" }).click();
+  const filterDialog = page.getByRole("dialog", { name: "Filtry miejsc" });
+  const searchInput = filterDialog.getByLabel("Szukaj");
+  await expect(searchInput).toBeFocused();
+
+  await searchInput.fill("rynek");
+  await searchInput.press("Enter");
+
+  await expect(filterDialog).toBeHidden();
+  await expect(page.getByRole("button", { name: /Filtry miejsc, aktywne 1/ })).toBeVisible();
+  const cityToggle = page.locator(".place-city-toggle").filter({ hasText: city.name });
+  await expect(cityToggle).toHaveAttribute("aria-expanded", "true");
+  await expect(cityToggle).toContainText("1 miejsce");
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: adminPlaces[0].title })).toBeVisible();
+  await expect(page.locator(".place-city-group .table-row").filter({ hasText: adminPlaces[1].title })).toHaveCount(0);
+});
+
+test("admin moderation keeps inbox filters in the shared toolbar", async ({ page }) => {
+  await mockAdminApi(page);
+  await unlockAdmin(page);
   await page
     .getByRole("navigation", { name: "Sekcje panelu admina" })
     .getByRole("button", { name: /Moderacja/ })
@@ -337,8 +347,11 @@ test("admin moderation keeps photo upload action in the shared toolbar", async (
     .locator(".admin-toolbar")
     .filter({ has: page.getByRole("tablist", { name: "Sekcje moderacji" }) });
   await expect(toolbar.getByRole("tab", { name: /Zdjęcia/ })).toBeVisible();
-  await expect(toolbar.getByRole("tab", { name: /Wszystkie/ })).toBeVisible();
-  await expect(toolbar.getByRole("button", { name: "Dodaj zdjęcie" })).toBeVisible();
+  await expect(toolbar.getByRole("tab", { name: /Do sprawdzenia/ })).toBeVisible();
+  await expect(toolbar.getByRole("tab", { name: /Odrzucone/ })).toBeVisible();
+  await expect(toolbar.getByRole("tab", { name: /Wszystkie/ })).toHaveCount(0);
+  await expect(toolbar.getByRole("tab", { name: /Zatwierdzone/ })).toHaveCount(0);
+  await expect(toolbar.getByRole("button", { name: "Dodaj zdjęcie" })).toHaveCount(0);
   await expect(page.locator(".photo-queue-toolbar")).toHaveCount(0);
 });
 
@@ -368,13 +381,13 @@ test("admin moderation badges use backend totals beyond loaded media page", asyn
   await clickAdminSection(page, /Moderacja/);
 
   const photoStatusTabs = page.getByRole("tablist", { name: "Status zdjęć" });
-  await expect(photoStatusTabs.getByRole("tab", { name: /Wszystkie 1176/ })).toBeVisible();
   await expect(photoStatusTabs.getByRole("tab", { name: /Do sprawdzenia 23/ })).toBeVisible();
-  await expect(photoStatusTabs.getByRole("tab", { name: /Zatwierdzone 1150/ })).toBeVisible();
   await expect(photoStatusTabs.getByRole("tab", { name: /Odrzucone 3/ })).toBeVisible();
+  await expect(photoStatusTabs.getByRole("tab", { name: /Wszystkie/ })).toHaveCount(0);
+  await expect(photoStatusTabs.getByRole("tab", { name: /Zatwierdzone/ })).toHaveCount(0);
 
   const moderationSections = page.getByRole("tablist", { name: "Sekcje moderacji" });
-  await expect(moderationSections.getByRole("tab", { name: /Zdjęcia 1176/ })).toBeVisible();
+  await expect(moderationSections.getByRole("tab", { name: /Zdjęcia 26/ })).toBeVisible();
   await expect(moderationSections.getByRole("tab", { name: /Zgłoszenia 2/ })).toBeVisible();
 
   await photoStatusTabs.getByRole("tab", { name: /Do sprawdzenia 23/ }).click();
@@ -383,7 +396,12 @@ test("admin moderation badges use backend totals beyond loaded media page", asyn
 });
 
 test("admin moderation media groups start collapsed", async ({ page }) => {
-  await mockAdminApi(page);
+  await mockAdminApi(page, {
+    adminPhotoList: [
+      { ...rynekCover, id: "pending-rynek-cover", status: "pending" as const },
+      { ...nadodrzeCover, id: "pending-nadodrze-cover", status: "pending" as const },
+    ],
+  });
   await unlockAdmin(page);
   await clickAdminSection(page, /Moderacja/);
 
@@ -414,7 +432,12 @@ test("visual: admin city lists share one panel and row contract", async ({ page 
     { height: 740, label: "mobile", width: 390 },
   ];
 
-  await mockAdminApi(page);
+  await mockAdminApi(page, {
+    adminPhotoList: [
+      { ...rynekCover, id: "pending-rynek-cover", status: "pending" as const },
+      { ...nadodrzeCover, id: "pending-nadodrze-cover", status: "pending" as const },
+    ],
+  });
   await unlockAdmin(page);
 
   for (const viewport of viewports) {
@@ -526,6 +549,8 @@ test("admin place photo gallery exposes moderator tools in responsive media view
     rynekSide,
     ...Array.from({ length: 3 }, (_, index) => ({
       ...rynekCover,
+      admin_public_path: `/api/admin/photos/visual-rynek-extra-${index + 1}/media/image`,
+      admin_thumb_path: `/api/admin/photos/visual-rynek-extra-${index + 1}/media/thumb`,
       caption: `Dodatkowe zdjęcie ${index + 1}`,
       id: `visual-rynek-extra-${index + 1}`,
       public_path: `/media/visual/visual-rynek-extra-${index + 1}.svg`,
@@ -841,7 +866,7 @@ test("admin status pills keep stable geometry across sections and filters", asyn
       contentSelector: ".photo-queue",
       sectionName: /Moderacja/,
       statusTablistName: "Status zdjęć",
-      statusTabName: /Zatwierdzone/,
+      statusTabName: /Do sprawdzenia/,
     },
     {
       contentSelector: ".guide-list",
@@ -916,9 +941,7 @@ test("admin guide status tabs filter the list", async ({ page }) => {
   ];
 
   await mockAdminApi(page, { adminGuideList: guideList });
-  await page.goto("/");
-  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
-  await page.goto("/admin");
+  await unlockAdmin(page);
   await page.getByRole("navigation", { name: "Sekcje panelu admina" }).getByRole("button", { name: /Trasy/ }).click();
 
   const statusTabs = page.getByRole("tablist", { name: "Status tras" });
@@ -934,9 +957,7 @@ test("admin guide status tabs filter the list", async ({ page }) => {
 
 test("admin configuration separates application settings and maintenance", async ({ page }) => {
   await mockAdminApi(page);
-  await page.goto("/");
-  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
-  await page.goto("/admin");
+  await unlockAdmin(page);
   await expect(
     page.getByRole("navigation", { name: "Sekcje panelu admina" }).getByRole("button", { name: /Ustawienia/ }),
   ).toHaveCount(0);

@@ -10,7 +10,6 @@ import {
   DEFAULT_ADMIN_MODERATION_FILTERS,
   countActiveAdminModerationFilters,
   filterAdminModerationMemories,
-  filterAdminModerationPhotos,
   filterAdminModerationReports,
   type AdminModerationFilters,
 } from "./adminModerationFilters";
@@ -29,9 +28,9 @@ export function filterReportsByStatus(reports: Report[], status: ReportStatus | 
 
 export function countModerationSections(counts: AdminModerationCounts) {
   return {
-    memories: counts.memories.all,
-    photos: counts.photos.all,
-    reports: counts.reports.all,
+    memories: counts.memories.pending + counts.memories.rejected,
+    photos: counts.photos.pending + counts.photos.rejected,
+    reports: counts.reports.open + counts.reports.closed,
   };
 }
 
@@ -39,7 +38,6 @@ export {
   DEFAULT_ADMIN_MODERATION_FILTERS,
   countActiveAdminModerationFilters,
   filterAdminModerationMemories,
-  filterAdminModerationPhotos,
   filterAdminModerationReports,
 };
 export type { AdminModerationFilters };

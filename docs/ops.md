@@ -38,7 +38,42 @@ Konfiguracja env:
 ```bash
 PHOTOMAP_PUBLIC_PENDING_MEDIA_MAX_RECORDS=100
 PHOTOMAP_PUBLIC_PENDING_MEDIA_MAX_BYTES=536870912
+PHOTOMAP_PUBLIC_MEMORY_UPLOAD_RATE_LIMIT=10
+PHOTOMAP_PUBLIC_MEMORY_UPLOAD_RATE_WINDOW_SECONDS=3600
+PHOTOMAP_PUBLIC_MEMORY_UPLOAD_MAX_CONCURRENCY=1
+PHOTOMAP_ADMIN_MEDIA_UPLOAD_MAX_CONCURRENCY=1
+PHOTOMAP_PUBLIC_REPORT_RATE_LIMIT=20
+PHOTOMAP_PUBLIC_REPORT_RATE_WINDOW_SECONDS=3600
+PHOTOMAP_PUBLIC_MEMORY_OWNER_RATE_LIMIT=30
+PHOTOMAP_PUBLIC_MEMORY_OWNER_RATE_WINDOW_SECONDS=3600
+PHOTOMAP_TRUSTED_PROXY_NETWORKS=127.0.0.1/32,::1/128
 ```
+
+Limity częstotliwości są prowadzone w pamięci procesu osobno dla uploadów pamiątek i zgłoszeń.
+Identyfikator `CF-Connecting-IP` jest używany wyłącznie wtedy, gdy bezpośrednie połączenie pochodzi
+z sieci wskazanej w `PHOTOMAP_TRUSTED_PROXY_NETWORKS`; nagłówek od innego klienta jest ignorowany.
+Publiczny runtime za lokalnym `cloudflared` powinien pozostać dostępny tylko na loopback.
+Limit całego requestu jest sprawdzany przed parserem multipart zarówno z `Content-Length`, jak i podczas
+strumieniowego odbierania body, więc upload bez tego nagłówka nie może ominąć ograniczenia rozmiaru.
+Domyślnie tylko jeden publiczny upload pamiątki może być jednocześnie parsowany i przetwarzany; następne
+żądanie dostaje `429` z `Retry-After`, co ogranicza szczytowe zużycie RAM podczas dekodowania dużych zdjęć.
+Mutacje admina sprawdzają Bearer token przed odczytem body. Wszystkie mają limit całego requestu, a trzy
+endpointy mediów współdzielą osobny limit jednej równoległej operacji, więc nieuwierzytelniony request nie
+może wymusić wcześniejszego spoolowania dużego multipart do `/tmp`.
+
+Publiczny runtime powinien dodatkowo ustawić:
+
+```bash
+PHOTOMAP_ENV=production
+PHOTOMAP_PUBLIC_SITE_URL=https://photomap.pl
+PHOTOMAP_ALLOWED_HOSTS=photomap.pl,www.photomap.pl,localhost,127.0.0.1
+FRONTEND_ORIGINS=https://photomap.pl,https://www.photomap.pl
+```
+
+Tryb `production` wyłącza `/docs`, `/redoc` i `/openapi.json`. Aplikacja odrzuca nieznane nagłówki
+`Host`, dodaje CSP, ochronę przed osadzaniem, `nosniff`, polityki referrera/uprawnień oraz HSTS dla
+żądań HTTPS. `/admin` i `/api/admin/*` mają `Cache-Control: no-store`. Token panelu admina jest trzymany
+wyłącznie w pamięci bieżącej karty i po odświeżeniu trzeba wpisać go ponownie.
 
 ## Diagnostyka Danych
 
@@ -87,9 +122,26 @@ python3 scripts/cleanup_orphan_media.py --apply
 python3 scripts/cleanup_orphan_media.py --apply --output-json .dev/orphan-media-cleanup.json
 ```
 
+## Wycofanie Publicznych Mediów Niezatwierdzonych Zdjęć
+
+Po migracji prywatności zdjęć usuń historyczne publiczne pochodne rekordów `pending` i `rejected`. Komenda bez `--apply` jest bezpiecznym dry-runem. Tryb `--apply` usuwa wyłącznie publiczną kopię, miniaturę i publiczne audio, a następnie zeruje ich ścieżki w bazie; prywatny oryginał pozostaje do podglądu moderatora. Skrypt jest idempotentny.
+
+```bash
+./scripts/backup_local_data.sh --apply
+backend/.venv/bin/python scripts/unpublish_nonapproved_photos.py
+backend/.venv/bin/python scripts/unpublish_nonapproved_photos.py --apply
+```
+
+W bieżącym przepływie odrzucenie najpierw przenosi publiczne pliki przez atomowy rename do prywatnego quarantine, a następnie jednym commitem zapisuje status `rejected` i puste ścieżki publiczne. Publiczny `server.py` po migracjach automatycznie odzyskuje niedokończoną operację: przy nadal zatwierdzonym rekordzie przywraca pliki, a po zapisanym odrzuceniu usuwa quarantine. Niepusty quarantine bez poprawnego manifestu zatrzymuje start fail-closed i pozostawia prywatne pliki do ręcznej inspekcji.
+
+Po `--apply` unieważnij w cache CDN ścieżki `/media/...` wypisane przez raport, żeby wcześniej zbuforowana odpowiedź nie pozostała dostępna na brzegu.
+Runtime ustawia dla `/media/*` rewalidację przeglądarki i `no-store` dla CDN, aby zwykłe odrzucenie
+zdjęcia nie pozostawiało publicznej kopii na brzegu. Po pierwszym wdrożeniu tej polityki wykonaj jeden
+pełny purge istniejącego cache strefy Cloudflare; nowe nagłówki nie usuwają odpowiedzi zbuforowanych wcześniej.
+
 ## Retencja Prywatnych Oryginałów
 
-Retencja prywatnych oryginałów działa jako ręczny skrypt operacyjny. Dla zatwierdzonych mediów po zadanym czasie prywatny oryginał jest zastępowany kopią publicznej pochodnej. Dla odrzuconych mediów prywatny oryginał jest usuwany, a publiczne pochodne zostają dostępne dla admina.
+Retencja prywatnych oryginałów działa jako ręczny skrypt operacyjny. Dla zatwierdzonych mediów po zadanym czasie prywatny oryginał jest zastępowany kopią publicznej pochodnej. Odrzucone media nie mają publicznych pochodnych; admin korzysta z chronionego podglądu prywatnego oryginału tylko do czasu usunięcia go przez retencję.
 
 ```bash
 python3 scripts/retain_private_originals.py --dry-run

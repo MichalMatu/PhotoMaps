@@ -11,6 +11,7 @@ type Props<TItem extends AdminMediaItem> = {
   groups: Array<AdminMediaPlaceGroup<TItem>>;
   onTogglePlace: (placeId: string) => void;
   renderItem: (item: TItem, group: AdminMediaPlaceGroup<TItem>) => ReactNode;
+  renderPanel?: (group: AdminMediaPlaceGroup<TItem>) => ReactNode;
 };
 
 export function AdminMediaAlbums<TItem extends AdminMediaItem>({
@@ -20,6 +21,7 @@ export function AdminMediaAlbums<TItem extends AdminMediaItem>({
   groups,
   onTogglePlace,
   renderItem,
+  renderPanel,
 }: Props<TItem>) {
   if (groups.length === 0) {
     return <p className="ui-empty">{emptyMessage}</p>;
@@ -38,7 +40,7 @@ export function AdminMediaAlbums<TItem extends AdminMediaItem>({
             expandLabel={`Pokaż media miejsca ${group.title}`}
             isExpanded={isExpanded}
             key={group.placeId}
-            meta={countLabel(group.items.length)}
+            meta={countLabel(group.itemCount)}
             metaClassName="admin-media-count"
             panelClassName="admin-media-gallery"
             panelId={panelId}
@@ -61,7 +63,7 @@ export function AdminMediaAlbums<TItem extends AdminMediaItem>({
             toggleClassName="admin-media-album-summary"
             onToggle={() => onTogglePlace(group.placeId)}
           >
-            {group.items.map((item) => renderItem(item, group))}
+            {renderPanel ? renderPanel(group) : group.items.map((item) => renderItem(item, group))}
           </AdminDisclosureRow>
         );
       })}

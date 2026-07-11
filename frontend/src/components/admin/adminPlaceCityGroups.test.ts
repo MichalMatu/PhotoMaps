@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { AdminPlace, City } from "../../api/types";
-import { getPlaceCityGroups, getPlaceStatusGroups } from "./adminPlaceCityGroups";
+import { getPlaceCityGroups } from "./adminPlaceCityGroups";
 
 const WROCLAW: City = {
   default_zoom: 13,
@@ -50,13 +50,22 @@ function place(id: string, cityId: string, status: AdminPlace["status"] = "draft
 }
 
 describe("getPlaceCityGroups", () => {
-  it("keeps cities without places visible in the places admin grouping", () => {
+  it("sorts city groups alphabetically and keeps empty cities visible", () => {
     const groups = getPlaceCityGroups([KRAKOW, WROCLAW], [place("p1", "wroclaw")]);
 
     expect(groups.map((group) => [group.cityId, group.places.map((groupPlace) => groupPlace.id)])).toEqual([
-      ["wroclaw", ["p1"]],
       ["krakow", []],
+      ["wroclaw", ["p1"]],
     ]);
+  });
+
+  it("sorts places alphabetically inside a city group", () => {
+    const groups = getPlaceCityGroups(
+      [WROCLAW],
+      [place("zoo", "wroclaw"), place("bar", "wroclaw"), place("arena", "wroclaw")],
+    );
+
+    expect(groups[0].places.map((groupPlace) => groupPlace.id)).toEqual(["arena", "bar", "zoo"]);
   });
 
   it("hides cities without matching places when empty city groups are disabled", () => {
@@ -69,7 +78,7 @@ describe("getPlaceCityGroups", () => {
     ).toEqual([["wroclaw", "Wrocław", ["p1"]]]);
   });
 
-  it("keeps places with missing city records visible after configured cities", () => {
+  it("keeps places with missing city records visible after configured city groups", () => {
     const groups = getPlaceCityGroups([WROCLAW], [place("p1", "missing-city")]);
 
     expect(groups.map((group) => [group.cityId, group.cityName, group.city?.id ?? null])).toEqual([
@@ -86,21 +95,5 @@ describe("getPlaceCityGroups", () => {
     expect(groups.map((group) => [group.cityId, group.cityName, group.city?.id ?? null])).toEqual([
       ["missing-city", "missing-city", null],
     ]);
-  });
-
-  it("groups places by editorial status in the visible city order", () => {
-    const statusGroups = getPlaceStatusGroups([
-      place("archived", "wroclaw", "archived"),
-      place("published", "wroclaw", "published"),
-      place("draft", "wroclaw", "draft"),
-    ]);
-
-    expect(statusGroups.map((group) => [group.status, group.label, group.defaultExpanded, group.places[0].id])).toEqual(
-      [
-        ["published", "Opublikowane", true, "published"],
-        ["draft", "Szkice", false, "draft"],
-        ["archived", "Archiwalne", false, "archived"],
-      ],
-    );
   });
 });

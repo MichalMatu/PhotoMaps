@@ -1,6 +1,6 @@
-import { mediaUrl } from "../../api/http";
 import type { AdminPhoto, ReviewFinalStatus } from "../../api/types";
 import { AdminAudioControls } from "./AdminAudioControls";
+import { AdminMediaImage } from "./AdminAuthenticatedMedia";
 import type { AdminMediaPlaceGroup } from "./adminMediaGroups";
 import { ADMIN_MEDIA_STATUS_LABELS } from "./adminMediaUi";
 import { AdminPhotoActionBar } from "./AdminPhotoActionBar";
@@ -37,12 +37,12 @@ export function PhotoQueueItem({
 
   return (
     <article className="ui-card admin-media-item">
-      <img
+      <AdminMediaImage
         className="admin-media-item-image"
         alt={photo.caption ?? group.title}
         decoding="async"
         loading="lazy"
-        src={mediaUrl(photo.thumb_path)}
+        src={photo.admin_thumb_path}
       />
       <div className="admin-media-item-body">
         <div className="photo-meta-row">
@@ -52,8 +52,9 @@ export function PhotoQueueItem({
         <p className="admin-media-caption">{photo.caption ?? "Brak podpisu"}</p>
         <PhotoAttributionSummary photo={photo} />
         <AdminAudioControls
-          audio={photo.audio}
+          audio={photo.admin_audio}
           inputKeyPrefix={`photo-audio-${photo.id}`}
+          mode="compact"
           onDeleteAudio={() => onDeleteAudio(photo)}
           onError={onError}
           onSaveAudio={(file) => onSaveAudio(photo, file)}

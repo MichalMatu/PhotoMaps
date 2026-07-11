@@ -43,15 +43,31 @@ describe("places API", () => {
     expect(fetchMock.mock.calls[0][0]).toBe("http://127.0.0.1:8000/api/places/map?city_id=wroclaw");
   });
 
-  it("loads admin map preview places only for active cities", async () => {
+  it("loads admin map preview places with one all-active-cities request", async () => {
+    const fetchMock = vi.fn<typeof fetch>(async () => {
+      return new Response(
+        JSON.stringify([{ city_id: "wroclaw" }, { city_id: "archived-city" }, { city_id: "unknown-active-city" }]),
+        { headers: { "Content-Type": "application/json" }, status: 200 },
+      );
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const places = await getAdminMapPlacesForCities([city("wroclaw"), city("archived-city", "archived")]);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls[0][0]).toBe("http://127.0.0.1:8000/api/places/map");
+    expect(places).toEqual([{ city_id: "wroclaw" }]);
+  });
+
+  it("skips admin map preview loading when no city is active", async () => {
     const fetchMock = vi.fn<typeof fetch>(async () => {
       return new Response(JSON.stringify([]), { headers: { "Content-Type": "application/json" }, status: 200 });
     });
     vi.stubGlobal("fetch", fetchMock);
 
-    await getAdminMapPlacesForCities([city("wroclaw"), city("archived-city", "archived")]);
+    const places = await getAdminMapPlacesForCities([city("archived-city", "archived")]);
 
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(fetchMock.mock.calls[0][0]).toBe("http://127.0.0.1:8000/api/places/map?city_id=wroclaw");
+    expect(places).toEqual([]);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

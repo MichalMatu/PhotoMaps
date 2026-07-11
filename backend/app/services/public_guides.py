@@ -29,3 +29,8 @@ def public_guide_by_slug(session: Session, slug: str) -> tuple[Guide, list[Place
     if not places:
         return None
     return guide, places
+
+
+def list_public_sitemap_guides(session: Session) -> list[Guide]:
+    statement = select(Guide).where(Guide.status == "published").order_by(Guide.updated_at.desc())
+    return [guide for guide in session.exec(statement).all() if public_guide_has_visible_places(session, guide.id)]

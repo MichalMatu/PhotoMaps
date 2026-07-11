@@ -10,6 +10,9 @@ import {
 
 const PHOTOS: AdminPhoto[] = [
   {
+    admin_audio: null,
+    admin_public_path: "/api/admin/photos/1/media/image",
+    admin_thumb_path: "/api/admin/photos/1/media/thumb",
     approved_at: null,
     audio: null,
     attribution_author: null,
@@ -29,6 +32,9 @@ const PHOTOS: AdminPhoto[] = [
     thumb_path: "",
   },
   {
+    admin_audio: null,
+    admin_public_path: "/api/admin/photos/2/media/image",
+    admin_thumb_path: "/api/admin/photos/2/media/thumb",
     approved_at: "",
     audio: null,
     attribution_author: null,
@@ -48,6 +54,9 @@ const PHOTOS: AdminPhoto[] = [
     thumb_path: "",
   },
   {
+    admin_audio: null,
+    admin_public_path: "/api/admin/photos/3/media/image",
+    admin_thumb_path: "/api/admin/photos/3/media/thumb",
     approved_at: null,
     audio: null,
     attribution_author: null,
@@ -126,7 +135,7 @@ const REPORTS: Report[] = [
 
 const MODERATION_COUNTS: AdminModerationCounts = {
   memories: { all: 12, approved: 10, pending: 1, rejected: 1 },
-  photos: { all: 1176, approved: 1176, pending: 0, rejected: 0 },
+  photos: { all: 1176, approved: 1150, pending: 23, rejected: 3 },
   reports: { all: 2, closed: 1, open: 1 },
 };
 
@@ -146,8 +155,8 @@ describe("adminSectionState", () => {
 
   it("counts moderation section tabs from backend totals, not loaded page size", () => {
     expect(countModerationSections(MODERATION_COUNTS)).toEqual({
-      memories: 12,
-      photos: 1176,
+      memories: 2,
+      photos: 26,
       reports: 2,
     });
   });

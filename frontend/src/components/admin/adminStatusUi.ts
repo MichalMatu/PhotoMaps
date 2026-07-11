@@ -55,11 +55,10 @@ export const ADMIN_CATEGORY_STATUS_OPTIONS = [
   { label: "Archiwalna", value: "archived" },
 ] satisfies Array<{ label: string; value: CategoryStatus }>;
 
-export const ADMIN_REPORT_STATUS_FILTERS: Array<{ label: string; value: ReportStatus | "all" }> = [
-  { label: "Wszystkie", value: "all" },
+export const ADMIN_REPORT_STATUS_FILTERS = [
   { label: "Otwarte", value: "open" },
   { label: "Zamknięte", value: "closed" },
-];
+] satisfies Array<{ label: string; value: ReportStatus }>;
 
 export function adminPlaceStatusLabel(status: PlaceStatus) {
   return ADMIN_PLACE_STATUS_LABELS[status];

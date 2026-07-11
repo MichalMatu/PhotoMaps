@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import type { AdminPhoto, Category, City, Place } from "../../api/types";
-import { groupAdminMediaByPlace, groupAdminMediaPlaceGroupsByCity, selectPhotoAlbumCover } from "./adminMediaGroups";
+import {
+  groupAdminMediaByPlace,
+  groupAdminMediaPlaceGroupsByCity,
+  groupAdminPhotoAlbumsByPlace,
+  selectPhotoAlbumCover,
+} from "./adminMediaGroups";
 
 const category: Category = {
   description: null,
@@ -46,6 +51,9 @@ const place: Place = {
 
 function photo(id: string, placeId = "place-1"): AdminPhoto {
   return {
+    admin_audio: null,
+    admin_public_path: `/api/admin/photos/${id}/media/image`,
+    admin_thumb_path: `/api/admin/photos/${id}/media/thumb`,
     approved_at: null,
     audio: null,
     attribution_author: null,
@@ -74,6 +82,7 @@ describe("groupAdminMediaByPlace", () => {
       {
         categoryLabel: "Sklepy",
         coverItem: { id: "photo-2" },
+        itemCount: 2,
         items: [{ id: "photo-1" }, { id: "photo-2" }],
         title: "Sklep",
       },
@@ -88,6 +97,25 @@ describe("groupAdminMediaByPlace", () => {
         items: [{ id: "photo-1" }],
         placeId: "place-1",
         title: "Sklep",
+      },
+    ]);
+  });
+});
+
+describe("groupAdminPhotoAlbumsByPlace", () => {
+  it("keeps album counts separate from lazily loaded photo items", () => {
+    expect(
+      groupAdminPhotoAlbumsByPlace(
+        [{ cover_photo: photo("photo-1"), photo_count: 7, place_id: place.id }],
+        [place],
+        [category],
+      ),
+    ).toMatchObject([
+      {
+        coverItem: { id: "photo-1" },
+        itemCount: 7,
+        items: [],
+        placeId: "place-1",
       },
     ]);
   });

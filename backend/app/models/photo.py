@@ -13,8 +13,8 @@ class Photo(SQLModel, table=True):
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     place_id: str = Field(foreign_key="place.id", index=True)
     original_path: str
-    public_path: str
-    thumb_path: str
+    public_path: str | None = None
+    thumb_path: str | None = None
     audio_original_path: str | None = None
     audio_public_path: str | None = None
     audio_mime_type: str | None = None

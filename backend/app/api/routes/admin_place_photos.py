@@ -1,12 +1,14 @@
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
-from sqlmodel import Session, select
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
+from sqlmodel import Session
 
 from app.api.admin_auth import require_admin_token
 from app.db.session import get_session
-from app.models.photo import Photo
 from app.models.place import Place
+from app.schemas.contract_types import ReviewStatus
 from app.schemas.photo import PhotoAdminRead
 from app.serializers.photo import photo_to_admin_read
+from app.services.admin_photos import AdminPhotoAudioFilter
+from app.services.admin_photos import list_admin_place_photos as list_admin_place_photo_records
 from app.services.photo_fields import photo_description_blocks_from_form
 from app.services.photo_uploads import create_editorial_photo_from_upload
 
@@ -20,14 +22,17 @@ router = APIRouter(
 @router.get("", response_model=list[PhotoAdminRead])
 def list_admin_place_photos(
     place_id: str,
+    status: ReviewStatus | None = Query(default=None),
+    query: str | None = Query(default=None),
+    audio: AdminPhotoAudioFilter = Query(default="all"),
     session: Session = Depends(get_session),
 ) -> list[PhotoAdminRead]:
     place = session.get(Place, place_id)
     if place is None:
         raise HTTPException(status_code=404, detail="Place not found")
 
-    statement = select(Photo).where(Photo.place_id == place.id).order_by(Photo.created_at.desc())
-    return [photo_to_admin_read(photo) for photo in session.exec(statement).all()]
+    photos = list_admin_place_photo_records(session, place_id=place.id, status=status, query=query, audio=audio)
+    return [photo_to_admin_read(photo) for photo in photos]
 
 
 @router.post("", response_model=PhotoAdminRead, status_code=201)

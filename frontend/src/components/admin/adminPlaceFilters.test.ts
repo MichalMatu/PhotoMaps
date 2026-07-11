@@ -56,12 +56,16 @@ describe("filterAdminPlaces", () => {
     ];
 
     expect(filterAdminPlaces(places, filters({ query: "ryn" })).map((item) => item.id)).toEqual(["place-1"]);
-    expect(filterAdminPlaces(places, filters({ cityId: "poznan" })).map((item) => item.id)).toEqual(["place-2"]);
-    expect(filterAdminPlaces(places, filters({ status: "draft" })).map((item) => item.id)).toEqual(["place-2"]);
-    expect(filterAdminPlaces(places, filters({ categoryId: "quiet" })).map((item) => item.id)).toEqual(["place-2"]);
-    expect(filterAdminPlaces(places, filters({ completeness: "missing-cover" })).map((item) => item.id)).toEqual([
+    expect(filterAdminPlaces(places, filters({ cityId: "poznan", status: "draft" })).map((item) => item.id)).toEqual([
       "place-2",
     ]);
+    expect(filterAdminPlaces(places, filters({ status: "draft" })).map((item) => item.id)).toEqual(["place-2"]);
+    expect(filterAdminPlaces(places, filters({ categoryId: "quiet", status: "draft" })).map((item) => item.id)).toEqual(
+      ["place-2"],
+    );
+    expect(
+      filterAdminPlaces(places, filters({ completeness: "missing-cover", status: "draft" })).map((item) => item.id),
+    ).toEqual(["place-2"]);
   });
 });
 

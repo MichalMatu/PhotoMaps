@@ -24,7 +24,7 @@ def audit_public_payloads(
     checked = 0
     custom_field_definitions = get_place_custom_field_definitions(session)
     for photo in photos:
-        if photo.status != "approved":
+        if photo.status != "approved" or photo.public_path is None or photo.thumb_path is None:
             continue
         checked += 1
         audit_payload(photo_to_read(photo).model_dump(mode="json"), f"public-photo:{photo.id}", issues)

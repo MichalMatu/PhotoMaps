@@ -51,7 +51,7 @@ describe("AdminPlacesToolbar", () => {
 
     expect(markup).toContain('role="tablist"');
     expect(markup).toContain('aria-label="Status miejsc"');
-    expect(markup).toContain("Wszystkie");
+    expect(markup).not.toContain("Wszystkie");
     expect(markup).toContain("Opublikowane");
     expect(markup).toContain("Szkice");
     expect(markup).toContain("Archiwalne");
@@ -64,7 +64,7 @@ describe("AdminPlacesToolbar", () => {
     const markup = renderToStaticMarkup(
       <AdminPlacesToolbar
         activeFilterCount={2}
-        activeStatusFilter="all"
+        activeStatusFilter="published"
         places={[place()]}
         visiblePlaceCount={1}
         onCreateCity={vi.fn()}

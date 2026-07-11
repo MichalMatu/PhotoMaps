@@ -5,7 +5,7 @@ from fastapi import Header, HTTPException, status
 from app.core.config import get_admin_token
 
 
-def require_admin_token(authorization: str | None = Header(default=None)) -> None:
+def validate_admin_token(authorization: str | None) -> None:
     expected_token = get_admin_token()
     if not expected_token:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Admin token is not configured")
@@ -17,3 +17,7 @@ def require_admin_token(authorization: str | None = Header(default=None)) -> Non
             detail="Invalid admin token",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+
+def require_admin_token(authorization: str | None = Header(default=None)) -> None:
+    validate_admin_token(authorization)

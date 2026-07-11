@@ -352,6 +352,8 @@ def test_photo_attribution_migration_preserves_existing_records(tmp_path: Path) 
     assert "description" not in photo_columns
     assert photo_columns["attribution_author"]["nullable"] is True
     assert photo_columns["attribution_source_url"]["nullable"] is True
+    assert photo_columns["public_path"]["nullable"] is True
+    assert photo_columns["thumb_path"]["nullable"] is True
 
 
 def test_photo_description_migration_moves_legacy_text_to_blocks(tmp_path: Path) -> None:

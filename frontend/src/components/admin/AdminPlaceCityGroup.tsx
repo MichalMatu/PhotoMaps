@@ -1,10 +1,9 @@
-import { Archive, ChevronDown, Pencil, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Archive, Pencil, Trash2 } from "lucide-react";
 
 import type { AdminPlace, Category, City } from "../../api/types";
 import { AdminActionIconButton } from "./AdminActionIconButton";
 import { AdminDisclosureRow } from "./AdminDisclosureRow";
-import { PLACE_STATUS_SECTIONS, getPlaceStatusGroups, type PlaceCityGroup } from "./adminPlaceCityGroups";
+import type { PlaceCityGroup } from "./adminPlaceCityGroups";
 import { AdminPlaceRow } from "./AdminPlaceRow";
 import { polishCountLabel } from "../ui/polishCountLabel";
 import { adminCityStatusLabel } from "./adminStatusUi";
@@ -52,22 +51,6 @@ export function AdminPlaceCityGroup({
 }: Props) {
   const city = group.city;
   const cityGroupPlacesId = `place-city-group-${group.cityId}`;
-  const [collapsedStatusIds, setCollapsedStatusIds] = useState<Set<AdminPlace["status"]>>(
-    () => new Set(PLACE_STATUS_SECTIONS.filter((section) => !section.defaultExpanded).map((section) => section.status)),
-  );
-  const statusGroups = getPlaceStatusGroups(group.places);
-
-  function toggleStatusSection(status: AdminPlace["status"]) {
-    setCollapsedStatusIds((currentIds) => {
-      const nextIds = new Set(currentIds);
-      if (nextIds.has(status)) {
-        nextIds.delete(status);
-      } else {
-        nextIds.add(status);
-      }
-      return nextIds;
-    });
-  }
 
   return (
     <AdminDisclosureRow
@@ -137,48 +120,20 @@ export function AdminPlaceCityGroup({
       {group.places.length === 0 ? (
         <p className="admin-list-empty place-city-empty">Brak miejsc w tym mieście.</p>
       ) : null}
-      {statusGroups.map((statusGroup) => {
-        const sectionId = `${cityGroupPlacesId}-${statusGroup.status}`;
-        const isSectionExpanded = !collapsedStatusIds.has(statusGroup.status);
-        return (
-          <section
-            className={`place-status-section place-status-section--${statusGroup.status}`}
-            key={statusGroup.status}
-          >
-            <button
-              aria-controls={sectionId}
-              aria-expanded={isSectionExpanded}
-              className="place-status-toggle"
-              type="button"
-              onClick={() => toggleStatusSection(statusGroup.status)}
-            >
-              <ChevronDown aria-hidden="true" className="place-status-icon" size={16} />
-              <span className="place-status-title">{statusGroup.label}</span>
-              <span className="admin-list-group-count place-city-count">
-                {placeCountLabel(statusGroup.places.length)}
-              </span>
-            </button>
-            {isSectionExpanded ? (
-              <div className="place-status-list" id={sectionId}>
-                {statusGroup.places.map((place) => (
-                  <AdminPlaceRow
-                    categoryById={categoryById}
-                    editingPlaceId={editingPlaceId}
-                    key={place.id}
-                    place={place}
-                    onArchive={onArchivePlace}
-                    onDelete={onDeletePlace}
-                    onEdit={onEditPlace}
-                    onPhotos={onPhotos}
-                    onPublicPreview={onPublicPreviewPlace}
-                    publicPreviewAvailable={publicPreviewPlaceIds.has(place.id)}
-                  />
-                ))}
-              </div>
-            ) : null}
-          </section>
-        );
-      })}
+      {group.places.map((place) => (
+        <AdminPlaceRow
+          categoryById={categoryById}
+          editingPlaceId={editingPlaceId}
+          key={place.id}
+          place={place}
+          onArchive={onArchivePlace}
+          onDelete={onDeletePlace}
+          onEdit={onEditPlace}
+          onPhotos={onPhotos}
+          onPublicPreview={onPublicPreviewPlace}
+          publicPreviewAvailable={publicPreviewPlaceIds.has(place.id)}
+        />
+      ))}
     </AdminDisclosureRow>
   );
 }

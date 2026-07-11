@@ -2,12 +2,12 @@ import type { ReviewStatus } from "../../api/types";
 import { polishCountLabel } from "../ui/polishCountLabel";
 import { ADMIN_REVIEW_STATUS_LABELS } from "./adminStatusUi";
 
-export const ADMIN_MEDIA_STATUS_FILTERS: Array<{ label: string; value: ReviewStatus | "all" }> = [
-  { label: "Wszystkie", value: "all" },
+export type AdminModerationMediaStatus = Extract<ReviewStatus, "pending" | "rejected">;
+
+export const ADMIN_MEDIA_STATUS_FILTERS = [
   { label: "Do sprawdzenia", value: "pending" },
-  { label: "Zatwierdzone", value: "approved" },
   { label: "Odrzucone", value: "rejected" },
-];
+] satisfies Array<{ label: string; value: AdminModerationMediaStatus }>;
 
 export const ADMIN_MEDIA_STATUS_LABELS: Record<ReviewStatus, string> = {
   pending: ADMIN_REVIEW_STATUS_LABELS.pending,

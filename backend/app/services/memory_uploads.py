@@ -1,9 +1,11 @@
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session
+from starlette.concurrency import run_in_threadpool
 
 from app.models.memory import Memory
 from app.services.media.audio import (
+    MAX_AUDIO_BYTES,
     StoredPrivateAudio,
     audio_paths,
     clear_audio_metadata,
@@ -13,6 +15,7 @@ from app.services.media.audio import (
     store_private_audio_bytes,
 )
 from app.services.media.images import (
+    MAX_IMAGE_BYTES,
     StoredPrivateImage,
     delete_public_image,
     delete_stored_image,
@@ -21,6 +24,20 @@ from app.services.media.images import (
 )
 from app.services.media.pending_queue import ensure_public_pending_media_capacity
 from app.services.tokens import claim_token_hash
+
+UPLOAD_READ_CHUNK_BYTES = 1024 * 1024
+
+
+async def read_upload_with_limit(upload: UploadFile, max_bytes: int, media_label: str) -> bytes:
+    content = bytearray()
+    while True:
+        remaining_bytes = max_bytes - len(content)
+        chunk = await upload.read(min(UPLOAD_READ_CHUNK_BYTES, remaining_bytes + 1))
+        if not chunk:
+            return bytes(content)
+        content.extend(chunk)
+        if len(content) > max_bytes:
+            raise HTTPException(status_code=413, detail=f"{media_label} file is too large")
 
 
 def delete_memory_files(memory: Memory) -> None:
@@ -66,16 +83,25 @@ async def create_memory_from_upload(
     place_id: str,
     session: Session,
 ) -> Memory:
-    content = await file.read()
-    audio_content = await audio_file.read() if audio_file is not None else None
+    content = await read_upload_with_limit(file, MAX_IMAGE_BYTES, "Image")
+    audio_content = (
+        await read_upload_with_limit(audio_file, MAX_AUDIO_BYTES, "Audio") if audio_file is not None else None
+    )
     ensure_public_pending_media_capacity(session, len(content) + len(audio_content or b""))
 
     stored_image = None
     stored_audio: StoredPrivateAudio | None = None
     try:
-        stored_image = store_private_image_bytes(content, file.filename, place_id, "memories")
+        stored_image = await run_in_threadpool(
+            store_private_image_bytes,
+            content,
+            file.filename,
+            place_id,
+            "memories",
+        )
         if audio_file is not None and audio_content is not None:
-            stored_audio = store_private_audio_bytes(
+            stored_audio = await run_in_threadpool(
+                store_private_audio_bytes,
                 audio_content,
                 audio_file.filename,
                 audio_file.content_type,

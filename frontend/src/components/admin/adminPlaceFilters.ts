@@ -14,7 +14,7 @@ export type AdminPlaceFilters = {
   cityId: string;
   completeness: AdminPlaceCompletenessFilter;
   query: string;
-  status: AdminPlace["status"] | "all";
+  status: AdminPlace["status"];
 };
 
 export const DEFAULT_ADMIN_PLACE_FILTERS: AdminPlaceFilters = {
@@ -22,7 +22,7 @@ export const DEFAULT_ADMIN_PLACE_FILTERS: AdminPlaceFilters = {
   cityId: "all",
   completeness: "all",
   query: "",
-  status: "all",
+  status: "published",
 };
 
 function matchesQuery(place: AdminPlace, query: string) {
@@ -56,7 +56,7 @@ function matchesCompleteness(place: AdminPlace, completeness: AdminPlaceComplete
 export function filterAdminPlaces(places: AdminPlace[], filters: AdminPlaceFilters): AdminPlace[] {
   return places.filter((place) => {
     if (filters.cityId !== "all" && place.city_id !== filters.cityId) return false;
-    if (filters.status !== "all" && place.status !== filters.status) return false;
+    if (place.status !== filters.status) return false;
     if (filters.categoryId !== "all" && !place.category_ids.includes(filters.categoryId)) return false;
     if (!matchesCompleteness(place, filters.completeness)) return false;
     return matchesQuery(place, filters.query);
@@ -67,7 +67,7 @@ export function countActiveAdminPlaceFilters(filters: AdminPlaceFilters): number
   return [
     filters.query.trim() ? "query" : null,
     filters.cityId !== "all" ? "city" : null,
-    filters.status !== "all" ? "status" : null,
+    "status",
     filters.categoryId !== "all" ? "category" : null,
     filters.completeness !== "all" ? "completeness" : null,
   ].filter(Boolean).length;

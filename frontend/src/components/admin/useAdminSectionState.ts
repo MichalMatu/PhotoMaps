@@ -3,24 +3,21 @@ import { useMemo, useState } from "react";
 import type {
   AdminMemory,
   AdminModerationCounts,
-  AdminPhoto,
   Report,
   ReportStatus,
   ReportStatusCounts,
-  ReviewStatus,
   ReviewStatusCounts,
 } from "../../api/types";
 import {
   countActiveAdminModerationFilters,
   DEFAULT_ADMIN_MODERATION_FILTERS,
   filterAdminModerationMemories,
-  filterAdminModerationPhotos,
   filterAdminModerationReports,
   filterMemoriesByStatus,
-  filterPhotosByStatus,
   filterReportsByStatus,
   type AdminModerationFilters,
 } from "./adminSectionState";
+import type { AdminModerationMediaStatus } from "./adminMediaUi";
 import type { AdminModerationSection, AdminSection } from "./adminSections";
 
 type Result = {
@@ -28,45 +25,38 @@ type Result = {
   activeSection: AdminSection;
   activeModerationFilterCount: number;
   memoryStatusCounts: ReviewStatusCounts;
-  memoryStatusFilter: ReviewStatus | "all";
+  memoryStatusFilter: AdminModerationMediaStatus;
   moderationFilters: AdminModerationFilters;
   photoStatusCounts: ReviewStatusCounts;
-  photoStatusFilter: ReviewStatus | "all";
+  photoStatusFilter: AdminModerationMediaStatus;
   reportStatusCounts: ReportStatusCounts;
-  reportStatusFilter: ReportStatus | "all";
+  reportStatusFilter: ReportStatus;
   setActiveModerationSection: (section: AdminModerationSection) => void;
   setActiveSection: (section: AdminSection) => void;
-  setMemoryStatusFilter: (status: ReviewStatus | "all") => void;
+  setMemoryStatusFilter: (status: AdminModerationMediaStatus) => void;
   setModerationFilters: (filters: AdminModerationFilters) => void;
-  setPhotoStatusFilter: (status: ReviewStatus | "all") => void;
-  setReportStatusFilter: (status: ReportStatus | "all") => void;
+  setPhotoStatusFilter: (status: AdminModerationMediaStatus) => void;
+  setReportStatusFilter: (status: ReportStatus) => void;
   visibleMemories: AdminMemory[];
-  visiblePhotos: AdminPhoto[];
   visibleReports: Report[];
 };
 
 export function useAdminSectionState({
   memories,
   moderationCounts,
-  photos,
   reports,
 }: {
   memories: AdminMemory[];
   moderationCounts: AdminModerationCounts;
-  photos: AdminPhoto[];
   reports: Report[];
 }): Result {
   const [activeSection, setActiveSection] = useState<AdminSection>("places");
   const [activeModerationSection, setActiveModerationSection] = useState<AdminModerationSection>("photos");
-  const [memoryStatusFilter, setMemoryStatusFilter] = useState<ReviewStatus | "all">("all");
-  const [photoStatusFilter, setPhotoStatusFilter] = useState<ReviewStatus | "all">("all");
-  const [reportStatusFilter, setReportStatusFilter] = useState<ReportStatus | "all">("all");
+  const [memoryStatusFilter, setMemoryStatusFilter] = useState<AdminModerationMediaStatus>("pending");
+  const [photoStatusFilter, setPhotoStatusFilter] = useState<AdminModerationMediaStatus>("pending");
+  const [reportStatusFilter, setReportStatusFilter] = useState<ReportStatus>("open");
   const [moderationFilters, setModerationFilters] = useState<AdminModerationFilters>(DEFAULT_ADMIN_MODERATION_FILTERS);
 
-  const visiblePhotos = useMemo(
-    () => filterAdminModerationPhotos(filterPhotosByStatus(photos, photoStatusFilter), moderationFilters),
-    [moderationFilters, photoStatusFilter, photos],
-  );
   const visibleMemories = useMemo(
     () => filterAdminModerationMemories(filterMemoriesByStatus(memories, memoryStatusFilter), moderationFilters),
     [memories, memoryStatusFilter, moderationFilters],
@@ -93,7 +83,6 @@ export function useAdminSectionState({
     setPhotoStatusFilter,
     setReportStatusFilter,
     visibleMemories,
-    visiblePhotos,
     visibleReports,
   };
 }
