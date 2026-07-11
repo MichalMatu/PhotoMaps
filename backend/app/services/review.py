@@ -7,6 +7,7 @@ from app.models.memory import Memory
 from app.models.photo import Photo
 from app.models.place import Place
 from app.services.memory_uploads import publish_memory_media, unpublish_memory_media
+from app.services.photo_uploads import publish_photo_media
 
 VISIBLE_REVIEW_STATUSES = {"pending", "approved", "rejected"}
 FINAL_REVIEW_STATUSES = {"approved", "rejected"}
@@ -36,6 +37,7 @@ def next_cover_photo(session: Session, place_id: str, current_photo_id: str) -> 
         .where(Photo.place_id == place_id)
         .where(Photo.id != current_photo_id)
         .where(Photo.status == "approved")
+        .where(Photo.public_path.is_not(None), Photo.thumb_path.is_not(None))
         .order_by(Photo.approved_at.desc(), Photo.created_at.desc())
     )
     return session.exec(statement).first()
@@ -45,6 +47,8 @@ def review_photo(photo: Photo, place: Place, status: str, session: Session) -> N
     ensure_final_review_status(status)
 
     previous_status = photo.status
+    if status == "approved" and (photo.public_path is None or photo.thumb_path is None):
+        publish_photo_media(photo)
     photo.status = status
     photo.approved_at = datetime.now(UTC) if status == "approved" else None
     place.photo_count = update_review_count(place.photo_count, previous_status, status)

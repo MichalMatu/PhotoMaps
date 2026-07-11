@@ -4,6 +4,7 @@ import {
   apiErrorMessageFromBody,
   apiRequestIdFromBody,
   bumpMediaCacheRevision,
+  clearAdminSessionToken,
   deleteAdminMemoryAudio,
   deleteAdminPhotoAudio,
   getAdminPhotoAlbums,
@@ -16,6 +17,7 @@ import {
   redactAdminMemory,
   redactAdminPhoto,
   request,
+  setAdminSessionToken,
   updateAdminMemoryAudio,
   updateAdminPhotoAudio,
   uploadAdminPlacePhoto,
@@ -23,6 +25,7 @@ import {
 } from "./client";
 
 afterEach(() => {
+  clearAdminSessionToken();
   vi.unstubAllGlobals();
 });
 
@@ -112,13 +115,7 @@ describe("request", () => {
 
 describe("admin queue requests", () => {
   it("requests bounded moderation queues", async () => {
-    vi.stubGlobal("window", {
-      sessionStorage: {
-        getItem: vi.fn(() => "admin-token"),
-        removeItem: vi.fn(),
-        setItem: vi.fn(),
-      },
-    });
+    setAdminSessionToken("admin-token");
     const fetchMock = vi.fn<typeof fetch>(async () => {
       return new Response(JSON.stringify([]), { headers: { "Content-Type": "application/json" }, status: 200 });
     });
@@ -146,13 +143,7 @@ describe("admin queue requests", () => {
 
 describe("admin media redaction requests", () => {
   it("posts polygon redactions to photo and memory endpoints", async () => {
-    vi.stubGlobal("window", {
-      sessionStorage: {
-        getItem: vi.fn(() => "admin-token"),
-        removeItem: vi.fn(),
-        setItem: vi.fn(),
-      },
-    });
+    setAdminSessionToken("admin-token");
     const fetchMock = vi.fn<typeof fetch>(async () => {
       return new Response(
         JSON.stringify({
@@ -293,16 +284,13 @@ describe("uploadPlaceMemory", () => {
 
 describe("uploadAdminPlacePhoto", () => {
   it("uses the admin place photo contract without public consent fields", async () => {
-    vi.stubGlobal("window", {
-      sessionStorage: {
-        getItem: vi.fn(() => "admin-token"),
-        removeItem: vi.fn(),
-        setItem: vi.fn(),
-      },
-    });
+    setAdminSessionToken("admin-token");
     const fetchMock = vi.fn<typeof fetch>(async () => {
       return new Response(
         JSON.stringify({
+          admin_audio: null,
+          admin_public_path: "/api/admin/photos/photo-1/media/image",
+          admin_thumb_path: "/api/admin/photos/photo-1/media/thumb",
           approved_at: null,
           audio: null,
           attribution_author: null,
@@ -315,11 +303,11 @@ describe("uploadAdminPlacePhoto", () => {
           created_at: "2026-06-10T00:00:00",
           id: "photo-1",
           place_id: "place-1",
-          public_path: "/media/photos/photo-1.jpg",
+          public_path: null,
           role: "gallery",
           source: "editorial",
           status: "pending",
-          thumb_path: "/media/photos/photo-1-thumb.jpg",
+          thumb_path: null,
         }),
         { headers: { "Content-Type": "application/json" }, status: 201 },
       );
@@ -354,23 +342,20 @@ describe("uploadAdminPlacePhoto", () => {
   });
 
   it("adds admin photo audio when selected", async () => {
-    vi.stubGlobal("window", {
-      sessionStorage: {
-        getItem: vi.fn(() => "admin-token"),
-        removeItem: vi.fn(),
-        setItem: vi.fn(),
-      },
-    });
+    setAdminSessionToken("admin-token");
     const fetchMock = vi.fn<typeof fetch>(async () => {
       return new Response(
         JSON.stringify({
-          approved_at: null,
-          audio: {
+          admin_audio: {
             duration_seconds: 1.2,
             mime_type: "audio/mpeg",
-            public_path: "/media/photos/audio.mp3",
+            public_path: "/api/admin/photos/photo-1/media/audio",
             size_bytes: 1200,
           },
+          admin_public_path: "/api/admin/photos/photo-1/media/image",
+          admin_thumb_path: "/api/admin/photos/photo-1/media/thumb",
+          approved_at: null,
+          audio: null,
           attribution_author: null,
           attribution_license: null,
           attribution_license_url: null,
@@ -381,11 +366,11 @@ describe("uploadAdminPlacePhoto", () => {
           created_at: "2026-06-10T00:00:00",
           id: "photo-1",
           place_id: "place-1",
-          public_path: "/media/photos/photo-1.jpg",
+          public_path: null,
           role: "gallery",
           source: "editorial",
           status: "pending",
-          thumb_path: "/media/photos/photo-1-thumb.jpg",
+          thumb_path: null,
         }),
         { headers: { "Content-Type": "application/json" }, status: 201 },
       );
@@ -408,13 +393,7 @@ describe("uploadAdminPlacePhoto", () => {
 
 describe("admin audio attachment requests", () => {
   it("sets and deletes existing media audio through admin endpoints", async () => {
-    vi.stubGlobal("window", {
-      sessionStorage: {
-        getItem: vi.fn(() => "admin-token"),
-        removeItem: vi.fn(),
-        setItem: vi.fn(),
-      },
-    });
+    setAdminSessionToken("admin-token");
     const fetchMock = vi.fn<typeof fetch>(async () => {
       return new Response(
         JSON.stringify({

@@ -1,7 +1,6 @@
 import { ChevronLeft, ChevronRight, Maximize2, Minimize2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-import { mediaUrl } from "../../api/http";
 import type { AdminPhoto, Place, ReviewFinalStatus } from "../../api/types";
 import {
   PhotoDescriptionActions,
@@ -10,6 +9,7 @@ import {
 } from "../photos/PhotoDescriptionLayer";
 import { useMediaFullscreen } from "../ui/useMediaFullscreen";
 import { AdminAudioControls } from "./AdminAudioControls";
+import { AdminMediaImage } from "./AdminAuthenticatedMedia";
 import { ADMIN_MEDIA_STATUS_LABELS } from "./adminMediaUi";
 import { AdminPhotoActionBar } from "./AdminPhotoActionBar";
 import { PhotoAttributionSummary } from "./PhotoAttributionFields";
@@ -131,11 +131,11 @@ export function AdminPhotoGalleryModal({
               <ChevronLeft aria-hidden="true" size={22} />
             </button>
           ) : null}
-          <img
+          <AdminMediaImage
             className="admin-photo-gallery-image"
             alt={photo.caption ?? place.title}
             decoding="async"
-            src={mediaUrl(photo.public_path)}
+            src={photo.admin_public_path}
           />
           {hasNavigation ? (
             <button
@@ -163,7 +163,7 @@ export function AdminPhotoGalleryModal({
             <div className="photo-meta-row">
               <span className={`ui-status ui-status--${photo.status}`}>{ADMIN_MEDIA_STATUS_LABELS[photo.status]}</span>
               {isCover ? <span className="ui-status ui-status--cover">główne</span> : null}
-              {photo.audio ? <span className="ui-status ui-status--info">audio</span> : null}
+              {photo.admin_audio ? <span className="ui-status ui-status--info">audio</span> : null}
             </div>
             <p className="admin-media-caption">{photo.caption ?? "Brak podpisu"}</p>
             <PhotoAttributionSummary photo={photo} />
@@ -181,7 +181,7 @@ export function AdminPhotoGalleryModal({
               onSetCover={() => onSetCover(photo)}
             />
             <AdminAudioControls
-              audio={photo.audio}
+              audio={photo.admin_audio}
               inputKeyPrefix={`admin-gallery-audio-${photo.id}`}
               mode="compact"
               onDeleteAudio={() => onDeleteAudio(photo)}

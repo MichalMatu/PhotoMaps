@@ -1,4 +1,4 @@
-import { getStoredAdminToken } from "./auth";
+import { getAdminSessionToken } from "./auth";
 
 const DEFAULT_API_BASE_URL = import.meta.env.PROD ? "" : "http://127.0.0.1:8000";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? DEFAULT_API_BASE_URL;
@@ -76,7 +76,7 @@ export async function request<T>(path: string, options?: RequestInit): Promise<T
     headers.set("Content-Type", "application/json");
   }
   if (path.startsWith("/api/admin")) {
-    const token = getStoredAdminToken();
+    const token = getAdminSessionToken();
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
@@ -118,7 +118,7 @@ export async function request<T>(path: string, options?: RequestInit): Promise<T
 export async function requestBlob(path: string, options?: RequestInit): Promise<Blob> {
   const headers = new Headers(options?.headers);
   if (path.startsWith("/api/admin")) {
-    const token = getStoredAdminToken();
+    const token = getAdminSessionToken();
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }

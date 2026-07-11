@@ -39,7 +39,8 @@ export function MediaRedactionModal({ isApplying = false, kind, media, onApply, 
 
   const title = kind === "photo" ? "Anonimizuj zdjęcie" : "Anonimizuj pamiątkę";
   const canApply = redactions.length > 0 && !isApplying;
-  const imagePath = kind === "memory" ? (media as AdminMemory).admin_public_path : (media as AdminPhoto).public_path;
+  const imagePath =
+    kind === "memory" ? (media as AdminMemory).admin_public_path : (media as AdminPhoto).admin_public_path;
 
   async function handleApply() {
     setSaveError(null);

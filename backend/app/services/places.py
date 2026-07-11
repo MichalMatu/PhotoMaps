@@ -187,6 +187,7 @@ def approved_photos_by_place_id(
         select(Photo.id.label("photo_id"), preview_rank)
         .where(Photo.place_id.in_(place_ids))
         .where(Photo.status == "approved")
+        .where(Photo.public_path.is_not(None), Photo.thumb_path.is_not(None))
         .subquery()
     )
     preview_filter = ranked_photos.c.preview_rank <= limit_per_place
@@ -243,6 +244,7 @@ def list_public_place_photos(session: Session, place: Place) -> list[Photo]:
         select(Photo)
         .where(Photo.place_id == place.id)
         .where(Photo.status == "approved")
+        .where(Photo.public_path.is_not(None), Photo.thumb_path.is_not(None))
         .order_by(Photo.approved_at.desc(), Photo.created_at.desc(), Photo.id.desc())
     )
     photos = list(session.exec(statement).all())

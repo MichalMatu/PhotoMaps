@@ -17,6 +17,7 @@ THUMB_JPEG_SUBSAMPLING = 2
 THUMB_SIZE = (520, 520)
 MEDIA_KINDS = {"photos", "memories"}
 PUBLIC_IMAGE_FORMATS = {"JPEG", "PNG"}
+SUPPORTED_IMAGE_FORMATS = ("JPEG", "PNG", "WEBP")
 
 Image.MAX_IMAGE_PIXELS = MAX_IMAGE_PIXELS
 
@@ -166,12 +167,18 @@ def ensure_image_size(image: Image.Image) -> None:
         raise HTTPException(status_code=413, detail="Image dimensions are too large")
 
 
+def ensure_supported_image_format(image: Image.Image) -> None:
+    if image.format not in SUPPORTED_IMAGE_FORMATS:
+        raise HTTPException(status_code=422, detail="Unsupported image file")
+
+
 def validate_image_content(content: bytes) -> None:
     try:
-        with Image.open(BytesIO(content)) as image:
+        with Image.open(BytesIO(content), formats=SUPPORTED_IMAGE_FORMATS) as image:
+            ensure_supported_image_format(image)
             ensure_image_size(image)
             image.load()
-    except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
+    except (UnidentifiedImageError, OSError, Image.DecompressionBombError, Image.DecompressionBombWarning) as exc:
         raise HTTPException(status_code=422, detail="Unsupported image file") from exc
 
 
@@ -221,7 +228,8 @@ def publish_image_derivatives(original_path: str) -> StoredPublicImage:
     public_path: Path | None = None
     thumb_path: Path | None = None
     try:
-        with Image.open(private_path) as image:
+        with Image.open(private_path, formats=SUPPORTED_IMAGE_FORMATS) as image:
+            ensure_supported_image_format(image)
             ensure_image_size(image)
             output_format = public_image_format(image)
             public_path, thumb_path = public_image_paths_for_original(original_path, output_format)
@@ -234,7 +242,13 @@ def publish_image_derivatives(original_path: str) -> StoredPublicImage:
                 centering=(0.5, 0.5),
             )
             save_thumbnail_image(thumb_image, thumb_path, output_format)
-    except (HTTPException, UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
+    except (
+        HTTPException,
+        UnidentifiedImageError,
+        OSError,
+        Image.DecompressionBombError,
+        Image.DecompressionBombWarning,
+    ) as exc:
         cleanup_paths(*[path for path in (public_path, thumb_path) if path is not None])
         if isinstance(exc, HTTPException):
             raise
@@ -263,14 +277,21 @@ def store_image_bytes(content: bytes, original_filename: str | None, place_id: s
     original_path.write_bytes(content)
 
     try:
-        with Image.open(BytesIO(content)) as image:
+        with Image.open(BytesIO(content), formats=SUPPORTED_IMAGE_FORMATS) as image:
+            ensure_supported_image_format(image)
             ensure_image_size(image)
             output_format = public_image_format(image)
             output_suffix = public_image_suffix(output_format)
             public_path = public_dir / f"{image_id}{output_suffix}"
             thumb_path = public_dir / f"{image_id}-thumb{output_suffix}"
             public_image = normalized_public_image(image, output_format)
-    except (HTTPException, UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
+    except (
+        HTTPException,
+        UnidentifiedImageError,
+        OSError,
+        Image.DecompressionBombError,
+        Image.DecompressionBombWarning,
+    ) as exc:
         cleanup_paths(*[path for path in (original_path, public_path, thumb_path) if path is not None])
         if isinstance(exc, HTTPException):
             raise

@@ -5,6 +5,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app.api.routes import (
     admin_app_config,
@@ -28,13 +29,23 @@ from app.api.routes import (
     public_discovery,
     reports,
 )
-from app.core.config import API_TITLE, FRONTEND_ORIGINS, PUBLIC_STORAGE_DIR
+from app.core.config import (
+    ALLOWED_HOSTS,
+    API_TITLE,
+    DOCS_URL,
+    FRONTEND_ORIGINS,
+    OPENAPI_URL,
+    PUBLIC_STORAGE_DIR,
+    REDOC_URL,
+)
+from app.core.public_submission_security import RequestBodyLimitMiddleware, submission_security_middleware
 from app.core.request_context import (
     REQUEST_ID_HEADER,
     http_exception_handler,
     request_context_middleware,
     validation_exception_handler,
 )
+from app.core.security_headers import security_headers_middleware
 from app.db.session import create_db_and_tables
 
 
@@ -44,7 +55,14 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title=API_TITLE, lifespan=lifespan)
+app = FastAPI(
+    title=API_TITLE,
+    lifespan=lifespan,
+    docs_url=DOCS_URL,
+    redoc_url=REDOC_URL,
+    openapi_url=OPENAPI_URL,
+)
+app.add_middleware(RequestBodyLimitMiddleware)
 app.middleware("http")(request_context_middleware)
 app.add_exception_handler(StarletteHTTPException, http_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
@@ -57,6 +75,9 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=[REQUEST_ID_HEADER],
 )
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=ALLOWED_HOSTS)
+app.middleware("http")(submission_security_middleware)
+app.middleware("http")(security_headers_middleware)
 
 app.include_router(categories.router)
 app.include_router(app_config.router)

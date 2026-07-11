@@ -1,10 +1,15 @@
 from datetime import UTC, datetime
 
+from sqlmodel import select
+
+from app.core import public_submission_security
+from app.core.rate_limit import RateLimitPolicy
 from app.models.city import City
 from app.models.guide import Guide, PlaceGuide
 from app.models.memory import Memory
 from app.models.photo import Photo
 from app.models.report import Report
+from app.schemas.report import MAX_REPORT_MESSAGE_LENGTH
 from app.services.tokens import claim_token_hash
 from app.tests.support import ADMIN_HEADERS, create_place
 
@@ -37,6 +42,48 @@ def test_public_report_can_be_created_and_closed_by_admin(client_session) -> Non
     assert list_response.json()[0]["id"] == report_id
     assert close_response.status_code == 200
     assert close_response.json()["status"] == "closed"
+
+
+def test_public_report_message_has_bounded_contract(client_session) -> None:
+    client, session = client_session
+    place = create_place(session)
+
+    response = client.post(
+        "/api/reports",
+        json={
+            "target_type": "place",
+            "target_id": place.id,
+            "reason": "wrong_data",
+            "message": "x" * (MAX_REPORT_MESSAGE_LENGTH + 1),
+        },
+    )
+
+    assert response.status_code == 422
+    assert session.exec(select(Report)).all() == []
+
+
+def test_public_report_rate_limit_cannot_be_bypassed_with_client_header(client_session, monkeypatch) -> None:
+    client, session = client_session
+    place = create_place(session)
+    monkeypatch.setattr(
+        public_submission_security,
+        "PUBLIC_REPORT_RATE_LIMIT_POLICY",
+        RateLimitPolicy(scope="test-report", requests=1, window_seconds=60),
+    )
+    payload = {
+        "target_type": "place",
+        "target_id": place.id,
+        "reason": "wrong_data",
+        "message": "Test",
+    }
+
+    first_response = client.post("/api/reports", headers={"CF-Connecting-IP": "203.0.113.1"}, json=payload)
+    limited_response = client.post("/api/reports", headers={"CF-Connecting-IP": "203.0.113.2"}, json=payload)
+
+    assert first_response.status_code == 201
+    assert limited_response.status_code == 429
+    assert limited_response.json()["detail"] == "Too many requests"
+    assert limited_response.headers["retry-after"] == "60"
 
 
 def test_admin_can_delete_report(client_session) -> None:

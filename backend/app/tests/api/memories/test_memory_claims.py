@@ -2,6 +2,8 @@ from pathlib import Path
 
 from PIL import Image
 
+from app.core import public_submission_security
+from app.core.rate_limit import RateLimitPolicy
 from app.models.memory import Memory
 from app.services.tokens import claim_token_hash
 from app.tests.support import ADMIN_HEADERS, create_place, image_upload
@@ -123,6 +125,42 @@ def test_memory_claim_rejects_missing_stored_hash(client_session) -> None:
 
     assert response.status_code == 403
     assert response.json()["detail"] == "Invalid memory token"
+
+
+def test_memory_claim_attempts_are_rate_limited_per_client(client_session, monkeypatch) -> None:
+    client, session = client_session
+    place = create_place(session)
+    memory = Memory(
+        place_id=place.id,
+        caption="Pamiątka",
+        memory_text=MEMORY_TEXT,
+        original_path="memories/original.jpg",
+        status="pending",
+        claim_token_hash=claim_token_hash(MEMORY_TOKEN),
+    )
+    session.add(memory)
+    session.commit()
+    session.refresh(memory)
+    monkeypatch.setattr(
+        public_submission_security,
+        "PUBLIC_MEMORY_OWNER_RATE_LIMIT_POLICY",
+        RateLimitPolicy(scope="test-memory-owner", requests=1, window_seconds=60),
+    )
+
+    first_response = client.post(
+        f"/api/places/{place.id}/memories/{memory.id}/claim",
+        headers={"CF-Connecting-IP": "203.0.113.1"},
+        json={"claim_token": "wrong-token"},
+    )
+    limited_response = client.post(
+        f"/api/places/{place.id}/memories/{memory.id}/claim",
+        headers={"CF-Connecting-IP": "203.0.113.2"},
+        json={"claim_token": "another-wrong-token"},
+    )
+
+    assert first_response.status_code == 403
+    assert limited_response.status_code == 429
+    assert limited_response.headers["retry-after"] == "60"
 
 
 def test_memory_hash_is_not_plaintext(client_session) -> None:

@@ -1,20 +1,16 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { clearAdminSessionToken, setAdminSessionToken } from "./auth";
 import { reorderGuidePlaces } from "./guides";
 
 afterEach(() => {
+  clearAdminSessionToken();
   vi.unstubAllGlobals();
 });
 
 describe("guides API", () => {
   it("updates guide place order in one request", async () => {
-    vi.stubGlobal("window", {
-      sessionStorage: {
-        getItem: vi.fn(() => "admin-token"),
-        removeItem: vi.fn(),
-        setItem: vi.fn(),
-      },
-    });
+    setAdminSessionToken("admin-token");
     const fetchMock = vi.fn<typeof fetch>(async () => {
       return new Response(
         JSON.stringify({

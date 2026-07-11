@@ -84,8 +84,8 @@ function photoMatchesAdminFilters(photo: AdminPhoto, url: URL) {
 
   if (status && photo.status !== status) return false;
   if (placeId && photo.place_id !== placeId) return false;
-  if (audio === "with-audio" && !photo.audio) return false;
-  if (audio === "without-audio" && photo.audio) return false;
+  if (audio === "with-audio" && !photo.admin_audio) return false;
+  if (audio === "without-audio" && photo.admin_audio) return false;
   if (!query) return true;
 
   return [
@@ -208,6 +208,9 @@ export async function mockAdminApi(page: Page, options: MockAdminApiOptions = {}
   };
 
   await mockSharedApi(page);
+  await page.route(`${API_URL}/api/admin/photos/*/media/*`, (route) =>
+    route.fulfill({ body: imageSvg(route.request().url()), contentType: "image/svg+xml" }),
+  );
   await page.route(`${API_URL}/api/admin/app-config`, (route) => route.fulfill({ json: appConfig }));
   await page.route(`${API_URL}/api/admin/categories`, (route) => route.fulfill({ json: adminCategoryList }));
   await page.route(`${API_URL}/api/admin/cities`, (route) => route.fulfill({ json: adminCityList }));

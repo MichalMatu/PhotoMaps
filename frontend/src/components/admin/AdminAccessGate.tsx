@@ -1,7 +1,7 @@
 import { FormEvent, useState } from "react";
 import { LockKeyhole } from "lucide-react";
 
-import { saveAdminToken } from "../../api/auth";
+import { setAdminSessionToken } from "../../api/auth";
 
 type Props = {
   message?: string | null;
@@ -18,7 +18,7 @@ export function AdminAccessGate({ message, onUnlocked }: Props) {
       return;
     }
 
-    saveAdminToken(nextToken);
+    setAdminSessionToken(nextToken);
     onUnlocked(nextToken);
   }
 

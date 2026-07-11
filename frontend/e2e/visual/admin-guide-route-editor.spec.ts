@@ -28,9 +28,9 @@ async function waitForRouteEditorZoom(page: Page, expectedZoom: number) {
 test("admin route editor preserves zoom while adding and moving route points", async ({ page }) => {
   await page.setViewportSize({ height: 920, width: 1360 });
   await mockAdminApi(page);
-  await page.goto("/");
-  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
   await page.goto("/admin");
+  await page.getByLabel("Token").fill(ADMIN_TOKEN);
+  await page.getByRole("button", { name: "Wejdź do panelu" }).click();
 
   await page.getByRole("navigation", { name: "Sekcje panelu admina" }).getByRole("button", { name: /Trasy/ }).click();
   await page.getByRole("button", { name: "Edytuj trasę Wizualny spacer po centrum" }).click();

@@ -3,7 +3,22 @@ from pathlib import Path
 
 APP_NAME = os.getenv("APP_NAME", "PhotoMap")
 API_TITLE = os.getenv("API_TITLE", f"{APP_NAME} API")
+ENVIRONMENT = os.getenv("PHOTOMAP_ENV", "development").strip().lower()
+IS_PRODUCTION = ENVIRONMENT == "production"
 PUBLIC_SITE_URL = os.getenv("PHOTOMAP_PUBLIC_SITE_URL", "").rstrip("/")
+
+
+def configured_allowed_hosts() -> list[str]:
+    configured_hosts = os.getenv("PHOTOMAP_ALLOWED_HOSTS")
+    if configured_hosts:
+        return [host.strip() for host in configured_hosts.split(",") if host.strip()]
+    return ["photomap.pl", "www.photomap.pl", "localhost", "127.0.0.1", "testserver"]
+
+
+ALLOWED_HOSTS = configured_allowed_hosts()
+OPENAPI_URL = None if IS_PRODUCTION else "/openapi.json"
+DOCS_URL = None if IS_PRODUCTION else "/docs"
+REDOC_URL = None if IS_PRODUCTION else "/redoc"
 
 
 def get_admin_token() -> str | None:

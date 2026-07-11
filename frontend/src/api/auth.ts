@@ -1,13 +1,22 @@
-const ADMIN_TOKEN_STORAGE_KEY = "photomaps_admin_token";
+let adminSessionToken = "";
+const LEGACY_ADMIN_TOKEN_STORAGE_KEY = "photomaps_admin_token";
 
-export function getStoredAdminToken(): string {
-  return window.sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY) ?? "";
+if (typeof window !== "undefined") {
+  try {
+    window.sessionStorage.removeItem(LEGACY_ADMIN_TOKEN_STORAGE_KEY);
+  } catch {
+    // Storage can be unavailable in hardened or private browser contexts.
+  }
 }
 
-export function saveAdminToken(token: string) {
-  window.sessionStorage.setItem(ADMIN_TOKEN_STORAGE_KEY, token);
+export function getAdminSessionToken(): string {
+  return adminSessionToken;
 }
 
-export function clearAdminToken() {
-  window.sessionStorage.removeItem(ADMIN_TOKEN_STORAGE_KEY);
+export function setAdminSessionToken(token: string) {
+  adminSessionToken = token;
+}
+
+export function clearAdminSessionToken() {
+  adminSessionToken = "";
 }

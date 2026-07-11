@@ -37,7 +37,7 @@ function matchesAudio(audio: { public_path: string } | null, filter: AdminModera
 export function filterAdminModerationPhotos(photos: AdminPhoto[], filters: AdminModerationFilters): AdminPhoto[] {
   return photos.filter((photo) => {
     if (filters.placeId !== "all" && photo.place_id !== filters.placeId) return false;
-    if (!matchesAudio(photo.audio, filters.audio)) return false;
+    if (!matchesAudio(photo.admin_audio, filters.audio)) return false;
     return includesQuery(
       [
         photo.caption,

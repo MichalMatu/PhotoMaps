@@ -1,5 +1,5 @@
-import { mediaUrl } from "../../api/http";
 import type { AdminPhoto, ReviewFinalStatus } from "../../api/types";
+import { AdminMediaImage } from "./AdminAuthenticatedMedia";
 import { ADMIN_MEDIA_STATUS_LABELS } from "./adminMediaUi";
 import { AdminPhotoActionBar } from "./AdminPhotoActionBar";
 import { PhotoAttributionSummary } from "./PhotoAttributionFields";
@@ -37,19 +37,19 @@ export function PlacePhotoCard({
         onClick={() => onPreview(photo)}
         aria-label={`Otwórz galerię zdjęć miejsca ${placeTitle}`}
       >
-        <img
+        <AdminMediaImage
           className="admin-media-item-image"
           alt={photo.caption ?? placeTitle}
           decoding="async"
           loading="lazy"
-          src={mediaUrl(photo.thumb_path)}
+          src={photo.admin_thumb_path}
         />
       </button>
       <div className="admin-media-item-body">
         <div className="photo-meta-row">
           <span className={`ui-status ui-status--${photo.status}`}>{ADMIN_MEDIA_STATUS_LABELS[photo.status]}</span>
           {isCover ? <span className="ui-status ui-status--cover">główne</span> : null}
-          {photo.audio ? <span className="ui-status ui-status--info">audio</span> : null}
+          {photo.admin_audio ? <span className="ui-status ui-status--info">audio</span> : null}
         </div>
         <p className="admin-media-caption">{photo.caption ?? "Brak podpisu"}</p>
         <PhotoAttributionSummary photo={photo} />

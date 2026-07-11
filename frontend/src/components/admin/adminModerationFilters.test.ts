@@ -10,6 +10,9 @@ import {
 } from "./adminModerationFilters";
 
 const photo = {
+  admin_audio: null,
+  admin_public_path: "/api/admin/photos/photo-1/media/image",
+  admin_thumb_path: "/api/admin/photos/photo-1/media/thumb",
   approved_at: null,
   audio: null,
   attribution_author: "Marta",

@@ -196,7 +196,21 @@ export type Photo = {
   audio: AudioAttachment | null;
 };
 
-export type AdminPhoto = Photo & {
+export type AdminPhoto = {
+  id: string;
+  place_id: string;
+  public_path: string | null;
+  thumb_path: string | null;
+  admin_public_path: string;
+  admin_thumb_path: string;
+  caption: string | null;
+  description_blocks: ContentBlock[];
+  attribution_author: string | null;
+  attribution_source_url: string | null;
+  attribution_license: string | null;
+  attribution_license_url: string | null;
+  audio: AudioAttachment | null;
+  admin_audio: AudioAttachment | null;
   role: PhotoRole;
   source: PhotoSource;
   status: ReviewStatus;

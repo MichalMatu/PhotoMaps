@@ -51,6 +51,9 @@ const place: Place = {
 
 function photo(id: string, placeId = "place-1"): AdminPhoto {
   return {
+    admin_audio: null,
+    admin_public_path: `/api/admin/photos/${id}/media/image`,
+    admin_thumb_path: `/api/admin/photos/${id}/media/thumb`,
     approved_at: null,
     audio: null,
     attribution_author: null,

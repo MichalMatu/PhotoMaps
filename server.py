@@ -49,6 +49,18 @@ def run_migrations() -> None:
     )
 
 
+def recover_photo_media_quarantine() -> dict[str, int]:
+    configure_import_path()
+
+    from sqlmodel import Session
+
+    from app.db.session import engine
+    from app.services.photo_media_quarantine import recover_photo_media_quarantines
+
+    with Session(engine) as session:
+        return recover_photo_media_quarantines(session)
+
+
 def create_app():
     configure_import_path()
 
@@ -74,10 +86,13 @@ def main() -> int:
         return 1
 
     run_migrations()
+    recovery = recover_photo_media_quarantine()
+    if recovery["restored"] or recovery["discarded"]:
+        print("Photo media quarantine recovery: " f"restored={recovery['restored']} discarded={recovery['discarded']}")
 
     host = os.getenv("PHOTOMAP_SERVER_HOST", "127.0.0.1")
     port = int(os.getenv("PHOTOMAP_SERVER_PORT", "8000"))
-    uvicorn.run(runtime_app, host=host, port=port, lifespan="off")
+    uvicorn.run(runtime_app, host=host, port=port, lifespan="off", server_header=False)
     return 0
 
 

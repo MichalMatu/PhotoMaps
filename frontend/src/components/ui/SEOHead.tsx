@@ -23,6 +23,13 @@ function safeJsonForScript(data: Record<string, unknown>): string {
   return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
+function cspNonce(): string | undefined {
+  if (typeof document === "undefined") {
+    return undefined;
+  }
+  return document.querySelector<HTMLMetaElement>('meta[name="csp-nonce"]')?.content || undefined;
+}
+
 export function SEOHead({
   title,
   description,
@@ -36,6 +43,7 @@ export function SEOHead({
   const canonicalUrl = url ? absoluteSeoUrl(url) : null;
   const imageUrl = image ? absoluteSeoUrl(image) : null;
   const twitterCard = imageUrl ? "summary_large_image" : "summary";
+  const nonce = cspNonce();
 
   return (
     <Helmet>
@@ -57,7 +65,11 @@ export function SEOHead({
 
       {canonicalUrl ? <link rel="canonical" href={canonicalUrl} /> : null}
 
-      {schemaOrgJson ? <script type="application/ld+json">{safeJsonForScript(schemaOrgJson)}</script> : null}
+      {schemaOrgJson ? (
+        <script type="application/ld+json" nonce={nonce}>
+          {safeJsonForScript(schemaOrgJson)}
+        </script>
+      ) : null}
     </Helmet>
   );
 }

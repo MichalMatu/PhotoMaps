@@ -1,19 +1,33 @@
+import logging
 from datetime import UTC, datetime
 from typing import Literal
 
 from fastapi import HTTPException, UploadFile
 from sqlalchemy import String, cast, or_
+from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
 
 from app.models.photo import Photo
 from app.models.place import Place
 from app.schemas.photo import PhotoUpdate
+from app.services.media.audio import delete_public_audio
+from app.services.media.images import delete_public_image
 from app.services.photo_fields import (
     normalize_photo_attribution,
     normalize_photo_caption,
     normalize_photo_description_blocks,
 )
-from app.services.photo_uploads import delete_photo_audio, delete_photo_files, replace_photo_audio
+from app.services.photo_media_quarantine import (
+    PhotoMediaQuarantine,
+    discard_photo_media_quarantine,
+    quarantine_photo_public_media,
+    restore_photo_media_quarantine,
+)
+from app.services.photo_uploads import (
+    delete_photo_audio,
+    delete_photo_files,
+    replace_photo_audio,
+)
 from app.services.review import (
     apply_photo_deleted,
     ensure_final_review_status,
@@ -30,6 +44,7 @@ PHOTO_ATTRIBUTION_FIELDS = {
     "attribution_source_url",
 }
 AdminPhotoAudioFilter = Literal["all", "with-audio", "without-audio"]
+logger = logging.getLogger(__name__)
 
 
 def get_admin_photo(session: Session, photo_id: str) -> Photo:
@@ -128,9 +143,9 @@ def admin_photo_statement(
     if place_id is not None:
         statement = statement.where(Photo.place_id == place_id)
     if audio == "with-audio":
-        statement = statement.where(Photo.audio_public_path.is_not(None))
+        statement = statement.where(Photo.audio_original_path.is_not(None))
     elif audio == "without-audio":
-        statement = statement.where(Photo.audio_public_path.is_(None))
+        statement = statement.where(Photo.audio_original_path.is_(None))
 
     normalized_query = query.strip() if query else ""
     if normalized_query:
@@ -165,13 +180,66 @@ def review_admin_photo(session: Session, photo_id: str, status: str) -> Photo:
     photo = get_admin_photo(session, photo_id)
     place = get_photo_place(session, photo)
 
-    apply_photo_review(photo, place, status, session)
+    previous_public_path = photo.public_path
+    previous_thumb_path = photo.thumb_path
+    previous_audio_public_path = photo.audio_public_path
+    quarantine: PhotoMediaQuarantine | None = None
+    next_public_path = previous_public_path
+    next_thumb_path = previous_thumb_path
+    next_audio_public_path = previous_audio_public_path
+    if status == "rejected":
+        try:
+            quarantine = quarantine_photo_public_media(photo)
+        except (OSError, ValueError) as exc:
+            session.rollback()
+            restore_quarantine_after_failed_review(quarantine)
+            raise HTTPException(status_code=500, detail="Photo media could not be quarantined") from exc
 
-    session.add(photo)
-    session.add(place)
-    session.commit()
+    try:
+        apply_photo_review(photo, place, status, session)
+        if status == "rejected":
+            photo.public_path = None
+            photo.thumb_path = None
+            photo.audio_public_path = None
+        next_public_path = photo.public_path
+        next_thumb_path = photo.thumb_path
+        next_audio_public_path = photo.audio_public_path
+        session.add(photo)
+        session.add(place)
+        session.commit()
+    except SQLAlchemyError as exc:
+        session.rollback()
+        if quarantine is not None:
+            restore_quarantine_after_failed_review(quarantine)
+        elif next_public_path != previous_public_path or next_thumb_path != previous_thumb_path:
+            delete_public_image(next_public_path, next_thumb_path)
+        if quarantine is None and next_audio_public_path != previous_audio_public_path:
+            delete_public_audio(next_audio_public_path)
+        raise HTTPException(status_code=500, detail="Photo review could not be saved") from exc
+
+    if quarantine is not None:
+        try:
+            discard_photo_media_quarantine(quarantine)
+        except OSError:
+            logger.exception(
+                "Committed photo rejection left quarantine for startup recovery",
+                extra={"photo_id": photo.id},
+            )
+
     session.refresh(photo)
     return photo
+
+
+def restore_quarantine_after_failed_review(quarantine: PhotoMediaQuarantine | None) -> None:
+    if quarantine is None:
+        return
+    try:
+        restore_photo_media_quarantine(quarantine)
+    except (OSError, ValueError):
+        logger.exception(
+            "Photo review rollback left quarantine for startup recovery",
+            extra={"photo_id": quarantine.photo_id},
+        )
 
 
 def update_admin_photo(session: Session, photo_id: str, payload: PhotoUpdate) -> Photo:
@@ -218,7 +286,7 @@ def delete_admin_photo_audio(session: Session, photo_id: str) -> Photo:
 
 def set_admin_cover_photo(session: Session, photo_id: str) -> Place:
     photo = get_admin_photo(session, photo_id)
-    if photo.status != "approved":
+    if photo.status != "approved" or photo.public_path is None or photo.thumb_path is None:
         raise HTTPException(status_code=422, detail="Only approved photos can be used as cover")
 
     place = get_photo_place(session, photo)

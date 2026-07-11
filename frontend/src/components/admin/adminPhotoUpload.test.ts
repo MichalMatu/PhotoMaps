@@ -6,6 +6,9 @@ describe("uploadAndApproveAdminPlacePhoto", () => {
   it("uploads and approves an editorial admin photo", async () => {
     const file = new File(["image"], "place.jpg", { type: "image/jpeg" });
     const uploadAdminPlacePhoto = vi.fn(async () => ({
+      admin_audio: null,
+      admin_public_path: "/api/admin/photos/photo-1/media/image",
+      admin_thumb_path: "/api/admin/photos/photo-1/media/thumb",
       approved_at: null,
       audio: null,
       attribution_author: null,
@@ -18,13 +21,16 @@ describe("uploadAndApproveAdminPlacePhoto", () => {
       created_at: "",
       id: "photo-1",
       place_id: "place-1",
-      public_path: "/media/photos/photo.jpg",
+      public_path: null,
       role: "gallery" as const,
       source: "editorial" as const,
       status: "pending" as const,
-      thumb_path: "/media/photos/photo-thumb.jpg",
+      thumb_path: null,
     }));
     const reviewPhoto = vi.fn(async () => ({
+      admin_audio: null,
+      admin_public_path: "/api/admin/photos/photo-1/media/image",
+      admin_thumb_path: "/api/admin/photos/photo-1/media/thumb",
       approved_at: "",
       audio: null,
       attribution_author: null,

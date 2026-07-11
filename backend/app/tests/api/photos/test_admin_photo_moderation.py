@@ -8,7 +8,9 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
 
 from app.models.photo import Photo
+from app.services import admin_photos as admin_photo_service
 from app.services.media import audio as audio_service
+from app.services.photo_media_quarantine import recover_photo_media_quarantines
 from app.tests.support import ADMIN_HEADERS, audio_upload, create_place, image_upload, png_upload
 
 
@@ -55,6 +57,103 @@ def test_photo_review_approves_and_updates_place_count(client_session) -> None:
     assert public_response.json()[0]["id"] == photo_id
     assert place.photo_count == 1
     assert place.cover_photo_id == photo_id
+
+
+def test_rejecting_uploaded_photo_removes_public_derivatives(client_session, tmp_path: Path, monkeypatch) -> None:
+    client, session = client_session
+    place = create_place(session)
+
+    upload_response = client.post(
+        f"/api/admin/places/{place.id}/photos",
+        headers=ADMIN_HEADERS,
+        files={"file": image_upload("place.jpg")},
+    )
+    photo_id = upload_response.json()["id"]
+    approve_response = client.post(
+        f"/api/admin/photos/{photo_id}/review",
+        headers=ADMIN_HEADERS,
+        json={"status": "approved"},
+    )
+    approved_body = approve_response.json()
+    public_path = approved_body["public_path"]
+    thumb_path = approved_body["thumb_path"]
+
+    assert (tmp_path / "public" / public_path.removeprefix("/media/")).is_file()
+    assert (tmp_path / "public" / thumb_path.removeprefix("/media/")).is_file()
+
+    real_commit = session.commit
+    rejection_commit_count = 0
+
+    def count_rejection_commit() -> None:
+        nonlocal rejection_commit_count
+        rejection_commit_count += 1
+        real_commit()
+
+    monkeypatch.setattr(session, "commit", count_rejection_commit)
+    reject_response = client.post(
+        f"/api/admin/photos/{photo_id}/review",
+        headers=ADMIN_HEADERS,
+        json={"status": "rejected"},
+    )
+    photo = session.get(Photo, photo_id)
+
+    assert reject_response.status_code == 200
+    assert rejection_commit_count == 1
+    assert reject_response.json()["public_path"] is None
+    assert reject_response.json()["thumb_path"] is None
+    assert photo is not None
+    assert photo.public_path is None
+    assert photo.thumb_path is None
+    assert not (tmp_path / "public" / public_path.removeprefix("/media/")).exists()
+    assert not (tmp_path / "public" / thumb_path.removeprefix("/media/")).exists()
+    assert client.get(public_path).status_code == 404
+    assert client.get(thumb_path).status_code == 404
+    assert client.get(reject_response.json()["admin_public_path"], headers=ADMIN_HEADERS).status_code == 200
+
+
+def test_startup_recovery_discards_quarantine_left_after_rejection_commit(
+    client_session,
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    client, session = client_session
+    place = create_place(session)
+    upload_response = client.post(
+        f"/api/admin/places/{place.id}/photos",
+        headers=ADMIN_HEADERS,
+        files={"file": image_upload("place.jpg")},
+    )
+    photo_id = upload_response.json()["id"]
+    approved_response = client.post(
+        f"/api/admin/photos/{photo_id}/review",
+        headers=ADMIN_HEADERS,
+        json={"status": "approved"},
+    )
+    public_path = approved_response.json()["public_path"]
+
+    def simulate_postcommit_cleanup_crash(_quarantine) -> None:
+        raise OSError("process stopped before quarantine cleanup")
+
+    monkeypatch.setattr(admin_photo_service, "discard_photo_media_quarantine", simulate_postcommit_cleanup_crash)
+    reject_response = client.post(
+        f"/api/admin/photos/{photo_id}/review",
+        headers=ADMIN_HEADERS,
+        json={"status": "rejected"},
+    )
+    photo = session.get(Photo, photo_id)
+    quarantine_root = tmp_path / "private" / ".quarantine" / "photo-public"
+
+    assert reject_response.status_code == 200
+    assert photo is not None
+    assert photo.status == "rejected"
+    assert photo.public_path is None
+    assert quarantine_root.is_dir()
+    assert not (tmp_path / "public" / public_path.removeprefix("/media/")).exists()
+
+    recovery = recover_photo_media_quarantines(session)
+
+    assert recovery == {"discarded": 1, "restored": 0}
+    assert not quarantine_root.exists()
 
 
 def test_rejecting_approved_photo_decrements_place_count(client_session) -> None:
@@ -128,7 +227,7 @@ def test_rejecting_cover_photo_selects_replacement(client_session) -> None:
     assert place.cover_photo_id == replacement_photo.id
 
 
-def test_admin_can_upload_photo_for_draft_place(client_session) -> None:
+def test_admin_can_upload_photo_for_draft_place(client_session, tmp_path: Path) -> None:
     client, session = client_session
     place = create_place(session, status="draft")
 
@@ -153,6 +252,10 @@ def test_admin_can_upload_photo_for_draft_place(client_session) -> None:
     assert body["place_id"] == place.id
     assert body["status"] == "pending"
     assert body["source"] == "editorial"
+    assert body["public_path"] is None
+    assert body["thumb_path"] is None
+    assert body["admin_public_path"] == f"/api/admin/photos/{photo.id}/media/image"
+    assert body["admin_thumb_path"] == f"/api/admin/photos/{photo.id}/media/thumb"
     assert body["caption"] == "Główne"
     assert body["description_blocks"] == [
         {"type": "paragraph", "text": "Wieczorny widok na wejście i detale fasady.", "url": None}
@@ -167,6 +270,15 @@ def test_admin_can_upload_photo_for_draft_place(client_session) -> None:
     assert photo.attribution_license == "CC BY 4.0"
     assert photo.attribution_license_url == "https://creativecommons.org/licenses/by/4.0/"
     assert photo.attribution_source_url == "https://commons.wikimedia.org/wiki/File:Photo.jpg"
+    assert photo.public_path is None
+    assert photo.thumb_path is None
+    assert (tmp_path / "private" / photo.original_path).is_file()
+    public_root = tmp_path / "public"
+    assert not public_root.exists() or not any(path.is_file() for path in public_root.rglob("*"))
+    assert client.get(body["admin_public_path"]).status_code == 401
+    assert client.get(body["admin_thumb_path"]).status_code == 401
+    assert client.get(body["admin_public_path"], headers=ADMIN_HEADERS).status_code == 200
+    assert client.get(body["admin_thumb_path"], headers=ADMIN_HEADERS).status_code == 200
 
 
 def test_admin_can_upload_photo_with_audio(client_session, monkeypatch) -> None:
@@ -185,15 +297,18 @@ def test_admin_can_upload_photo_with_audio(client_session, monkeypatch) -> None:
 
     assert response.status_code == 201
     body = response.json()
-    assert body["audio"] == {
+    assert body["audio"] is None
+    assert body["admin_audio"] == {
         "duration_seconds": 1.25,
         "mime_type": "audio/mpeg",
-        "public_path": photo.audio_public_path,
+        "public_path": f"/api/admin/photos/{photo.id}/media/audio",
         "size_bytes": len(b"test-audio"),
     }
     assert "audio_original_path" not in body
     assert photo.audio_original_path is not None
-    assert photo.audio_public_path is not None
+    assert photo.audio_public_path is None
+    assert client.get(body["admin_audio"]["public_path"]).status_code == 401
+    assert client.get(body["admin_audio"]["public_path"], headers=ADMIN_HEADERS).content == b"test-audio"
 
 
 def test_admin_can_upload_photo_with_flac_audio(client_session, monkeypatch) -> None:
@@ -215,17 +330,17 @@ def test_admin_can_upload_photo_with_flac_audio(client_session, monkeypatch) -> 
 
     assert response.status_code == 201
     body = response.json()
-    assert body["audio"] == {
+    assert body["audio"] is None
+    assert body["admin_audio"] == {
         "duration_seconds": 2.0,
         "mime_type": "audio/flac",
-        "public_path": photo.audio_public_path,
+        "public_path": f"/api/admin/photos/{photo.id}/media/audio",
         "size_bytes": len(b"flac-audio"),
     }
     assert "audio_original_path" not in body
     assert photo.audio_original_path is not None
     assert photo.audio_original_path.endswith(".flac")
-    assert photo.audio_public_path is not None
-    assert photo.audio_public_path.endswith(".flac")
+    assert photo.audio_public_path is None
 
 
 def test_admin_png_photo_upload_preserves_public_png_alpha(client_session, tmp_path: Path) -> None:
@@ -240,7 +355,17 @@ def test_admin_png_photo_upload_preserves_public_png_alpha(client_session, tmp_p
     )
 
     assert response.status_code == 201
-    body = response.json()
+    pending_body = response.json()
+    assert pending_body["public_path"] is None
+    assert pending_body["thumb_path"] is None
+
+    review_response = client.post(
+        f"/api/admin/photos/{pending_body['id']}/review",
+        headers=ADMIN_HEADERS,
+        json={"status": "approved"},
+    )
+    assert review_response.status_code == 200
+    body = review_response.json()
     assert body["public_path"].endswith(".png")
     assert body["thumb_path"].endswith(".png")
 
@@ -267,7 +392,17 @@ def test_admin_photo_upload_preserves_public_image_resolution(client_session, tm
     )
 
     assert response.status_code == 201
-    body = response.json()
+    pending_body = response.json()
+    assert pending_body["public_path"] is None
+    assert pending_body["thumb_path"] is None
+
+    review_response = client.post(
+        f"/api/admin/photos/{pending_body['id']}/review",
+        headers=ADMIN_HEADERS,
+        json={"status": "approved"},
+    )
+    assert review_response.status_code == 200
+    body = review_response.json()
     public_file = tmp_path / "public" / body["public_path"].removeprefix("/media/")
     thumb_file = tmp_path / "public" / body["thumb_path"].removeprefix("/media/")
     with Image.open(public_file) as public_image:
@@ -335,6 +470,90 @@ def test_admin_photo_upload_with_audio_cleans_files_when_database_save_fails(
     assert response.json()["detail"] == "Photo could not be saved"
     assert stored_files == []
     assert session.exec(select(Photo)).all() == []
+
+
+def test_photo_approval_cleans_public_derivatives_when_database_save_fails(
+    client_session,
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    client, session = client_session
+    place = create_place(session)
+    monkeypatch.setattr(audio_service, "audio_duration_seconds", lambda _content: 1.25)
+    monkeypatch.setattr(audio_service, "strip_public_audio_metadata", lambda _path: None)
+    upload_response = client.post(
+        f"/api/admin/places/{place.id}/photos",
+        headers=ADMIN_HEADERS,
+        files={"file": image_upload("place.jpg"), "audio_file": audio_upload("place.mp3")},
+    )
+    photo_id = upload_response.json()["id"]
+
+    def fail_commit() -> None:
+        raise SQLAlchemyError("commit failed")
+
+    monkeypatch.setattr(session, "commit", fail_commit)
+    response = client.post(
+        f"/api/admin/photos/{photo_id}/review",
+        headers=ADMIN_HEADERS,
+        json={"status": "approved"},
+    )
+    public_files = [path for path in (tmp_path / "public").rglob("*") if path.is_file()]
+
+    assert response.status_code == 500
+    assert response.json()["detail"] == "Photo review could not be saved"
+    assert public_files == []
+
+
+def test_photo_rejection_keeps_public_files_when_database_save_fails(
+    client_session,
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    client, session = client_session
+    place = create_place(session)
+    monkeypatch.setattr(audio_service, "audio_duration_seconds", lambda _content: 1.25)
+    monkeypatch.setattr(audio_service, "strip_public_audio_metadata", lambda _path: None)
+    upload_response = client.post(
+        f"/api/admin/places/{place.id}/photos",
+        headers=ADMIN_HEADERS,
+        files={"file": image_upload("place.jpg"), "audio_file": audio_upload("place.mp3")},
+    )
+    photo_id = upload_response.json()["id"]
+    approved_response = client.post(
+        f"/api/admin/photos/{photo_id}/review",
+        headers=ADMIN_HEADERS,
+        json={"status": "approved"},
+    )
+    public_path = approved_response.json()["public_path"]
+    thumb_path = approved_response.json()["thumb_path"]
+    audio_public_path = approved_response.json()["audio"]["public_path"]
+    public_file = tmp_path / "public" / public_path.removeprefix("/media/")
+    thumb_file = tmp_path / "public" / thumb_path.removeprefix("/media/")
+    audio_public_file = tmp_path / "public" / audio_public_path.removeprefix("/media/")
+
+    def fail_commit() -> None:
+        raise SQLAlchemyError("commit failed")
+
+    monkeypatch.setattr(session, "commit", fail_commit)
+    response = client.post(
+        f"/api/admin/photos/{photo_id}/review",
+        headers=ADMIN_HEADERS,
+        json={"status": "rejected"},
+    )
+    session.expire_all()
+    photo = session.get(Photo, photo_id)
+
+    assert response.status_code == 500
+    assert response.json()["detail"] == "Photo review could not be saved"
+    assert photo is not None
+    assert photo.status == "approved"
+    assert photo.public_path == public_path
+    assert photo.thumb_path == thumb_path
+    assert photo.audio_public_path == audio_public_path
+    assert public_file.is_file()
+    assert thumb_file.is_file()
+    assert audio_public_file.is_file()
+    assert not (tmp_path / "private" / ".quarantine" / "photo-public").exists()
 
 
 def test_admin_photo_upload_rejects_invalid_audio(client_session, tmp_path: Path, monkeypatch) -> None:

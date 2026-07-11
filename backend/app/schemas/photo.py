@@ -21,7 +21,21 @@ class PhotoRead(SQLModel):
     audio: AudioAttachment | None
 
 
-class PhotoAdminRead(PhotoRead):
+class PhotoAdminRead(SQLModel):
+    id: str
+    place_id: str
+    public_path: str | None
+    thumb_path: str | None
+    admin_public_path: str
+    admin_thumb_path: str
+    caption: str | None
+    description_blocks: list[ContentBlock]
+    attribution_author: str | None
+    attribution_source_url: str | None
+    attribution_license: str | None
+    attribution_license_url: str | None
+    audio: AudioAttachment | None
+    admin_audio: AudioAttachment | None
     role: PhotoRole
     source: PhotoSource
     status: ReviewStatus

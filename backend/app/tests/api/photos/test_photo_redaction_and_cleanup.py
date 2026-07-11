@@ -45,13 +45,15 @@ def test_admin_can_redact_photo_by_polygon(client_session, tmp_path: Path) -> No
             ],
         },
     )
-    public_file = tmp_path / "public" / photo.public_path.removeprefix("/media/")
+    private_file = tmp_path / "private" / photo.original_path
 
     assert response.status_code == 200
-    assert response.json()["summary"]["actions"]["applied"] == 3
+    assert response.json()["summary"]["actions"]["applied"] == 1
     assert response.json()["actions"][0]["action"] == "redact_image"
     assert response.json()["issues"] == []
-    assert_blurred_pixel(image_pixel(public_file, (16, 16)))
+    assert photo.public_path is None
+    assert photo.thumb_path is None
+    assert_blurred_pixel(image_pixel(private_file, (16, 16)))
 
 
 def test_admin_photo_redaction_requires_shape(client_session) -> None:
@@ -84,8 +86,8 @@ def test_admin_can_set_approved_photo_as_cover(client_session) -> None:
     pending_photo = Photo(
         place_id=place.id,
         original_path="photos/pending-original.jpg",
-        public_path="/media/photos/pending.jpg",
-        thumb_path="/media/photos/pending-thumb.jpg",
+        public_path=None,
+        thumb_path=None,
         status="pending",
     )
     approved_photo = Photo(

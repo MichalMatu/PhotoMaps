@@ -33,6 +33,9 @@ describe("SEOHead", () => {
 
   it("renders public metadata with absolute canonical and image URLs", () => {
     vi.stubGlobal("window", { location: { origin: "https://photomap.pl" } });
+    vi.stubGlobal("document", {
+      querySelector: vi.fn(() => ({ content: "test-csp-nonce" })),
+    });
 
     const head = renderSeoHead(
       <SEOHead
@@ -56,6 +59,7 @@ describe("SEOHead", () => {
     expect(head.meta).toContain('name="twitter:image" content="https://photomap.pl/media/photos/rynek.jpg"');
     expect(head.link).toContain('rel="canonical" href="https://photomap.pl/places/rynek"');
     expect(head.script).toContain("\\u003cWrocław>");
+    expect(head.script).toContain('nonce="test-csp-nonce"');
   });
 
   it("keeps admin routes noindexed and does not invent a fallback social image", () => {

@@ -56,9 +56,10 @@ type AdminListStyleSnapshot = {
 };
 
 async function unlockAdmin(page: Page) {
-  await page.goto("/");
-  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
   await page.goto("/admin");
+  await page.getByLabel("Token").fill(ADMIN_TOKEN);
+  await page.getByRole("button", { name: "Wejdź do panelu" }).click();
+  await expect(page.getByRole("navigation", { name: "Sekcje panelu admina" })).toBeVisible();
 }
 
 async function clickAdminSection(page: Page, sectionName: RegExp) {
@@ -171,9 +172,7 @@ async function getAdminListStyleSnapshot(panel: Locator, rowSelector: string): P
 test("visual: admin place table", async ({ page }) => {
   await page.setViewportSize({ height: 820, width: 1280 });
   await mockAdminApi(page);
-  await page.goto("/");
-  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
-  await page.goto("/admin");
+  await unlockAdmin(page);
   await page
     .getByRole("navigation", { name: "Sekcje panelu admina" })
     .getByRole("button", { name: /Miejsca/ })
@@ -212,9 +211,7 @@ test("admin place status tabs filter city places without nested sections", async
   ];
 
   await mockAdminApi(page, { adminPlaceList: statusPlaces });
-  await page.goto("/");
-  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
-  await page.goto("/admin");
+  await unlockAdmin(page);
   await page
     .getByRole("navigation", { name: "Sekcje panelu admina" })
     .getByRole("button", { name: /Miejsca/ })
@@ -266,9 +263,7 @@ test("admin place status tabs filter city groups", async ({ page }) => {
   ];
 
   await mockAdminApi(page, { adminCityList: [city, emptyCity], adminPlaceList: statusPlaces });
-  await page.goto("/");
-  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
-  await page.goto("/admin");
+  await unlockAdmin(page);
   await page
     .getByRole("navigation", { name: "Sekcje panelu admina" })
     .getByRole("button", { name: /Miejsca/ })
@@ -300,9 +295,7 @@ test("admin place status tabs filter city groups", async ({ page }) => {
 
 test("admin place empty modal filter shows one empty state", async ({ page }) => {
   await mockAdminApi(page, { adminPlaceList: [adminPlaces[0]] });
-  await page.goto("/");
-  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
-  await page.goto("/admin");
+  await unlockAdmin(page);
   await page
     .getByRole("navigation", { name: "Sekcje panelu admina" })
     .getByRole("button", { name: /Miejsca/ })
@@ -319,9 +312,7 @@ test("admin place empty modal filter shows one empty state", async ({ page }) =>
 
 test("admin place filter search is focused and submits with Enter", async ({ page }) => {
   await mockAdminApi(page);
-  await page.goto("/");
-  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
-  await page.goto("/admin");
+  await unlockAdmin(page);
   await page
     .getByRole("navigation", { name: "Sekcje panelu admina" })
     .getByRole("button", { name: /Miejsca/ })
@@ -346,9 +337,7 @@ test("admin place filter search is focused and submits with Enter", async ({ pag
 
 test("admin moderation keeps inbox filters in the shared toolbar", async ({ page }) => {
   await mockAdminApi(page);
-  await page.goto("/");
-  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
-  await page.goto("/admin");
+  await unlockAdmin(page);
   await page
     .getByRole("navigation", { name: "Sekcje panelu admina" })
     .getByRole("button", { name: /Moderacja/ })
@@ -560,6 +549,8 @@ test("admin place photo gallery exposes moderator tools in responsive media view
     rynekSide,
     ...Array.from({ length: 3 }, (_, index) => ({
       ...rynekCover,
+      admin_public_path: `/api/admin/photos/visual-rynek-extra-${index + 1}/media/image`,
+      admin_thumb_path: `/api/admin/photos/visual-rynek-extra-${index + 1}/media/thumb`,
       caption: `Dodatkowe zdjęcie ${index + 1}`,
       id: `visual-rynek-extra-${index + 1}`,
       public_path: `/media/visual/visual-rynek-extra-${index + 1}.svg`,
@@ -950,9 +941,7 @@ test("admin guide status tabs filter the list", async ({ page }) => {
   ];
 
   await mockAdminApi(page, { adminGuideList: guideList });
-  await page.goto("/");
-  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
-  await page.goto("/admin");
+  await unlockAdmin(page);
   await page.getByRole("navigation", { name: "Sekcje panelu admina" }).getByRole("button", { name: /Trasy/ }).click();
 
   const statusTabs = page.getByRole("tablist", { name: "Status tras" });
@@ -968,9 +957,7 @@ test("admin guide status tabs filter the list", async ({ page }) => {
 
 test("admin configuration separates application settings and maintenance", async ({ page }) => {
   await mockAdminApi(page);
-  await page.goto("/");
-  await page.evaluate((token) => window.sessionStorage.setItem("photomaps_admin_token", token), ADMIN_TOKEN);
-  await page.goto("/admin");
+  await unlockAdmin(page);
   await expect(
     page.getByRole("navigation", { name: "Sekcje panelu admina" }).getByRole("button", { name: /Ustawienia/ }),
   ).toHaveCount(0);

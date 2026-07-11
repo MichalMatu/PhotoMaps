@@ -61,6 +61,16 @@ def audit_photos(
                 target,
                 "Approved photo has no approved_at timestamp.",
             )
+        if photo.status != "approved" and any(
+            path is not None for path in (photo.public_path, photo.thumb_path, photo.audio_public_path)
+        ):
+            add_issue(
+                issues,
+                "error",
+                "photo_nonapproved_media_is_public",
+                target,
+                "Pending or rejected photo has public media paths.",
+            )
         audit_private_media_path(
             media_kind="photo",
             media_id=photo.id,
@@ -80,6 +90,7 @@ def audit_photos(
             expected_public=expected_public,
             issues=issues,
             check_images=check_images,
+            required=photo.status == "approved",
         )
         audit_public_media_path(
             media_kind="photo",
@@ -90,6 +101,7 @@ def audit_photos(
             expected_public=expected_public,
             issues=issues,
             check_images=check_images,
+            required=photo.status == "approved",
         )
         audit_audio_paths(
             media_kind="photo",
@@ -102,6 +114,7 @@ def audit_photos(
             expected_public=expected_public,
             issues=issues,
             required=photo.status != "rejected",
+            require_public=photo.status == "approved",
         )
     return {
         "records": len(photos),

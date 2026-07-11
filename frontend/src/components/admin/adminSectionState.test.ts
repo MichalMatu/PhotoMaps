@@ -10,6 +10,9 @@ import {
 
 const PHOTOS: AdminPhoto[] = [
   {
+    admin_audio: null,
+    admin_public_path: "/api/admin/photos/1/media/image",
+    admin_thumb_path: "/api/admin/photos/1/media/thumb",
     approved_at: null,
     audio: null,
     attribution_author: null,
@@ -29,6 +32,9 @@ const PHOTOS: AdminPhoto[] = [
     thumb_path: "",
   },
   {
+    admin_audio: null,
+    admin_public_path: "/api/admin/photos/2/media/image",
+    admin_thumb_path: "/api/admin/photos/2/media/thumb",
     approved_at: "",
     audio: null,
     attribution_author: null,
@@ -48,6 +54,9 @@ const PHOTOS: AdminPhoto[] = [
     thumb_path: "",
   },
   {
+    admin_audio: null,
+    admin_public_path: "/api/admin/photos/3/media/image",
+    admin_thumb_path: "/api/admin/photos/3/media/thumb",
     approved_at: null,
     audio: null,
     attribution_author: null,

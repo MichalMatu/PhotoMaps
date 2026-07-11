@@ -237,7 +237,7 @@ Uzupelnij pola:
 
 Styl opisow TTS trzymaj wedlug [`docs/create_tts.md`](create_tts.md): edutainment turystyczny, krotkie wejscie ze zdjecia i jedna ciekawostka, anegdota albo historyczny zwrot akcji. Nie zapisuj atrybucji, licencji ani niezweryfikowanych faktow w `description_blocks`.
 
-Po uploadzie sprawdz, czy zdjecie ma poprawny status, publiczna kopie, miniatury i czy nie ujawnia prywatnej sciezki oryginalu. Cover miejsca ustawiaj na najczytelniejsze zdjecie w malej miniaturze, niekoniecznie najbardziej artystyczne w pelnym rozmiarze.
+Po uploadzie zdjecie ma status `pending`, pozostaje w private storage i nie ma jeszcze `public_path`, `thumb_path` ani publicznego audio. Adminowy payload zwraca chronione sciezki `admin_public_path`, `admin_thumb_path` i opcjonalne `admin_audio`; nigdy nie ujawnia prywatnej sciezki oryginalu. Dopiero zatwierdzenie tworzy publiczna kopie, miniaturę i opcjonalne publiczne audio. Odrzucenie usuwa publiczne pochodne i zeruje ich sciezki. Cover miejsca ustawiaj na najczytelniejsze zatwierdzone zdjecie w malej miniaturze, niekoniecznie najbardziej artystyczne w pelnym rozmiarze.
 
 Do korekt konkretnego miejsca uzywaj panelu zdjec miejsca albo `GET /api/admin/places/{place_id}/photos`, bo zwraca pelna liste zdjec tego miejsca. `GET /api/admin/photos` jest paginowana kolejka moderacji i nie moze sluzyc jako zrodlo prawdy dla galerii pojedynczego miejsca.
 

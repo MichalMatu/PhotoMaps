@@ -87,6 +87,17 @@ def component_properties(component: str) -> set[str]:
     return set(schema["components"]["schemas"][component]["properties"])
 
 
+def component_property_max_length(component: str, property_name: str) -> int | None:
+    schema = app.openapi()
+    property_schema = schema["components"]["schemas"][component]["properties"][property_name]
+    if "maxLength" in property_schema:
+        return property_schema["maxLength"]
+    for nested_schema in property_schema.get("anyOf", []):
+        if "maxLength" in nested_schema:
+            return nested_schema["maxLength"]
+    return None
+
+
 def query_parameter_enum(path: str, parameter_name: str) -> set[str]:
     schema = app.openapi()
     parameters = schema["paths"][path]["get"].get("parameters", [])
@@ -203,6 +214,11 @@ def test_openapi_contract_exposes_domain_enums() -> None:
     assert query_parameter_enum("/api/admin/reports", "status") == report_states
 
 
+def test_openapi_contract_limits_report_message_length() -> None:
+    assert component_property_max_length("ReportCreate", "message") == 2000
+    assert component_property_max_length("ReportUpdate", "message") == 2000
+
+
 def test_openapi_contract_keeps_public_payloads_out_of_admin_shape() -> None:
     city_parameter = query_parameter("/api/places/map", "city_id")
     assert city_parameter["in"] == "query"
@@ -294,6 +310,28 @@ def test_openapi_contract_keeps_public_payloads_out_of_admin_shape() -> None:
         "place_id",
         "public_path",
         "share_slug",
+        "status",
+        "thumb_path",
+    }
+    assert component_properties("PhotoAdminRead") == {
+        "admin_audio",
+        "admin_public_path",
+        "admin_thumb_path",
+        "approved_at",
+        "attribution_author",
+        "attribution_license",
+        "attribution_license_url",
+        "attribution_source_url",
+        "audio",
+        "caption",
+        "consent_confirmed",
+        "created_at",
+        "description_blocks",
+        "id",
+        "place_id",
+        "public_path",
+        "role",
+        "source",
         "status",
         "thumb_path",
     }

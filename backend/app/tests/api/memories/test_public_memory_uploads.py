@@ -1,11 +1,17 @@
+import asyncio
+from io import BytesIO
 from pathlib import Path
 
+import pytest
 from fastapi import HTTPException
 from PIL import Image
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
 
+from app.core import public_submission_security
+from app.core.rate_limit import RateLimitPolicy
 from app.models.memory import Memory
+from app.services import memory_uploads as memory_upload_service
 from app.services.media import audio as audio_service
 from app.services.media import pending_queue
 from app.services.memory_fields import MAX_MEMORY_AUTHOR_LENGTH, MAX_MEMORY_CAPTION_LENGTH, MAX_MEMORY_TEXT_LENGTH
@@ -25,6 +31,28 @@ def assert_blurred_pixel(value: tuple[int, int, int]) -> None:
     assert 40 < value[0] < 220
     assert 40 < value[1] < 220
     assert 40 < value[2] < 220
+
+
+class TrackingUpload:
+    def __init__(self, content: bytes) -> None:
+        self._content = content
+        self.bytes_read = 0
+
+    async def read(self, size: int) -> bytes:
+        chunk = self._content[self.bytes_read : self.bytes_read + size]
+        self.bytes_read += len(chunk)
+        return chunk
+
+
+def test_upload_reader_stops_one_byte_after_configured_limit() -> None:
+    upload = TrackingUpload(b"x" * 100)
+
+    with pytest.raises(HTTPException) as exc_info:
+        asyncio.run(memory_upload_service.read_upload_with_limit(upload, 5, "Image"))
+
+    assert exc_info.value.status_code == 413
+    assert exc_info.value.detail == "Image file is too large"
+    assert upload.bytes_read == 6
 
 
 def test_memory_upload_stays_pending_private_and_hidden_publicly(client_session, tmp_path: Path) -> None:
@@ -74,6 +102,115 @@ def test_memory_upload_stays_pending_private_and_hidden_publicly(client_session,
     assert thumb_response.status_code == 200
     assert thumb_response.headers["content-type"] in {"image/jpeg", "image/png"}
     assert image_response.status_code == 200
+
+
+def test_memory_upload_rejects_unsupported_image_format(client_session, tmp_path: Path) -> None:
+    client, session = client_session
+    place = create_place(session)
+    buffer = BytesIO()
+    Image.new("RGB", (16, 16), (18, 106, 90)).save(buffer, format="BMP")
+
+    response = client.post(
+        f"/api/places/{place.id}/memories",
+        files={"file": ("memory.bmp", buffer.getvalue(), "image/bmp")},
+        data={
+            "caption": "Byłem tutaj",
+            "memory_text": MEMORY_TEXT,
+            "claim_token": MEMORY_TOKEN,
+            "consent_confirmed": "true",
+        },
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"] == "Unsupported image file"
+    assert session.exec(select(Memory)).all() == []
+    assert [path for root in (tmp_path / "private", tmp_path / "public") for path in root.rglob("*")] == []
+
+
+def test_memory_upload_enforces_streamed_image_byte_limit(client_session, tmp_path: Path, monkeypatch) -> None:
+    client, session = client_session
+    place = create_place(session)
+    monkeypatch.setattr(memory_upload_service, "MAX_IMAGE_BYTES", 32)
+
+    response = client.post(
+        f"/api/places/{place.id}/memories",
+        files={"file": image_upload("memory.jpg")},
+        data={
+            "caption": "Byłem tutaj",
+            "memory_text": MEMORY_TEXT,
+            "claim_token": MEMORY_TOKEN,
+            "consent_confirmed": "true",
+        },
+    )
+
+    assert response.status_code == 413
+    assert response.json()["detail"] == "Image file is too large"
+    assert session.exec(select(Memory)).all() == []
+    assert [path for root in (tmp_path / "private", tmp_path / "public") for path in root.rglob("*")] == []
+
+
+def test_memory_upload_offloads_image_processing_from_event_loop(client_session, monkeypatch) -> None:
+    client, session = client_session
+    place = create_place(session)
+    processed_functions = []
+
+    async def run_inline(function, *args):
+        processed_functions.append(function)
+        return function(*args)
+
+    monkeypatch.setattr(memory_upload_service, "run_in_threadpool", run_inline)
+
+    response = client.post(
+        f"/api/places/{place.id}/memories",
+        files={"file": image_upload("memory.jpg")},
+        data={
+            "caption": "Byłem tutaj",
+            "memory_text": MEMORY_TEXT,
+            "claim_token": MEMORY_TOKEN,
+            "consent_confirmed": "true",
+        },
+    )
+
+    assert response.status_code == 201
+    assert memory_upload_service.store_private_image_bytes in processed_functions
+
+
+def test_memory_upload_rate_limit_cannot_be_bypassed_with_client_header(client_session, monkeypatch) -> None:
+    client, session = client_session
+    place = create_place(session)
+    monkeypatch.setattr(
+        public_submission_security,
+        "PUBLIC_MEMORY_UPLOAD_RATE_LIMIT_POLICY",
+        RateLimitPolicy(scope="test-memory-upload", requests=1, window_seconds=60),
+    )
+
+    first_response = client.post(
+        f"/api/places/{place.id}/memories",
+        headers={"CF-Connecting-IP": "203.0.113.1"},
+        files={"file": image_upload("memory-1.jpg")},
+        data={
+            "caption": "Pierwsza",
+            "memory_text": MEMORY_TEXT,
+            "claim_token": MEMORY_TOKEN,
+            "consent_confirmed": "true",
+        },
+    )
+    limited_response = client.post(
+        f"/api/places/{place.id}/memories",
+        headers={"CF-Connecting-IP": "203.0.113.2"},
+        files={"file": image_upload("memory-2.jpg")},
+        data={
+            "caption": "Druga",
+            "memory_text": MEMORY_TEXT,
+            "claim_token": MEMORY_TOKEN,
+            "consent_confirmed": "true",
+        },
+    )
+
+    assert first_response.status_code == 201
+    assert limited_response.status_code == 429
+    assert limited_response.json()["detail"] == "Too many requests"
+    assert limited_response.headers["retry-after"] == "60"
 
 
 def test_memory_upload_with_audio_is_hidden_until_approved(client_session, monkeypatch) -> None:
