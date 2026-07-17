@@ -52,7 +52,7 @@ Publiczna mapa trzyma reguły wizualnego układu w małych helperach w `frontend
 - `placeGallerySizing.ts` wylicza maksymalny obszar rozwiniętej galerii miejsca z realnego viewportu, dostępnego miejsca wokół markera i liczby elementów.
 - `mapMotion.ts` układa kafelki rozwiniętej galerii w chmurę/wachlarz, skaluje je do przekazanego obszaru i pilnuje krótkich opóźnień wejścia.
 
-Pierwszy widok mapy renderuje elementy z lekkiego `map preview`, ale rozwinięta galeria miejsca po kliknięciu pobiera pełną publiczną listę zdjęć miejsca i pokazuje wszystkie zatwierdzone zdjęcia w wachlarzu. Nie ma stałego niskiego limitu widocznych miniaturek: obszar ma rosnąć na większych ekranach i dla gęstszych zestawów, ale musi pozostać bez nachodzenia kafli i bez wychodzenia poza ramkę mapy. Ten kontrakt chronią testy jednostkowe `mapMotion.test.ts` oraz E2E `frontend/e2e/visual/map-gallery-sizing.spec.ts` i `frontend/e2e/visual/map.spec.ts`.
+Pierwszy widok mapy renderuje elementy z lekkiego `map preview` (bez `description_blocks` zdjęć). Rozwinięta galeria miejsca po kliknięciu pobiera lekką publiczną listę zdjęć miejsca i pokazuje wszystkie zatwierdzone zdjęcia w wachlarzu. Opis TTS jednego medium ładuje endpoint detail zdjęcia dopiero w modalu. Nie ma stałego niskiego limitu widocznych miniaturek: obszar ma rosnąć na większych ekranach i dla gęstszych zestawów, ale musi pozostać bez nachodzenia kafli i bez wychodzenia poza ramkę mapy. Ten kontrakt chronią testy jednostkowe `mapMotion.test.ts` oraz E2E `frontend/e2e/visual/map-gallery-sizing.spec.ts` i `frontend/e2e/visual/map.spec.ts`.
 
 ## Refactor Closure
 

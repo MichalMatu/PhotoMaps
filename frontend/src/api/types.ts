@@ -188,12 +188,15 @@ export type Photo = {
   public_path: string;
   thumb_path: string;
   caption: string | null;
-  description_blocks: ContentBlock[];
   attribution_author: string | null;
   attribution_source_url: string | null;
   attribution_license: string | null;
   attribution_license_url: string | null;
   audio: AudioAttachment | null;
+};
+
+export type PhotoDetail = Photo & {
+  description_blocks: ContentBlock[];
 };
 
 export type AdminPhoto = {
@@ -461,7 +464,6 @@ export type PlaceMapPhoto = {
   role: PhotoRole;
   source: PhotoSource;
   caption: string | null;
-  description_blocks: ContentBlock[];
   attribution_author: string | null;
   attribution_source_url: string | null;
   attribution_license: string | null;

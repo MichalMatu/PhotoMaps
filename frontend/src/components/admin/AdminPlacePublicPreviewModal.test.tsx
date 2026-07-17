@@ -41,7 +41,6 @@ function photo(id: string): Photo {
     attribution_license_url: null,
     attribution_source_url: null,
     caption: `Zdjęcie ${id}`,
-    description_blocks: [],
     id,
     place_id: "place-1",
     public_path: `/media/${id}.jpg`,

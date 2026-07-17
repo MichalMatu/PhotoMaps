@@ -83,7 +83,6 @@ class PlaceMapPhotoRead(SQLModel):
     role: PhotoRole
     source: PhotoSource
     caption: str | None
-    description_blocks: list[ContentBlock]
     attribution_author: str | None
     attribution_source_url: str | None
     attribution_license: str | None

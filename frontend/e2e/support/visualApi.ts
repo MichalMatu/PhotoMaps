@@ -152,8 +152,55 @@ export async function mockSharedApi(
     route.fulfill({ json: cityId ? mapPlaces.filter((place) => place.city_id === cityId) : mapPlaces });
   });
   await page.route(`${API_URL}/api/places/${places[0].slug}`, (route) => route.fulfill({ json: placeDetail }));
-  await page.route(`${API_URL}/api/places/${places[0].id}/photos`, (route) =>
-    route.fulfill({ json: [rynekCover, rynekSide] }),
+  await page.route(`${API_URL}/api/places/${places[0].id}/photos`, (route) => {
+    if (new URL(route.request().url()).pathname.endsWith(`/photos/${rynekCover.id}`)) {
+      return route.fallback();
+    }
+    return route.fulfill({
+      json: [
+        {
+          audio: rynekCover.audio,
+          attribution_author: rynekCover.attribution_author,
+          attribution_license: rynekCover.attribution_license,
+          attribution_license_url: rynekCover.attribution_license_url,
+          attribution_source_url: rynekCover.attribution_source_url,
+          caption: rynekCover.caption,
+          id: rynekCover.id,
+          place_id: rynekCover.place_id,
+          public_path: rynekCover.public_path,
+          thumb_path: rynekCover.thumb_path,
+        },
+        {
+          audio: rynekSide.audio,
+          attribution_author: rynekSide.attribution_author,
+          attribution_license: rynekSide.attribution_license,
+          attribution_license_url: rynekSide.attribution_license_url,
+          attribution_source_url: rynekSide.attribution_source_url,
+          caption: rynekSide.caption,
+          id: rynekSide.id,
+          place_id: rynekSide.place_id,
+          public_path: rynekSide.public_path,
+          thumb_path: rynekSide.thumb_path,
+        },
+      ],
+    });
+  });
+  await page.route(`${API_URL}/api/places/${places[0].id}/photos/${rynekCover.id}`, (route) =>
+    route.fulfill({
+      json: {
+        audio: rynekCover.audio,
+        attribution_author: rynekCover.attribution_author,
+        attribution_license: rynekCover.attribution_license,
+        attribution_license_url: rynekCover.attribution_license_url,
+        attribution_source_url: rynekCover.attribution_source_url,
+        caption: rynekCover.caption,
+        description_blocks: rynekCover.description_blocks,
+        id: rynekCover.id,
+        place_id: rynekCover.place_id,
+        public_path: rynekCover.public_path,
+        thumb_path: rynekCover.thumb_path,
+      },
+    }),
   );
   await page.route(`${API_URL}/api/places/${places[0].id}/memories/${rynekMemory.id}`, (route) =>
     route.fulfill({ json: rynekMemory }),

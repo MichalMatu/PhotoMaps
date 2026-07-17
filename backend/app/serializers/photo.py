@@ -1,6 +1,6 @@
 from app.models.photo import Photo
 from app.schemas.audio import AudioAttachment
-from app.schemas.photo import PhotoAdminRead, PhotoRead
+from app.schemas.photo import PhotoAdminRead, PhotoDetailRead, PhotoRead
 from app.serializers.audio import audio_to_read
 
 
@@ -17,12 +17,18 @@ def photo_to_read(photo: Photo) -> PhotoRead:
         public_path=photo.public_path,
         thumb_path=photo.thumb_path,
         caption=photo.caption,
-        description_blocks=photo.description_blocks or [],
         attribution_author=photo.attribution_author,
         attribution_source_url=photo.attribution_source_url,
         attribution_license=photo.attribution_license,
         attribution_license_url=photo.attribution_license_url,
         audio=audio_to_read(photo) if photo.status == "approved" else None,
+    )
+
+
+def photo_to_detail_read(photo: Photo) -> PhotoDetailRead:
+    return PhotoDetailRead(
+        **photo_to_read(photo).model_dump(),
+        description_blocks=photo.description_blocks or [],
     )
 
 

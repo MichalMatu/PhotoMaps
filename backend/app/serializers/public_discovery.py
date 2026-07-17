@@ -8,7 +8,7 @@ from app.schemas.app_config import PlaceCustomFieldDefinition
 from app.schemas.public_discovery import PublicPlaceDetailRead, PublicPlaceIndexRead
 from app.serializers.category import category_to_read
 from app.serializers.city import city_to_read
-from app.serializers.photo import photo_to_read
+from app.serializers.photo import photo_to_detail_read
 from app.services.app_config import public_place_custom_fields_for_definitions
 from app.services.ranking import place_score
 
@@ -59,7 +59,7 @@ def place_to_public_detail_read(
     photos: list[Photo],
     custom_field_definitions: Sequence[PlaceCustomFieldDefinition],
 ) -> PublicPlaceDetailRead:
-    public_photos = [photo_to_read(photo) for photo in photos]
+    public_photos = [photo_to_detail_read(photo) for photo in photos]
     cover_photo = next((photo for photo in public_photos if photo.id == place.cover_photo_id), None)
     return PublicPlaceDetailRead(
         **place_to_public_index_read(place, city, categories, category_ids, custom_field_definitions).model_dump(),

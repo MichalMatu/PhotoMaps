@@ -15,7 +15,6 @@ function photo(id: string): PlaceMapVisualItem {
     attribution_license_url: null,
     attribution_source_url: null,
     caption: null,
-    description_blocks: [],
     id,
     kind: "photo",
     public_path: `/media/photos/${id}.jpg`,

@@ -26,7 +26,6 @@ function photo(id: string): PlaceMapPhoto {
     attribution_source_url: null,
     caption: `Zdjęcie ${id}`,
     created_at: "2026-06-10T00:00:00",
-    description_blocks: [],
     id,
     place_id: "place-1",
     public_path: `/media/photos/${id}.jpg`,

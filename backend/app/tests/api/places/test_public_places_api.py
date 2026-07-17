@@ -447,6 +447,7 @@ def test_public_media_contracts_never_return_original_path(client_session) -> No
         client.get("/api/places/map?city_id=wroclaw"),
         client.get(f"/api/places/{place.slug}"),
         client.get(f"/api/places/{place.id}/photos"),
+        client.get(f"/api/places/{place.id}/photos/{photo.id}"),
         client.get(f"/api/places/{place.id}/memories"),
     ]
 
@@ -454,7 +455,14 @@ def test_public_media_contracts_never_return_original_path(client_session) -> No
         assert response.status_code == 200
         assert_no_private_original_path(response.json())
 
+    map_payload = responses[1].json()
+    assert "description_blocks" not in map_payload[0]["cover_photo"]
+    assert all("description_blocks" not in item for item in map_payload[0]["preview_items"])
+
     photos_payload = responses[3].json()
-    assert photos_payload[0]["description_blocks"] == [
+    assert "description_blocks" not in photos_payload[0]
+
+    photo_detail_payload = responses[4].json()
+    assert photo_detail_payload["description_blocks"] == [
         {"type": "paragraph", "text": "Opis zdjęcia do odsłuchu.", "url": None}
     ]
