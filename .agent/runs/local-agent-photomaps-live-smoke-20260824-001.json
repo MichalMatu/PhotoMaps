@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "local-agent-photomaps-live-smoke-20260824-001",
+  "task_digest": "91330bafc6f9987f93dbd851032e05657803dd17f047462822cab81570c7f9c3",
+  "idle_timeout": 30,
+  "task_timeout": 180,
+  "memory_limit_mb": 256,
+  "started_at": "2026-08-24T11:56:30.194488+00:00",
+  "attempt_id": "10dba715f786dc2a809309a8",
+  "daemon_version": "4.6.0",
+  "daemon_pid": 48997,
+  "updated_at": "2026-08-24T11:56:30.194523+00:00",
+  "pid": 48997
+}
