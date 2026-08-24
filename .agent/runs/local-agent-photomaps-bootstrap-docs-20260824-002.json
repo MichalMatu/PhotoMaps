@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "local-agent-photomaps-bootstrap-docs-20260824-002",
+  "task_digest": "4cf39ba729147a9a081a716ec56afcf13d1d07f071b9ae276d19ac40833121d9",
+  "idle_timeout": 60,
+  "task_timeout": 600,
+  "memory_limit_mb": 256,
+  "started_at": "2026-08-24T11:59:28.444286+00:00",
+  "attempt_id": "b81d2eae324252588ddde34e",
+  "daemon_version": "4.6.0",
+  "daemon_pid": 50244,
+  "updated_at": "2026-08-24T11:59:28.444330+00:00",
+  "pid": 50244
+}
