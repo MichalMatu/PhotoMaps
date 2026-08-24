@@ -1,0 +1,9 @@
+{
+  "id": "local-agent-photomaps-bootstrap-docs-20260824-001",
+  "status": "failed",
+  "failure_reason": "invalid_task_file",
+  "started_at": null,
+  "finished_at": "2026-08-24T11:57:50.214857+00:00",
+  "daemon_version": "4.6.0",
+  "error": "JSONDecodeError: Invalid control character at: line 13 column 2256 (char 2548)"
+}
