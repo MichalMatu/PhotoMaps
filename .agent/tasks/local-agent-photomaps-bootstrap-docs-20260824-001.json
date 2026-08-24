@@ -1,0 +1,29 @@
+{
+  "id": "local-agent-photomaps-bootstrap-docs-20260824-001",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": true,
+  "command_timeout": 180,
+  "idle_timeout": 60,
+  "task_timeout": 600,
+  "memory_limit_mb": 256,
+  "steps": [
+    {
+      "name": "patch-agent-bootstrap-docs",
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\n\nagents = Path('AGENTS.md')\ntext = agents.read_text(encoding='utf-8')\nmarker = '## Local Agent v4.6 - repository workflow'\nif marker not in text:\n    title = '# AGENTS.md - PhotoMap\\n\\n'\n    if not text.startswith(title):\n        raise SystemExit('unexpected AGENTS.md header')\n    section = '''## Local Agent v4.6 - repository workflow\n\nThis repository is registered in the shared `MichalMatu/local-agent` v4.6 multi-repository supervisor.\n\nRepository identity:\n\n- repository: `MichalMatu/PhotoMaps`\n- local-agent repository id: `photomaps`\n- control branch: `agent-control`\n- default source branch: `main`\n- execution model: one shared supervisor across repositories, with at most one local task executing at a time\n\n### New chat bootstrap\n\nWhen starting work on PhotoMaps in a new chat/session:\n\n1. Read this `AGENTS.md` and the current `README.md` before proposing or executing changes.\n2. Inspect the current GitHub state and the branch relevant to the requested work. Do not assume remembered conversation state is current.\n3. Use this repository's own `agent-control` branch for Local Agent tasks. Never send PhotoMaps tasks through LiteGraph, Growbox, or another repository's control branch.\n4. Submit task requests under `.agent/tasks/<task-id>.json` on `agent-control`.\n5. Follow execution through `.agent/runs/<task-id>.json` and `.agent/status/daemon.json`.\n6. Read the terminal result from `.agent/results/<task-id>.json` before reporting completion.\n7. Prefer repository status/results from GitHub over asking the user to copy local terminal logs when Local Agent can provide the state directly.\n8. Keep repository workspaces isolated. A PhotoMaps task must not read, modify, checkpoint, or publish results through another repository's Local Agent workspace.\n9. `agent-control` is a control plane, not a development branch. Product/source changes belong on the explicitly requested source/work branch.\n\nThe canonical Local Agent implementation and operational documentation live in `MichalMatu/local-agent`. If the control protocol changes, update this bootstrap section so future chats do not depend on remembered conversation context.\n\n'''
+    agents.write_text(title + section + text[len(title):], encoding='utf-8')\n\nreadme = Path('README.md')\ntext = readme.read_text(encoding='utf-8')\nmarker = '## Local Agent v4.6'\nif marker not in text:\n    anchor = '## Dokumenty\\n'\n    if anchor not in text:\n        raise SystemExit('README.md Dokumenty anchor missing')\n    section = '''## Local Agent v4.6\n\nPhotoMaps jest zarejestrowany jako `photomaps` w wielorepozytoryjnym Local Agent v4.6. Nowy chat powinien zaczac od przeczytania aktualnego `AGENTS.md`; zadania lokalne dla tego repo trafiaja wylacznie przez branch `agent-control` PhotoMaps. Szczegolowy bootstrap i kontrakt kolejki sa zapisane w `AGENTS.md`.\n\n'''
+    readme.write_text(text.replace(anchor, section + anchor, 1), encoding='utf-8')\nPY",
+      "timeout": 120
+    },
+    {
+      "name": "verify-bootstrap-docs",
+      "command": "git diff --check && grep -F 'local-agent repository id: `photomaps`' AGENTS.md && grep -F 'PhotoMaps jest zarejestrowany jako `photomaps`' README.md && git diff -- AGENTS.md README.md",
+      "timeout": 120
+    },
+    {
+      "name": "commit-bootstrap-docs",
+      "command": "git add AGENTS.md README.md && git commit -m 'Document PhotoMaps Local Agent workflow' && git push origin HEAD:main",
+      "timeout": 180
+    }
+  ]
+}
