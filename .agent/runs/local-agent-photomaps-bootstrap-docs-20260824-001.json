@@ -1,0 +1,9 @@
+{
+  "event": "invalid_task_rejected",
+  "status": "failed",
+  "failure_reason": "invalid_task_file",
+  "updated_at": "2026-08-24T11:57:53.023787+00:00",
+  "task_id": "local-agent-photomaps-bootstrap-docs-20260824-001",
+  "daemon_version": "4.6.0",
+  "pid": 49786
+}
