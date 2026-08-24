@@ -1,9 +1,9 @@
 {
   "version": 1,
   "daemon_version": "4.6.0",
-  "state": "running",
+  "state": "idle",
   "pid": 50244,
-  "updated_at": "2026-08-24T11:59:56.194870+00:00",
+  "updated_at": "2026-08-24T12:00:04.389184+00:00",
   "self_revision": "b2cdfdb6716f2c56fddc960876ed1e2fbdd1bde3",
   "poll_seconds": 15,
   "self_update_seconds": 60,
@@ -11,19 +11,7 @@
   "idle_timeout_default": 300,
   "task_timeout_default": 1800,
   "memory_limit_mb_default": 4096,
-  "current_task_id": "local-agent-photomaps-bootstrap-docs-20260824-002",
-  "current_attempt_id": "b81d2eae324252588ddde34e",
-  "current_task_digest": "4cf39ba729147a9a081a716ec56afcf13d1d07f071b9ae276d19ac40833121d9",
-  "progress": {
-    "event": "task_finished",
-    "task_id": "local-agent-photomaps-bootstrap-docs-20260824-002",
-    "task_digest": "4cf39ba729147a9a081a716ec56afcf13d1d07f071b9ae276d19ac40833121d9",
-    "status": "done",
-    "failure_reason": null,
-    "finished_at": "2026-08-24T11:59:53.215090+00:00",
-    "attempt_id": "b81d2eae324252588ddde34e",
-    "daemon_version": "4.6.0",
-    "daemon_pid": 50244,
-    "updated_at": "2026-08-24T11:59:53.389861+00:00"
-  }
+  "current_task_id": null,
+  "current_attempt_id": null,
+  "current_task_digest": null
 }
