@@ -1,13 +1,12 @@
 {
-  "event": "task_finished",
-  "task_id": "local-agent-photomaps-live-smoke-20260824-001",
-  "task_digest": "91330bafc6f9987f93dbd851032e05657803dd17f047462822cab81570c7f9c3",
+  "event": "result_published",
   "status": "done",
   "failure_reason": null,
-  "finished_at": "2026-08-24T11:56:42.759809+00:00",
   "attempt_id": "10dba715f786dc2a809309a8",
+  "task_digest": "91330bafc6f9987f93dbd851032e05657803dd17f047462822cab81570c7f9c3",
+  "finished_at": "2026-08-24T11:56:42.759809+00:00",
+  "updated_at": "2026-08-24T11:56:51.059144+00:00",
+  "task_id": "local-agent-photomaps-live-smoke-20260824-001",
   "daemon_version": "4.6.0",
-  "daemon_pid": 48997,
-  "updated_at": "2026-08-24T11:56:42.940283+00:00",
   "pid": 48997
 }
