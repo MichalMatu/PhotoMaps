@@ -1,13 +1,12 @@
 {
-  "event": "task_finished",
-  "task_id": "local-agent-photomaps-bootstrap-docs-20260824-002",
-  "task_digest": "4cf39ba729147a9a081a716ec56afcf13d1d07f071b9ae276d19ac40833121d9",
+  "event": "result_published",
   "status": "done",
   "failure_reason": null,
-  "finished_at": "2026-08-24T11:59:53.215090+00:00",
   "attempt_id": "b81d2eae324252588ddde34e",
+  "task_digest": "4cf39ba729147a9a081a716ec56afcf13d1d07f071b9ae276d19ac40833121d9",
+  "finished_at": "2026-08-24T11:59:53.215090+00:00",
+  "updated_at": "2026-08-24T12:00:01.375875+00:00",
+  "task_id": "local-agent-photomaps-bootstrap-docs-20260824-002",
   "daemon_version": "4.6.0",
-  "daemon_pid": 50244,
-  "updated_at": "2026-08-24T11:59:53.389861+00:00",
   "pid": 50244
 }
