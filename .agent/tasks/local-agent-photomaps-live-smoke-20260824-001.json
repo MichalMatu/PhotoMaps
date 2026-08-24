@@ -1,0 +1,17 @@
+{
+  "id": "local-agent-photomaps-live-smoke-20260824-001",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "command_timeout": 60,
+  "idle_timeout": 30,
+  "task_timeout": 180,
+  "memory_limit_mb": 256,
+  "steps": [
+    {
+      "name": "photomaps-live-smoke",
+      "command": "printf 'photomaps-v4.6-smoke\\n'",
+      "timeout": 60
+    }
+  ]
+}
