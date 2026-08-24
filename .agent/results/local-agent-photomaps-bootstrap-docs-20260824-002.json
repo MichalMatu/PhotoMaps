@@ -1,0 +1,107 @@
+{
+  "id": "local-agent-photomaps-bootstrap-docs-20260824-002",
+  "status": "done",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": true,
+  "started_at": "2026-08-24T11:59:34.183711+00:00",
+  "command_timeout": 180,
+  "edits": {},
+  "commands": [
+    {
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport base64\nagents = Path('AGENTS.md')\ntext = agents.read_text(encoding='utf-8')\nmarker = '## Local Agent v4.6 - repository workflow'\nif marker not in text:\n    title = '# AGENTS.md - PhotoMap\\n\\n'\n    if not text.startswith(title):\n        raise SystemExit('unexpected AGENTS.md header')\n    section = base64.b64decode('IyMgTG9jYWwgQWdlbnQgdjQuNiAtIHJlcG9zaXRvcnkgd29ya2Zsb3cKClRoaXMgcmVwb3NpdG9yeSBpcyByZWdpc3RlcmVkIGluIHRoZSBzaGFyZWQgYE1pY2hhbE1hdHUvbG9jYWwtYWdlbnRgIHY0LjYgbXVsdGktcmVwb3NpdG9yeSBzdXBlcnZpc29yLgoKUmVwb3NpdG9yeSBpZGVudGl0eToKCi0gcmVwb3NpdG9yeTogYE1pY2hhbE1hdHUvUGhvdG9NYXBzYAotIGxvY2FsLWFnZW50IHJlcG9zaXRvcnkgaWQ6IGBwaG90b21hcHNgCi0gY29udHJvbCBicmFuY2g6IGBhZ2VudC1jb250cm9sYAotIGRlZmF1bHQgc291cmNlIGJyYW5jaDogYG1haW5gCi0gZXhlY3V0aW9uIG1vZGVsOiBvbmUgc2hhcmVkIHN1cGVydmlzb3IgYWNyb3NzIHJlcG9zaXRvcmllcywgd2l0aCBhdCBtb3N0IG9uZSBsb2NhbCB0YXNrIGV4ZWN1dGluZyBhdCBhIHRpbWUKCiMjIyBOZXcgY2hhdCBib290c3RyYXAKCldoZW4gc3RhcnRpbmcgd29yayBvbiBQaG90b01hcHMgaW4gYSBuZXcgY2hhdC9zZXNzaW9uOgoKMS4gUmVhZCB0aGlzIGBBR0VOVFMubWRgIGFuZCB0aGUgY3VycmVudCBgUkVBRE1FLm1kYCBiZWZvcmUgcHJvcG9zaW5nIG9yIGV4ZWN1dGluZyBjaGFuZ2VzLgoyLiBJbnNwZWN0IHRoZSBjdXJyZW50IEdpdEh1YiBzdGF0ZSBhbmQgdGhlIGJyYW5jaCByZWxldmFudCB0byB0aGUgcmVxdWVzdGVkIHdvcmsuIERvIG5vdCBhc3N1bWUgcmVtZW1iZXJlZCBjb252ZXJzYXRpb24gc3RhdGUgaXMgY3VycmVudC4KMy4gVXNlIHRoaXMgcmVwb3NpdG9yeSdzIG93biBgYWdlbnQtY29udHJvbGAgYnJhbmNoIGZvciBMb2NhbCBBZ2VudCB0YXNrcy4gTmV2ZXIgc2VuZCBQaG90b01hcHMgdGFza3MgdGhyb3VnaCBMaXRlR3JhcGgsIEdyb3dib3gsIG9yIGFub3RoZXIgcmVwb3NpdG9yeSdzIGNvbnRyb2wgYnJhbmNoLgo0LiBTdWJtaXQgdGFzayByZXF1ZXN0cyB1bmRlciBgLmFnZW50L3Rhc2tzLzx0YXNrLWlkPi5qc29uYCBvbiBgYWdlbnQtY29udHJvbGAuCjUuIEZvbGxvdyBleGVjdXRpb24gdGhyb3VnaCBgLmFnZW50L3J1bnMvPHRhc2staWQ+Lmpzb25gIGFuZCBgLmFnZW50L3N0YXR1cy9kYWVtb24uanNvbmAuCjYuIFJlYWQgdGhlIHRlcm1pbmFsIHJlc3VsdCBmcm9tIGAuYWdlbnQvcmVzdWx0cy88dGFzay1pZD4uanNvbmAgYmVmb3JlIHJlcG9ydGluZyBjb21wbGV0aW9uLgo3LiBQcmVmZXIgcmVwb3NpdG9yeSBzdGF0dXMvcmVzdWx0cyBmcm9tIEdpdEh1YiBvdmVyIGFza2luZyB0aGUgdXNlciB0byBjb3B5IGxvY2FsIHRlcm1pbmFsIGxvZ3Mgd2hlbiBMb2NhbCBBZ2VudCBjYW4gcHJvdmlkZSB0aGUgc3RhdGUgZGlyZWN0bHkuCjguIEtlZXAgcmVwb3NpdG9yeSB3b3Jrc3BhY2VzIGlzb2xhdGVkLiBBIFBob3RvTWFwcyB0YXNrIG11c3Qgbm90IHJlYWQsIG1vZGlmeSwgY2hlY2twb2ludCwgb3IgcHVibGlzaCByZXN1bHRzIHRocm91Z2ggYW5vdGhlciByZXBvc2l0b3J5J3MgTG9jYWwgQWdlbnQgd29ya3NwYWNlLgo5LiBgYWdlbnQtY29udHJvbGAgaXMgYSBjb250cm9sIHBsYW5lLCBub3QgYSBkZXZlbG9wbWVudCBicmFuY2guIFByb2R1Y3Qvc291cmNlIGNoYW5nZXMgYmVsb25nIG9uIHRoZSBleHBsaWNpdGx5IHJlcXVlc3RlZCBzb3VyY2Uvd29yayBicmFuY2guCgpUaGUgY2Fub25pY2FsIExvY2FsIEFnZW50IGltcGxlbWVudGF0aW9uIGFuZCBvcGVyYXRpb25hbCBkb2N1bWVudGF0aW9uIGxpdmUgaW4gYE1pY2hhbE1hdHUvbG9jYWwtYWdlbnRgLiBJZiB0aGUgY29udHJvbCBwcm90b2NvbCBjaGFuZ2VzLCB1cGRhdGUgdGhpcyBib290c3RyYXAgc2VjdGlvbiBzbyBmdXR1cmUgY2hhdHMgZG8gbm90IGRlcGVuZCBvbiByZW1lbWJlcmVkIGNvbnZlcnNhdGlvbiBjb250ZXh0LgoK').decode('utf-8')\n    agents.write_text(title + section + text[len(title):], encoding='utf-8')\nreadme = Path('README.md')\ntext = readme.read_text(encoding='utf-8')\nmarker = '## Local Agent v4.6'\nif marker not in text:\n    anchor = '## Dokumenty\\n'\n    if anchor not in text:\n        raise SystemExit('README.md Dokumenty anchor missing')\n    section = base64.b64decode('IyMgTG9jYWwgQWdlbnQgdjQuNgoKUGhvdG9NYXBzIGplc3QgemFyZWplc3Ryb3dhbnkgamFrbyBgcGhvdG9tYXBzYCB3IHdpZWxvcmVwb3p5dG9yeWpueW0gTG9jYWwgQWdlbnQgdjQuNi4gTm93eSBjaGF0IHBvd2luaWVuIHphY3phYyBvZCBwcnplY3p5dGFuaWEgYWt0dWFsbmVnbyBgQUdFTlRTLm1kYDsgemFkYW5pYSBsb2thbG5lIGRsYSB0ZWdvIHJlcG8gdHJhZmlhamEgd3lsYWN6bmllIHByemV6IGJyYW5jaCBgYWdlbnQtY29udHJvbGAgUGhvdG9NYXBzLiBTemN6ZWdvbG93eSBib290c3RyYXAgaSBrb250cmFrdCBrb2xlamtpIHNhIHphcGlzYW5lIHcgYEFHRU5UUy5tZGAuCgo=').decode('utf-8')\n    readme.write_text(text.replace(anchor, section + anchor, 1), encoding='utf-8')\nPY",
+      "exit_code": 0,
+      "output": "",
+      "elapsed_seconds": 5.768,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "task_timed_out": false,
+      "memory_limit_mb": 256,
+      "memory_limited": false,
+      "peak_rss_mb": null,
+      "stage_name": "patch-agent-bootstrap-docs",
+      "stage_index": 1,
+      "stage_total": 3,
+      "stage_phase": "commands",
+      "stage_timeout": 120
+    },
+    {
+      "command": "git diff --check && grep -F 'local-agent repository id: `photomaps`' AGENTS.md && grep -F 'PhotoMaps jest zarejestrowany jako `photomaps`' README.md && git diff -- AGENTS.md README.md",
+      "exit_code": 0,
+      "output": "- local-agent repository id: `photomaps`\nPhotoMaps jest zarejestrowany jako `photomaps` w wielorepozytoryjnym Local Agent v4.6. Nowy chat powinien zaczac od przeczytania aktualnego `AGENTS.md`; zadania lokalne dla tego repo trafiaja wylacznie przez branch `agent-control` PhotoMaps. Szczegolowy bootstrap i kontrakt kolejki sa zapisane w `AGENTS.md`.\ndiff --git a/AGENTS.md b/AGENTS.md\nindex 77071df..2a83bd2 100644\n--- a/AGENTS.md\n+++ b/AGENTS.md\n@@ -1,5 +1,33 @@\n # AGENTS.md - PhotoMap\n \n+## Local Agent v4.6 - repository workflow\n+\n+This repository is registered in the shared `MichalMatu/local-agent` v4.6 multi-repository supervisor.\n+\n+Repository identity:\n+\n+- repository: `MichalMatu/PhotoMaps`\n+- local-agent repository id: `photomaps`\n+- control branch: `agent-control`\n+- default source branch: `main`\n+- execution model: one shared supervisor across repositories, with at most one local task executing at a time\n+\n+### New chat bootstrap\n+\n+When starting work on PhotoMaps in a new chat/session:\n+\n+1. Read this `AGENTS.md` and the current `README.md` before proposing or executing changes.\n+2. Inspect the current GitHub state and the branch relevant to the requested work. Do not assume remembered conversation state is current.\n+3. Use this repository's own `agent-control` branch for Local Agent tasks. Never send PhotoMaps tasks through LiteGraph, Growbox, or another repository's control branch.\n+4. Submit task requests under `.agent/tasks/<task-id>.json` on `agent-control`.\n+5. Follow execution through `.agent/runs/<task-id>.json` and `.agent/status/daemon.json`.\n+6. Read the terminal result from `.agent/results/<task-id>.json` before reporting completion.\n+7. Prefer repository status/results from GitHub over asking the user to copy local terminal logs when Local Agent can provide the state directly.\n+8. Keep repository workspaces isolated. A PhotoMaps task must not read, modify, checkpoint, or publish results through another repository's Local Agent workspace.\n+9. `agent-control` is a control plane, not a development branch. Product/source changes belong on the explicitly requested source/work branch.\n+\n+The canonical Local Agent implementation and operational documentation live in `MichalMatu/local-agent`. If the control protocol changes, update this bootstrap section so future chats do not depend on remembered conversation context.\n+\n ## Cel projektu\n \n PhotoMap to globalny produkt: wizualna mapa miejsc z klimatem. Uzytkownik ma wejsc na mape miasta i od razu zobaczyc atrakcyjna tablice miniaturek miejsc: zdjecia, covery, pamiatki ludzi i proste trasy/kolekcje.\ndiff --git a/README.md b/README.md\nindex c34c5e2..fd06971 100644\n--- a/README.md\n+++ b/README.md\n@@ -4,6 +4,10 @@ PhotoMap to wizualna mapa miejsc z klimatem. Wroclaw jest pierwszym miastem star\n \n Glownym bytem systemu jest `place`. Zdjecia, pamiatki, kolekcje i zgloszenia sa przypiete do miejsca albo kolekcji miejsc. Nowe moduly nie wchodza do aktualnego zakresu, jesli nie wzmacniaja publicznej mapy.\n \n+## Local Agent v4.6\n+\n+PhotoMaps jest zarejestrowany jako `photomaps` w wielorepozytoryjnym Local Agent v4.6. Nowy chat powinien zaczac od przeczytania aktualnego `AGENTS.md`; zadania lokalne dla tego repo trafiaja wylacznie przez branch `agent-control` PhotoMaps. Szczegolowy bootstrap i kontrakt kolejki sa zapisane w `AGENTS.md`.\n+\n ## Dokumenty\n \n - [Kierunek produktu](docs/product-direction.md)\n",
+      "elapsed_seconds": 5.409,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "task_timed_out": false,
+      "memory_limit_mb": 256,
+      "memory_limited": false,
+      "peak_rss_mb": null,
+      "stage_name": "verify-bootstrap-docs",
+      "stage_index": 2,
+      "stage_total": 3,
+      "stage_phase": "commands",
+      "stage_timeout": 120
+    },
+    {
+      "command": "git add AGENTS.md README.md && git commit -m 'Document PhotoMaps Local Agent workflow' && git push origin HEAD:main",
+      "exit_code": 0,
+      "output": "[agent-work 328d457] Document PhotoMaps Local Agent workflow\n 2 files changed, 32 insertions(+)\nTo https://github.com/MichalMatu/PhotoMaps.git\n   2fc99f1..328d457  HEAD -> main\n",
+      "elapsed_seconds": 6.518,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "task_timed_out": false,
+      "memory_limit_mb": 256,
+      "memory_limited": false,
+      "peak_rss_mb": null,
+      "stage_name": "commit-bootstrap-docs",
+      "stage_index": 3,
+      "stage_total": 3,
+      "stage_phase": "commands",
+      "stage_timeout": 180
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "patch-agent-bootstrap-docs",
+      "stage_index": 1,
+      "stage_total": 3,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 5.768
+    },
+    {
+      "stage_name": "verify-bootstrap-docs",
+      "stage_index": 2,
+      "stage_total": 3,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 5.409
+    },
+    {
+      "stage_name": "commit-bootstrap-docs",
+      "stage_index": 3,
+      "stage_total": 3,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 6.518
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.053
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.097
+  },
+  "finished_at": "2026-08-24T11:59:53.215090+00:00",
+  "task_digest": "4cf39ba729147a9a081a716ec56afcf13d1d07f071b9ae276d19ac40833121d9",
+  "idle_timeout": 60,
+  "task_timeout": 600,
+  "memory_limit_mb": 256,
+  "attempt_id": "b81d2eae324252588ddde34e",
+  "daemon_version": "4.6.0"
+}
