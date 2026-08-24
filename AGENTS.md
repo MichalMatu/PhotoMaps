@@ -1,5 +1,33 @@
 # AGENTS.md - PhotoMap
 
+## Local Agent v4.6 - repository workflow
+
+This repository is registered in the shared `MichalMatu/local-agent` v4.6 multi-repository supervisor.
+
+Repository identity:
+
+- repository: `MichalMatu/PhotoMaps`
+- local-agent repository id: `photomaps`
+- control branch: `agent-control`
+- default source branch: `main`
+- execution model: one shared supervisor across repositories, with at most one local task executing at a time
+
+### New chat bootstrap
+
+When starting work on PhotoMaps in a new chat/session:
+
+1. Read this `AGENTS.md` and the current `README.md` before proposing or executing changes.
+2. Inspect the current GitHub state and the branch relevant to the requested work. Do not assume remembered conversation state is current.
+3. Use this repository's own `agent-control` branch for Local Agent tasks. Never send PhotoMaps tasks through LiteGraph, Growbox, or another repository's control branch.
+4. Submit task requests under `.agent/tasks/<task-id>.json` on `agent-control`.
+5. Follow execution through `.agent/runs/<task-id>.json` and `.agent/status/daemon.json`.
+6. Read the terminal result from `.agent/results/<task-id>.json` before reporting completion.
+7. Prefer repository status/results from GitHub over asking the user to copy local terminal logs when Local Agent can provide the state directly.
+8. Keep repository workspaces isolated. A PhotoMaps task must not read, modify, checkpoint, or publish results through another repository's Local Agent workspace.
+9. `agent-control` is a control plane, not a development branch. Product/source changes belong on the explicitly requested source/work branch.
+
+The canonical Local Agent implementation and operational documentation live in `MichalMatu/local-agent`. If the control protocol changes, update this bootstrap section so future chats do not depend on remembered conversation context.
+
 ## Cel projektu
 
 PhotoMap to globalny produkt: wizualna mapa miejsc z klimatem. Uzytkownik ma wejsc na mape miasta i od razu zobaczyc atrakcyjna tablice miniaturek miejsc: zdjecia, covery, pamiatki ludzi i proste trasy/kolekcje.

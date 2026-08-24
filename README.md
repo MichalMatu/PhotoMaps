@@ -4,6 +4,10 @@ PhotoMap to wizualna mapa miejsc z klimatem. Wroclaw jest pierwszym miastem star
 
 Glownym bytem systemu jest `place`. Zdjecia, pamiatki, kolekcje i zgloszenia sa przypiete do miejsca albo kolekcji miejsc. Nowe moduly nie wchodza do aktualnego zakresu, jesli nie wzmacniaja publicznej mapy.
 
+## Local Agent v4.6
+
+PhotoMaps jest zarejestrowany jako `photomaps` w wielorepozytoryjnym Local Agent v4.6. Nowy chat powinien zaczac od przeczytania aktualnego `AGENTS.md`; zadania lokalne dla tego repo trafiaja wylacznie przez branch `agent-control` PhotoMaps. Szczegolowy bootstrap i kontrakt kolejki sa zapisane w `AGENTS.md`.
+
 ## Dokumenty
 
 - [Kierunek produktu](docs/product-direction.md)
