@@ -1,16 +1,16 @@
 {
   "event": "command_started",
   "phase": "commands",
-  "index": 1,
+  "index": 2,
   "total": 3,
-  "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport base64\nagents = Path('AGENTS.md')\ntext = agents.read_text(encoding='utf-8')\nmarker = '## Local Agent v4.6 - repository workflow'\nif marker not in text:\n    title = '# AGENTS.md - PhotoMap\\n\\n'\n    if not text.startswith(title):\n        raise SystemExit('unexpected AGENTS.md header')\n    section = base64.b64decode('IyMgTG9jYWwgQWdlbnQgdjQuNiAtIHJlcG9zaXRvcnkgd29ya2Zsb3cKClRoaXMgcmVwb3NpdG9yeSBpcyByZWdpc3RlcmVkIGluIHRoZSBzaGFyZWQgYE1pY2hhbE1hdHUvbG9jYWwtYWdlbnRgIHY0LjYgbXVsdGktcmVwb3NpdG9yeSBzdXBlcnZpc29yLgoKUmVwb3NpdG9yeSBpZGVudGl0eToKCi0gcmVwb3NpdG9yeTogYE1pY2hhbE1hdHUvUGhvdG9NYXBzYAotIGxvY2FsLWFnZW50IHJlcG9zaXRvcnkgaWQ6IGBwaG90b21hcHNgCi0gY29udHJvbCBicmFuY2g6IGBhZ2VudC1jb250cm9sYAotIGRlZmF1bHQgc291cmNlIGJyYW5jaDogYG1haW5gCi0gZXhlY3V0aW9uIG1vZGVsOiBvbmUgc2hhcmVkIHN1cGVydmlzb3IgYWNyb3NzIHJlcG9zaXRvcmllcywgd2l0aCBhdCBtb3N0IG9uZSBsb2NhbCB0YXNrIGV4ZWN1dGluZyBhdCBhIHRpbWUKCiMjIyBOZXcgY2hhdCBib290c3RyYXAKCldoZW4gc3RhcnRpbmcgd29yayBvbiBQaG90b01hcHMgaW4gYSBuZXcgY2hhdC9zZXNzaW9uOgoKMS4gUmVhZCB0aGlzIGBBR0VOVFMubWRgIGFuZCB0aGUgY3VycmVudCBgUkVBRE1FLm1kYCBiZWZvcmUgcHJvcG9zaW5nIG9yIGV4ZWN1dGluZyBjaGFuZ2VzLgoyLiBJbnNwZWN0IHRoZSBjdXJyZW50IEdpdEh1YiBzdGF0ZSBhbmQgdGhlIGJyYW5jaCByZWxldmFudCB0byB0aGUgcmVxdWVzdGVkIHdvcmsuIERvIG5vdCBhc3N1bWUgcmVtZW1iZXJlZCBjb252ZXJzYXRpb24gc3RhdGUgaXMgY3VycmVudC4KMy4gVXNlIHRoaXMgcmVwb3NpdG9yeSdzIG93biBgYWdlbnQtY29udHJvbGAgYnJhbmNoIGZvciBMb2NhbCBBZ2VudCB0YXNrcy4gTmV2ZXIgc2VuZCBQaG90b01hcHMgdGFza3MgdGhyb3VnaCBMaXRlR3JhcGgsIEdyb3dib3gsIG9yIGFub3RoZXIgcmVwb3NpdG9yeSdzIGNvbnRyb2wgYnJhbmNoLgo0LiBTdWJtaXQgdGFzayByZXF1ZXN0cyB1bmRlciBgLmFnZW50L3Rhc2tzLzx0YXNrLWlkPi5qc29uYCBvbiBgYWdlbnQtY29udHJvbGAuCjUuIEZvbGxvdyBleGVjdXRpb24gdGhyb3VnaCBgLmFnZW50L3J1bnMvPHRhc2staWQ+Lmpzb25gIGFuZCBgLmFnZW50L3N0YXR1cy9kYWVtb24uanNvbmAuCjYuIFJlYWQgdGhlIHRlcm1pbmFsIHJlc3VsdCBmcm9tIGAuYWdlbnQvcmVzdWx0cy88dGFzay1pZD4uanNvbmAgYmVmb3JlIHJlcG9ydGluZyBjb21wbGV0aW9uLgo3LiBQcmVmZXIgcmVwb3NpdG9yeSBzdGF0dXMvcmVzdWx0cyBmcm9tIEdpdEh1YiBvdmVyIGFza2luZyB0aGUgdXNlciB0byBjb3B5IGxvY2FsIHRlcm1pbmFsIGxvZ3Mgd2hlbiBMb2NhbCBBZ2VudCBjYW4gcHJvdmlkZSB0aGUgc3RhdGUgZGlyZWN0bHkuCjguIEtlZXAgcmVwb3NpdG9yeSB3b3Jrc3BhY2VzIGlzb2xhdGVkLiBBIFBob3RvTWFwcyB0YXNrIG11c3Qgbm90IHJlYWQsIG1vZGlmeSwgY2hlY2twb2ludCwgb3IgcHVibGlzaCByZXN1bHRzIHRocm91Z2ggYW5vdGhlciByZXBvc2l0b3J5J3MgTG9jYWwgQWdlbnQgd29ya3NwYWNlLgo5LiBgYWdlbnQtY29udHJvbGAgaXMgYSBjb250cm9sIHBsYW5lLCBub3QgYSBkZXZlbG9wbWVudCBicmFuY2guIFByb2R1Y3Qvc291cmNlIGNoYW5nZXMgYmVsb25nIG9uIHRoZSBleHBsaWNpdGx5IHJlcXVlc3RlZCBzb3VyY2Uvd29yayBicmFuY2guCgpUaGUgY2Fub25pY2FsIExvY2FsIEFnZW50IGltcGxlbWVudGF0aW9uIGFuZCBvcGVyYXRpb25hbCBkb2N1bWVudGF0aW9uIGxpdmUgaW4gYE1pY2hhbE1hdHUvbG9jYWwtYWdlbnRgLiBJZiB0aGUgY29udHJvbCBwcm90b2NvbCBjaGFuZ2VzLCB1cGRhdGUgdGhpcyBib290c3RyYXAgc2VjdGlvbiBzbyBmdXR1cmUgY2hhdHMgZG8gbm90IGRlcGVuZCBvbiByZW1lbWJlcmVkIGNvbnZlcnNhdGlvbiBjb250ZXh0LgoK').decode('utf-8')\n    agents.write_text(title + section + text[len(title):], encoding='utf-8')\nreadme = Path('README.md')\ntext = readme.read_text(encoding='utf-8')\nmarker = '## Local Agent v4.6'\nif marker not in text:\n    anchor = '## Dokumenty\\n'\n    if anchor not in text:\n        raise SystemExit('README.md Dokumenty anchor missing')\n    section = base64.b64decode('IyMgTG9jYWwgQWdlbnQgdjQuNgoKUGhvdG9NYXBzIGplc3QgemFyZWplc3Ryb3dhbnkgamFrbyBgcGhvdG9tYXBzYCB3IHdpZWxvcmVwb3p5dG9yeWpueW0gTG9jYWwgQWdlbnQgdjQuNi4gTm93eSBjaGF0IHBvd2luaWVuIHphY3phYyBvZCBwcnplY3p5dGFuaWEgYWt0dWFsbmVnbyBgQUdFTlRTLm1kYDsgemFkYW5pYSBsb2thbG5lIGRsYSB0ZWdvIHJlcG8gdHJhZmlhamEgd3lsYWN6bmllIHByemV6IGJyYW5jaCBgYWdlbnQtY29udHJvbGAgUGhvdG9NYXBzLiBTemN6ZWdvbG93eSBib290c3RyYXAgaSBrb250cmFrdCBrb2xlamtpIHNhIHphcGlzYW5lIHcgYEFHRU5UUy5tZGAuCgo=').decode('utf-8')\n    readme.write_text(text.replace(anchor, section + anchor, 1), encoding='utf-8')\nPY",
-  "pid": 50349,
+  "command": "git diff --check && grep -F 'local-agent repository id: `photomaps`' AGENTS.md && grep -F 'PhotoMaps jest zarejestrowany jako `photomaps`' README.md && git diff -- AGENTS.md README.md",
+  "pid": 50405,
   "timeout": 120,
   "idle_timeout": 60,
   "memory_limit_mb": 256,
-  "started_at": "2026-08-24T11:59:35.248625+00:00",
-  "stage_name": "patch-agent-bootstrap-docs",
-  "stage_index": 1,
+  "started_at": "2026-08-24T11:59:41.055647+00:00",
+  "stage_name": "verify-bootstrap-docs",
+  "stage_index": 2,
   "stage_total": 3,
   "stage_phase": "commands",
   "stage_timeout": 120,
@@ -19,5 +19,5 @@
   "task_digest": "4cf39ba729147a9a081a716ec56afcf13d1d07f071b9ae276d19ac40833121d9",
   "daemon_version": "4.6.0",
   "daemon_pid": 50244,
-  "updated_at": "2026-08-24T11:59:35.248704+00:00"
+  "updated_at": "2026-08-24T11:59:41.055820+00:00"
 }
