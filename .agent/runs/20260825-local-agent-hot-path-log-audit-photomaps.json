@@ -1,13 +1,12 @@
 {
-  "event": "task_finished",
-  "task_id": "20260825-local-agent-hot-path-log-audit-photomaps",
-  "task_digest": "9a0a34264089b5c625e897f7e430bc011509a78d806a202a6b032aab31bc8386",
+  "event": "result_published",
   "status": "done",
   "failure_reason": null,
-  "finished_at": "2026-08-25T12:11:37.161819+00:00",
   "attempt_id": "dd6ab825cc1e76a07a95711d",
+  "task_digest": "9a0a34264089b5c625e897f7e430bc011509a78d806a202a6b032aab31bc8386",
+  "finished_at": "2026-08-25T12:11:37.161819+00:00",
+  "updated_at": "2026-08-25T12:11:48.491528+00:00",
+  "task_id": "20260825-local-agent-hot-path-log-audit-photomaps",
   "daemon_version": "4.9.5",
-  "daemon_pid": 73409,
-  "updated_at": "2026-08-25T12:11:38.078468+00:00",
   "pid": 73409
 }
