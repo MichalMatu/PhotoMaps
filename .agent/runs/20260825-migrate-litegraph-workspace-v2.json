@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260825-migrate-litegraph-workspace-v2",
+  "task_digest": "89baa977d9c4827aed8ea941a548757e32a6eb3acc1150c3435668ccd12c369d",
+  "idle_timeout": 120,
+  "task_timeout": 900,
+  "memory_limit_mb": 1024,
+  "started_at": "2026-08-25T11:09:37.024693+00:00",
+  "attempt_id": "26428ebbcb4293c0e7cf21d3",
+  "daemon_version": "4.9.3",
+  "daemon_pid": 23934,
+  "updated_at": "2026-08-25T11:09:37.024856+00:00",
+  "pid": 23934
+}
