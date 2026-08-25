@@ -1,0 +1,13 @@
+{
+  "id": "20260825-local-agent-git-poll-benchmark",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "command_timeout": 300,
+  "idle_timeout": 120,
+  "task_timeout": 900,
+  "memory_limit_mb": 512,
+  "commands": [
+    "set -euo pipefail; C=\"$HOME/agent-workspace/repos/growbox-ml-controller/control\"; echo CONTROL=$C; echo REMOTE=$(git -C \"$C\" remote get-url origin); echo '--- ssh config ---'; (ssh -G github.com 2>/dev/null | grep -E '^(hostname|port|controlmaster|controlpersist|controlpath) ' || true); echo '--- benchmark default ---'; python3 - <<'PY'\nimport subprocess,time,statistics,os\nfrom pathlib import Path\nc=Path.home()/\"agent-workspace/repos/growbox-ml-controller/control\"\ncmds={\n 'ls_remote':['git','ls-remote','origin','refs/heads/agent-control'],\n 'fetch_depth1':['git','fetch','--quiet','--no-tags','--depth','1','origin','agent-control'],\n 'pull_depth256':['git','pull','--rebase','--depth','256','--no-tags','origin','agent-control'],\n}\nfor name,cmd in cmds.items():\n    vals=[]\n    for i in range(3):\n        t=time.monotonic(); p=subprocess.run(cmd,cwd=c,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT); dt=time.monotonic()-t\n        vals.append(dt); print(f'{name}[{i+1}] exit={p.returncode} sec={dt:.3f} out={p.stdout.strip()[:120]}')\n    print(f'{name} median={statistics.median(vals):.3f} min={min(vals):.3f} max={max(vals):.3f}')\nPY\n echo '--- benchmark ssh multiplex ---'; SOCKDIR=\"$HOME/Library/Application Support/local-agent/ssh-control\"; mkdir -p \"$SOCKDIR\"; export GIT_SSH_COMMAND=\"ssh -o ControlMaster=auto -o ControlPersist=120 -o ControlPath=$SOCKDIR/%C\"; python3 - <<'PY'\nimport subprocess,time,statistics,os\nfrom pathlib import Path\nc=Path.home()/\"agent-workspace/repos/growbox-ml-controller/control\"\nenv=os.environ.copy()\ncmds={\n 'mux_ls_remote':['git','ls-remote','origin','refs/heads/agent-control'],\n 'mux_fetch_depth1':['git','fetch','--quiet','--no-tags','--depth','1','origin','agent-control'],\n}\nfor name,cmd in cmds.items():\n    vals=[]\n    for i in range(4):\n        t=time.monotonic(); p=subprocess.run(cmd,cwd=c,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,env=env); dt=time.monotonic()-t\n        vals.append(dt); print(f'{name}[{i+1}] exit={p.returncode} sec={dt:.3f} out={p.stdout.strip()[:120]}')\n    print(f'{name} median={statistics.median(vals):.3f} min={min(vals):.3f} max={max(vals):.3f}')\nPY\n echo BENCHMARK_OK"
+  ]
+}
