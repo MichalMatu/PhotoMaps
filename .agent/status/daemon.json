@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "daemon_version": "4.9.5",
+  "daemon_version": "4.9.6",
   "state": "idle",
-  "pid": 73409,
-  "updated_at": "2026-08-25T12:11:56.086845+00:00",
-  "self_revision": "673e1082747f604b6bb62a3a882e9130092ba650",
+  "pid": 43178,
+  "updated_at": "2026-08-25T15:07:39.797803+00:00",
+  "self_revision": "2187ce41aabd26d3a2344a9c64b6a767497832a2",
   "poll_seconds": 15,
   "self_update_seconds": 60,
   "command_timeout_default": 900,
@@ -22,7 +22,6 @@
   "control_branch": "agent-control",
   "default_branch": "main",
   "execution_model": "multi_repository_worker",
-  "worker_pid": 73409,
-  "supervisor_pid": 67414,
-  "last_task_id": "20260825-local-agent-hot-path-log-audit-photomaps"
+  "worker_pid": 43178,
+  "supervisor_pid": 67414
 }
