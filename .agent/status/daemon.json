@@ -1,9 +1,9 @@
 {
   "version": 1,
   "daemon_version": "4.9.5",
-  "state": "idle",
-  "pid": 68248,
-  "updated_at": "2026-08-25T12:03:32.191905+00:00",
+  "state": "running",
+  "pid": 71463,
+  "updated_at": "2026-08-25T12:07:53.169033+00:00",
   "self_revision": "673e1082747f604b6bb62a3a882e9130092ba650",
   "poll_seconds": 15,
   "self_update_seconds": 60,
@@ -14,15 +14,7 @@
   "task_timeout_default": 1800,
   "task_timeout_max": 21600,
   "memory_limit_mb_default": 4096,
-  "current_task_id": null,
-  "current_attempt_id": null,
-  "current_task_digest": null,
-  "repository_id": "photomaps",
-  "repository": "MichalMatu/PhotoMaps",
-  "control_branch": "agent-control",
-  "default_branch": "main",
-  "execution_model": "multi_repository_worker",
-  "worker_pid": 68248,
-  "supervisor_pid": 67414,
-  "last_task_id": "20260825-adaptive-final-hot2"
+  "current_task_id": "20260825-local-agent-git-poll-benchmark",
+  "current_attempt_id": "e6d46c502afd88148bbad03b",
+  "current_task_digest": "570b4895b659a4aa01474247dc23b48ea3613231eb9de5e97a0e990c6584f9ea"
 }
