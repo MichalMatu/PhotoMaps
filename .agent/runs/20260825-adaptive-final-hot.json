@@ -1,13 +1,12 @@
 {
-  "event": "task_finished",
-  "task_id": "20260825-adaptive-final-hot",
-  "task_digest": "741c367de760494d08eb3a759f68ae936bf687da61e1947fcc5089e5f335988b",
+  "event": "result_published",
   "status": "done",
   "failure_reason": null,
-  "finished_at": "2026-08-25T12:02:41.840598+00:00",
   "attempt_id": "20b02b20a6559b9f8a8fd822",
+  "task_digest": "741c367de760494d08eb3a759f68ae936bf687da61e1947fcc5089e5f335988b",
+  "finished_at": "2026-08-25T12:02:41.840598+00:00",
+  "updated_at": "2026-08-25T12:02:51.101079+00:00",
+  "task_id": "20260825-adaptive-final-hot",
   "daemon_version": "4.9.5",
-  "daemon_pid": 67258,
-  "updated_at": "2026-08-25T12:02:42.519204+00:00",
   "pid": 67258
 }
