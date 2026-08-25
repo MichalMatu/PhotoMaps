@@ -1,0 +1,57 @@
+{
+  "id": "20260825-migrate-litegraph-workspace-v2",
+  "status": "done",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "started_at": "2026-08-25T11:09:37.024771+00:00",
+  "command_timeout": 300,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail\nHOME_DIR=\"$HOME\"\nREG=\"$HOME_DIR/Library/Application Support/local-agent/repositories.json\"\nBACKUP=\"$HOME_DIR/Library/Application Support/local-agent/repositories.json.pre-litegraph-layout-20260825\"\nOLD_ROOT=\"$HOME_DIR/agent-workspace\"\nNEW_ROOT=\"$OLD_ROOT/repos/litegraph\"\nOLD_WORK=\"$OLD_ROOT/work\"\nOLD_CONTROL=\"$OLD_ROOT/control\"\nOLD_CHECKPOINTS=\"$OLD_ROOT/checkpoints\"\nNEW_WORK=\"$NEW_ROOT/work\"\nNEW_CONTROL=\"$NEW_ROOT/control\"\nNEW_CHECKPOINTS=\"$NEW_ROOT/checkpoints\"\n\npython3 - <<'PY'\nimport json\nfrom pathlib import Path\nhome = Path.home()\nreg = home / \"Library\" / \"Application Support\" / \"local-agent\" / \"repositories.json\"\npayload = json.loads(reg.read_text())\nrepos = payload.get(\"repositories\", [])\nlg = [r for r in repos if r.get(\"id\") == \"litegraph\"]\nassert len(lg) == 1, f\"expected one litegraph entry, got {len(lg)}\"\nassert lg[0].get(\"repository\") == \"MichalMatu/esp32s3_LiteGraph\"\nassert lg[0].get(\"legacy_workspace\") is True, f\"unexpected legacy flag: {lg[0].get('legacy_workspace')!r}\"\nfor p in [\n    home / \"agent-workspace\" / \"work\",\n    home / \"agent-workspace\" / \"control\",\n    home / \"agent-workspace\" / \"checkpoints\",\n]:\n    assert p.exists(), f\"missing source: {p}\"\nassert not (home / \"agent-workspace\" / \"repos\" / \"litegraph\").exists(), \"destination already exists\"\nPY\n\ngit -C \"$OLD_WORK\" diff --quiet\ngit -C \"$OLD_WORK\" diff --cached --quiet\ngit -C \"$OLD_CONTROL\" diff --quiet\ngit -C \"$OLD_CONTROL\" diff --cached --quiet\n\ncp -p \"$REG\" \"$BACKUP\"\nmkdir -p \"$NEW_ROOT\"\nMOVED_WORK=0\nMOVED_CONTROL=0\nMOVED_CHECKPOINTS=0\nREG_CHANGED=0\n\nrollback() {\n  rc=$?\n  if [ \"$rc\" -eq 0 ]; then\n    return\n  fi\n  echo \"migration failed rc=$rc; rolling back\" >&2\n  if [ \"$REG_CHANGED\" -eq 1 ] && [ -f \"$BACKUP\" ]; then\n    cp -p \"$BACKUP\" \"$REG\" || true\n  fi\n  if [ \"$MOVED_CONTROL\" -eq 1 ] && [ -e \"$NEW_CONTROL\" ] && [ ! -e \"$OLD_CONTROL\" ]; then\n    mv \"$NEW_CONTROL\" \"$OLD_CONTROL\" || true\n  fi\n  if [ \"$MOVED_CHECKPOINTS\" -eq 1 ] && [ -e \"$NEW_CHECKPOINTS\" ] && [ ! -e \"$OLD_CHECKPOINTS\" ]; then\n    mv \"$NEW_CHECKPOINTS\" \"$OLD_CHECKPOINTS\" || true\n  fi\n  if [ \"$MOVED_WORK\" -eq 1 ] && [ -e \"$NEW_WORK\" ] && [ ! -e \"$OLD_WORK\" ]; then\n    mv \"$NEW_WORK\" \"$OLD_WORK\" || true\n  fi\n  rmdir \"$NEW_ROOT\" 2>/dev/null || true\n  exit \"$rc\"\n}\ntrap rollback EXIT\n\nmv \"$OLD_WORK\" \"$NEW_WORK\"\nMOVED_WORK=1\nmv \"$OLD_CHECKPOINTS\" \"$NEW_CHECKPOINTS\"\nMOVED_CHECKPOINTS=1\nmv \"$OLD_CONTROL\" \"$NEW_CONTROL\"\nMOVED_CONTROL=1\n\npython3 - <<'PY'\nimport json, os, tempfile\nfrom pathlib import Path\nhome = Path.home()\nreg = home / \"Library\" / \"Application Support\" / \"local-agent\" / \"repositories.json\"\npayload = json.loads(reg.read_text())\nfor item in payload[\"repositories\"]:\n    if item.get(\"id\") == \"litegraph\":\n        if item.get(\"legacy_workspace\") is not True:\n            raise SystemExit(\"litegraph legacy_workspace changed during migration\")\n        item.pop(\"legacy_workspace\", None)\n        break\nelse:\n    raise SystemExit(\"litegraph registry entry missing\")\ntext = json.dumps(payload, indent=2, ensure_ascii=False) + \"\\n\"\nfd, tmp = tempfile.mkstemp(prefix=\"repositories.\", suffix=\".tmp\", dir=reg.parent)\ntry:\n    with os.fdopen(fd, \"w\", encoding=\"utf-8\") as f:\n        f.write(text)\n        f.flush()\n        os.fsync(f.fileno())\n    os.replace(tmp, reg)\nfinally:\n    try:\n        os.unlink(tmp)\n    except FileNotFoundError:\n        pass\nPY\nREG_CHANGED=1\n\ncd \"$HOME_DIR/local-agent\"\npython3 agent_repo_admin.py --registry \"$REG\" validate --repository-id litegraph\npython3 agent_repo_admin.py --registry \"$REG\" list --repository-id litegraph\n[ -d \"$NEW_WORK/.git\" ]\n[ -d \"$NEW_CONTROL/.git\" ]\n[ -d \"$NEW_CHECKPOINTS\" ]\n[ ! -e \"$OLD_WORK\" ]\n[ ! -e \"$OLD_CONTROL\" ]\n[ ! -e \"$OLD_CHECKPOINTS\" ]\n\ntrap - EXIT\necho \"MIGRATION_OK\"\necho \"--- registry ---\"\ncat \"$REG\"\necho \"--- new paths ---\"\nfor p in \"$NEW_WORK\" \"$NEW_CONTROL\" \"$NEW_CHECKPOINTS\"; do\n  printf \"%s\\t\" \"$p\"\n  du -sh \"$p\"\ndone\necho \"backup=$BACKUP\"\n",
+      "exit_code": 0,
+      "output": "OK litegraph: MichalMatu/esp32s3_LiteGraph\nlitegraph\tMichalMatu/esp32s3_LiteGraph\tcontrol=/Users/michal/agent-workspace/repos/litegraph/control\twork=/Users/michal/agent-workspace/repos/litegraph/work\nMIGRATION_OK\n--- registry ---\n{\n  \"version\": 1,\n  \"repositories\": [\n    {\n      \"id\": \"litegraph\",\n      \"repository\": \"MichalMatu/esp32s3_LiteGraph\"\n    },\n    {\n      \"id\": \"growbox-ml-controller\",\n      \"repository\": \"MichalMatu/growbox-ml-controller\",\n      \"default_branch\": \"main\"\n    },\n    {\n      \"id\": \"photomaps\",\n      \"repository\": \"MichalMatu/PhotoMaps\",\n      \"default_branch\": \"main\"\n    }\n  ]\n}\n--- new paths ---\n/Users/michal/agent-workspace/repos/litegraph/work\t196M\t/Users/michal/agent-workspace/repos/litegraph/work\n/Users/michal/agent-workspace/repos/litegraph/control\t 28M\t/Users/michal/agent-workspace/repos/litegraph/control\n/Users/michal/agent-workspace/repos/litegraph/checkpoints\t664K\t/Users/michal/agent-workspace/repos/litegraph/checkpoints\nbackup=/Users/michal/Library/Application Support/local-agent/repositories.json.pre-litegraph-layout-20260825\n",
+      "elapsed_seconds": 2.743,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 1024,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 4.48,
+      "current_rss_mb": 4.48,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 2.743
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.258
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.213
+  },
+  "finished_at": "2026-08-25T11:09:42.450355+00:00",
+  "task_digest": "89baa977d9c4827aed8ea941a548757e32a6eb3acc1150c3435668ccd12c369d",
+  "idle_timeout": 120,
+  "task_timeout": 900,
+  "memory_limit_mb": 1024,
+  "attempt_id": "26428ebbcb4293c0e7cf21d3",
+  "daemon_version": "4.9.3"
+}
