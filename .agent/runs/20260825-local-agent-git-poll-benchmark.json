@@ -1,13 +1,12 @@
 {
-  "event": "task_finished",
-  "task_id": "20260825-local-agent-git-poll-benchmark",
-  "task_digest": "570b4895b659a4aa01474247dc23b48ea3613231eb9de5e97a0e990c6584f9ea",
+  "event": "result_published",
   "status": "done",
   "failure_reason": null,
-  "finished_at": "2026-08-25T12:08:13.975862+00:00",
   "attempt_id": "e6d46c502afd88148bbad03b",
+  "task_digest": "570b4895b659a4aa01474247dc23b48ea3613231eb9de5e97a0e990c6584f9ea",
+  "finished_at": "2026-08-25T12:08:13.975862+00:00",
+  "updated_at": "2026-08-25T12:08:22.550818+00:00",
+  "task_id": "20260825-local-agent-git-poll-benchmark",
   "daemon_version": "4.9.5",
-  "daemon_pid": 71463,
-  "updated_at": "2026-08-25T12:08:14.410979+00:00",
   "pid": 71463
 }
