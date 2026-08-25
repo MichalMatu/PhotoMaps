@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "daemon_version": "4.8.0",
-  "state": "idle",
-  "pid": 46349,
-  "updated_at": "2026-08-25T09:27:08.900317+00:00",
-  "self_revision": "2cc8eba6bb6afb71782639540aad420449297a5f",
+  "daemon_version": "4.9.3",
+  "state": "running",
+  "pid": 23934,
+  "updated_at": "2026-08-25T11:09:33.052176+00:00",
+  "self_revision": "d0e394756b03b4482777e5f5a3389111de1f4755",
   "poll_seconds": 15,
   "self_update_seconds": 60,
   "command_timeout_default": 900,
@@ -14,14 +14,7 @@
   "task_timeout_default": 1800,
   "task_timeout_max": 21600,
   "memory_limit_mb_default": 4096,
-  "current_task_id": null,
-  "current_attempt_id": null,
-  "current_task_digest": null,
-  "repository_id": "photomaps",
-  "repository": "MichalMatu/PhotoMaps",
-  "control_branch": "agent-control",
-  "default_branch": "main",
-  "execution_model": "multi_repository_worker",
-  "worker_pid": 46349,
-  "supervisor_pid": 67414
+  "current_task_id": "20260825-migrate-litegraph-workspace-v2",
+  "current_attempt_id": "26428ebbcb4293c0e7cf21d3",
+  "current_task_digest": "89baa977d9c4827aed8ea941a548757e32a6eb3acc1150c3435668ccd12c369d"
 }
