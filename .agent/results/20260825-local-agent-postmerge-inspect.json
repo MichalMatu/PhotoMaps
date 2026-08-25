@@ -1,0 +1,57 @@
+{
+  "id": "20260825-local-agent-postmerge-inspect",
+  "status": "done",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "started_at": "2026-08-25T12:01:32.019589+00:00",
+  "command_timeout": 120,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail; echo LOCAL_HEAD=$(git -C \"$HOME/local-agent\" rev-parse HEAD); echo LOCAL_BRANCH=$(git -C \"$HOME/local-agent\" branch --show-current); echo LOCAL_STATUS; git -C \"$HOME/local-agent\" status --short; echo REMOTE_MAIN=$(git -C \"$HOME/local-agent\" rev-parse origin/main); echo LOG; tail -n 100 \"$HOME/Library/Logs/local-agent.log\" | grep -E 'self-update|supervisor 4.9.5 starting|adaptive polling' | tail -n 40 || true",
+      "exit_code": 0,
+      "output": "LOCAL_HEAD=673e1082747f604b6bb62a3a882e9130092ba650\nLOCAL_BRANCH=main\nLOCAL_STATUS\nREMOTE_MAIN=673e1082747f604b6bb62a3a882e9130092ba650\nLOG\n[2026-08-25T11:56:59.964337+00:00] [multi-repo] adaptive polling repository=litegraph tier=hot interval=2s\n[2026-08-25T11:59:03.647501+00:00] [multi-repo] adaptive polling repository=litegraph tier=idle\n[2026-08-25T11:59:37.879126+00:00] self-update available f28d850bd -> 673e10827\n[2026-08-25T12:01:08.740387+00:00] self-update installed 673e10827\n[2026-08-25T12:01:14.483557+00:00] [multi-repo] supervisor 4.9.5 starting; global execution concurrency=1 control_repository=litegraph; adaptive_polling=hot:2s/30s warm:5s/120s idle:15s\n[2026-08-25T12:01:34.013605+00:00] exec: set -euo pipefail; echo LOCAL_HEAD=$(git -C \"$HOME/local-agent\" rev-parse HEAD); echo LOCAL_BRANCH=$(git -C \"$HOME/local-agent\" branch --show-current); echo LOCAL_STATUS; git -C \"$HOME/local-agent\" status --short; echo REMOTE_MAIN=$(git -C \"$HOME/local-agent\" rev-parse origin/main); echo LOG; tail -n 100 \"$HOME/Library/Logs/local-agent.log\" | grep -E 'self-update|supervisor 4.9.5 starting|adaptive polling' | tail -n 40 || true\n",
+      "elapsed_seconds": 0.705,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 512,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 4.27,
+      "current_rss_mb": 4.27,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 0.705
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.212
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.198
+  },
+  "finished_at": "2026-08-25T12:01:35.129147+00:00",
+  "task_digest": "f8196bd8addc2c9a1ff679af2a9606c55e80cd70f41c0d1432f3d1ddc24a1a7f",
+  "idle_timeout": 60,
+  "task_timeout": 300,
+  "memory_limit_mb": 512,
+  "attempt_id": "508658a349c01486ec1b2f4a",
+  "daemon_version": "4.9.5"
+}
