@@ -1,13 +1,12 @@
 {
-  "event": "task_finished",
-  "task_id": "20260825-local-agent-postmerge-inspect",
-  "task_digest": "f8196bd8addc2c9a1ff679af2a9606c55e80cd70f41c0d1432f3d1ddc24a1a7f",
+  "event": "result_published",
   "status": "done",
   "failure_reason": null,
-  "finished_at": "2026-08-25T12:01:35.129147+00:00",
   "attempt_id": "508658a349c01486ec1b2f4a",
+  "task_digest": "f8196bd8addc2c9a1ff679af2a9606c55e80cd70f41c0d1432f3d1ddc24a1a7f",
+  "finished_at": "2026-08-25T12:01:35.129147+00:00",
+  "updated_at": "2026-08-25T12:01:43.208286+00:00",
+  "task_id": "20260825-local-agent-postmerge-inspect",
   "daemon_version": "4.9.5",
-  "daemon_pid": 66150,
-  "updated_at": "2026-08-25T12:01:35.696494+00:00",
   "pid": 66150
 }
