@@ -1,9 +1,9 @@
 {
   "version": 1,
   "daemon_version": "4.9.5",
-  "state": "idle",
-  "pid": 66150,
-  "updated_at": "2026-08-25T12:01:50.737752+00:00",
+  "state": "running",
+  "pid": 67258,
+  "updated_at": "2026-08-25T12:02:33.519585+00:00",
   "self_revision": "673e1082747f604b6bb62a3a882e9130092ba650",
   "poll_seconds": 15,
   "self_update_seconds": 60,
@@ -14,15 +14,7 @@
   "task_timeout_default": 1800,
   "task_timeout_max": 21600,
   "memory_limit_mb_default": 4096,
-  "current_task_id": null,
-  "current_attempt_id": null,
-  "current_task_digest": null,
-  "repository_id": "photomaps",
-  "repository": "MichalMatu/PhotoMaps",
-  "control_branch": "agent-control",
-  "default_branch": "main",
-  "execution_model": "multi_repository_worker",
-  "worker_pid": 66150,
-  "supervisor_pid": 67414,
-  "last_task_id": "20260825-local-agent-postmerge-inspect"
+  "current_task_id": "20260825-adaptive-final-hot",
+  "current_attempt_id": "20b02b20a6559b9f8a8fd822",
+  "current_task_digest": "741c367de760494d08eb3a759f68ae936bf687da61e1947fcc5089e5f335988b"
 }
