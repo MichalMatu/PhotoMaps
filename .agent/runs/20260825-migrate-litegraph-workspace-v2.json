@@ -1,13 +1,12 @@
 {
-  "event": "task_finished",
-  "task_id": "20260825-migrate-litegraph-workspace-v2",
-  "task_digest": "89baa977d9c4827aed8ea941a548757e32a6eb3acc1150c3435668ccd12c369d",
+  "event": "result_published",
   "status": "done",
   "failure_reason": null,
-  "finished_at": "2026-08-25T11:09:42.450355+00:00",
   "attempt_id": "26428ebbcb4293c0e7cf21d3",
+  "task_digest": "89baa977d9c4827aed8ea941a548757e32a6eb3acc1150c3435668ccd12c369d",
+  "finished_at": "2026-08-25T11:09:42.450355+00:00",
+  "updated_at": "2026-08-25T11:09:53.181904+00:00",
+  "task_id": "20260825-migrate-litegraph-workspace-v2",
   "daemon_version": "4.9.3",
-  "daemon_pid": 23934,
-  "updated_at": "2026-08-25T11:09:43.119218+00:00",
   "pid": 23934
 }
