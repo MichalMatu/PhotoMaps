@@ -1,0 +1,9 @@
+{
+  "id": "20260825-migrate-litegraph-workspace",
+  "status": "failed",
+  "failure_reason": "invalid_task_file",
+  "started_at": null,
+  "finished_at": "2026-08-25T11:08:10.024801+00:00",
+  "daemon_version": "4.9.3",
+  "error": "JSONDecodeError: Expecting ',' delimiter: line 11 column 1049 (char 1284)"
+}
