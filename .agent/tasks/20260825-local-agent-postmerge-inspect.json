@@ -1,0 +1,13 @@
+{
+  "id": "20260825-local-agent-postmerge-inspect",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "command_timeout": 120,
+  "idle_timeout": 60,
+  "task_timeout": 300,
+  "memory_limit_mb": 512,
+  "commands": [
+    "set -euo pipefail; echo LOCAL_HEAD=$(git -C \"$HOME/local-agent\" rev-parse HEAD); echo LOCAL_BRANCH=$(git -C \"$HOME/local-agent\" branch --show-current); echo LOCAL_STATUS; git -C \"$HOME/local-agent\" status --short; echo REMOTE_MAIN=$(git -C \"$HOME/local-agent\" rev-parse origin/main); echo LOG; tail -n 100 \"$HOME/Library/Logs/local-agent.log\" | grep -E 'self-update|supervisor 4.9.5 starting|adaptive polling' | tail -n 40 || true"
+  ]
+}
