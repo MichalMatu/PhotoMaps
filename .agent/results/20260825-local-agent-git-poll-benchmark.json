@@ -1,0 +1,57 @@
+{
+  "id": "20260825-local-agent-git-poll-benchmark",
+  "status": "done",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "started_at": "2026-08-25T12:07:56.889079+00:00",
+  "command_timeout": 300,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail; C=\"$HOME/agent-workspace/repos/growbox-ml-controller/control\"; echo CONTROL=$C; echo REMOTE=$(git -C \"$C\" remote get-url origin); echo '--- ssh config ---'; (ssh -G github.com 2>/dev/null | grep -E '^(hostname|port|controlmaster|controlpersist|controlpath) ' || true); echo '--- benchmark default ---'; python3 - <<'PY'\nimport subprocess,time,statistics,os\nfrom pathlib import Path\nc=Path.home()/\"agent-workspace/repos/growbox-ml-controller/control\"\ncmds={\n 'ls_remote':['git','ls-remote','origin','refs/heads/agent-control'],\n 'fetch_depth1':['git','fetch','--quiet','--no-tags','--depth','1','origin','agent-control'],\n 'pull_depth256':['git','pull','--rebase','--depth','256','--no-tags','origin','agent-control'],\n}\nfor name,cmd in cmds.items():\n    vals=[]\n    for i in range(3):\n        t=time.monotonic(); p=subprocess.run(cmd,cwd=c,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT); dt=time.monotonic()-t\n        vals.append(dt); print(f'{name}[{i+1}] exit={p.returncode} sec={dt:.3f} out={p.stdout.strip()[:120]}')\n    print(f'{name} median={statistics.median(vals):.3f} min={min(vals):.3f} max={max(vals):.3f}')\nPY\n echo '--- benchmark ssh multiplex ---'; SOCKDIR=\"$HOME/Library/Application Support/local-agent/ssh-control\"; mkdir -p \"$SOCKDIR\"; export GIT_SSH_COMMAND=\"ssh -o ControlMaster=auto -o ControlPersist=120 -o ControlPath=$SOCKDIR/%C\"; python3 - <<'PY'\nimport subprocess,time,statistics,os\nfrom pathlib import Path\nc=Path.home()/\"agent-workspace/repos/growbox-ml-controller/control\"\nenv=os.environ.copy()\ncmds={\n 'mux_ls_remote':['git','ls-remote','origin','refs/heads/agent-control'],\n 'mux_fetch_depth1':['git','fetch','--quiet','--no-tags','--depth','1','origin','agent-control'],\n}\nfor name,cmd in cmds.items():\n    vals=[]\n    for i in range(4):\n        t=time.monotonic(); p=subprocess.run(cmd,cwd=c,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,env=env); dt=time.monotonic()-t\n        vals.append(dt); print(f'{name}[{i+1}] exit={p.returncode} sec={dt:.3f} out={p.stdout.strip()[:120]}')\n    print(f'{name} median={statistics.median(vals):.3f} min={min(vals):.3f} max={max(vals):.3f}')\nPY\n echo BENCHMARK_OK",
+      "exit_code": 0,
+      "output": "CONTROL=/Users/michal/agent-workspace/repos/growbox-ml-controller/control\nREMOTE=https://github.com/MichalMatu/growbox-ml-controller.git\n--- ssh config ---\nhostname github.com\nport 22\ncontrolmaster false\ncontrolpersist no\n--- benchmark default ---\nls_remote[1] exit=0 sec=0.681 out=909c37252ef0a22a930917f9065252ac277d51aa\trefs/heads/agent-control\nls_remote[2] exit=0 sec=0.583 out=909c37252ef0a22a930917f9065252ac277d51aa\trefs/heads/agent-control\nls_remote[3] exit=0 sec=0.633 out=909c37252ef0a22a930917f9065252ac277d51aa\trefs/heads/agent-control\nls_remote median=0.633 min=0.583 max=0.681\nfetch_depth1[1] exit=0 sec=0.921 out=\nfetch_depth1[2] exit=0 sec=0.948 out=\nfetch_depth1[3] exit=0 sec=0.921 out=\nfetch_depth1 median=0.921 min=0.921 max=0.948\npull_depth256[1] exit=0 sec=1.310 out=From https://github.com/MichalMatu/growbox-ml-controller\n * branch            agent-control -> FETCH_HEAD\nAlready up to \npull_depth256[2] exit=0 sec=0.884 out=From https://github.com/MichalMatu/growbox-ml-controller\n * branch            agent-control -> FETCH_HEAD\nAlready up to \npull_depth256[3] exit=0 sec=0.944 out=From https://github.com/MichalMatu/growbox-ml-controller\n * branch            agent-control -> FETCH_HEAD\nAlready up to \npull_depth256 median=0.944 min=0.884 max=1.310\n--- benchmark ssh multiplex ---\nmux_ls_remote[1] exit=0 sec=0.574 out=909c37252ef0a22a930917f9065252ac277d51aa\trefs/heads/agent-control\nmux_ls_remote[2] exit=0 sec=0.613 out=909c37252ef0a22a930917f9065252ac277d51aa\trefs/heads/agent-control\nmux_ls_remote[3] exit=0 sec=0.620 out=909c37252ef0a22a930917f9065252ac277d51aa\trefs/heads/agent-control\nmux_ls_remote[4] exit=0 sec=0.583 out=909c37252ef0a22a930917f9065252ac277d51aa\trefs/heads/agent-control\nmux_ls_remote median=0.598 min=0.574 max=0.620\nmux_fetch_depth1[1] exit=0 sec=0.880 out=\nmux_fetch_depth1[2] exit=0 sec=0.902 out=\nmux_fetch_depth1[3] exit=0 sec=0.858 out=\nmux_fetch_depth1[4] exit=0 sec=0.979 out=\nmux_fetch_depth1 median=0.891 min=0.858 max=0.979\nBENCHMARK_OK\n",
+      "elapsed_seconds": 14.717,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 512,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 35.02,
+      "current_rss_mb": 35.02,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 14.717
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.21
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.157
+  },
+  "finished_at": "2026-08-25T12:08:13.975862+00:00",
+  "task_digest": "570b4895b659a4aa01474247dc23b48ea3613231eb9de5e97a0e990c6584f9ea",
+  "idle_timeout": 120,
+  "task_timeout": 900,
+  "memory_limit_mb": 512,
+  "attempt_id": "e6d46c502afd88148bbad03b",
+  "daemon_version": "4.9.5"
+}
