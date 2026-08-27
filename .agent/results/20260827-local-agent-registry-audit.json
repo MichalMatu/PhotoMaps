@@ -1,0 +1,58 @@
+{
+  "id": "20260827-local-agent-registry-audit",
+  "status": "done",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "started_at": "2026-08-27T10:22:55.387384+00:00",
+  "command_timeout": 120,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail\npython3 \"$HOME/local-agent/agent_repo_admin.py\" list\npython3 \"$HOME/local-agent/agent_repo_admin.py\" validate",
+      "exit_code": 0,
+      "output": "litegraph\tMichalMatu/esp32s3_LiteGraph\tcontrol=/Users/michal/agent-workspace/repos/litegraph/control\twork=/Users/michal/agent-workspace/repos/litegraph/work\ngrowbox-ml-controller\tMichalMatu/growbox-ml-controller\tcontrol=/Users/michal/agent-workspace/repos/growbox-ml-controller/control\twork=/Users/michal/agent-workspace/repos/growbox-ml-controller/work\nphotomaps\tMichalMatu/PhotoMaps\tcontrol=/Users/michal/agent-workspace/repos/photomaps/control\twork=/Users/michal/agent-workspace/repos/photomaps/work\nOK litegraph: MichalMatu/esp32s3_LiteGraph\nOK growbox-ml-controller: MichalMatu/growbox-ml-controller\nOK photomaps: MichalMatu/PhotoMaps\n",
+      "elapsed_seconds": 2.464,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 256,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 2.11,
+      "current_rss_mb": 2.11,
+      "stage_name": "inspect-local-agent-registry",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "stage_timeout": 120
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "inspect-local-agent-registry",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 2.464
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.159
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.204
+  },
+  "finished_at": "2026-08-27T10:23:01.128686+00:00",
+  "task_digest": "427dfb674f3fc3f13f560e572ba22955d13a410ea5204f5dcc841c4307af99c1",
+  "idle_timeout": 60,
+  "task_timeout": 300,
+  "memory_limit_mb": 256,
+  "attempt_id": "70e5dba98672a90f8980a401",
+  "daemon_version": "4.10.0"
+}
