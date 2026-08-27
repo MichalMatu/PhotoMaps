@@ -1,0 +1,59 @@
+{
+  "id": "20260827-migrate-photomaps-to-matrixhub",
+  "status": "failed",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "started_at": "2026-08-27T12:56:38.593063+00:00",
+  "command_timeout": 300,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail\nREG=\"$HOME/Library/Application Support/local-agent/repositories.json\"\nBACKUP=\"$HOME/Library/Application Support/local-agent/repositories.json.pre-matrixhub-20260827\"\nADMIN=\"$HOME/local-agent/agent_repo_admin.py\"\n[ -f \"$REG\" ]\ncp -p \"$REG\" \"$BACKUP\"\nrollback() {\n  rc=$?\n  if [ \"$rc\" -ne 0 ]; then\n    echo \"migration failed rc=$rc; restoring registry\" >&2\n    cp -p \"$BACKUP\" \"$REG\" || true\n  fi\n  exit \"$rc\"\n}\ntrap rollback EXIT\n\npython3 - <<'PY'\nimport json, os, tempfile\nfrom pathlib import Path\nreg = Path.home() / \"Library\" / \"Application Support\" / \"local-agent\" / \"repositories.json\"\npayload = json.loads(reg.read_text(encoding=\"utf-8\"))\nif payload.get(\"version\") != 1:\n    raise SystemExit(f\"unsupported registry version: {payload.get('version')!r}\")\nrepos = payload.get(\"repositories\")\nif not isinstance(repos, list):\n    raise SystemExit(\"registry repositories must be a list\")\nphoto = [r for r in repos if r.get(\"id\") == \"photomaps\"]\nif len(photo) != 1 or photo[0].get(\"repository\") != \"MichalMatu/PhotoMaps\":\n    raise SystemExit(f\"expected exact photomaps entry, got {photo!r}\")\nmatrix = [r for r in repos if r.get(\"id\") == \"matrixhub\"]\nif matrix:\n    if len(matrix) != 1 or matrix[0].get(\"repository\") != \"MichalMatu/MatrixHub\":\n        raise SystemExit(f\"conflicting matrixhub entry: {matrix!r}\")\nelse:\n    repos.append({\"id\": \"matrixhub\", \"repository\": \"MichalMatu/MatrixHub\"})\ntext = json.dumps(payload, indent=2, ensure_ascii=False) + \"\\n\"\nfd, tmp = tempfile.mkstemp(prefix=\"repositories.\", suffix=\".tmp\", dir=reg.parent)\ntry:\n    with os.fdopen(fd, \"w\", encoding=\"utf-8\") as f:\n        f.write(text)\n        f.flush()\n        os.fsync(f.fileno())\n    os.replace(tmp, reg)\nfinally:\n    try:\n        os.unlink(tmp)\n    except FileNotFoundError:\n        pass\nPY\n\npython3 \"$ADMIN\" --registry \"$REG\" validate\npython3 \"$ADMIN\" --registry \"$REG\" provision --repository-id matrixhub\npython3 \"$ADMIN\" --registry \"$REG\" validate --repository-id matrixhub\n\nCONTROL=\"$HOME/agent-workspace/repos/matrixhub/control\"\nWORK=\"$HOME/agent-workspace/repos/matrixhub/work\"\n[ \"$(git -C \"$CONTROL\" branch --show-current)\" = \"agent-control\" ]\n[ \"$(git -C \"$WORK\" branch --show-current)\" = \"main\" ]\ngit -C \"$CONTROL\" remote get-url origin\ngit -C \"$WORK\" remote get-url origin\n\npython3 - <<'PY'\nimport json, os, tempfile\nfrom pathlib import Path\nreg = Path.home() / \"Library\" / \"Application Support\" / \"local-agent\" / \"repositories.json\"\npayload = json.loads(reg.read_text(encoding=\"utf-8\"))\nrepos = payload[\"repositories\"]\nmatrix = [r for r in repos if r.get(\"id\") == \"matrixhub\"]\nif len(matrix) != 1 or matrix[0].get(\"repository\") != \"MichalMatu/MatrixHub\":\n    raise SystemExit(f\"matrixhub entry missing or invalid: {matrix!r}\")\nphoto = [r for r in repos if r.get(\"id\") == \"photomaps\"]\nif len(photo) != 1 or photo[0].get(\"repository\") != \"MichalMatu/PhotoMaps\":\n    raise SystemExit(f\"photomaps entry changed unexpectedly: {photo!r}\")\npayload[\"repositories\"] = [r for r in repos if r.get(\"id\") != \"photomaps\"]\ntext = json.dumps(payload, indent=2, ensure_ascii=False) + \"\\n\"\nfd, tmp = tempfile.mkstemp(prefix=\"repositories.\", suffix=\".tmp\", dir=reg.parent)\ntry:\n    with os.fdopen(fd, \"w\", encoding=\"utf-8\") as f:\n        f.write(text)\n        f.flush()\n        os.fsync(f.fileno())\n    os.replace(tmp, reg)\nfinally:\n    try:\n        os.unlink(tmp)\n    except FileNotFoundError:\n        pass\nPY\n\npython3 \"$ADMIN\" --registry \"$REG\" validate\npython3 \"$ADMIN\" --registry \"$REG\" list\ntrap - EXIT\necho \"MIGRATION_OK\"\necho \"backup=$BACKUP\"",
+      "exit_code": 1,
+      "output": "OK litegraph: MichalMatu/esp32s3_LiteGraph\nOK growbox-ml-controller: MichalMatu/growbox-ml-controller\nOK photomaps: MichalMatu/PhotoMaps\nFAIL matrixhub: RuntimeError: control checkout missing: /Users/michal/agent-workspace/repos/matrixhub/control\nmigration failed rc=1; restoring registry\n",
+      "elapsed_seconds": 2.252,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 1024,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 1.98,
+      "current_rss_mb": 1.98,
+      "stage_name": "migrate-local-agent-registry",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "stage_timeout": 600
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "migrate-local-agent-registry",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "failed",
+      "elapsed_seconds": 2.252
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.129
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.271
+  },
+  "failure_reason": "command_failed",
+  "finished_at": "2026-08-27T12:56:44.452348+00:00",
+  "task_digest": "9c0a6583f45e9e9df5cd7d882be81973c0bec9c6292a309b0e4f95b3484c804e",
+  "idle_timeout": 120,
+  "task_timeout": 900,
+  "memory_limit_mb": 1024,
+  "attempt_id": "515bcd70625812059977fd85",
+  "daemon_version": "4.10.0"
+}
