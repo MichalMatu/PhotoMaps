@@ -1,0 +1,17 @@
+{
+  "id": "20260827-local-agent-registry-audit",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "command_timeout": 120,
+  "idle_timeout": 60,
+  "task_timeout": 300,
+  "memory_limit_mb": 256,
+  "steps": [
+    {
+      "name": "inspect-local-agent-registry",
+      "timeout": 120,
+      "command": "set -euo pipefail\npython3 \"$HOME/local-agent/agent_repo_admin.py\" list\npython3 \"$HOME/local-agent/agent_repo_admin.py\" validate"
+    }
+  ]
+}
