@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260827-migrate-photomaps-to-matrixhub",
+  "task_digest": "9c0a6583f45e9e9df5cd7d882be81973c0bec9c6292a309b0e4f95b3484c804e",
+  "idle_timeout": 120,
+  "task_timeout": 900,
+  "memory_limit_mb": 1024,
+  "started_at": "2026-08-27T12:56:38.592953+00:00",
+  "attempt_id": "515bcd70625812059977fd85",
+  "daemon_version": "4.10.0",
+  "daemon_pid": 23940,
+  "updated_at": "2026-08-27T12:56:38.593144+00:00",
+  "pid": 23940
+}
