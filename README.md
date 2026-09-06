@@ -10,9 +10,14 @@ PhotoMaps jest zarejestrowany jako `photomaps` w wielorepozytoryjnym workflow [`
 
 Dokumentacja celowo nie przypina tej integracji do numeru wersji `local-agent` — aktualny kontrakt wykonawczy jest utrzymywany w repozytorium agenta.
 
+## Sandbox i ChatGPT Library
+
+Software-only buildy i testy moga byc wykonywane w sandboxie ChatGPT z zaleznosciami odtwarzanymi offline z ChatGPT Library. GitHub Actions generuje snapshot zrodel po dokladnym SHA oraz paczke Python/npm/Playwright. Szczegolowy flow, nazwy artefaktow i bootstrap sa w [docs/SANDBOX_EXECUTION_FLOW.md](docs/SANDBOX_EXECUTION_FLOW.md).
+
 ## Dokumenty
 
 - [Kierunek produktu](docs/product-direction.md)
+- [Sandbox / ChatGPT Library](docs/SANDBOX_EXECUTION_FLOW.md)
 - [Content pipeline](docs/content-pipeline.md)
 - [Opisy TTS zdjec](docs/create_tts.md)
 - [Prompt miniatur miejsc](docs/image_generation/place-thumbnails.md)
