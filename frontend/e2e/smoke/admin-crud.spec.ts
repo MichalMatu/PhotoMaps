@@ -25,15 +25,15 @@ test("admin can upload an approved place photo through UI", async ({ page, reque
 
   const photoPanelDialog = page.getByRole("dialog", { name: "Zdjęcia miejsca" });
   await expect(photoPanelDialog).toBeVisible();
-  await photoPanelDialog.getByRole("button", { name: "Dodaj zdjęcie" }).click();
+  await photoPanelDialog.getByRole("button", { name: "Dodaj zdjęcie", exact: true }).click();
   const uploadDialog = page.getByRole("dialog", { name: "Dodaj zdjęcie" });
   await expect(uploadDialog).toBeVisible();
-  await uploadDialog.getByLabel("Zdjęcie").setInputFiles({
+  await uploadDialog.getByLabel("Zdjęcie", { exact: true }).setInputFiles({
     buffer: PHOTO_BUFFER,
     mimeType: "image/jpeg",
     name: "e2e-photo.jpg",
   });
-  await uploadDialog.getByLabel("Podpis").fill(caption);
+  await uploadDialog.getByLabel("Podpis", { exact: true }).fill(caption);
   await uploadDialog.getByRole("button", { name: "Dodaj zdjęcie" }).click();
   await expect(uploadDialog).toBeHidden();
 
@@ -123,11 +123,11 @@ test("admin can create category, place and guide through UI", async ({ page, req
   await expect(categoryManagerDialog).toBeHidden();
   await expect(placeDialog.getByRole("checkbox", { name: editedCategoryLabel })).toBeChecked();
 
-  await placeDialog.getByLabel("Nazwa").fill(placeTitle);
-  await placeDialog.getByLabel("Opis").fill("Opis miejsca dodanego przez e2e");
-  await placeDialog.getByLabel("Lokalny komentarz").fill("Komentarz lokalny e2e");
-  await placeDialog.getByLabel("Priorytet redakcji").fill("1.8");
-  await placeDialog.getByLabel("Status").selectOption("published");
+  await placeDialog.getByLabel("Nazwa", { exact: true }).fill(placeTitle);
+  await placeDialog.getByLabel("Opis", { exact: true }).fill("Opis miejsca dodanego przez e2e");
+  await placeDialog.getByLabel("Lokalny komentarz", { exact: true }).fill("Komentarz lokalny e2e");
+  await placeDialog.getByLabel("Priorytet redakcji", { exact: true }).fill("1.8");
+  await placeDialog.getByLabel("Status", { exact: true }).selectOption("published");
   await placeDialog.getByRole("button", { name: "Dodaj miejsce" }).click();
   await expect(placeDialog).toBeHidden();
 
@@ -139,9 +139,9 @@ test("admin can create category, place and guide through UI", async ({ page, req
   await placeRow.getByRole("button", { name: "Edytuj" }).click();
   const editPlaceDialog = page.getByRole("dialog", { name: "Edytuj miejsce" });
   await expect(editPlaceDialog).toBeVisible();
-  await expect(editPlaceDialog.getByLabel("Status")).toHaveValue("published");
-  await expect(editPlaceDialog.getByLabel("Priorytet redakcji")).toHaveValue("1.8");
-  await editPlaceDialog.getByLabel("Nazwa").fill(editedPlaceTitle);
+  await expect(editPlaceDialog.getByLabel("Status", { exact: true })).toHaveValue("published");
+  await expect(editPlaceDialog.getByLabel("Priorytet redakcji", { exact: true })).toHaveValue("1.8");
+  await editPlaceDialog.getByLabel("Nazwa", { exact: true }).fill(editedPlaceTitle);
   await editPlaceDialog.getByRole("button", { name: "Zapisz zmiany" }).click();
   await expect(editPlaceDialog).toBeHidden();
 
