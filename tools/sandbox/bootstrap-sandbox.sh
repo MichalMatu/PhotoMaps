@@ -59,6 +59,24 @@ cp -a "$OFFLINE_DIR/npm-cache/." "$ROOT/npm-cache/"
   npm ci --offline --cache "$ROOT/npm-cache" --prefer-offline
 )
 
+# Knip 6.16 uses oxc-parser raw transfer on Node 22. That path reserves a ~6 GiB
+# ArrayBuffer and cannot run inside the current 4 GiB sandbox cgroup. Disable only
+# the experimental transfer mode in disposable node_modules; project source is untouched.
+KNIP_AST="$REPO_ROOT/frontend/node_modules/knip/dist/typescript/ast-nodes.js"
+"$ROOT/venv/bin/python" - "$KNIP_AST" <<'PY_PATCH'
+from pathlib import Path
+import sys
+
+path = Path(sys.argv[1])
+text = path.read_text()
+old = "experimentalRawTransfer: rawTransferSupported(),"
+new = "experimentalRawTransfer: false,"
+if old in text:
+    path.write_text(text.replace(old, new, 1))
+elif new not in text:
+    raise SystemExit("Unsupported Knip/oxc-parser layout; refresh sandbox bootstrap")
+PY_PATCH
+
 cat > "$ROOT/env.sh" <<ENV
 export PHOTOMAP_SANDBOX_ROOT="$ROOT"
 export PHOTOMAP_REPO_ROOT="$REPO_ROOT"
