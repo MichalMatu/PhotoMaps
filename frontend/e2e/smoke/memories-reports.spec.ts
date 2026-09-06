@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import { PHOTO_BUFFER } from "../fixtures/media";
 import { openAdminModerationSection, openStatusTab, unlockAdmin } from "../support/adminUi";
 import { clickMapMarker } from "../support/mapInteractions";
-import { createCategory, createPlace, getMapPlaces, uploadApprovedPhoto } from "../support/smokeApi";
+import { createCategory, createPlace, getMapPlaces, getPublicMapStart, uploadApprovedPhoto } from "../support/smokeApi";
 
 test("visitor can add a memory and admin can approve it through UI", async ({ page, request }) => {
   const suffix = `${Date.now()}-${test.info().workerIndex}`;
@@ -13,9 +13,10 @@ test("visitor can add a memory and admin can approve it through UI", async ({ pa
   const authorName = "Marta";
   const authorCity = "Wrocław";
   const category = await createCategory(request, suffix);
+  const mapStart = await getPublicMapStart(request);
   const place = await createPlace(request, category.id, suffix, {
-    lat: 51.12,
-    lon: 17.08,
+    lat: mapStart.lat + 0.006,
+    lon: mapStart.lon + 0.006,
     title: `E2E pamiątka ${suffix}`,
   });
   await uploadApprovedPhoto(request, place.id, `Cover e2e ${suffix}`);
@@ -49,6 +50,9 @@ test("visitor can add a memory and admin can approve it through UI", async ({ pa
   await openAdminModerationSection(page, adminTabs, /Pamiątki/);
 
   await openStatusTab(page, /Do sprawdzenia/);
+  const cityMediaGroup = page.getByRole("button", { name: "Pokaż media miasta Wrocław" });
+  await expect(cityMediaGroup).toBeVisible();
+  await cityMediaGroup.click();
   const pendingAlbum = page.locator(".admin-media-album-summary").filter({ hasText: place.title });
   await expect(pendingAlbum).toContainText("1 pamiątka");
   await pendingAlbum.click();
@@ -86,9 +90,10 @@ test("visitor can report a photo and admin can inspect, close and delete the rep
   const photoCaption = `Zdjęcie do zgłoszenia ${suffix}`;
   const reportMessage = `Opis problemu e2e ${suffix}`;
   const category = await createCategory(request, suffix);
+  const mapStart = await getPublicMapStart(request);
   const place = await createPlace(request, category.id, suffix, {
-    lat: 51.14,
-    lon: 17.02,
+    lat: mapStart.lat - 0.006,
+    lon: mapStart.lon + 0.006,
     title: `E2E zgłoszenie ${suffix}`,
   });
   await uploadApprovedPhoto(request, place.id, photoCaption);

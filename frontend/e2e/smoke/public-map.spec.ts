@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 import { clickMapMarker } from "../support/mapInteractions";
 import { expectAnimationName, expectExitPhase } from "../support/motionAssertions";
-import { createCategory, createPlace, uploadApprovedPhoto } from "../support/smokeApi";
+import { createCategory, createPlace, getPublicMapStart, uploadApprovedPhoto } from "../support/smokeApi";
 
 test("public map loads without API error", async ({ page }) => {
   await page.goto("/");
@@ -15,9 +15,10 @@ test("map motion states animate media modal and sheets", async ({ page, request 
   const suffix = `${Date.now()}-${test.info().workerIndex}`;
   const photoCaption = `Zdjęcie motion ${suffix}`;
   const category = await createCategory(request, suffix);
+  const mapStart = await getPublicMapStart(request);
   const place = await createPlace(request, category.id, suffix, {
-    lat: 51.101,
-    lon: 17.055,
+    lat: mapStart.lat + 0.006,
+    lon: mapStart.lon - 0.006,
     title: `E2E motion ${suffix}`,
   });
   await uploadApprovedPhoto(request, place.id, photoCaption);

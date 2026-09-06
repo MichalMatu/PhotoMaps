@@ -21,6 +21,12 @@ type PhotoResponse = {
   id: string;
 };
 
+type AppConfigResponse = {
+  map: {
+    fallback_center: { lat: number; lon: number };
+  };
+};
+
 type MapPlaceResponse = {
   cover_photo: { caption: string | null } | null;
   id: string;
@@ -94,6 +100,11 @@ export async function createPlace(
     }),
     201,
   );
+}
+
+export async function getPublicMapStart(request: APIRequestContext) {
+  const config = await expectJson<AppConfigResponse>(request.get(`${API_URL}/api/app-config`), 200);
+  return config.map.fallback_center;
 }
 
 export async function getMapPlaces(request: APIRequestContext, cityId: string) {
