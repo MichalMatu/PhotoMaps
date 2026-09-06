@@ -1,0 +1,230 @@
+name: Sandbox Pack
+
+on:
+  push:
+    branches:
+      - main
+      - "work/**"
+  workflow_dispatch:
+    inputs:
+      include_offline_dependencies:
+        description: "Build and upload Python/npm/Playwright offline pack"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sandbox-pack-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Record source and dependency identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .sandbox-pack/meta
+          printf '%s\n' "$GITHUB_SHA" > .sandbox-pack/meta/git-sha.txt
+          {
+            sha256sum backend/requirements.txt
+            sha256sum backend/pyproject.toml
+            sha256sum frontend/package.json
+            sha256sum frontend/package-lock.json
+            sha256sum tools/sandbox/bootstrap-sandbox.sh
+            sha256sum tools/sandbox/sandbox-doctor.sh
+            sha256sum tools/sandbox/run-sandbox-check.sh
+            printf '%s\n' 'python=3.13'
+            printf '%s\n' 'node=22'
+          } > .sandbox-pack/meta/dependency-inputs.sha256
+          sha256sum .sandbox-pack/meta/dependency-inputs.sha256 | awk '{print $1}' > .sandbox-pack/meta/dependency-key.txt
+
+      - name: Create exact source snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=.sandbox-pack/source-root
+          mkdir -p "$ROOT/.sandbox-snapshot"
+          git archive --format=tar HEAD | tar -xf - -C "$ROOT"
+          cp .sandbox-pack/meta/git-sha.txt "$ROOT/.sandbox-snapshot/git-sha.txt"
+          cp .sandbox-pack/meta/dependency-key.txt "$ROOT/.sandbox-snapshot/dependency-key.txt"
+          tar -C "$ROOT" -cf - . | zstd -T0 -10 -o "photomap-source-${GITHUB_SHA}.tar.zst"
+          sha256sum "photomap-source-${GITHUB_SHA}.tar.zst" > "photomap-source-${GITHUB_SHA}.tar.zst.sha256"
+
+      - name: Upload source snapshot
+        uses: actions/upload-artifact@v7
+        with:
+          name: photomap-source-${{ github.sha }}
+          path: |
+            photomap-source-${{ github.sha }}.tar.zst
+            photomap-source-${{ github.sha }}.tar.zst.sha256
+            .sandbox-pack/meta/git-sha.txt
+            .sandbox-pack/meta/dependency-key.txt
+            .sandbox-pack/meta/dependency-inputs.sha256
+          retention-days: 30
+          compression-level: 0
+
+      - name: Decide whether offline pack is needed
+        id: offline
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.include_offline_dependencies }}" == "true" ]] || \
+             [[ "${{ github.event_name }}" == "push" && "${{ contains(github.event.head_commit.message, '[sandbox-offline]') }}" == "true" ]]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Python 3.13
+        if: steps.offline.outputs.enabled == 'true'
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Set up Node 22
+        if: steps.offline.outputs.enabled == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Build Python wheelhouse
+        if: steps.offline.outputs.enabled == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .sandbox-pack/offline/python-wheelhouse
+          python -m pip install --upgrade pip wheel
+          python -m pip wheel \
+            --wheel-dir .sandbox-pack/offline/python-wheelhouse \
+            -r backend/requirements.txt
+
+      - name: Warm npm cache
+        if: steps.offline.outputs.enabled == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .sandbox-pack/offline/npm-cache
+          cd frontend
+          npm ci --cache "$GITHUB_WORKSPACE/.sandbox-pack/offline/npm-cache" --prefer-offline
+
+      - name: Download Playwright Chromium
+        if: steps.offline.outputs.enabled == 'true'
+        shell: bash
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.sandbox-pack/offline/ms-playwright
+        run: |
+          set -euo pipefail
+          cd frontend
+          npx playwright install chromium
+
+      - name: Validate offline install inputs
+        if: steps.offline.outputs.enabled == 'true'
+        shell: bash
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.sandbox-pack/offline/ms-playwright
+        run: |
+          set -euo pipefail
+          test -n "$(find .sandbox-pack/offline/python-wheelhouse -maxdepth 1 -type f -name '*.whl' -print -quit)"
+          test -d .sandbox-pack/offline/npm-cache/_cacache
+          test -n "$(find .sandbox-pack/offline/ms-playwright -type f \( -name chrome -o -name headless_shell \) -print -quit)"
+          mkdir -p .sandbox-pack/offline/meta
+          cp .sandbox-pack/meta/git-sha.txt .sandbox-pack/offline/meta/
+          cp .sandbox-pack/meta/dependency-key.txt .sandbox-pack/offline/meta/
+          cp .sandbox-pack/meta/dependency-inputs.sha256 .sandbox-pack/offline/meta/
+
+      - name: Build and split offline pack
+        if: steps.offline.outputs.enabled == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          KEY=$(cat .sandbox-pack/meta/dependency-key.txt)
+          mkdir -p .sandbox-pack/chunks
+          PACK="photomap-offline-${KEY}.tar.zst"
+          tar -C .sandbox-pack -cf - offline | zstd -T0 -10 -o "$PACK"
+          sha256sum "$PACK" > .sandbox-pack/chunks/full-pack.sha256
+          printf '%s\n' "$PACK" > .sandbox-pack/chunks/full-pack.name
+          split -b 180M -d -a 2 "$PACK" .sandbox-pack/chunks/part-
+          sha256sum .sandbox-pack/chunks/part-* > .sandbox-pack/chunks/parts.sha256
+          ls -lh .sandbox-pack/chunks
+
+      - name: Upload offline manifest
+        if: steps.offline.outputs.enabled == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: photomap-offline-manifest
+          path: |
+            .sandbox-pack/chunks/full-pack.name
+            .sandbox-pack/chunks/full-pack.sha256
+            .sandbox-pack/chunks/parts.sha256
+            .sandbox-pack/meta/dependency-key.txt
+            .sandbox-pack/meta/dependency-inputs.sha256
+          retention-days: 14
+          compression-level: 0
+
+      - name: Upload offline part 00
+        if: steps.offline.outputs.enabled == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: photomap-offline-part-00
+          path: .sandbox-pack/chunks/part-00
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
+      - name: Upload offline part 01
+        if: steps.offline.outputs.enabled == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: photomap-offline-part-01
+          path: .sandbox-pack/chunks/part-01
+          if-no-files-found: ignore
+          retention-days: 14
+          compression-level: 0
+
+      - name: Upload offline part 02
+        if: steps.offline.outputs.enabled == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: photomap-offline-part-02
+          path: .sandbox-pack/chunks/part-02
+          if-no-files-found: ignore
+          retention-days: 14
+          compression-level: 0
+
+      - name: Upload offline part 03
+        if: steps.offline.outputs.enabled == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: photomap-offline-part-03
+          path: .sandbox-pack/chunks/part-03
+          if-no-files-found: ignore
+          retention-days: 14
+          compression-level: 0
+
+      - name: Upload offline part 04
+        if: steps.offline.outputs.enabled == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: photomap-offline-part-04
+          path: .sandbox-pack/chunks/part-04
+          if-no-files-found: ignore
+          retention-days: 14
+          compression-level: 0
+
+      - name: Upload offline part 05
+        if: steps.offline.outputs.enabled == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: photomap-offline-part-05
+          path: .sandbox-pack/chunks/part-05
+          if-no-files-found: ignore
+          retention-days: 14
+          compression-level: 0
