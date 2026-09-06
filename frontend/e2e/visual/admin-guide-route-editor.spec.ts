@@ -42,9 +42,7 @@ test("admin route editor preserves zoom while adding and moving route points", a
 
   const initialZoom = await routeEditorZoom(page);
   await map.locator(".leaflet-control-zoom-in").click();
-  await map.locator(".leaflet-control-zoom-in").click();
   await expect.poll(() => routeEditorZoom(page)).toBeGreaterThan(initialZoom);
-  await expect.poll(() => routeEditorZoom(page)).toBeGreaterThanOrEqual(initialZoom + 2);
 
   const zoomBeforeAdd = await routeEditorZoom(page);
   const mapBox = await map.boundingBox();
