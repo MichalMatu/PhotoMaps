@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-final-storage-reaudit-fix-041",
+  "task_digest": "6d922ddb04b2ec7dc67fd67081f982f0304943df27024453902d5dc07c28d0ce",
+  "idle_timeout": 300,
+  "task_timeout": 1800,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T08:20:50.425885+00:00",
+  "attempt_id": "1d27bee705a86d7cd6e627aa",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 95069,
+  "updated_at": "2026-09-12T08:20:50.426083+00:00",
+  "pid": 95069
+}
