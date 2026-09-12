@@ -14,6 +14,8 @@ type StoredPayload = {
   version: 1;
 };
 
+type PinnedPhotoSnapshot = Extract<PlaceMapVisualItem, { kind: "photo" }>;
+
 export function readPinnedMediaCards(storage: StorageLike | null = getLocalStorage()): StoredPinnedMediaCard[] {
   if (!storage) {
     return [];
@@ -92,11 +94,12 @@ function isPinnedMediaItemSnapshot(value: unknown, kind: "photo" | "memory", ite
     return true;
   }
 
+  const photo = item as Partial<PinnedPhotoSnapshot>;
   return (
-    isNullableString(item.attribution_author) &&
-    isNullableString(item.attribution_source_url) &&
-    isNullableString(item.attribution_license) &&
-    isNullableString(item.attribution_license_url)
+    isNullableString(photo.attribution_author) &&
+    isNullableString(photo.attribution_source_url) &&
+    isNullableString(photo.attribution_license) &&
+    isNullableString(photo.attribution_license_url)
   );
 }
 
