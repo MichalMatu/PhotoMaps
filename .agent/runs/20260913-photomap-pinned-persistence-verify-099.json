@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260913-photomap-pinned-persistence-verify-099",
+  "task_digest": "12d08a416e2f508734206d56e110129a4727e03a085dca4a2d65eb7b3d8cec9c",
+  "idle_timeout": 300,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T23:39:39.899814+00:00",
+  "attempt_id": "c8df56473afce828c7100444",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 65553,
+  "updated_at": "2026-09-12T23:39:39.899884+00:00",
+  "pid": 65553
+}
