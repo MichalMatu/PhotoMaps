@@ -122,7 +122,7 @@ def test_private_original_retention_apply_replaces_approved_memory_and_removes_r
     assert photo.original_path is None
 
 
-def test_local_data_diagnostics_allows_retained_rejected_private_original(
+def test_local_data_diagnostics_allows_existing_rejected_private_original(
     client_session,
     tmp_path: Path,
 ) -> None:
@@ -130,15 +130,11 @@ def test_local_data_diagnostics_allows_retained_rejected_private_original(
     place = create_place(session)
     private_root = tmp_path / "private"
     public_root = tmp_path / "public"
-    public_path = f"photos/{place.id}/rejected.jpg"
-    thumb_path = f"photos/{place.id}/rejected-thumb.jpg"
-    write_file(public_root, public_path, b"public")
-    write_file(public_root, thumb_path, b"thumb")
+    original_path = f"photos/{place.id}/rejected-original.jpg"
+    write_file(private_root, original_path, b"private")
     photo = Photo(
         place_id=place.id,
-        original_path=f"photos/{place.id}/deleted-original.jpg",
-        public_path=f"/media/{public_path}",
-        thumb_path=f"/media/{thumb_path}",
+        original_path=original_path,
         status="rejected",
     )
     session.add(photo)
@@ -153,3 +149,28 @@ def test_local_data_diagnostics_allows_retained_rejected_private_original(
     issue_codes = {issue["code"] for issue in report["issues"]}
 
     assert "photo_original_missing" not in issue_codes
+
+
+def test_local_data_diagnostics_flags_stale_rejected_private_original_path(
+    client_session,
+    tmp_path: Path,
+) -> None:
+    _client, session = client_session
+    place = create_place(session)
+    photo = Photo(
+        place_id=place.id,
+        original_path=f"photos/{place.id}/deleted-original.jpg",
+        status="rejected",
+    )
+    session.add(photo)
+    session.commit()
+
+    report = run_local_data_diagnostics(
+        session,
+        private_storage_dir=tmp_path / "private",
+        public_storage_dir=tmp_path / "public",
+        check_images=False,
+    )
+    issue_codes = {issue["code"] for issue in report["issues"]}
+
+    assert "photo_original_missing" in issue_codes
