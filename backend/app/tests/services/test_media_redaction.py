@@ -104,7 +104,7 @@ def test_memory_redaction_updates_private_public_and_thumbnail(client_session, t
         public_path=f"/media/{public_path}",
         thumb_path=f"/media/{thumb_path}",
         status="approved",
-        claim_token_hash=claim_token_hash("token"),
+        claim_token_hash=claim_token_hash("secret-token"),
     )
     session.add(memory)
     session.commit()
@@ -144,7 +144,7 @@ def test_memory_redaction_supports_polygons(client_session, tmp_path: Path) -> N
         public_path=f"/media/{public_path}",
         thumb_path=f"/media/{thumb_path}",
         status="approved",
-        claim_token_hash=claim_token_hash("token"),
+        claim_token_hash=claim_token_hash("secret-token"),
     )
     session.add(memory)
     session.commit()
