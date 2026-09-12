@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-doc-contracts-023",
+  "task_digest": "a2d029ad9a57e8acdb77fdcb554f4591b57f25b9436c24034c905eb358f62817",
+  "idle_timeout": 300,
+  "task_timeout": 600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T04:22:51.326460+00:00",
+  "attempt_id": "a3dd024163b673f6840aef91",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 41647,
+  "updated_at": "2026-09-12T04:22:51.326542+00:00",
+  "pid": 41647
+}
