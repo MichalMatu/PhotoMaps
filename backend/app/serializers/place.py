@@ -91,7 +91,6 @@ def photo_to_map_photo(photo: Photo) -> PlaceMapPhotoRead:
         role=photo.role,
         source=photo.source,
         caption=photo.caption,
-        description_blocks=photo.description_blocks or [],
         attribution_author=photo.attribution_author,
         attribution_source_url=photo.attribution_source_url,
         attribution_license=photo.attribution_license,

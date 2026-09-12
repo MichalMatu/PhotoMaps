@@ -1,7 +1,9 @@
+import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, Info, Maximize2, Minimize2, Pin } from "lucide-react";
 import { useEffect, useRef, useState, type MouseEvent, type PointerEvent as ReactPointerEvent } from "react";
 
 import { mediaUrl } from "../../api/http";
+import { getPlacePhoto } from "../../api/media";
 import type { PlaceCustomFieldDefinition, PlaceMapItem } from "../../api/types";
 import {
   PhotoDescriptionActions,
@@ -105,11 +107,17 @@ export function PhotoDetailModal({
   const { isFullscreen, toggleFullscreen } = useMediaFullscreen(contentRef);
   const { memoryOwnerTools, memorySource } = usePhotoDetailMemory({ item, onDeleted: onClose, place });
   const photoNavigation = usePhotoDetailNavigation({ item, navigationItems, onNavigate });
+  const photoDetailQuery = useQuery({
+    queryKey: ["place", place.id, "photos", item.id, "detail"],
+    queryFn: () => getPlacePhoto(place.id, item.id),
+    enabled: item.kind === "photo",
+    staleTime: 60_000,
+  });
   const display = mapMediaDisplay(item.kind, item.caption, place.description, memorySource);
   const audio = item.kind === "memory" ? (memorySource?.audio ?? item.audio) : item.audio;
   const customFields = publicPlaceCustomFieldDisplayItems(customFieldDefinitions, place.custom_fields);
   const photoAttribution = photoAttributionDisplay(item);
-  const photoDescriptionBlocks = item.kind === "photo" ? item.description_blocks : [];
+  const photoDescriptionBlocks = item.kind === "photo" ? (photoDetailQuery.data?.description_blocks ?? []) : [];
   const photoDescriptionText = textFromPhotoDescription(photoDescriptionBlocks);
   const hasDisplayText = Boolean(display.title || display.body || display.meta);
   const hasCopy = hasDisplayText || customFields.length > 0 || Boolean(photoAttribution);

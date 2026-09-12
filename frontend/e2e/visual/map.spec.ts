@@ -284,20 +284,62 @@ test("map remains visible when app config request fails", async ({ page }) => {
 test("visual: map markers, gallery and photo detail", async ({ page }) => {
   test.setTimeout(60_000);
 
-  const describedCover = {
-    ...rynekCover,
+  const describedCoverDetail = {
+    audio: rynekCover.audio,
+    attribution_author: rynekCover.attribution_author,
+    attribution_license: rynekCover.attribution_license,
+    attribution_license_url: rynekCover.attribution_license_url,
+    attribution_source_url: rynekCover.attribution_source_url,
+    caption: rynekCover.caption,
     description_blocks: [
       {
         type: "paragraph" as const,
         text: "Długi opis zdjęcia Rynku do samodzielnego czytania i TTS.",
       },
     ],
+    id: rynekCover.id,
+    place_id: rynekCover.place_id,
+    public_path: rynekCover.public_path,
+    thumb_path: rynekCover.thumb_path,
   };
 
   await page.setViewportSize({ height: 820, width: 1280 });
   await mockSharedApi(page);
-  await page.route(`${API_URL}/api/places/${places[0].id}/photos`, (route) =>
-    route.fulfill({ json: [describedCover, rynekSide] }),
+  await page.route(`${API_URL}/api/places/${places[0].id}/photos`, (route) => {
+    if (route.request().url().endsWith(`/photos/${rynekCover.id}`)) {
+      return route.fallback();
+    }
+    return route.fulfill({
+      json: [
+        {
+          audio: rynekCover.audio,
+          attribution_author: rynekCover.attribution_author,
+          attribution_license: rynekCover.attribution_license,
+          attribution_license_url: rynekCover.attribution_license_url,
+          attribution_source_url: rynekCover.attribution_source_url,
+          caption: rynekCover.caption,
+          id: rynekCover.id,
+          place_id: rynekCover.place_id,
+          public_path: rynekCover.public_path,
+          thumb_path: rynekCover.thumb_path,
+        },
+        {
+          audio: rynekSide.audio,
+          attribution_author: rynekSide.attribution_author,
+          attribution_license: rynekSide.attribution_license,
+          attribution_license_url: rynekSide.attribution_license_url,
+          attribution_source_url: rynekSide.attribution_source_url,
+          caption: rynekSide.caption,
+          id: rynekSide.id,
+          place_id: rynekSide.place_id,
+          public_path: rynekSide.public_path,
+          thumb_path: rynekSide.thumb_path,
+        },
+      ],
+    });
+  });
+  await page.route(`${API_URL}/api/places/${places[0].id}/photos/${rynekCover.id}`, (route) =>
+    route.fulfill({ json: describedCoverDetail }),
   );
   await page.goto("/");
   await expect(page.locator(".place-photo-marker")).toHaveCount(2);

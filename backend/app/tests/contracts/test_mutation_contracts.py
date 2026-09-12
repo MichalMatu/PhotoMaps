@@ -260,11 +260,14 @@ def test_openapi_contract_keeps_public_payloads_out_of_admin_shape() -> None:
         "attribution_license_url",
         "attribution_source_url",
         "caption",
-        "description_blocks",
         "id",
         "place_id",
         "public_path",
         "thumb_path",
+    }
+    assert component_properties("PhotoDetailRead") == {
+        *component_properties("PhotoRead"),
+        "description_blocks",
     }
     assert component_properties("MemoryRead") == {
         "audio",
@@ -344,7 +347,6 @@ def test_openapi_contract_keeps_public_payloads_out_of_admin_shape() -> None:
         "attribution_source_url",
         "caption",
         "created_at",
-        "description_blocks",
         "id",
         "place_id",
         "public_path",
