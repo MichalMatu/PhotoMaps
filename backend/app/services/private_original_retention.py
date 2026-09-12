@@ -69,8 +69,8 @@ def run_private_original_retention(
 
     if apply_changes:
         # Persist the fact that rejected originals are no longer retained before
-        # deleting any file. A database failure therefore leaves the source file
-        # intact instead of creating a stale database reference.
+        # deleting rejected source files. A database failure therefore leaves each
+        # rejected source intact instead of creating a stale database reference.
         session.commit()
         for target, private_path in rejected_deletions:
             try:
@@ -81,7 +81,10 @@ def run_private_original_retention(
                         "warning",
                         "rejected_original_delete_failed",
                         target,
-                        f"Database retention state was saved, but the private original could not be deleted: {private_path}",
+                        (
+                            "Database retention state was saved, but the private original could not be deleted: "
+                            f"{private_path}"
+                        ),
                     )
                 )
 
