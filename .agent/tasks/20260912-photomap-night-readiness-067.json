@@ -1,0 +1,13 @@
+{
+  "id": "20260912-photomap-night-readiness-067",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 600,
+  "task_timeout": 1200,
+  "commands": [
+    "echo '=== public site ==='; curl -fsS -L -o /tmp/photomap-readiness.html -w 'https_status=%{http_code} total=%{time_total}s size=%{size_download}\\n' https://photomap.pl/ || true; echo '=== playwright ==='; cd frontend; node --version; npm --version; npx playwright --version; node -e \"const { chromium } = require('@playwright/test'); console.log('playwright_import=' + Boolean(chromium));\"; echo '=== browser caches ==='; find \"$HOME/Library/Caches/ms-playwright\" \"$HOME/.cache/ms-playwright\" -maxdepth 1 -mindepth 1 -type d -print 2>/dev/null | head -20 || true; echo '=== pi runtime ==='; ssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'cd /home/michal/src/PhotoMaps && echo ssh=ok && echo service=$(systemctl is-active photomap.service) && test -x backend/.venv/bin/python && echo backend_venv=yes || echo backend_venv=no; test -f frontend/dist/index.html && echo frontend_dist=yes || echo frontend_dist=no; test -f server.py && echo server_py=yes || echo server_py=no'"
+  ]
+}
