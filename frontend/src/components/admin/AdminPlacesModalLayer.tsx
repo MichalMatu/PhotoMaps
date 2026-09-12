@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { getAdminPlacePhotos } from "../../api/media";
 import type { AdminPhoto, AdminPlace, AppConfig, Category, City, PlaceMapItem } from "../../api/types";
@@ -9,6 +9,7 @@ import { AdminPlaceActionModals } from "./AdminPlaceActionModals";
 import { AdminPlaceFormModal } from "./AdminPlaceFormModal";
 import { AdminPlacePhotoPreviewModal } from "./AdminPlacePhotoPreviewModal";
 import { AdminPlacePublicPreviewModal } from "./AdminPlacePublicPreviewModal";
+import { createLatestRequestGuard, type LatestRequestGuard } from "./latestRequestGuard";
 import type { CityActions } from "./useCityActions";
 import type { AdminPlaceManagement, PlaceFormPayload } from "./useAdminPlaceManagement";
 
@@ -56,6 +57,7 @@ export function AdminPlacesModalLayer({
   const [isPhotoPreviewLoading, setIsPhotoPreviewLoading] = useState(false);
   const [photoPreviewError, setPhotoPreviewError] = useState<OperationError | null>(null);
   const [photoPreviewPhotos, setPhotoPreviewPhotos] = useState<AdminPhoto[]>([]);
+  const photoPreviewRequestGuard = useRef<LatestRequestGuard>(createLatestRequestGuard());
   const editingPlace = placeManagement.editingPlace;
   const editingPlaceView = editingPlace ? (places.find((place) => place.id === editingPlace.id) ?? editingPlace) : null;
   const editingPlacePhotoCount = editingPlaceView?.photo_count ?? 0;
@@ -67,60 +69,47 @@ export function AdminPlacesModalLayer({
     ? (mapPlaces.find((place) => place.id === publicPreviewPlaceId) ?? null)
     : null;
 
-  async function refreshPhotoPreviewPhotos(placeId: string) {
+  const refreshPhotoPreviewPhotos = useCallback(async (placeId: string) => {
+    const guard = photoPreviewRequestGuard.current;
+    const token = guard.begin();
     setIsPhotoPreviewLoading(true);
     setPhotoPreviewError(null);
     try {
-      setPhotoPreviewPhotos(await getAdminPlacePhotos(placeId));
+      const nextPhotos = await getAdminPlacePhotos(placeId);
+      if (guard.isCurrent(token)) {
+        setPhotoPreviewPhotos(nextPhotos);
+      }
     } catch (reason) {
-      setPhotoPreviewPhotos([]);
-      setPhotoPreviewError({
-        details: errorDetails(reason),
-        message: "Nie udało się pobrać zdjęć tego miejsca.",
-        title: "Nie udało się pobrać zdjęć",
-      });
+      if (guard.isCurrent(token)) {
+        setPhotoPreviewPhotos([]);
+        setPhotoPreviewError({
+          details: errorDetails(reason),
+          message: "Nie udało się pobrać zdjęć tego miejsca.",
+          title: "Nie udało się pobrać zdjęć",
+        });
+      }
     } finally {
-      setIsPhotoPreviewLoading(false);
+      if (guard.isCurrent(token)) {
+        setIsPhotoPreviewLoading(false);
+      }
     }
-  }
+  }, []);
 
   useEffect(() => {
     if (!photoPreviewPlaceId) {
+      photoPreviewRequestGuard.current.invalidate();
       setPhotoPreviewPhotos([]);
       setPhotoPreviewError(null);
       setIsPhotoPreviewLoading(false);
       return;
     }
 
-    let ignore = false;
-    setIsPhotoPreviewLoading(true);
-    setPhotoPreviewError(null);
-    getAdminPlacePhotos(photoPreviewPlaceId)
-      .then((nextPhotos) => {
-        if (!ignore) {
-          setPhotoPreviewPhotos(nextPhotos);
-        }
-      })
-      .catch((reason: unknown) => {
-        if (!ignore) {
-          setPhotoPreviewPhotos([]);
-          setPhotoPreviewError({
-            details: errorDetails(reason),
-            message: "Nie udało się pobrać zdjęć tego miejsca.",
-            title: "Nie udało się pobrać zdjęć",
-          });
-        }
-      })
-      .finally(() => {
-        if (!ignore) {
-          setIsPhotoPreviewLoading(false);
-        }
-      });
+    void refreshPhotoPreviewPhotos(photoPreviewPlaceId);
 
     return () => {
-      ignore = true;
+      photoPreviewRequestGuard.current.invalidate();
     };
-  }, [photoPreviewPlaceId]);
+  }, [photoPreviewPlaceId, refreshPhotoPreviewPhotos]);
 
   function closePlaceEditor() {
     onPhotoPreviewPlaceIdChange(null);
@@ -139,9 +128,16 @@ export function AdminPlacesModalLayer({
   }
 
   async function handlePhotoPreviewChanged() {
+    if (!photoPreviewPlaceId) {
+      return;
+    }
+
+    const guard = photoPreviewRequestGuard.current;
+    const token = guard.begin();
+    const placeId = photoPreviewPlaceId;
     await onRefreshPhotosAndPlaces();
-    if (photoPreviewPlaceId) {
-      await refreshPhotoPreviewPhotos(photoPreviewPlaceId);
+    if (guard.isCurrent(token)) {
+      await refreshPhotoPreviewPhotos(placeId);
     }
   }
 
