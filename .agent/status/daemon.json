@@ -2,8 +2,8 @@
   "version": 1,
   "daemon_version": "4.18.20",
   "state": "idle",
-  "pid": 10192,
-  "updated_at": "2026-09-12T10:59:22.179813+00:00",
+  "pid": 19014,
+  "updated_at": "2026-09-12T11:04:34.421080+00:00",
   "self_revision": "3914aedf1143a4cc8713d38d9f3961e086f5e343",
   "poll_seconds": 15,
   "self_update_seconds": 60,
@@ -23,8 +23,7 @@
   "default_branch": "main",
   "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
   "execution_model": "multi_repository_worker",
-  "worker_pid": 10192,
+  "worker_pid": 19014,
   "supervisor_pid": 97229,
-  "last_task_id": "20260912-photomap-local-review-bootstrap-054",
   "execution_variant": "parallel"
 }
