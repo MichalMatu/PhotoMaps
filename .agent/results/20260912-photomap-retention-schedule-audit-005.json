@@ -1,0 +1,60 @@
+{
+  "id": "20260912-photomap-retention-schedule-audit-005",
+  "status": "done",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "started_at": "2026-09-12T03:10:30.460443+00:00",
+  "command_timeout": 120,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail\nssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'bash -s' <<'REMOTE'\nset -eu\necho '=== USER CRONTAB ==='\ncrontab -l 2>/dev/null || echo '<none>'\necho\necho '=== SYSTEM CRON REFERENCES ==='\ngrep -R -n -E 'PhotoMaps|photomap|retain_private|private_original' /etc/cron.d /etc/cron.daily /etc/cron.hourly /etc/cron.weekly /etc/cron.monthly 2>/dev/null || true\necho\necho '=== SYSTEMD TIMERS ==='\nsystemctl list-timers --all --no-pager 2>/dev/null | grep -Ei 'photo|retain|original' || true\necho\necho '=== SYSTEMD UNIT REFERENCES ==='\nsystemctl list-unit-files --no-pager 2>/dev/null | grep -Ei 'photo|map|cloudflared' || true\necho\necho '=== RELEVANT PROCESSES ==='\nps -eo pid,ppid,etime,args | grep -E '[p]hotomap|[P]hotoMaps|[c]loudflared|[s]erver.py' || true\nREMOTE",
+      "exit_code": 0,
+      "output": "=== USER CRONTAB ===\n<none>\n\n=== SYSTEM CRON REFERENCES ===\n\n=== SYSTEMD TIMERS ===\n\n=== SYSTEMD UNIT REFERENCES ===\ncloudflared-update.service                   static          -\ncloudflared.service                          enabled         enabled\nnfs-blkmap.service                           disabled        enabled\nnfs-idmapd.service                           static          -\nphotomap.service                             enabled         enabled\nportmap.service                              alias           -\ncloudflared-update.timer                     disabled        enabled\n\n=== RELEVANT PROCESSES ===\n    664       1    09:59:08 /usr/bin/cloudflared --no-autoupdate --config /etc/cloudflared/config.yml tunnel run\n    665       1    09:59:08 /home/michal/src/PhotoMaps/backend/.venv/bin/python /home/michal/src/PhotoMaps/server.py\n",
+      "elapsed_seconds": 4.805,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 6.55,
+      "output_policy": "stream",
+      "captured_output_chars": 840,
+      "output_truncated": false,
+      "current_rss_mb": 6.55,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 4.805
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.127
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.071
+  },
+  "finished_at": "2026-09-12T03:10:36.859457+00:00",
+  "task_digest": "69cd6c01d3612adc85cf649e974e585f270884a9f680d9253ed0f40263484bb3",
+  "idle_timeout": 300,
+  "task_timeout": 300,
+  "memory_limit_mb": 4096,
+  "attempt_id": "1085ff7838c3a71ce04ba9fb",
+  "daemon_version": "4.18.20"
+}
