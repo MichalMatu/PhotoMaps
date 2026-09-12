@@ -1,0 +1,14 @@
+{
+  "id": "20260912-photomap-review-batch1-060",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 300,
+  "idle_timeout": 300,
+  "task_timeout": 600,
+  "commands": [
+    "set -euo pipefail; DB=\"$HOME/agent-workspace/review/photomap-2026-09-12/app.db\"; DB=\"$DB\" python3 - <<'PY'\nimport json, os, sqlite3\nc=sqlite3.connect(os.environ['DB'])\nc.row_factory=sqlite3.Row\nrows=c.execute(\"SELECT p.id,p.slug,p.title,p.description,p.photo_count,p.cover_photo_id,c.name AS city_name FROM place p JOIN city c ON c.id=p.city_id WHERE p.status='published' ORDER BY CASE WHEN trim(coalesce(p.description,''))='' THEN 0 ELSE 1 END, length(coalesce(p.description,'')), p.photo_count ASC, p.title LIMIT 12\").fetchall()\nfor r in rows:\n    photos=c.execute(\"SELECT id,caption,thumb_path FROM photo WHERE place_id=? AND status='approved' ORDER BY CASE WHEN id=? THEN 0 ELSE 1 END, approved_at, created_at LIMIT 3\",(r['id'],r['cover_photo_id'])).fetchall()\n    print(json.dumps({'id':r['id'],'city':r['city_name'],'slug':r['slug'],'title':r['title'],'description':r['description'] or '', 'description_len':len(r['description'] or ''),'photo_count':r['photo_count'],'photos':[{'id':p['id'],'caption':p['caption'] or '', 'thumb_url':'https://photomap.pl'+p['thumb_path']} for p in photos]},ensure_ascii=False,separators=(',',':')))\nc.close()\nPY"
+  ]
+}
