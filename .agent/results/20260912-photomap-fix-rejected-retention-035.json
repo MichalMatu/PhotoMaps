@@ -1,0 +1,60 @@
+{
+  "id": "20260912-photomap-fix-rejected-retention-035",
+  "status": "failed",
+  "mode": "commands",
+  "work_branch": "work/fix-rejected-original-retention",
+  "allow_write": true,
+  "started_at": "2026-09-12T06:21:32.881484+00:00",
+  "command_timeout": 1200,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail\nBRANCH=work/fix-rejected-original-retention\ntest \"$(git branch --show-current)\" = \"$BRANCH\"\npython3 -m pytest -q backend/app/tests/services/test_private_original_retention.py backend/app/tests/services/test_rejected_original_retention_state.py backend/app/tests/services/test_local_data_diagnostics.py\nmake PYTHON=python3 schema-check\ngit diff --check\ngit status --short\ngit add backend/app/services/media/images.py backend/app/services/photo_uploads.py backend/app/services/memory_uploads.py backend/app/api/routes/admin_photos.py backend/app/api/routes/admin_memories.py backend/app/services/media/redaction.py backend/app/services/private_original_retention.py backend/app/tests/services/test_private_original_retention.py backend/app/tests/services/test_rejected_original_retention_state.py\ngit commit -m 'Make rejected original retention database-consistent'\necho final_head=$(git rev-parse HEAD)",
+      "exit_code": 1,
+      "output": "",
+      "elapsed_seconds": 0.379,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": null,
+      "output_policy": "stream",
+      "captured_output_chars": 0,
+      "output_truncated": false,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "failed",
+      "elapsed_seconds": 0.379
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.093
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.074
+  },
+  "failure_reason": "command_failed",
+  "finished_at": "2026-09-12T06:21:35.041266+00:00",
+  "task_digest": "ca6db7fcc4d2ae340cf82c1325667db04ddf9120b7acffdc6af79ff97084740a",
+  "idle_timeout": 300,
+  "task_timeout": 1800,
+  "memory_limit_mb": 4096,
+  "attempt_id": "d1f12f795e6563529f1f5ac5",
+  "daemon_version": "4.18.20"
+}
