@@ -1,14 +1,13 @@
 {
-  "event": "task_started",
+  "event": "task_finished",
   "task_id": "20260912-photomap-reconcile-merge-test-009",
   "task_digest": "0c37f83f124505e7205eee82d25085808c189a7abb557f2f5bd310d29ca08b8f",
-  "idle_timeout": 300,
-  "task_timeout": 3600,
-  "memory_limit_mb": 4096,
-  "started_at": "2026-09-12T03:18:36.265601+00:00",
+  "status": "failed",
+  "failure_reason": "command_failed",
+  "finished_at": "2026-09-12T03:18:39.245484+00:00",
   "attempt_id": "a2f57b5816e233f46daba1f4",
   "daemon_version": "4.18.20",
   "daemon_pid": 63551,
-  "updated_at": "2026-09-12T03:18:36.265828+00:00",
+  "updated_at": "2026-09-12T03:18:39.544749+00:00",
   "pid": 63551
 }
