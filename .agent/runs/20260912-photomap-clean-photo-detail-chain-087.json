@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-clean-photo-detail-chain-087",
+  "task_digest": "08a137f2d40997abb071754b960d668b1827668a41f41839f4a99b2e31c7fc4d",
+  "idle_timeout": 300,
+  "task_timeout": 600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T21:35:35.168801+00:00",
+  "attempt_id": "7916c7e74ab3de2fa2166fa4",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 46847,
+  "updated_at": "2026-09-12T21:35:35.168872+00:00",
+  "pid": 46847
+}
