@@ -60,11 +60,11 @@ Ponowne uruchomienie na tym samym manifiescie ma aktualizowac istniejace rekordy
 - Waliduje, ze trasy/kolekcje przypinaja tylko miejsca ze statusem `published`.
 - Waliduje `guide.kind` oraz zapisuje opcjonalne `guide.route_points` jako przebieg linii mapy trasy; kolekcje musza miec puste `route_points`.
 
-Manifest nie importuje coverow ani ikon miejsc. Media widoczne jako covery mapy przechodza przez adminowy pipeline zdjec, prywatnego oryginalu, publicznej kopii i moderacji. Publiczna kopia zdjecia zachowuje rozdzielczosc wejscia po bezpiecznym przetworzeniu i nie jest sztucznie downsizowana; tylko osobna miniatura jest skalowana do lekkich widokow mapy i list. Limity bajtow i pikseli w pipeline sa wysokimi bezpiecznikami przed uszkodzonym albo ekstremalnym inputem, a nie limitem jakosci materialow redakcyjnych.
+Manifest nie importuje coverow ani ikon miejsc. Media widoczne jako covery mapy przechodza przez adminowy pipeline zdjec, prywatnego kanonicznego oryginalu, miniatury i moderacji. Po zatwierdzeniu `Photo` publiczny endpoint obrazu serwuje bajty oryginalu bez tworzenia pelnej publicznej kopii; tylko osobna miniatura jest skalowana do lekkich widokow mapy i list. Limity bajtow i pikseli w pipeline sa wysokimi bezpiecznikami przed uszkodzonym albo ekstremalnym inputem, a nie limitem jakosci materialow redakcyjnych.
 
 ## Workflow Mediow I Danych Roboczych
 
-Miejsca, kategorie, opisy i proste trasy importuj przez manifest. Pamiatki uzytkownikow oraz redakcyjne zdjecia z audio sa dalej przeplywem admina i moderacji, bo wymagaja prywatnego oryginalu, publicznej kopii, statusu widocznosci oraz ewentualnej anonimizacji.
+Miejsca, kategorie, opisy i proste trasy importuj przez manifest. Pamiatki uzytkownikow pozostaja przeplywem moderacji z prywatnym oryginalem, publiczna pochodna, miniatura i opcjonalna anonimizacja. Redakcyjne `Photo` zachowuje prywatny kanoniczny oryginal, publiczny endpoint oryginalu i miniaturke; oryginal jest niemodyfikowalny, wiec material wymagajacy anonimizacji nalezy odrzucic albo zastapic bezpieczna wersja.
 
 Przed czyszczeniem lokalnej dummy data albo wieksza sesja realnego contentu wykonaj backup, uruchom diagnostyke i dopiero potem reset/import. Nie kasuj recznie pojedynczych plikow storage bez odpowiadajacych rekordow w bazie; po takim sprzataniu `scripts/diagnose_local_data.py` powinien przejsc bez bledow.
 
