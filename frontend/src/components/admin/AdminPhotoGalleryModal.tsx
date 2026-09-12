@@ -26,7 +26,6 @@ type Props = {
   onDeleteAudio: (photo: AdminPhoto) => Promise<void>;
   onEditText: (photo: AdminPhoto) => void;
   onError: (message: string | null) => void;
-  onRedact: (photo: AdminPhoto) => void;
   onRequestDelete: (photo: AdminPhoto) => void;
   onReview: (photoId: string, status: ReviewFinalStatus) => void;
   onSaveAudio: (photo: AdminPhoto, nextAudioFile: File) => Promise<void>;
@@ -44,7 +43,6 @@ export function AdminPhotoGalleryModal({
   onDeleteAudio,
   onEditText,
   onError,
-  onRedact,
   onRequestDelete,
   onReview,
   onSaveAudio,
@@ -176,7 +174,6 @@ export function AdminPhotoGalleryModal({
               onClearCover={onClearCover}
               onDelete={() => onRequestDelete(photo)}
               onEditText={() => onEditText(photo)}
-              onRedact={() => onRedact(photo)}
               onReview={(status) => onReview(photo.id, status)}
               onSetCover={() => onSetCover(photo)}
             />

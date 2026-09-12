@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { RotateCcw, RotateCw, Trash2, Undo2 } from "lucide-react";
 
-import type { AdminMemory, AdminPhoto } from "../../api/types";
+import type { AdminMemory } from "../../api/types";
 import { AdminMediaImage } from "./AdminAuthenticatedMedia";
 import { SystemModal } from "./SystemModal";
 import type { RedactionPolygon } from "./mediaRedactionGeometry";
@@ -9,13 +9,12 @@ import { useMediaRedactionEditor } from "./useMediaRedactionEditor";
 
 type Props = {
   isApplying?: boolean;
-  kind: "memory" | "photo";
-  media: AdminMemory | AdminPhoto;
+  media: AdminMemory;
   onApply: (redactions: RedactionPolygon[]) => Promise<void>;
   onClose: () => void;
 };
 
-export function MediaRedactionModal({ isApplying = false, kind, media, onApply, onClose }: Props) {
+export function MediaRedactionModal({ isApplying = false, media, onApply, onClose }: Props) {
   const [saveError, setSaveError] = useState<string | null>(null);
   const {
     activeRedaction,
@@ -37,10 +36,8 @@ export function MediaRedactionModal({ isApplying = false, kind, media, onApply, 
     onInteractionStart: () => setSaveError(null),
   });
 
-  const title = kind === "photo" ? "Anonimizuj zdjęcie" : "Anonimizuj pamiątkę";
+  const title = "Anonimizuj pamiątkę";
   const canApply = redactions.length > 0 && !isApplying;
-  const imagePath =
-    kind === "memory" ? (media as AdminMemory).admin_public_path : (media as AdminPhoto).admin_public_path;
 
   async function handleApply() {
     setSaveError(null);
@@ -72,7 +69,11 @@ export function MediaRedactionModal({ isApplying = false, kind, media, onApply, 
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
         >
-          <AdminMediaImage className="media-redaction-image" alt={media.caption ?? title} src={imagePath} />
+          <AdminMediaImage
+            className="media-redaction-image"
+            alt={media.caption ?? title}
+            src={media.admin_public_path}
+          />
           <svg className="media-redaction-overlay" aria-hidden="true" viewBox="0 0 1 1" preserveAspectRatio="none">
             {[...redactions, ...(draftRedaction ? [draftRedaction] : [])].map((redaction, index) => {
               const isDraft = index >= redactions.length;

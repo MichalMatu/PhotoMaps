@@ -135,13 +135,27 @@ backend/.venv/bin/python scripts/unpublish_nonapproved_photos.py --apply
 W bieżącym przepływie odrzucenie najpierw przenosi publiczne pliki przez atomowy rename do prywatnego quarantine, a następnie jednym commitem zapisuje status `rejected` i puste ścieżki publiczne. Publiczny `server.py` po migracjach automatycznie odzyskuje niedokończoną operację: przy nadal zatwierdzonym rekordzie przywraca pliki, a po zapisanym odrzuceniu usuwa quarantine. Niepusty quarantine bez poprawnego manifestu zatrzymuje start fail-closed i pozostawia prywatne pliki do ręcznej inspekcji.
 
 Po `--apply` unieważnij w cache CDN ścieżki `/media/...` wypisane przez raport, żeby wcześniej zbuforowana odpowiedź nie pozostała dostępna na brzegu.
-Runtime ustawia dla `/media/*` rewalidację przeglądarki i `no-store` dla CDN, aby zwykłe odrzucenie
-zdjęcia nie pozostawiało publicznej kopii na brzegu. Po pierwszym wdrożeniu tej polityki wykonaj jeden
-pełny purge istniejącego cache strefy Cloudflare; nowe nagłówki nie usuwają odpowiedzi zbuforowanych wcześniej.
+Runtime ustawia dla `/media/*` oraz publicznego endpointu oryginału `Photo` (`/api/places/.../photos/.../media/image`) rewalidację przeglądarki i `no-store` dla CDN, aby odrzucenie zdjęcia nie pozostawiało obrazu na brzegu. Po pierwszym wdrożeniu tej polityki wykonaj jeden pełny purge istniejącego cache strefy Cloudflare; nowe nagłówki nie usuwają odpowiedzi zbuforowanych wcześniej.
+
+## Migracja Zatwierdzonych Zdjęć Do Publicznego Oryginału
+
+Docelowy model redakcyjnego `Photo` to jeden kanoniczny oryginał w private storage, publiczny URL `/api/places/{place_id}/photos/{photo_id}/media/image` serwujący dokładnie jego bajty dla zatwierdzonego zdjęcia publicznego miejsca oraz osobna miniatura pod `/media/...`. Stara pełnowymiarowa pochodna `/media/...` nie jest już potrzebna.
+
+Przed migracją zrób świeży backup. Zawsze zacznij od dry-runu:
+
+```bash
+make backup-apply
+make migrate-photo-originals
+make migrate-photo-originals ARGS="--json"
+make migrate-photo-originals-apply
+make migrate-photo-originals-apply ARGS="--output-json .dev/photo-original-migration.json"
+```
+
+Dry-run sprawdza wszystkie zatwierdzone zdjęcia, obecność kanonicznego oryginału i miniatury, pokazuje liczbę kandydatów oraz odzyskiwalne bajty i niczego nie zmienia. `--apply` działa fail-closed: jeśli preflight ma błąd, baza i pliki nie są ruszane. Przy poprawnym preflight najpierw jednym commitem zmieniane są `public_path`, a dopiero po udanym commicie usuwane są stare pełne pochodne. Błąd usunięcia pojedynczego pliku jest ostrzeżeniem i zostawia bezpieczny orphan do późniejszego cleanupu. Skrypt jest idempotentny.
 
 ## Retencja Prywatnych Oryginałów
 
-Retencja prywatnych oryginałów działa jako ręczny skrypt operacyjny. Dla zatwierdzonych mediów po zadanym czasie prywatny oryginał jest zastępowany kopią publicznej pochodnej. Odrzucone media nie mają publicznych pochodnych; admin korzysta z chronionego podglądu prywatnego oryginału tylko do czasu usunięcia go przez retencję.
+Retencja prywatnych oryginałów działa jako ręczny skrypt operacyjny. Zatwierdzone `Photo` są wyłączone z tej retencji: ich kanoniczny oryginał pozostaje źródłem publicznego obrazu i nie może być zastąpiony pochodną. Dla zatwierdzonych `Memory` po zadanym czasie prywatny oryginał może zostać zastąpiony kopią publicznej pochodnej. Odrzucone `Photo` i `Memory` mogą stracić prywatny oryginał po osiągnięciu progu retencji.
 
 ```bash
 python3 scripts/retain_private_originals.py --dry-run
@@ -150,7 +164,7 @@ python3 scripts/retain_private_originals.py --apply
 python3 scripts/retain_private_originals.py --apply --output-json .dev/private-original-retention.json
 ```
 
-Domyślnie zatwierdzone media są kwalifikowane po `30` dniach od `approved_at`, a odrzucone media od razu. Progi można zmienić:
+Domyślnie zatwierdzone `Memory` są kwalifikowane po `30` dniach od `approved_at`, a odrzucone `Photo` i `Memory` od razu. Zatwierdzone `Photo` są zawsze pomijane. Progi można zmienić:
 
 ```bash
 python3 scripts/retain_private_originals.py --dry-run --approved-days 60 --rejected-days 7
@@ -158,18 +172,19 @@ python3 scripts/retain_private_originals.py --dry-run --approved-days 60 --rejec
 
 ## Ręczna Redakcja Mediów
 
-Adminowe kolejki zdjęć i pamiątek mają akcję `Anonimizuj`. Modal ładuje obraz, pozwala narysować obszar myszką, przesunąć zaznaczenie, złapać rogi, dopasować kształt, obrócić aktywny obszar i zapisać redakcję. Zapis wypala obszary w prywatnym oryginale, publicznej kopii i miniaturze.
+Akcja `Anonimizuj` pozostaje tylko dla `Memory`. Modal pozwala narysować i dopasować obszary redakcji, a zapis wypala je w prywatnym oryginale pamiątki, jej publicznej pochodnej i miniaturze.
 
-CLI zostaje niższopoziomową ścieżką operacyjną. Współrzędne podawane są jako wartości z zakresu `0..1`: prostokąt jako `left,top,right,bottom`, a poligon jako kolejne punkty `x1,y1,x2,y2,x3,y3`.
+Kanoniczny oryginał redakcyjnego `Photo` jest niemodyfikowalny, ponieważ ten sam plik jest źródłem publicznego obrazu. Jeśli zdjęcie wymaga anonimizacji, odrzuć je i zastąp wcześniej przygotowaną bezpieczną wersją zamiast modyfikować oryginał w miejscu.
+
+CLI zostaje niższopoziomową ścieżką dla `Memory`. Współrzędne podawane są jako wartości z zakresu `0..1`: prostokąt jako `left,top,right,bottom`, a poligon jako kolejne punkty `x1,y1,x2,y2,x3,y3`.
 
 ```bash
-python3 scripts/redact_media_image.py --dry-run --kind photo --id <photo-id> --rect 0.1,0.1,0.4,0.3
+python3 scripts/redact_media_image.py --dry-run --kind memory --id <memory-id> --rect 0.1,0.1,0.4,0.3
 python3 scripts/redact_media_image.py --apply --kind memory --id <memory-id> --rect 0.2,0.2,0.5,0.5
-python3 scripts/redact_media_image.py --apply --kind photo --id <photo-id> --polygon 0.2,0.2,0.8,0.2,0.5,0.7
-python3 scripts/redact_media_image.py --apply --kind photo --id <photo-id> --rect 0.1,0.1,0.4,0.3 --output-json .dev/redaction.json
+python3 scripts/redact_media_image.py --apply --kind memory --id <memory-id> --polygon 0.2,0.2,0.8,0.2,0.5,0.7 --output-json .dev/redaction.json
 ```
 
-Używaj tego do ręcznego ukrycia twarzy, tablic, przypadkowych osób albo prywatnych szczegółów. Skrypt nie zgaduje regionów automatycznie.
+Używaj tego do ręcznego ukrycia twarzy, tablic, przypadkowych osób albo prywatnych szczegółów w pamiątkach. Skrypt nie zgaduje regionów automatycznie.
 
 ## Eksport Research Opisów
 

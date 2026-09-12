@@ -1,4 +1,4 @@
-import { Check, Eraser, Eye, EyeOff, Pencil, Star, StarOff, Trash2, Undo2, X } from "lucide-react";
+import { Check, Eye, EyeOff, Pencil, Star, StarOff, Trash2, Undo2, X } from "lucide-react";
 
 import type { AdminPhoto, ReviewFinalStatus } from "../../api/types";
 import { AdminActionIconButton } from "./AdminActionIconButton";
@@ -11,7 +11,6 @@ type Props = {
   onDelete: () => void;
   onEditText: () => void;
   onPreview?: () => void;
-  onRedact?: () => void;
   onReview: (status: ReviewFinalStatus) => void;
   onSetCover?: () => void;
 };
@@ -24,7 +23,6 @@ export function AdminPhotoActionBar({
   onDelete,
   onEditText,
   onPreview,
-  onRedact,
   onReview,
   onSetCover,
 }: Props) {
@@ -35,7 +33,6 @@ export function AdminPhotoActionBar({
     <div className="admin-media-card-actions">
       {onPreview ? <AdminPhotoActionButton icon={Eye} label="Podgląd" onClick={onPreview} /> : null}
       <AdminPhotoActionButton icon={Pencil} label="Edytuj tekst" onClick={onEditText} />
-      {onRedact ? <AdminPhotoActionButton icon={Eraser} label="Anonimizuj" onClick={onRedact} /> : null}
       {photo.status !== "approved" ? (
         <AdminPhotoActionButton
           icon={photo.status === "rejected" ? Undo2 : Check}

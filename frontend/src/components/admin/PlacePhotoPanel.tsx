@@ -3,7 +3,6 @@ import { useState } from "react";
 
 import type { AdminPhoto, City, Place } from "../../api/types";
 import { AdminPhotoGalleryModal } from "./AdminPhotoGalleryModal";
-import { MediaRedactionModal } from "./MediaRedactionModal";
 import { PhotoUploadModal } from "./PhotoUploadModal";
 import { placePhotoGridSlotCount } from "./placePhotoPanelLayout";
 import { PlacePhotoCard } from "./PlacePhotoCard";
@@ -113,7 +112,6 @@ export function PlacePhotoPanel({ cities, onChanged, photos, place }: Props) {
           onDeleteAudio={panel.handleDeleteAudio}
           onEditText={panel.handleStartCaptionEdit}
           onError={panel.setErrorMessage}
-          onRedact={panel.setPhotoToRedact}
           onRequestDelete={(photo) => {
             setGalleryPhotoId(null);
             panel.setPhotoToDelete(photo);
@@ -121,16 +119,6 @@ export function PlacePhotoPanel({ cities, onChanged, photos, place }: Props) {
           onReview={panel.handleReview}
           onSaveAudio={panel.handleSaveAudio}
           onSetCover={panel.handleSetCover}
-        />
-      ) : null}
-
-      {panel.photoToRedact ? (
-        <MediaRedactionModal
-          isApplying={panel.isApplyingRedaction}
-          kind="photo"
-          media={panel.photoToRedact}
-          onApply={panel.handleApplyRedaction}
-          onClose={() => panel.setPhotoToRedact(null)}
         />
       ) : null}
 

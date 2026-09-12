@@ -44,6 +44,8 @@ def run_private_original_retention(
 
     for target in retention_targets(session):
         if target.status == "approved":
+            if target.kind == "photo":
+                continue
             if target.approved_at is None:
                 issues.append(
                     issue("warning", "approved_missing_approved_at", target, "Approved media has no approved_at.")
@@ -175,6 +177,8 @@ def remove_rejected_original(
 
 
 def retained_private_path(target: MediaRetentionTarget) -> Path:
+    if target.public_path is None:
+        raise ValueError("Approved retained media requires a public path")
     public_relative = target.public_path.removeprefix("/media/")
     suffix = Path(public_relative).suffix or ".jpg"
     media_dir = "photos" if target.kind == "photo" else "memories"

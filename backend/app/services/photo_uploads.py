@@ -1,11 +1,8 @@
-from datetime import UTC, datetime
-
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session
 
 from app.models.photo import Photo
-from app.models.place import Place
 from app.schemas.content import ContentBlock
 from app.services.media.audio import (
     StoredPrivateAudio,
@@ -17,11 +14,10 @@ from app.services.media.audio import (
     store_private_audio_bytes,
 )
 from app.services.media.images import (
-    StoredImage,
     StoredPrivateImage,
     delete_public_image,
     delete_stored_image,
-    publish_image_derivatives,
+    publish_image_thumbnail,
     store_private_image_bytes,
 )
 from app.services.photo_fields import (
@@ -29,6 +25,7 @@ from app.services.photo_fields import (
     normalize_photo_caption,
     normalize_photo_description_blocks,
 )
+from app.services.photo_media import public_photo_image_url_for
 
 
 def delete_photo_files(photo: Photo) -> None:
@@ -47,9 +44,8 @@ def cleanup_stored_upload(
 
 
 def publish_photo_media(photo: Photo) -> None:
-    stored_image = publish_image_derivatives(photo.original_path)
-    photo.public_path = stored_image.public_path
-    photo.thumb_path = stored_image.thumb_path
+    photo.thumb_path = publish_image_thumbnail(photo.original_path)
+    photo.public_path = public_photo_image_url_for(photo)
 
     try:
         if photo.audio_original_path is not None:
@@ -70,52 +66,6 @@ def unpublish_photo_media(photo: Photo) -> None:
     photo.public_path = None
     photo.thumb_path = None
     photo.audio_public_path = None
-
-
-def attach_approved_place_photo(
-    *,
-    as_cover: bool,
-    attribution_author: str | None = None,
-    attribution_license: str | None = None,
-    attribution_license_url: str | None = None,
-    attribution_source_url: str | None = None,
-    caption: str | None,
-    description_blocks: list[ContentBlock] | None = None,
-    place: Place,
-    role: str,
-    session: Session,
-    source: str,
-    stored_image: StoredImage,
-) -> Photo:
-    now = datetime.now(UTC)
-    attribution = normalize_photo_attribution(
-        attribution_author=attribution_author,
-        attribution_license=attribution_license,
-        attribution_license_url=attribution_license_url,
-        attribution_source_url=attribution_source_url,
-    )
-    photo = Photo(
-        place_id=place.id,
-        original_path=stored_image.original_path,
-        public_path=stored_image.public_path,
-        thumb_path=stored_image.thumb_path,
-        role=role,
-        source=source,
-        status="approved",
-        caption=normalize_photo_caption(caption),
-        description_blocks=normalize_photo_description_blocks(description_blocks),
-        **attribution,
-        consent_confirmed=True,
-        approved_at=now,
-    )
-    session.add(photo)
-    session.flush()
-    place.photo_count += 1
-    if as_cover:
-        place.cover_photo_id = photo.id
-    place.updated_at = now
-    session.add(place)
-    return photo
 
 
 async def create_editorial_photo_from_upload(

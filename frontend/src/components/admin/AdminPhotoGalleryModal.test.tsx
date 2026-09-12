@@ -71,7 +71,7 @@ function photo(id: string, status: AdminPhoto["status"] = "approved"): AdminPhot
     description_blocks: [{ type: "paragraph", text: "Długi opis zdjęcia do czytania i TTS." }],
     id,
     place_id: "place-1",
-    public_path: `/media/${id}.jpg`,
+    public_path: `/api/places/place-1/photos/${id}/media/image`,
     role: "gallery",
     source: "editorial",
     status,
@@ -109,7 +109,6 @@ function renderGallery(photos: AdminPhoto[]) {
         onDeleteAudio={async () => undefined}
         onEditText={() => undefined}
         onError={() => undefined}
-        onRedact={() => undefined}
         onRequestDelete={() => undefined}
         onReview={() => undefined}
         onSaveAudio={async () => undefined}
@@ -134,7 +133,7 @@ describe("AdminPhotoGalleryModal", () => {
     expect(markup).toContain('aria-label="Pokaż opis zdjęcia"');
     expect(markup).toContain('aria-label="Odczytaj opis zdjęcia"');
     expect(markup).toContain('aria-label="Narzędzia zdjęcia"');
-    expect(markup).toContain("Anonimizuj");
+    expect(markup).not.toContain("Anonimizuj");
     expect(markup).toContain("Ukryj");
     expect(markup).toContain("Zdejmij główne");
     expect(markup).toContain("Poprzednie zdjęcie");

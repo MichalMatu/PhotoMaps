@@ -44,6 +44,8 @@ make scripts
 | Usunięcie mediów | `make cleanup-media-apply` | Usuwa tylko pliki zgłoszone przez diagnostykę. |
 | Retencja oryginałów | `make retain-originals` | Pokazuje plan retencji prywatnych oryginałów. |
 | Realna retencja | `make retain-originals-apply` | Stosuje reguły retencji. |
+| Migracja zdjęć | `make migrate-photo-originals` | Dry-run przejścia `Photo` na publiczny oryginał + miniaturę. |
+| Migracja zdjęć apply | `make migrate-photo-originals-apply` | Zmienia URL-e i usuwa stare pełne pochodne po commicie DB. |
 | Reset dev data | `make reset-dev-data` | Czyści lokalną bazę i storage dev. |
 
 ## Content Pipeline
@@ -156,11 +158,11 @@ plików zdjęć ani prywatnych ścieżek storage.
 Ręczna redakcja mediów wymaga jawnych argumentów, więc Make tylko przekazuje `ARGS` do skryptu:
 
 ```bash
-make redact-media ARGS="--dry-run --kind photo --id <photo-id> --rect 0.1,0.1,0.4,0.3"
+make redact-media ARGS="--dry-run --kind memory --id <memory-id> --rect 0.1,0.1,0.4,0.3"
 make redact-media ARGS="--apply --kind memory --id <memory-id> --rect 0.2,0.2,0.5,0.5"
 ```
 
-Szczegóły operacji na danych, backupu, retencji i redakcji są w [`docs/ops.md`](../docs/ops.md).
+Redakcyjne `Photo` nie są anonimizowane w miejscu: kanoniczny oryginał należy odrzucić i zastąpić bezpieczną wersją. Szczegóły operacji na danych, backupu, migracji zdjęć, retencji i redakcji są w [`docs/ops.md`](../docs/ops.md).
 
 ## Niskopoziomowe Pliki
 

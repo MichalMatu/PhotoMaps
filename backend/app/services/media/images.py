@@ -64,14 +64,18 @@ def public_storage_path(public_url_path: str) -> Path:
     return storage_path(PUBLIC_STORAGE_DIR, public_url_path.removeprefix(media_prefix))
 
 
+def static_public_storage_path(public_url_path: str | None) -> Path | None:
+    if public_url_path is None or not public_url_path.startswith("/media/"):
+        return None
+    return public_storage_path(public_url_path)
+
+
 def delete_stored_image(original_path: str, public_path: str | None, thumb_path: str | None) -> None:
-    paths = [
-        storage_path(PRIVATE_STORAGE_DIR, original_path),
-    ]
-    if public_path is not None:
-        paths.append(public_storage_path(public_path))
-    if thumb_path is not None:
-        paths.append(public_storage_path(thumb_path))
+    paths = [storage_path(PRIVATE_STORAGE_DIR, original_path)]
+    for public_url_path in (public_path, thumb_path):
+        static_path = static_public_storage_path(public_url_path)
+        if static_path is not None:
+            paths.append(static_path)
 
     for path in paths:
         cleanup_paths(path)
@@ -79,10 +83,10 @@ def delete_stored_image(original_path: str, public_path: str | None, thumb_path:
 
 def delete_public_image(public_path: str | None, thumb_path: str | None) -> None:
     paths = []
-    if public_path is not None:
-        paths.append(public_storage_path(public_path))
-    if thumb_path is not None:
-        paths.append(public_storage_path(thumb_path))
+    for public_url_path in (public_path, thumb_path):
+        static_path = static_public_storage_path(public_url_path)
+        if static_path is not None:
+            paths.append(static_path)
 
     cleanup_paths(*paths)
 
@@ -218,6 +222,44 @@ def public_image_paths_for_original(original_path: str, output_format: str) -> t
     public_dir.mkdir(parents=True, exist_ok=True)
     output_suffix = public_image_suffix(output_format)
     return public_dir / f"{base_name}{output_suffix}", public_dir / f"{base_name}-thumb{output_suffix}"
+
+
+def publish_image_thumbnail(original_path: str) -> str:
+    private_path = storage_path(PRIVATE_STORAGE_DIR, original_path)
+    if not private_path.exists():
+        raise HTTPException(status_code=422, detail="Image original is missing")
+
+    thumb_path: Path | None = None
+    try:
+        with Image.open(private_path, formats=SUPPORTED_IMAGE_FORMATS) as image:
+            ensure_supported_image_format(image)
+            ensure_image_size(image)
+            output_format = public_image_format(image)
+            _, thumb_path = public_image_paths_for_original(original_path, output_format)
+            public_image = normalized_public_image(image, output_format)
+            thumb_image = ImageOps.fit(
+                public_image,
+                THUMB_SIZE,
+                method=Image.Resampling.LANCZOS,
+                centering=(0.5, 0.5),
+            )
+            save_thumbnail_image(thumb_image, thumb_path, output_format)
+    except (
+        HTTPException,
+        UnidentifiedImageError,
+        OSError,
+        Image.DecompressionBombError,
+        Image.DecompressionBombWarning,
+    ) as exc:
+        if thumb_path is not None:
+            cleanup_paths(thumb_path)
+        if isinstance(exc, HTTPException):
+            raise
+        raise HTTPException(status_code=422, detail="Image file could not be processed") from exc
+
+    if thumb_path is None:
+        raise HTTPException(status_code=422, detail="Image file could not be processed")
+    return public_url(thumb_path)
 
 
 def publish_image_derivatives(original_path: str) -> StoredPublicImage:

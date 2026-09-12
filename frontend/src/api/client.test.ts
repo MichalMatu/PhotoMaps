@@ -15,7 +15,6 @@ import {
   getAdminReports,
   mediaUrl,
   redactAdminMemory,
-  redactAdminPhoto,
   request,
   setAdminSessionToken,
   updateAdminMemoryAudio,
@@ -142,7 +141,7 @@ describe("admin queue requests", () => {
 });
 
 describe("admin media redaction requests", () => {
-  it("posts polygon redactions to photo and memory endpoints", async () => {
+  it("posts polygon redactions to the memory endpoint", async () => {
     setAdminSessionToken("admin-token");
     const fetchMock = vi.fn<typeof fetch>(async () => {
       return new Response(
@@ -184,11 +183,9 @@ describe("admin media redaction requests", () => {
       rectangles: [],
     };
 
-    const report = await redactAdminPhoto("photo-1", payload);
-    await redactAdminMemory("memory-1", payload);
+    const report = await redactAdminMemory("memory-1", payload);
 
-    expect(fetchMock.mock.calls[0][0]).toBe("http://127.0.0.1:8000/api/admin/photos/photo-1/redaction");
-    expect(fetchMock.mock.calls[1][0]).toBe("http://127.0.0.1:8000/api/admin/memories/memory-1/redaction");
+    expect(fetchMock.mock.calls[0][0]).toBe("http://127.0.0.1:8000/api/admin/memories/memory-1/redaction");
     expect(JSON.parse(String(fetchMock.mock.calls[0][1]?.body))).toEqual(payload);
     expect(report.actions).toEqual([
       {

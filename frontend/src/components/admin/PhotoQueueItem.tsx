@@ -12,7 +12,6 @@ type Props = {
   onDelete: (photo: AdminPhoto) => void;
   onDeleteAudio: (photo: AdminPhoto) => Promise<void>;
   onError: (message: string | null) => void;
-  onRedact: (photo: AdminPhoto) => void;
   onReview: (photoId: string, status: ReviewFinalStatus) => void;
   onSaveAudio: (photo: AdminPhoto, file: File) => Promise<void>;
   onSetCover: (photo: AdminPhoto) => void;
@@ -26,7 +25,6 @@ export function PhotoQueueItem({
   onDelete,
   onDeleteAudio,
   onError,
-  onRedact,
   onReview,
   onSaveAudio,
   onSetCover,
@@ -65,7 +63,6 @@ export function PhotoQueueItem({
           onClearCover={() => onClearCover(photo)}
           onDelete={() => onDelete(photo)}
           onEditText={() => onStartCaptionEdit(photo)}
-          onRedact={() => onRedact(photo)}
           onReview={(status) => onReview(photo.id, status)}
           onSetCover={() => onSetCover(photo)}
         />

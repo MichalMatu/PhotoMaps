@@ -91,6 +91,15 @@ def redact_media_image(
     if media is None:
         issues.append({"severity": "error", "code": "media_missing", "message": "Media record does not exist."})
         return redaction_report(kind, media_id, apply_changes, actions, issues)
+    if isinstance(media, Photo):
+        issues.append(
+            {
+                "severity": "error",
+                "code": "photo_original_immutable",
+                "message": "Editorial photo originals are immutable; replace or reject the photo instead.",
+            }
+        )
+        return redaction_report(kind, media_id, apply_changes, actions, issues)
 
     paths = media_paths(media)
     private_path = paths["private_original"]

@@ -38,7 +38,9 @@ def quarantine_root() -> Path:
 def photo_public_paths(photo: Photo) -> tuple[str, ...]:
     return tuple(
         dict.fromkeys(
-            path for path in (photo.public_path, photo.thumb_path, photo.audio_public_path) if path is not None
+            path
+            for path in (photo.public_path, photo.thumb_path, photo.audio_public_path)
+            if path is not None and images.static_public_storage_path(path) is not None
         )
     )
 

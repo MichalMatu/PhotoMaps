@@ -4,7 +4,6 @@ import { bumpMediaCacheRevision } from "../../api/http";
 import {
   deleteAdminPhoto,
   deleteAdminPhotoAudio,
-  redactAdminPhoto,
   reviewPhoto,
   setCoverPhoto,
   updateAdminPhoto,
@@ -23,7 +22,6 @@ import {
   photoPayloadFromDraft,
   sortPlacePhotosForPanel,
 } from "./placePhotoPanelState";
-import type { RedactionPolygon } from "./mediaRedactionGeometry";
 
 type UsePlacePhotoPanelParams = {
   onChanged: () => Promise<void>;
@@ -49,12 +47,10 @@ export function usePlacePhotoPanel({ onChanged, photos, place }: UsePlacePhotoPa
   const [inputKey, setInputKey] = useState(0);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isApplyingRedaction, setIsApplyingRedaction] = useState(false);
   const [isSavingCaption, setIsSavingCaption] = useState(false);
   const [isSettingCover, setIsSettingCover] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [photoToDelete, setPhotoToDelete] = useState<AdminPhoto | null>(null);
-  const [photoToRedact, setPhotoToRedact] = useState<AdminPhoto | null>(null);
   const sortedPhotos = useMemo(
     () => sortPlacePhotosForPanel(photos, place.cover_photo_id),
     [photos, place.cover_photo_id],
@@ -145,28 +141,6 @@ export function usePlacePhotoPanel({ onChanged, photos, place }: UsePlacePhotoPa
       await onChanged();
     } catch (reason) {
       setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się zmienić statusu zdjęcia.");
-    }
-  }
-
-  async function handleApplyRedaction(redactions: RedactionPolygon[]) {
-    if (!photoToRedact) {
-      return;
-    }
-
-    setErrorMessage(null);
-    setIsApplyingRedaction(true);
-    try {
-      await redactAdminPhoto(photoToRedact.id, {
-        polygons: redactions.map((redaction) => redaction.points),
-        rectangles: [],
-      });
-      bumpMediaCacheRevision();
-      setPhotoToRedact(null);
-      await onChanged();
-    } catch (reason) {
-      throw reason instanceof Error ? reason : new Error("Nie udało się zapisać redakcji zdjęcia.");
-    } finally {
-      setIsApplyingRedaction(false);
     }
   }
 
@@ -294,7 +268,6 @@ export function usePlacePhotoPanel({ onChanged, photos, place }: UsePlacePhotoPa
     editingPhotoId,
     errorMessage,
     file,
-    handleApplyRedaction,
     handleCancelCaptionEdit,
     handleClearCover,
     handleConfirmDelete,
@@ -307,14 +280,12 @@ export function usePlacePhotoPanel({ onChanged, photos, place }: UsePlacePhotoPa
     handleUpload,
     inputKey,
     isDeleting,
-    isApplyingRedaction,
     isSavingCaption,
     isSettingCover,
     isUploadModalOpen,
     isUploading,
     openUploadModal,
     photoToDelete,
-    photoToRedact,
     removeDescriptionBlock,
     removeDescriptionDraftBlock,
     setAudioFile,
@@ -324,7 +295,6 @@ export function usePlacePhotoPanel({ onChanged, photos, place }: UsePlacePhotoPa
     setErrorMessage,
     setFile,
     setPhotoToDelete,
-    setPhotoToRedact,
     setUploadAttributionDraft,
     sortedPhotos,
     updateDescriptionBlock,

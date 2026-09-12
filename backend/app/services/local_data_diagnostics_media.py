@@ -18,6 +18,7 @@ from app.services.local_data_diagnostics_common import (
     safe_child,
     safe_relative_path,
 )
+from app.services.photo_media import public_photo_image_url_for
 
 
 def audit_photos(
@@ -81,16 +82,12 @@ def audit_photos(
             check_images=check_images,
             required=photo.status != "rejected",
         )
-        audit_public_media_path(
-            media_kind="photo",
-            media_id=photo.id,
-            field="public_path",
-            url_path=photo.public_path,
+        audit_photo_public_image_path(
+            photo=photo,
             public_storage_dir=public_storage_dir,
             expected_public=expected_public,
             issues=issues,
             check_images=check_images,
-            required=photo.status == "approved",
         )
         audit_public_media_path(
             media_kind="photo",
@@ -390,6 +387,59 @@ def audit_audio_paths(
         public_storage_dir=public_storage_dir,
         expected_public=expected_public,
         issues=issues,
+    )
+
+
+def audit_photo_public_image_path(
+    *,
+    photo: Photo,
+    public_storage_dir: Path,
+    expected_public: set[str],
+    issues: IssueList,
+    check_images: bool,
+) -> None:
+    target = f"photo:{photo.id}:public_path"
+    required = photo.status == "approved"
+    if photo.public_path is None:
+        if required:
+            add_issue(issues, "error", "photo_public_path_missing", target, "Approved photo has no public URL.")
+        return
+
+    expected_url = public_photo_image_url_for(photo)
+    if photo.public_path == expected_url:
+        return
+
+    legacy_relative = public_relative_path(photo.public_path)
+    if legacy_relative is not None:
+        add_issue(
+            issues,
+            "warning",
+            "photo_legacy_public_derivative",
+            target,
+            "Photo still uses a legacy full-size public derivative.",
+            path=legacy_relative,
+        )
+        audit_public_media_path(
+            media_kind="photo",
+            media_id=photo.id,
+            field="public_path",
+            url_path=photo.public_path,
+            public_storage_dir=public_storage_dir,
+            expected_public=expected_public,
+            issues=issues,
+            check_images=check_images,
+            required=required,
+        )
+        return
+
+    add_issue(
+        issues,
+        "error",
+        "photo_bad_public_path",
+        target,
+        "Photo public URL does not match the guarded original endpoint.",
+        expected=expected_url,
+        actual=photo.public_path,
     )
 
 

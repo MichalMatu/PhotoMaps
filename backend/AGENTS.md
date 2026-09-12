@@ -21,7 +21,7 @@ Backend odpowiada za FastAPI, SQLite/Alembic, modele domenowe, publiczne i admin
 - Kategorie miejsc sa relacja wiele-do-wielu przez `PlaceCategory`; nie wracac do pojedynczej kategorii na `Place`.
 - Publiczne endpointy zwracaja tylko `published` miejsca oraz tylko zatwierdzone publiczne media.
 - Publiczne odpowiedzi nigdy nie moga ujawnic `original_path` ani sciezek do prywatnego storage.
-- Pipeline obrazow ma zachowywac rozdzielczosc i wysoka jakosc publicznej kopii; skalowanie jest dopuszczalne tylko dla osobnych miniaturek/preview, a limity bajtow i pikseli sa wysokimi bezpiecznikami, nie narzedziem obnizania jakosci.
+- Redakcyjne `Photo` zachowuje kanoniczny oryginal w private storage; zatwierdzony publiczny endpoint serwuje ten plik bez pelnej pochodnej, a pipeline generuje tylko osobna miniaturke. `Memory` nadal uzywa private original + public derivative + thumb. Skalowanie jest dopuszczalne tylko dla miniaturek/preview, a limity bajtow i pikseli sa wysokimi bezpiecznikami, nie narzedziem obnizania jakosci.
 - Publiczne i adminowe przeplywy API maja byc osobne, nawet jesli uzywaja tych samych modeli i serwisow.
 - Route'y maja byc cienkie; walidacja domenowa, liczniki, review i usuwanie zaleznosci naleza do serwisow.
 - Zmiana modelu wymaga migracji albo jawnej aktualizacji schematu oraz testu.

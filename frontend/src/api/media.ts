@@ -260,13 +260,6 @@ export function deleteAdminMemoryAudio(memoryId: string): Promise<AdminMemory> {
   });
 }
 
-export function redactAdminPhoto(photoId: string, payload: MediaRedactionPayload): Promise<MediaRedactionReport> {
-  return request<MediaRedactionReport>(`/api/admin/photos/${photoId}/redaction`, {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
-}
-
 export function redactAdminMemory(memoryId: string, payload: MediaRedactionPayload): Promise<MediaRedactionReport> {
   return request<MediaRedactionReport>(`/api/admin/memories/${memoryId}/redaction`, {
     method: "POST",

@@ -1,24 +1,11 @@
 from datetime import UTC, datetime
 from pathlib import Path
 
-from PIL import Image
-
 from app.models.photo import Photo
 from app.tests.support import ADMIN_HEADERS, create_place, detailed_image_upload
 
 
-def image_pixel(path: Path, xy: tuple[int, int]) -> tuple[int, int, int]:
-    with Image.open(path) as image:
-        return image.convert("RGB").getpixel(xy)
-
-
-def assert_blurred_pixel(value: tuple[int, int, int]) -> None:
-    assert 40 < value[0] < 220
-    assert 40 < value[1] < 220
-    assert 40 < value[2] < 220
-
-
-def test_admin_can_redact_photo_by_polygon(client_session, tmp_path: Path) -> None:
+def test_admin_photo_redaction_refuses_to_modify_original(client_session, tmp_path: Path) -> None:
     client, session = client_session
     place = create_place(session)
     upload_response = client.post(
@@ -29,6 +16,8 @@ def test_admin_can_redact_photo_by_polygon(client_session, tmp_path: Path) -> No
     )
     photo = session.get(Photo, upload_response.json()["id"])
     assert photo is not None
+    private_file = tmp_path / "private" / photo.original_path
+    before = private_file.read_bytes()
 
     response = client.post(
         f"/api/admin/photos/{photo.id}/redaction",
@@ -45,15 +34,12 @@ def test_admin_can_redact_photo_by_polygon(client_session, tmp_path: Path) -> No
             ],
         },
     )
-    private_file = tmp_path / "private" / photo.original_path
 
-    assert response.status_code == 200
-    assert response.json()["summary"]["actions"]["applied"] == 1
-    assert response.json()["actions"][0]["action"] == "redact_image"
-    assert response.json()["issues"] == []
+    assert response.status_code == 422
+    assert response.json()["detail"] == "Editorial photo originals are immutable; replace or reject the photo instead."
     assert photo.public_path is None
     assert photo.thumb_path is None
-    assert_blurred_pixel(image_pixel(private_file, (16, 16)))
+    assert private_file.read_bytes() == before
 
 
 def test_admin_photo_redaction_requires_shape(client_session) -> None:
