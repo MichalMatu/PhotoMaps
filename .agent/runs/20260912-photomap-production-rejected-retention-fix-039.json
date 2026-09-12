@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-production-rejected-retention-fix-039",
+  "task_digest": "514ff482dfad184e9cd6ceaa59a58a4c33473ca4ec31e9be8e10d122a0b1e8bb",
+  "idle_timeout": 300,
+  "task_timeout": 1800,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T07:23:00.807212+00:00",
+  "attempt_id": "b1590f6ce9a703a0ad019269",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 36919,
+  "updated_at": "2026-09-12T07:23:00.807336+00:00",
+  "pid": 36919
+}
