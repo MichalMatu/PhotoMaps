@@ -23,7 +23,7 @@ class MediaRetentionTarget:
     model: Photo | Memory
     place_id: str
     status: str
-    original_path: str
+    original_path: str | None
     public_path: str | None
     thumb_path: str | None
     created_at: datetime
@@ -41,6 +41,7 @@ def run_private_original_retention(
     current_time = now or datetime.now(UTC)
     actions: list[dict[str, Any]] = []
     issues: list[dict[str, Any]] = []
+    rejected_deletions: list[tuple[MediaRetentionTarget, Path]] = []
 
     for target in retention_targets(session):
         if target.status == "approved":
@@ -57,12 +58,32 @@ def run_private_original_retention(
         elif target.status == "rejected":
             if as_utc(target.created_at) > current_time - timedelta(days=rejected_retention_days):
                 continue
-            action_item = remove_rejected_original(target, apply_changes, issues)
+            action_item = remove_rejected_original(
+                target,
+                apply_changes,
+                issues,
+                rejected_deletions,
+            )
             if action_item is not None:
                 actions.append(action_item)
 
     if apply_changes:
+        # Persist the fact that rejected originals are no longer retained before
+        # deleting any file. A database failure therefore leaves the source file
+        # intact instead of creating a stale database reference.
         session.commit()
+        for target, private_path in rejected_deletions:
+            try:
+                private_path.unlink(missing_ok=True)
+            except OSError:
+                issues.append(
+                    issue(
+                        "warning",
+                        "rejected_original_delete_failed",
+                        target,
+                        f"Database retention state was saved, but the private original could not be deleted: {private_path}",
+                    )
+                )
 
     issue_counts = {
         "error": sum(1 for item in issues if item["severity"] == "error"),
@@ -132,6 +153,10 @@ def retain_approved_original(
     apply_changes: bool,
     issues: list[dict[str, Any]],
 ) -> dict[str, Any]:
+    if target.original_path is None:
+        issues.append(issue("error", "approved_original_path_missing", target, "Approved media has no original path."))
+        return action("replace_approved_original", target, "", applied=False)
+
     private_path = images.storage_path(images.PRIVATE_STORAGE_DIR, target.original_path)
     if target.public_path is None:
         issues.append(issue("error", "approved_public_path_missing", target, "Approved media has no public path."))
@@ -163,16 +188,21 @@ def remove_rejected_original(
     target: MediaRetentionTarget,
     apply_changes: bool,
     issues: list[dict[str, Any]],
+    rejected_deletions: list[tuple[MediaRetentionTarget, Path]],
 ) -> dict[str, Any] | None:
+    if target.original_path is None:
+        return None
     try:
         private_path = images.storage_path(images.PRIVATE_STORAGE_DIR, target.original_path)
     except ValueError:
         issues.append(issue("error", "rejected_original_path_unsafe", target, "Private original path is unsafe."))
         return None
-    if not private_path.exists():
-        return None
+
     if apply_changes:
-        private_path.unlink(missing_ok=True)
+        target.model.original_path = None
+        if private_path.exists():
+            rejected_deletions.append((target, private_path))
+
     return action("remove_rejected_original", target, target.original_path, applied=apply_changes)
 
 
