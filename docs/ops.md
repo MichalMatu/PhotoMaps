@@ -162,6 +162,7 @@ Retencja prywatnych oryginałów działa jako ręczny skrypt operacyjny i zawsze
 - odrzucone `Photo` i `Memory` po osiągnięciu progu retencji mogą całkowicie stracić prywatny oryginał; wtedy `original_path` jest ustawiany na `NULL`.
 
 Dla rejected media kolejność operacji jest częścią kontraktu bezpieczeństwa: najpierw zapisujemy w DB `original_path = NULL` i commitujemy transakcję, a dopiero potem usuwamy plik. Jeśli commit się nie powiedzie, plik pozostaje na dysku. Jeśli późniejszy unlink się nie powiedzie, DB pozostaje spójna, a plik jest bezpiecznym orphanem do wykrycia i usunięcia przez diagnostykę/cleanup.
+Ta sama zasada dotyczy zatwierdzonych `Memory`: najpierw tworzona jest kopia retained i zapisywana jej ścieżka w DB, commit musi się udać, a dopiero potem usuwany jest poprzedni prywatny oryginał. Awaria commita może zostawić dodatkowy orphan, ale nie może skasować źródła wskazywanego przez bazę.
 
 `original_path = NULL` jest poprawnym stanem tylko dla `rejected` po retencji. Dla `pending` i `approved` diagnostyka traktuje brak ścieżki jako błąd. Po purge adminowy podgląd odrzuconego medium zwraca `404`, a próba ponownego zatwierdzenia zwraca kontrolowane `422` zamiast błędu filesystemu. Usunięcie rekordu pozostaje idempotentne.
 

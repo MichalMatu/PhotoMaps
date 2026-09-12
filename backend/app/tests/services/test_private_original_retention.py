@@ -1,6 +1,8 @@
 from datetime import UTC, datetime
 from pathlib import Path
 
+import pytest
+
 from app.models.memory import Memory
 from app.models.photo import Photo
 from app.services.local_data_diagnostics import run_local_data_diagnostics
@@ -120,6 +122,51 @@ def test_private_original_retention_apply_replaces_approved_memory_and_removes_r
     assert memory.original_path.endswith("-retained.jpg")
     assert not rejected_original_file.exists()
     assert photo.original_path is None
+
+
+def test_approved_memory_retention_keeps_source_when_database_commit_fails(
+    client_session,
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    _client, session = client_session
+    place = create_place(session)
+    private_root = tmp_path / "private"
+    public_root = tmp_path / "public"
+    original_path = f"memories/{place.id}/approved-original.jpg"
+    public_path = f"memories/{place.id}/approved.jpg"
+    original_file = write_file(private_root, original_path, b"private-original")
+    write_file(public_root, public_path, b"public-derivative")
+    memory = Memory(
+        place_id=place.id,
+        caption="Pamiątka",
+        memory_text="Krótka myśl",
+        original_path=original_path,
+        public_path=f"/media/{public_path}",
+        status="approved",
+        approved_at=datetime(2026, 1, 1, tzinfo=UTC),
+        claim_token_hash=claim_token_hash("commit-failure-test"),
+    )
+    session.add(memory)
+    session.commit()
+    session.refresh(memory)
+    replacement_file = private_root / f"memories/{place.id}/{memory.id}-retained.jpg"
+
+    def fail_commit() -> None:
+        raise RuntimeError("simulated commit failure")
+
+    monkeypatch.setattr(session, "commit", fail_commit)
+    with pytest.raises(RuntimeError, match="simulated commit failure"):
+        run_private_original_retention(
+            session,
+            apply_changes=True,
+            approved_retention_days=30,
+            rejected_retention_days=1000000,
+            now=datetime(2026, 3, 1, tzinfo=UTC),
+        )
+
+    assert original_file.read_bytes() == b"private-original"
+    assert replacement_file.read_bytes() == b"public-derivative"
 
 
 def test_local_data_diagnostics_allows_existing_rejected_private_original(

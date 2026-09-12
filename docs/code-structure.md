@@ -59,7 +59,7 @@ Pierwszy widok mapy renderuje elementy z lekkiego `map preview` (bez `descriptio
 - Redakcyjne `Photo`: jeden niemodyfikowalny oryginal w `backend/storage/private`, publiczny endpoint `/api/places/{place_id}/photos/{photo_id}/media/image` serwuje dokladnie jego bajty dla zatwierdzonego zdjecia, a fizycznie generowana jest tylko miniatura.
 - `Memory`: prywatny oryginal + osobna publiczna pochodna + miniatura.
 - `original_path` jest niepusty dla `pending` i `approved`. `NULL` oznacza tylko swiadomie usuniety prywatny oryginal rekordu `rejected` po retencji.
-- Retencja rejected jest fail-safe: najpierw commit stanu `original_path = NULL`, dopiero potem unlink pliku. Niepowodzenie DB nie moze zostawic martwego wskaznika; niepowodzenie unlink moze zostawic orphan wykrywany przez diagnostyke.
+- Retencja jest fail-safe dla wszystkich destrukcyjnych zmian: rejected commitują `original_path = NULL` przed unlinkiem, a approved `Memory` commitują ścieżkę retained przed usunięciem poprzedniego oryginału. Niepowodzenie DB nie może zostawić martwego wskaźnika; niepowodzenie unlink może najwyżej zostawić orphan wykrywany przez diagnostykę.
 - Diagnostyka traktuje `NULL` jako poprawny tylko dla purged `rejected`; brak oryginalu w pozostalych stanach jest bledem.
 - Publiczne payloady nigdy nie ujawniaja `original_path` ani prywatnych sciezek storage.
 
