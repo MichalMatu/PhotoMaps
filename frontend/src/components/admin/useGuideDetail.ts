@@ -17,6 +17,18 @@ export function useGuideDetail({ onError, selectedGuideId }: UseGuideDetailArgs)
   const selectedGuideIdRef = useRef(selectedGuideId);
   selectedGuideIdRef.current = selectedGuideId;
 
+  const isGuideSelected = useCallback((guideId: string) => selectedGuideIdRef.current === guideId, []);
+
+  const commitGuideDetail = useCallback((guideId: string, detail: GuideDetail) => {
+    requestGuard.current.invalidate();
+    if (selectedGuideIdRef.current !== guideId) {
+      return false;
+    }
+    setGuideDetail(detail);
+    setIsGuideDetailLoading(false);
+    return true;
+  }, []);
+
   const refreshGuideDetail = useCallback(async (guideId: string) => {
     const guard = requestGuard.current;
     const token = guard.begin();
@@ -63,8 +75,10 @@ export function useGuideDetail({ onError, selectedGuideId }: UseGuideDetailArgs)
   }, [onError, refreshGuideDetail, selectedGuideId]);
 
   return {
+    commitGuideDetail,
     guideDetail,
     isGuideDetailLoading,
+    isGuideSelected,
     refreshGuideDetail,
     setGuideDetail,
   };
