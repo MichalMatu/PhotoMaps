@@ -1,0 +1,16 @@
+{
+  "id": "20260912-photomap-working-copy-bootstrap-057",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": true,
+  "resources": [],
+  "command_timeout": 1800,
+  "idle_timeout": 900,
+  "task_timeout": 3600,
+  "commands": [
+    "set -euo pipefail; SRC=\"$HOME/Desktop/PhotoMaps-full-backup-2026-09-12-053\"; DST=\"$HOME/Desktop/PhotoMaps-working-review-2026-09-12\"; test -d \"$SRC\"; echo src_files=$(find \"$SRC\" -type f | wc -l | tr -d ' '); echo src_kb=$(du -sk \"$SRC\" | cut -f1); echo dst_exists=$(test -e \"$DST\" && echo yes || echo no); if test -e \"$DST\"; then echo dst_files=$(find \"$DST\" -type f | wc -l | tr -d ' '); echo dst_kb=$(du -sk \"$DST\" | cut -f1); fi; cp -h 2>&1 | head -20 || true; diskutil info \"$HOME/Desktop\" 2>/dev/null | grep -E 'File System Personality|Type|Volume Name|Device Node|Solid State' || true; df -h \"$HOME/Desktop\"",
+    "set -euo pipefail; SRC=\"$HOME/Desktop/PhotoMaps-full-backup-2026-09-12-053\"; DST=\"$HOME/Desktop/PhotoMaps-working-review-2026-09-12\"; if test -e \"$DST\"; then rm -rf \"$DST\"; fi; mkdir -p \"$DST/backend/data\" \"$DST/backend/storage\"; cp \"$SRC/backend/data/app.db\" \"$DST/backend/data/app.db\"; cp -R -c \"$SRC/backend/storage/.\" \"$DST/backend/storage/\" 2>/tmp/photomap-clone-057.err || { rm -rf \"$DST/backend/storage\"; mkdir -p \"$DST/backend/storage\"; cp -R \"$SRC/backend/storage/.\" \"$DST/backend/storage/\"; }; cp \"$SRC/local-data-diagnostics.json\" \"$DST/local-data-diagnostics.json\"; test \"$(shasum -a 256 \"$SRC/backend/data/app.db\" | cut -d' ' -f1)\" = \"$(shasum -a 256 \"$DST/backend/data/app.db\" | cut -d' ' -f1)\"; echo working_copy=$DST; echo working_files=$(find \"$DST\" -type f | wc -l | tr -d ' '); echo working_kb=$(du -sk \"$DST\" | cut -f1); echo working_copy_ready",
+    "set -euo pipefail; DB=\"$HOME/Desktop/PhotoMaps-working-review-2026-09-12/backend/data/app.db\"; python3 -c 'import sqlite3, json; p=\"'$HOME'/Desktop/PhotoMaps-working-review-2026-09-12/backend/data/app.db\"; c=sqlite3.connect(p); c.row_factory=sqlite3.Row; print(\"place_columns=\"+json.dumps([r[1] for r in c.execute(\"pragma table_info(place)\")], ensure_ascii=False)); print(\"photo_columns=\"+json.dumps([r[1] for r in c.execute(\"pragma table_info(photo)\")], ensure_ascii=False)); rows=c.execute(\"select p.id,p.slug,p.title,p.description,p.photo_count,p.cover_photo_id,count(ph.id) as approved_photos from place p left join photo ph on ph.place_id=p.id and ph.status=\\\"approved\\\" group by p.id order by case when trim(coalesce(p.description,\\\"\\\"))=\\\"\\\" then 0 else 1 end, length(coalesce(p.description,\\\"\\\")), p.photo_count asc, p.title limit 30\").fetchall(); print(\"candidate_places=\"+json.dumps([dict(r) for r in rows], ensure_ascii=False)); c.close()'"
+  ]
+}
