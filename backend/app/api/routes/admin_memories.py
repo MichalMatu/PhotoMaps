@@ -43,6 +43,8 @@ def admin_memory_or_404(memory_id: str, session: Session) -> Memory:
 
 
 def private_memory_image_path(memory: Memory):
+    if memory.original_path is None:
+        raise HTTPException(status_code=404, detail="Memory media not found")
     path = images.storage_path(images.PRIVATE_STORAGE_DIR, memory.original_path)
     if not path.exists():
         raise HTTPException(status_code=404, detail="Memory media not found")
