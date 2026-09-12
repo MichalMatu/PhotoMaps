@@ -1,0 +1,89 @@
+{
+  "id": "20260912-photomap-copy-verified-backup-to-mac-052",
+  "status": "failed",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": true,
+  "started_at": "2026-09-12T09:42:51.668669+00:00",
+  "command_timeout": 7200,
+  "edits": {},
+  "commands": [
+    {
+      "command": "ssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'set -euo pipefail; cd /home/michal/src/PhotoMaps; b=backups/local-20260912-111259; test $(systemctl is-active photomap.service) = active; test $(git rev-parse HEAD) = dcd99f07faf9e159a1b6b3f0b76ccff1e9db8ce1; test -f \"$b/backend/data/app.db\"; test -d \"$b/backend/storage\"; test -f \"$b/local-data-diagnostics.json\"; cd \"$b\"; find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS; echo remote_files=$(find . -type f | wc -l | tr -d \" \" ); echo remote_bytes=$(du -sb . | cut -f1); echo production_service=active'",
+      "exit_code": 0,
+      "output": "remote_files=2411\nremote_bytes=4565181054\nproduction_service=active\n",
+      "elapsed_seconds": 213.176,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 4.66,
+      "output_policy": "stream",
+      "captured_output_chars": 68,
+      "output_truncated": false,
+      "current_rss_mb": 2.27,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 3,
+      "stage_phase": "commands"
+    },
+    {
+      "command": "set -euo pipefail; DEST=\"$HOME/Desktop/PhotoMaps-full-backup-2026-09-12-052\"; PART=\"$DEST.part\"; test ! -e \"$DEST\"; rm -rf \"$PART\"; mkdir -p \"$PART\"; rsync -a --partial --info=progress2 -e \"ssh -o BatchMode=yes -o ConnectTimeout=10\" michal@192.168.0.23:/home/michal/src/PhotoMaps/backups/local-20260912-111259/ \"$PART/\"; cd \"$PART\"; shasum -a 256 -c SHA256SUMS >/tmp/photomap-backup-052-sha-check.txt; entries=$(wc -l < SHA256SUMS | tr -d ' '); files=$(find . -type f | wc -l | tr -d ' '); test \"$files\" -eq $((entries + 1)); python3 -c 'import sqlite3; c=sqlite3.connect(\"backend/data/app.db\"); r=c.execute(\"PRAGMA integrity_check\").fetchone()[0]; assert r==\"ok\", r; print(\"backup_db_integrity=ok\"); print(\"backup_alembic=\"+c.execute(\"SELECT version_num FROM alembic_version\").fetchone()[0]); print(\"backup_photos=\"+str(c.execute(\"SELECT COUNT(*) FROM photo\").fetchone()[0])); print(\"backup_places=\"+str(c.execute(\"SELECT COUNT(*) FROM place\").fetchone()[0])); c.close()'; bytes=$(du -sk . | cut -f1); cd ..; mv \"$PART\" \"$DEST\"; echo backup_local=$DEST; echo backup_files=$files; echo backup_bytes_approx=$((bytes * 1024)); echo full_backup_to_mac_verified",
+      "exit_code": 1,
+      "output": "rsync: unrecognized option `--info=progress2'\nusage: rsync [-0468BCDEFHIKLOPRSTWVabcdghiklnopqrtuvxyz] [-e program]\n\t[-f filter] [--8-bit-output] [--address=sourceaddr] [--append]\n\t[--backup-dir=dir] [--bwlimit=limit] [--cache | --no-cache]\n\t[--checksum-seed=NUM] [--chmod=mode] [--compare-dest=dir] [--compress]\n\t[--compress-level=NUM] [--contimeout] [--copy-dest=dir]\n\t[--copy-unsafe-links] [--del]\n\t[--delete-after | --delete-before | --delete-delay | --delete-during]\n\t[--delete-excluded] [--delay-updates] [--dirs] [--no-dirs]\n\t[--existing] [--exclude=pattern] [--exclude-from=file] [--executability]\n\t[--extended-attributes]\n\t[--existing] [--files-from=filespec] [--force] [--ignore-errors]\n\t[--ignore-existing] [--ignore-non-existing] [--include=pattern]\n\t[--include-from=file] [--inplace] [--itemize-changes]\n\t[--keep-dirlinks] [--link-dest=dir] [--list-only]\n\t[--max-delete=NUM] [--max-size=SIZE] [--min-size=SIZE]\n\t[--modify-window=sec] [--no-implied-dirs] [--no-motd] [--numeric-ids]\n\t[--out-format=FMT] [--partial] [--partial-dir] [--password-file=pwfile]\n\t[--port=portnumber] [--progress] [--protocol=NUM] [--prune-empty-dirs]\n\t[--read-batch=file] [--remove-source-files] [--rsync-path=program]\n\t[--safe-links] [--size-only] [--sockopts=sockopts] [--specials]\n\t[--stats] [--suffix] [--super] [--timeout=seconds]\n\t[--only-write-batch=file | --write-batch=file]\n\tsource ... directory\n",
+      "elapsed_seconds": 0.39,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 1.92,
+      "output_policy": "stream",
+      "captured_output_chars": 1395,
+      "output_truncated": false,
+      "current_rss_mb": 1.92,
+      "stage_name": "command-2",
+      "stage_index": 2,
+      "stage_total": 3,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 3,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 213.176
+    },
+    {
+      "stage_name": "command-2",
+      "stage_index": 2,
+      "stage_total": 3,
+      "stage_phase": "commands",
+      "outcome": "failed",
+      "elapsed_seconds": 0.39
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.151
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.081
+  },
+  "failure_reason": "command_failed",
+  "finished_at": "2026-09-12T09:46:27.298230+00:00",
+  "task_digest": "aec0d12690f4b160ab84c27a5c2e0efa122f579f1d31006c973d995c910e1321",
+  "idle_timeout": 3600,
+  "task_timeout": 14400,
+  "memory_limit_mb": 4096,
+  "attempt_id": "7913d5891331eee8b3215235",
+  "daemon_version": "4.18.20"
+}
