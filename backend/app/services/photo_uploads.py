@@ -3,6 +3,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session
 
 from app.models.photo import Photo
+from app.schemas.content import ContentBlock
 from app.services.media.audio import (
     StoredPrivateAudio,
     audio_paths,
@@ -75,7 +76,7 @@ async def create_editorial_photo_from_upload(
     attribution_license_url: str | None = None,
     attribution_source_url: str | None = None,
     caption: str | None,
-    description_blocks: list | None = None,
+    description_blocks: list[ContentBlock] | None = None,
     file: UploadFile,
     place_id: str,
     session: Session,
