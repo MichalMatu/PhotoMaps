@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-guide-detail-race-verify-090",
+  "task_digest": "9125c12c4563a7d180559973fe4f97a3d040b8876dabe6d4ec4ed184a20fb791",
+  "idle_timeout": 300,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T22:11:09.295604+00:00",
+  "attempt_id": "1edeea2df3f358b3b9b9ee5f",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 83370,
+  "updated_at": "2026-09-12T22:11:09.295656+00:00",
+  "pid": 83370
+}
