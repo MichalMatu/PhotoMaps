@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260913-photomap-pinned-board-lazy-096",
+  "task_digest": "92941ab165916377b6f01cf5b464224b55dce6beadd7f127e01fa0350b3c7a21",
+  "idle_timeout": 300,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T23:05:29.869249+00:00",
+  "attempt_id": "9df4955c378d70595b451fbd",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 32619,
+  "updated_at": "2026-09-12T23:05:29.869298+00:00",
+  "pid": 32619
+}
