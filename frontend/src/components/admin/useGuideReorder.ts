@@ -4,18 +4,20 @@ import { errorDetails, type OperationError } from "../ui/ErrorModal";
 import { guidePlaceOrderPayload, moveGuidePlace, type GuidePlaceMoveDirection } from "./guidePlaceSelection";
 
 type UseGuideReorderArgs = {
+  commitGuideDetail: (guideId: string, guideDetail: GuideDetail) => boolean;
   guideDetail: GuideDetail | null;
+  isGuideSelected: (guideId: string) => boolean;
   onChanged: () => Promise<void>;
   selectedGuide: Guide | null;
-  setGuideDetail: (guideDetail: GuideDetail | null) => void;
   setOperationError: (error: OperationError | null) => void;
 };
 
 export function useGuideReorder({
+  commitGuideDetail,
   guideDetail,
+  isGuideSelected,
   onChanged,
   selectedGuide,
-  setGuideDetail,
   setOperationError,
 }: UseGuideReorderArgs) {
   async function movePlace(placeId: string, direction: GuidePlaceMoveDirection) {
@@ -28,17 +30,20 @@ export function useGuideReorder({
       return;
     }
 
+    const guideId = selectedGuide.id;
     setOperationError(null);
     try {
-      const detail = await reorderGuidePlaces(selectedGuide.id, guidePlaceOrderPayload(nextPlaces));
-      setGuideDetail(detail);
+      const detail = await reorderGuidePlaces(guideId, guidePlaceOrderPayload(nextPlaces));
+      commitGuideDetail(guideId, detail);
       await onChanged();
     } catch (reason) {
-      setOperationError({
-        details: errorDetails(reason),
-        message: "Nie udało się zmienić kolejności miejsc. Spróbuj ponownie.",
-        title: "Nie udało się zmienić kolejności",
-      });
+      if (isGuideSelected(guideId)) {
+        setOperationError({
+          details: errorDetails(reason),
+          message: "Nie udało się zmienić kolejności miejsc. Spróbuj ponownie.",
+          title: "Nie udało się zmienić kolejności",
+        });
+      }
     }
   }
 
