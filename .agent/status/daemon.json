@@ -2,8 +2,8 @@
   "version": 1,
   "daemon_version": "4.18.20",
   "state": "idle",
-  "pid": 84781,
-  "updated_at": "2026-09-12T05:01:29.753341+00:00",
+  "pid": 88467,
+  "updated_at": "2026-09-12T05:04:55.291762+00:00",
   "self_revision": "3914aedf1143a4cc8713d38d9f3961e086f5e343",
   "poll_seconds": 15,
   "self_update_seconds": 60,
@@ -23,8 +23,7 @@
   "default_branch": "main",
   "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
   "execution_model": "multi_repository_worker",
-  "worker_pid": 84781,
-  "supervisor_pid": 84529,
-  "last_task_id": "20260912-photomap-fix-content-block-case-collision-027",
+  "worker_pid": 88467,
+  "supervisor_pid": 88190,
   "execution_variant": "parallel"
 }
