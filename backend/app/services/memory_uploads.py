@@ -53,6 +53,8 @@ def cleanup_stored_upload(stored_image: StoredPrivateImage | None, stored_audio:
 
 
 def publish_memory_media(memory: Memory) -> None:
+    if memory.original_path is None:
+        raise HTTPException(status_code=422, detail="Memory original is no longer retained")
     stored_image = publish_image_derivatives(memory.original_path)
     memory.public_path = stored_image.public_path
     memory.thumb_path = stored_image.thumb_path
