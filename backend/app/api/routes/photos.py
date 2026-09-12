@@ -1,5 +1,3 @@
-from mimetypes import guess_type
-
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse
 from sqlmodel import Session
@@ -7,7 +5,7 @@ from sqlmodel import Session
 from app.db.session import get_session
 from app.schemas.photo import PhotoDetailRead, PhotoRead
 from app.serializers.photo import photo_to_detail_read, photo_to_read
-from app.services.photo_media import private_photo_image_path
+from app.services.photo_media import photo_image_media_type, private_photo_image_path
 from app.services.places import ensure_public_place, get_public_place_photo, list_public_place_photos
 
 router = APIRouter(prefix="/api/places/{place_id}/photos", tags=["photos"])
@@ -36,5 +34,4 @@ def get_place_photo_image(
     path = private_photo_image_path(photo)
     if not path.is_file():
         raise HTTPException(status_code=404, detail="Photo media not found")
-    media_type = guess_type(path.name)[0] or "application/octet-stream"
-    return FileResponse(path, media_type=media_type)
+    return FileResponse(path, media_type=photo_image_media_type(path))
