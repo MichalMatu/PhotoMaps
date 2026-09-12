@@ -1,0 +1,17 @@
+{
+  "id": "20260912-photomap-local-review-bootstrap-054",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": true,
+  "resources": [],
+  "command_timeout": 1800,
+  "idle_timeout": 900,
+  "task_timeout": 3600,
+  "commands": [
+    "set -euo pipefail; SRC=\"$HOME/Desktop/PhotoMaps-full-backup-2026-09-12-053\"; DST=\"$HOME/Desktop/PhotoMaps-working-review-2026-09-12\"; test -d \"$SRC\"; test -f \"$SRC/backend/data/app.db\"; if test ! -e \"$DST\"; then cp -cR \"$SRC\" \"$DST\"; fi; test -d \"$DST\"; test -f \"$DST/backend/data/app.db\"; test \"$(shasum -a 256 \"$SRC/backend/data/app.db\" | cut -d' ' -f1)\" = \"$(shasum -a 256 \"$DST/backend/data/app.db\" | cut -d' ' -f1)\"; echo pristine_backup=$SRC; echo working_copy=$DST; echo working_copy_ready",
+    "set -euo pipefail; DB=\"$HOME/Desktop/PhotoMaps-working-review-2026-09-12/backend/data/app.db\"; python3 -c 'import sqlite3, json, os; db=os.path.expanduser(\"~/Desktop/PhotoMaps-working-review-2026-09-12/backend/data/app.db\"); c=sqlite3.connect(db); c.row_factory=sqlite3.Row; tables=[r[0] for r in c.execute(\"select name from sqlite_master where type=\\\"table\\\" and name not like \\\"sqlite_%\\\" order by name\")]; print(\"TABLES=\"+json.dumps(tables,ensure_ascii=False)); [print(\"SCHEMA \"+t+\"=\"+json.dumps([dict(x) for x in c.execute(\"pragma table_info(\"+t+\")\")],ensure_ascii=False)) for t in tables]; c.close()'",
+    "set -euo pipefail; python3 -c 'import sqlite3, json, os; db=os.path.expanduser(\"~/Desktop/PhotoMaps-working-review-2026-09-12/backend/data/app.db\"); c=sqlite3.connect(db); c.row_factory=sqlite3.Row; cols=[r[1] for r in c.execute(\"pragma table_info(place)\")]; print(\"PLACE_COLUMNS=\"+json.dumps(cols,ensure_ascii=False)); rows=[dict(r) for r in c.execute(\"select * from place order by rowid limit 8\")]; print(\"PLACE_SAMPLE=\"+json.dumps(rows,ensure_ascii=False,default=str)); pcols=[r[1] for r in c.execute(\"pragma table_info(photo)\")]; print(\"PHOTO_COLUMNS=\"+json.dumps(pcols,ensure_ascii=False)); prows=[dict(r) for r in c.execute(\"select * from photo order by rowid limit 8\")]; print(\"PHOTO_SAMPLE=\"+json.dumps(prows,ensure_ascii=False,default=str)); c.close()'",
+    "set -euo pipefail; test -d \"$HOME/Desktop/PhotoMaps-full-backup-2026-09-12-053\"; test -d \"$HOME/Desktop/PhotoMaps-working-review-2026-09-12\"; echo bootstrap_complete"
+  ]
+}
