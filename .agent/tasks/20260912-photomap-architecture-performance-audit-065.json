@@ -1,0 +1,17 @@
+{
+  "id": "20260912-photomap-architecture-performance-audit-065",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 1800,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail\nVENV=$(mktemp -d /tmp/photomap-audit-XXXXXX)\npython3 -m venv \"$VENV\"\n\"$VENV/bin/python\" -m pip install -q -r backend/requirements.txt\ncd backend\n\"$VENV/bin/python\" -m coverage erase\n\"$VENV/bin/python\" -m coverage run -m pytest -q\n\"$VENV/bin/python\" -m coverage report\ncd ..\nrm -rf \"$VENV\"",
+    "set -euo pipefail\ncd frontend\nnpm run build\nprintf '%s\\n' '=== dist sizes ==='\ndu -ah dist | sort -h | tail -30",
+    "python3 - <<'PY'\nfrom pathlib import Path\nimport ast\nprint('=== backend import coupling ===')\nfor root in ('backend/app/services','backend/app/api/routes'):\n    print('---', root, '---')\n    rows=[]\n    for path in Path(root).rglob('*.py'):\n        tree=ast.parse(path.read_text())\n        imports=[]\n        for node in ast.walk(tree):\n            if isinstance(node, ast.ImportFrom) and node.module and node.module.startswith('app.'):\n                imports.append(node.module)\n        rows.append((len(set(imports)), str(path), sorted(set(imports))))\n    for count,path,imports in sorted(rows, reverse=True)[:20]:\n        print(f'{count:2d} {path}: {", ".join(imports)}')\nPY",
+    "git status --short"
+  ]
+}
