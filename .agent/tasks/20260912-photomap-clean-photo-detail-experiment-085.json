@@ -1,0 +1,14 @@
+{
+  "id": "20260912-photomap-clean-photo-detail-experiment-085",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/photomap-straighten-20260912",
+  "allow_write": true,
+  "resources": [],
+  "command_timeout": 300,
+  "task_timeout": 600,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail\ngit fetch origin work/photomap-straighten-20260912\ntest \"$(git rev-parse origin/work/photomap-straighten-20260912)\" = \"96d849bdbdafd656783d0be78f4510852ca0d0b7\"\ngit restore --source=origin/work/photomap-straighten-20260912 --staged --worktree frontend/src/components/map/PlaceMap.tsx\ntest \"$(git rev-parse HEAD)\" = \"96d849bdbdafd656783d0be78f4510852ca0d0b7\"\ntest -z \"$(git status --porcelain)\""
+  ]
+}
