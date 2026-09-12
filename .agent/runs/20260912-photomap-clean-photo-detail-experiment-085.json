@@ -1,14 +1,13 @@
 {
-  "event": "task_started",
+  "event": "task_finished",
   "task_id": "20260912-photomap-clean-photo-detail-experiment-085",
   "task_digest": "23aacc73f1cad08a2a92af871b94af25e57f89e597af01792ea851130ff845d4",
-  "idle_timeout": 300,
-  "task_timeout": 600,
-  "memory_limit_mb": 4096,
-  "started_at": "2026-09-12T21:13:54.243058+00:00",
+  "status": "done",
+  "failure_reason": null,
+  "finished_at": "2026-09-12T21:13:56.906360+00:00",
   "attempt_id": "071b913e7c2d56732f4d5f60",
   "daemon_version": "4.18.20",
   "daemon_pid": 29335,
-  "updated_at": "2026-09-12T21:13:54.243220+00:00",
+  "updated_at": "2026-09-12T21:13:57.182594+00:00",
   "pid": 29335
 }
