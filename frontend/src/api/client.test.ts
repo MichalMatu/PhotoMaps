@@ -128,7 +128,7 @@ describe("admin queue requests", () => {
     await getAdminPlacePhotos("place-1", { audio: "without-audio", query: "Most", status: "approved" });
 
     expect(fetchMock.mock.calls[0][0]).toBe("http://127.0.0.1:8000/api/admin/photos?limit=25&status=pending");
-    expect(fetchMock.mock.calls[0][0]).toBe("http://127.0.0.1:8000/api/admin/memories?limit=25&status=approved");
+    expect(fetchMock.mock.calls[1][0]).toBe("http://127.0.0.1:8000/api/admin/memories?limit=25&status=approved");
     expect(fetchMock.mock.calls[2][0]).toBe("http://127.0.0.1:8000/api/admin/reports?limit=20&status=open");
     expect(fetchMock.mock.calls[3][0]).toBe("http://127.0.0.1:8000/api/admin/moderation/counts");
     expect(fetchMock.mock.calls[4][0]).toBe(
@@ -185,7 +185,7 @@ describe("admin media redaction requests", () => {
 
     const report = await redactAdminMemory("memory-1", payload);
 
-    expect(fetchMock.mock.calls[1][0]).toBe("http://127.0.0.1:8000/api/admin/memories/memory-1/redaction");
+    expect(fetchMock.mock.calls[0][0]).toBe("http://127.0.0.1:8000/api/admin/memories/memory-1/redaction");
     expect(JSON.parse(String(fetchMock.mock.calls[0][1]?.body))).toEqual(payload);
     expect(report.actions).toEqual([
       {
