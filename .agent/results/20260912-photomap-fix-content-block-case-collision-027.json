@@ -1,0 +1,77 @@
+{
+  "id": "20260912-photomap-fix-content-block-case-collision-027",
+  "status": "failed",
+  "mode": "commands",
+  "work_branch": "work/fix-content-block-case-collision",
+  "allow_write": true,
+  "started_at": "2026-09-12T05:01:15.617881+00:00",
+  "command_timeout": 900,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail\ntest \"$(git rev-parse HEAD)\" = \"4e2bf05aca4b60115da6c1584920f6ee278e3534\"\ngit mv frontend/src/components/content/contentBlocks.ts frontend/src/components/content/contentBlockUtils.ts\npython3 - <<'PY'\nfrom pathlib import Path\nroot = Path('frontend/src')\nreplacements = {\n    'content/contentBlocks': 'content/contentBlockUtils',\n    './contentBlocks': './contentBlockUtils',\n}\nchanged = []\nfor path in root.rglob('*'):\n    if path.suffix not in {'.ts', '.tsx'}:\n        continue\n    text = path.read_text()\n    new = text\n    for old, repl in replacements.items():\n        new = new.replace(old, repl)\n    if new != text:\n        path.write_text(new)\n        changed.append(path.as_posix())\nprint('updated_import_files=' + ','.join(changed))\nPY\nif git grep -n -E '[\"'\"'](\\./|\\.\\./|\\.\\./\\.\\./).*contentBlocks[\"'\"']' -- frontend/src; then echo 'stale contentBlocks import remains'; exit 31; fi\ngit diff --check\ncd frontend\nnpm ci\nnpm run typecheck\nVITE_API_BASE_URL= npm run build\ncd ..\ngit status --short\ngit add frontend/src\ngit commit -m 'Fix content block module casing for macOS'\ngit push origin HEAD:work/fix-content-block-case-collision",
+      "exit_code": 2,
+      "output": "updated_import_files=frontend/src/pages/GuidesPage.tsx,frontend/src/components/places/placeArticleBlocks.ts,frontend/src/components/admin/usePlaceFormDraft.ts,frontend/src/components/admin/usePlacePhotoPanel.ts,frontend/src/components/admin/useGuideCrud.ts,frontend/src/components/admin/PhotoQueue.tsx,frontend/src/components/admin/adminModerationFilters.ts,frontend/src/components/admin/guideActionsState.ts,frontend/src/components/admin/placePhotoPanelState.ts,frontend/src/components/content/ContentBlockEditor.tsx,frontend/src/components/content/ContentBlocks.tsx,frontend/src/components/photos/PhotoDescriptionLayer.tsx\n/bin/sh: -c: line 32: unexpected EOF while looking for matching `''\n",
+      "elapsed_seconds": 0.46,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 4.33,
+      "output_policy": "stream",
+      "captured_output_chars": 693,
+      "output_truncated": false,
+      "current_rss_mb": 4.33,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "failed",
+      "elapsed_seconds": 0.46
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": " M frontend/src/components/admin/PhotoQueue.tsx\n M frontend/src/components/admin/adminModerationFilters.ts\n M frontend/src/components/admin/guideActionsState.ts\n M frontend/src/components/admin/placePhotoPanelState.ts\n M frontend/src/components/admin/useGuideCrud.ts\n M frontend/src/components/admin/usePlaceFormDraft.ts\n M frontend/src/components/admin/usePlacePhotoPanel.ts\n M frontend/src/components/content/ContentBlockEditor.tsx\n M frontend/src/components/content/ContentBlocks.tsx\nR  frontend/src/components/content/contentBlocks.ts -> frontend/src/components/content/contentBlockUtils.ts\n M frontend/src/components/photos/PhotoDescriptionLayer.tsx\n M frontend/src/components/places/placeArticleBlocks.ts\n M frontend/src/pages/GuidesPage.tsx\n",
+    "elapsed_seconds": 0.1
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "diff --git a/frontend/src/components/admin/PhotoQueue.tsx b/frontend/src/components/admin/PhotoQueue.tsx\nindex e1dca91..9b292d5 100644\n--- a/frontend/src/components/admin/PhotoQueue.tsx\n+++ b/frontend/src/components/admin/PhotoQueue.tsx\n@@ -22,7 +22,7 @@ import type {\n   ReviewFinalStatus,\n   ReviewStatus,\n } from \"../../api/types\";\n-import { emptyContentBlock } from \"../content/contentBlocks\";\n+import { emptyContentBlock } from \"../content/contentBlockUtils\";\n import { AdminMediaCityAlbums } from \"./AdminMediaCityAlbums\";\n import { PhotoQueueItem } from \"./PhotoQueueItem\";\n import { PhotoTextEditModal } from \"./PhotoTextEditModal\";\ndiff --git a/frontend/src/components/admin/adminModerationFilters.ts b/frontend/src/components/admin/adminModerationFilters.ts\nindex ceb4610..7f245cf 100644\n--- a/frontend/src/components/admin/adminModerationFilters.ts\n+++ b/frontend/src/components/admin/adminModerationFilters.ts\n@@ -1,5 +1,5 @@\n import type { AdminMediaAudioFilter, AdminMemory, AdminPhoto, Report } from \"../../api/types\";\n-import { contentBlocksTextForTts } from \"../content/contentBlocks\";\n+import { contentBlocksTextForTts } from \"../content/contentBlockUtils\";\n \n export type AdminModerationAudioFilter = AdminMediaAudioFilter;\n \ndiff --git a/frontend/src/components/admin/guideActionsState.ts b/frontend/src/components/admin/guideActionsState.ts\nindex fb0311a..8c5b1f8 100644\n--- a/frontend/src/components/admin/guideActionsState.ts\n+++ b/frontend/src/components/admin/guideActionsState.ts\n@@ -1,5 +1,5 @@\n import type { ContentBlock, Guide, GuideKind, GuidePayload, GuideRoutePoint, GuideStatus } from \"../../api/types\";\n-import { normalizeContentBlocks } from \"../content/contentBlocks\";\n+import { normalizeContentBlocks } from \"../content/contentBlockUtils\";\n \n export type GuideStatusFilter = GuideStatus | \"all\";\n \ndiff --git a/frontend/src/components/admin/placePhotoPanelState.ts b/frontend/src/components/admin/placePhotoPanelState.ts\nindex 1e1e9b5..bb09b2a 100644\n--- a/frontend/src/components/admin/placePhotoPanelState.ts\n+++ b/frontend/src/components/admin/placePhotoPanelState.ts\n@@ -1,5 +1,5 @@\n import type { AdminPhoto, ContentBlock, PhotoUpdatePayload, PhotoUploadPayload } from \"../../api/types\";\n-import { normalizeContentBlocks } from \"../content/contentBlocks\";\n+import { normalizeContentBlocks } from \"../content/contentBlockUtils\";\n \n export type PhotoAttributionDraft = {\n   attributionAuthor: string;\ndiff --git a/frontend/src/components/admin/useGuideCrud.ts b/frontend/src/components/admin/useGuideCrud.ts\nindex 5e94273..8f013f5 100644\n--- a/frontend/src/components/admin/useGuideCrud.ts\n+++ b/frontend/src/components/admin/useGuideCrud.ts\n@@ -11,7 +11,7 @@ import type {\n   GuideStatus,\n } from \"../../api/types\";\n import { slugify } from \"../../utils/slugify\";\n-import { emptyContentBlock } from \"../content/contentBlocks\";\n+import { emptyContentBlock } from \"../content/contentBlockUtils\";\n import { errorDetails, type OperationError } from \"../ui/ErrorModal\";\n import { guidePayloadFromState } from \"./guideActionsState\";\n \ndiff --git a/frontend/src/components/admin/usePlaceFormDraft.ts b/frontend/src/components/admin/usePlaceFormDraft.ts\nindex a6c5c91..e496480 100644\n--- a/frontend/src/components/admin/usePlaceFormDraft.ts\n+++ b/frontend/src/components/admin/usePlaceFormDraft.ts\n@@ -12,7 +12,7 @@ import type {\n } from \"../../api/types\";\n import { DEFAULT_PLACE_PRIORITY } from \"../../config/placePriority\";\n import { slugify } from \"../../utils/slugify\";\n-import { emptyContentBlock } from \"../content/contentBlocks\";\n+import { emptyContentBlock } from \"../content/contentBlockUtils\";\n import { emptyPlaceArticleBlock, normalizePlaceArticleBlocks } from \"../places/placeArticleBlocks\";\n import {\n   placeCustomFieldFormValues,\ndiff --git a/frontend/src/components/admin/usePlacePhotoPanel.ts b/frontend/src/components/admin/usePlacePhotoPanel.ts\nindex f8c5f03..3fdffc5 100644\n--- a/frontend/src/components/admin/usePlacePhotoPanel.ts\n+++ b/frontend/src/components/admin/usePlacePhotoPanel.ts\n@@ -11,7 +11,7 @@ import {\n } from \"../../api/media\";\n import { updatePlaceCover } from \"../../api/places\";\n import type { AdminPhoto, ContentBlock, ContentBlockType, Place, ReviewFinalStatus } from \"../../api/types\";\n-import { emptyContentBlock } from \"../content/contentBlocks\";\n+import { emptyContentBlock } from \"../content/contentBlockUtils\";\n import { validateAudioFile } from \"../ui/audioAttachment\";\n import { uploadAndApproveAdminPlacePhoto } from \"./adminPhotoUpload\";\n import { canSubmitPhotoUpload } from \"./photoUploadState\";\ndiff --git a/frontend/src/components/content/ContentBlockEditor.tsx b/frontend/src/components/content/ContentBlockEditor.tsx\nindex 467e269..c4c4ecb 100644\n--- a/frontend/src/components/content/ContentBlockEditor.tsx\n+++ b/frontend/src/components/content/ContentBlockEditor.tsx\n@@ -1,7 +1,7 @@\n import type { ContentBlock, ContentBlockType } from \"../../api/types\";\n import { SettingField } from \"../ui/SettingField\";\n import { CONTENT_BLOCK_FIELD_HELP } from \"./contentBlockFieldHelp\";\n-import { CONTENT_BLOCK_TYPES, contentBlockLabel } from \"./contentBlocks\";\n+import { CONTENT_BLOCK_TYPES, contentBlockLabel } from \"./contentBlockUtils\";\n \n type Props = {\n   blocks: ContentBlock[];\ndiff --git a/frontend/src/components/content/ContentBlocks.tsx b/frontend/src/components/content/ContentBlocks.tsx\nindex 16a7c60..da8e1a4 100644\n--- a/frontend/src/components/content/ContentBlocks.tsx\n+++ b/frontend/src/components/content/ContentBlocks.tsx\n@@ -1,7 +1,7 @@\n import { ExternalLink } from \"lucide-react\";\n \n import type { ContentBlock } from \"../../api/types\";\n-import { safeContentBlockUrl } from \"./contentBlocks\";\n+import { safeContentBlockUrl } from \"./contentBlockUtils\";\n \n type Props = {\n   blocks: ContentBlock[];\ndiff --git a/frontend/src/components/photos/PhotoDescriptionLayer.tsx b/frontend/src/components/photos/PhotoDescriptionLayer.tsx\nindex 20e22f2..dcd5aad 100644\n--- a/frontend/src/components/photos/PhotoDescriptionLayer.tsx\n+++ b/frontend/src/components/photos/PhotoDescriptionLayer.tsx\n@@ -2,7 +2,7 @@ import { FileText } from \"lucide-react\";\n \n import type { ContentBlock } from \"../../api/types\";\n import { ContentBlocks } from \"../content/ContentBlocks\";\n-import { contentBlocksTextForTts, normalizeContentBlocks } from \"../content/contentBlocks\";\n+import { contentBlocksTextForTts, normalizeContentBlocks } from \"../content/contentBlockUtils\";\n import { TtsButton } from \"../ui/TtsButton\";\n \n type PhotoDescriptionActionsProps = {\ndiff --git a/frontend/src/components/places/placeArticleBlocks.ts b/frontend/src/components/places/placeArticleBlocks.ts\nindex 22200b6..e3f2300 100644\n--- a/frontend/src/components/places/placeArticleBlocks.ts\n+++ b/frontend/src/components/places/placeArticleBlocks.ts\n@@ -1,4 +1,4 @@\n-import { contentBlocksTextForTts, emptyContentBlock, normalizeContentBlocks } from \"../content/contentBlocks\";\n+import { contentBlocksTextForTts, emptyContentBlock, normalizeContentBlocks } from \"../content/contentBlockUtils\";\n \n export const normalizePlaceArticleBlocks = normalizeContentBlocks;\n \ndiff --git a/frontend/src/pages/GuidesPage.tsx b/frontend/src/pages/GuidesPage.tsx\nindex 0f3f2a5..af7fc42 100644\n--- a/frontend/src/pages/GuidesPage.tsx\n+++ b/frontend/src/pages/GuidesPage.tsx\n@@ -6,7 +6,7 @@ import { getGuide, getGuides } from \"../api/guides\";\n import { mediaUrl } from \"../api/http\";\n import type { PublicGuide, PublicGuideDetail, PublicGuidePlacePreview } from \"../api/types\";\n import { ContentBlocks } from \"../components/content/ContentBlocks\";\n-import { contentBlocksTextForTts } from \"../components/content/contentBlocks\";\n+import { contentBlocksTextForTts } from \"../components/content/contentBlockUtils\";\n import { GuideRouteMap } from \"../components/guides/GuideRouteMap\";\n import { buildGoogleMapsWalkingRouteUrl } from \"../components/guides/googleMapsRoute\";\n import { AppShell } from \"../components/layout/AppShell\";\n",
+    "elapsed_seconds": 0.028
+  },
+  "failure_reason": "command_failed",
+  "finished_at": "2026-09-12T05:01:17.824068+00:00",
+  "workspace_checkpoint": {
+    "version": 2,
+    "task_id": "20260912-photomap-fix-content-block-case-collision-027",
+    "reason": "task-exit",
+    "created_at": "2026-09-12T05:01:18.260035+00:00",
+    "base_head": "4e2bf05aca4b60115da6c1584920f6ee278e3534",
+    "work_branch": "agent-work",
+    "path": "/Users/michal/agent-workspace/repos/photomaps/checkpoints/20260912-photomap-fix-content-block-case-collision-027/1789189278103339000-task-exit",
+    "tracked_patch": "tracked.patch",
+    "untracked_root": "untracked",
+    "untracked_files": [],
+    "tracked_patch_bytes": 9027,
+    "untracked_bytes": 0,
+    "total_bytes": 9027,
+    "status": " M frontend/src/components/admin/PhotoQueue.tsx\n M frontend/src/components/admin/adminModerationFilters.ts\n M frontend/src/components/admin/guideActionsState.ts\n M frontend/src/components/admin/placePhotoPanelState.ts\n M frontend/src/components/admin/useGuideCrud.ts\n M frontend/src/components/admin/usePlaceFormDraft.ts\n M frontend/src/components/admin/usePlacePhotoPanel.ts\n M frontend/src/components/content/ContentBlockEditor.tsx\n M frontend/src/components/content/ContentBlocks.tsx\nR  frontend/src/components/content/contentBlocks.ts -> frontend/src/components/content/contentBlockUtils.ts\n M frontend/src/components/photos/PhotoDescriptionLayer.tsx\n M frontend/src/components/places/placeArticleBlocks.ts\n M frontend/src/pages/GuidesPage.tsx\n"
+  },
+  "task_digest": "eff6b4030a0b33cc632f5cf182a56e0e9ad859fe2e55498015d64abf57b138de",
+  "idle_timeout": 300,
+  "task_timeout": 1800,
+  "memory_limit_mb": 4096,
+  "attempt_id": "6d37212cfa8bba873beba24c",
+  "daemon_version": "4.18.20"
+}
