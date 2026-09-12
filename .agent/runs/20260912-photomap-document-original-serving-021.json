@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-document-original-serving-021",
+  "task_digest": "8c2b2069da8d53b3ead801b6bfb4383df01ef86d089b9802e9d0f014dd5ce3a9",
+  "idle_timeout": 300,
+  "task_timeout": 600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T04:17:37.747802+00:00",
+  "attempt_id": "0b1200a5e607eb86acbdc4aa",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 34878,
+  "updated_at": "2026-09-12T04:17:37.747912+00:00",
+  "pid": 34878
+}
