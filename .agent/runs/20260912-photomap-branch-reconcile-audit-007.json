@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-branch-reconcile-audit-007",
+  "task_digest": "6c354dbf4dd5985a886248c583860bbc6db2d003f481f50de358f60f83bfb051",
+  "idle_timeout": 300,
+  "task_timeout": 420,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T03:17:15.836425+00:00",
+  "attempt_id": "0ca511d502720886a671d3a0",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 62169,
+  "updated_at": "2026-09-12T03:17:15.836583+00:00",
+  "pid": 62169
+}
