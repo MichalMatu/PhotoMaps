@@ -1,11 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { bumpMediaCacheRevision } from "../../api/http";
 import {
   deleteAdminPhoto,
   deleteAdminPhotoAudio,
-  getAdminPhotoAlbums,
-  getAdminPlacePhotos,
   reviewPhoto,
   setCoverPhoto,
   updateAdminPhoto,
@@ -36,6 +34,7 @@ import {
   photoPayloadFromDraft,
 } from "./placePhotoPanelState";
 import { useAdminMediaExpansion } from "./useAdminMediaExpansion";
+import { usePhotoQueueData } from "./usePhotoQueueData";
 
 type Props = {
   categories: Category[];
@@ -56,7 +55,6 @@ export function PhotoQueue({
   refreshKey,
   statusFilter,
 }: Props) {
-  const [albums, setAlbums] = useState<Awaited<ReturnType<typeof getAdminPhotoAlbums>>>([]);
   const [captionDraft, setCaptionDraft] = useState("");
   const [descriptionDraftBlocks, setDescriptionDraftBlocks] = useState<ContentBlock[]>([]);
   const [attributionDraft, setAttributionDraft] = useState<PhotoAttributionDraft>({
@@ -64,11 +62,8 @@ export function PhotoQueue({
   });
   const [editingPhotoId, setEditingPhotoId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isAlbumsLoading, setIsAlbumsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSavingCaption, setIsSavingCaption] = useState(false);
-  const [loadingPlaceIds, setLoadingPlaceIds] = useState<Set<string>>(() => new Set());
-  const [placePhotosById, setPlacePhotosById] = useState<Record<string, AdminPhoto[]>>({});
   const [photoToDelete, setPhotoToDelete] = useState<AdminPhoto | null>(null);
   const photoFilterOptions = useMemo(
     () => ({
@@ -79,37 +74,15 @@ export function PhotoQueue({
     }),
     [moderationFilters.audio, moderationFilters.placeId, moderationFilters.query, statusFilter],
   );
-
-  const loadAlbums = useCallback(async () => {
-    setIsAlbumsLoading(true);
-    try {
-      const nextAlbums = await getAdminPhotoAlbums(photoFilterOptions);
-      setAlbums(nextAlbums);
-    } catch (reason) {
-      setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się pobrać albumów zdjęć.");
-    } finally {
-      setIsAlbumsLoading(false);
-    }
-  }, [photoFilterOptions]);
-
-  const loadPlacePhotos = useCallback(
-    async (placeId: string) => {
-      setLoadingPlaceIds((currentIds) => new Set(currentIds).add(placeId));
-      try {
-        const nextPhotos = await getAdminPlacePhotos(placeId, photoFilterOptions);
-        setPlacePhotosById((currentPhotos) => ({ ...currentPhotos, [placeId]: nextPhotos }));
-      } catch (reason) {
-        setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się pobrać zdjęć miejsca.");
-      } finally {
-        setLoadingPlaceIds((currentIds) => {
-          const nextIds = new Set(currentIds);
-          nextIds.delete(placeId);
-          return nextIds;
-        });
-      }
-    },
-    [photoFilterOptions],
-  );
+  const {
+    albums,
+    isAlbumsLoading,
+    loadAlbums,
+    loadPlacePhotos,
+    loadingPlaceIds,
+    placePhotosById,
+    resetPlacePhotos,
+  } = usePhotoQueueData({ filterOptions: photoFilterOptions, onError: setErrorMessage });
 
   const photoGroups = useMemo(
     () =>
@@ -127,10 +100,10 @@ export function PhotoQueue({
     : null;
 
   useEffect(() => {
-    setPlacePhotosById({});
+    resetPlacePhotos();
     collapsePlace();
     loadAlbums().catch(() => undefined);
-  }, [collapsePlace, loadAlbums, refreshKey]);
+  }, [collapsePlace, loadAlbums, refreshKey, resetPlacePhotos]);
 
   async function handleReview(photoId: string, status: ReviewFinalStatus) {
     try {
