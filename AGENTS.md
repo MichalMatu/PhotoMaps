@@ -10,7 +10,10 @@ Repository identity:
 - local-agent repository id: `photomaps`
 - control branch: `agent-control`
 - default source branch: `main`
-- execution model: one shared supervisor across repositories, with at most one local task executing at a time
+- execution model: one shared bounded-parallel supervisor, with at most one task per repository and up to four independent repositories executing concurrently
+- agent_binding: `2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607`
+
+Every task must include this exact `agent_binding` and explicit `resources: []` for repository-scoped project work. Use a unique immutable task id and bounded command/task timeouts. Never invoke or delegate to local Codex from a task; ChatGPT plans and Local Agent executes deterministic commands. The registry binding, control binding and task binding must match before execution.
 
 ### New chat bootstrap
 
