@@ -1,0 +1,13 @@
+{
+  "id": "20260912-photomap-night-readiness-066",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 600,
+  "task_timeout": 1200,
+  "commands": [
+    "set -euo pipefail\nprintf '%s\\n' '=== local runner ==='\nhostname\nprintf 'repo_head=' && git rev-parse HEAD\nprintf 'repo_branch=' && git branch --show-current\nprintf 'repo_dirty=' && if test -n \"$(git status --porcelain)\"; then echo yes; git status --short; else echo no; fi\nprintf '%s\\n' '=== ssh raspberry pi ==='\nssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'set -euo pipefail; echo ssh=ok; printf hostname=; hostname; printf arch=; uname -m; cd /home/michal/src/PhotoMaps; printf repo_branch=; git branch --show-current; printf repo_head=; git rev-parse HEAD; printf repo_dirty=; if test -n \"$(git status --porcelain)\"; then echo yes; git status --short; else echo no; fi; printf service=; systemctl is-active photomap.service || true; echo ---service---; systemctl --no-pager --full status photomap.service 2>&1 | sed -n \"1,18p\"; echo ---unit---; systemctl cat photomap.service 2>&1 | sed -n \"1,120p\"; echo ---tools---; command -v python3 || true; command -v node || true; command -v npm || true'\nprintf '%s\\n' '=== public site ==='\ncurl -fsS -L -o /tmp/photomap-readiness.html -w 'https_status=%{http_code} total=%{time_total}s size=%{size_download}\\n' https://photomap.pl/\nhead -c 180 /tmp/photomap-readiness.html | tr '\\n' ' '; echo\nprintf '%s\\n' '=== screenshot/test capability ==='\ncd frontend\nprintf 'node=' && node --version\nprintf 'npm=' && npm --version\nnpx playwright --version\nnode -e \"const { chromium } = require('@playwright/test'); console.log('playwright_import=ok', Boolean(chromium));\"\nif test -d \"$HOME/.cache/ms-playwright\"; then find \"$HOME/.cache/ms-playwright\" -maxdepth 1 -mindepth 1 -type d -printf '%f\\n' | sort | head -20; else echo playwright_browser_cache=missing; fi"
+  ]
+}
