@@ -6,7 +6,6 @@ import {
   deleteAdminPhotoAudio,
   getAdminPhotoAlbums,
   getAdminPlacePhotos,
-  redactAdminPhoto,
   reviewPhoto,
   setCoverPhoto,
   updateAdminPhoto,
@@ -25,13 +24,11 @@ import type {
 } from "../../api/types";
 import { emptyContentBlock } from "../content/contentBlocks";
 import { AdminMediaCityAlbums } from "./AdminMediaCityAlbums";
-import { MediaRedactionModal } from "./MediaRedactionModal";
 import { PhotoQueueItem } from "./PhotoQueueItem";
 import { PhotoTextEditModal } from "./PhotoTextEditModal";
 import { SystemModal } from "./SystemModal";
 import { groupAdminMediaPlaceGroupsByCity, groupAdminPhotoAlbumsByPlace } from "./adminMediaGroups";
 import type { AdminModerationFilters } from "./adminModerationFilters";
-import type { RedactionPolygon } from "./mediaRedactionGeometry";
 import {
   EMPTY_PHOTO_ATTRIBUTION_DRAFT,
   type PhotoAttributionDraft,
@@ -69,12 +66,10 @@ export function PhotoQueue({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isAlbumsLoading, setIsAlbumsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isApplyingRedaction, setIsApplyingRedaction] = useState(false);
   const [isSavingCaption, setIsSavingCaption] = useState(false);
   const [loadingPlaceIds, setLoadingPlaceIds] = useState<Set<string>>(() => new Set());
   const [placePhotosById, setPlacePhotosById] = useState<Record<string, AdminPhoto[]>>({});
   const [photoToDelete, setPhotoToDelete] = useState<AdminPhoto | null>(null);
-  const [photoToRedact, setPhotoToRedact] = useState<AdminPhoto | null>(null);
   const photoFilterOptions = useMemo(
     () => ({
       audio: moderationFilters.audio,
@@ -222,27 +217,6 @@ export function PhotoQueue({
     }
   }
 
-  async function handleApplyRedaction(redactions: RedactionPolygon[]) {
-    if (!photoToRedact) {
-      return;
-    }
-
-    setIsApplyingRedaction(true);
-    try {
-      await redactAdminPhoto(photoToRedact.id, {
-        polygons: redactions.map((redaction) => redaction.points),
-        rectangles: [],
-      });
-      bumpMediaCacheRevision();
-      setPhotoToRedact(null);
-      await onChanged();
-    } catch (reason) {
-      throw reason instanceof Error ? reason : new Error("Nie udało się zapisać redakcji zdjęcia.");
-    } finally {
-      setIsApplyingRedaction(false);
-    }
-  }
-
   async function handleSaveAudio(photo: AdminPhoto, audioFile: File) {
     await updateAdminPhotoAudio(photo.id, audioFile);
     bumpMediaCacheRevision();
@@ -302,7 +276,6 @@ export function PhotoQueue({
                 onDelete={setPhotoToDelete}
                 onDeleteAudio={handleDeleteAudio}
                 onError={setErrorMessage}
-                onRedact={setPhotoToRedact}
                 onClearCover={handleClearCover}
                 onReview={handleReview}
                 onSaveAudio={handleSaveAudio}
@@ -328,7 +301,6 @@ export function PhotoQueue({
                   onDelete={setPhotoToDelete}
                   onDeleteAudio={handleDeleteAudio}
                   onError={setErrorMessage}
-                  onRedact={setPhotoToRedact}
                   onClearCover={handleClearCover}
                   onReview={handleReview}
                   onSaveAudio={handleSaveAudio}
@@ -344,7 +316,7 @@ export function PhotoQueue({
         <SystemModal
           confirmLabel="Usuń"
           isBusy={isDeleting}
-          message={`Zdjęcie zostanie usunięte z bazy, publicznego pliku, miniatury i prywatnego oryginału. Tej operacji nie da się cofnąć.`}
+          message={`Zdjęcie zostanie usunięte z bazy, publicznej miniatury i prywatnego oryginału. Tej operacji nie da się cofnąć.`}
           title="Usunąć zdjęcie?"
           tone="danger"
           onClose={() => setPhotoToDelete(null)}
@@ -371,15 +343,6 @@ export function PhotoQueue({
           onSave={handleSaveCaption}
           onUpdateDescriptionDraftBlock={updateDescriptionDraftBlock}
           onUpdateDescriptionDraftBlockType={updateDescriptionDraftBlockType}
-        />
-      ) : null}
-      {photoToRedact ? (
-        <MediaRedactionModal
-          isApplying={isApplyingRedaction}
-          kind="photo"
-          media={photoToRedact}
-          onApply={handleApplyRedaction}
-          onClose={() => setPhotoToRedact(null)}
         />
       ) : null}
       {errorMessage ? (
