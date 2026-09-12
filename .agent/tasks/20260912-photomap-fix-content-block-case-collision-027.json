@@ -1,0 +1,13 @@
+{
+  "id": "20260912-photomap-fix-content-block-case-collision-027",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/fix-content-block-case-collision",
+  "allow_write": true,
+  "resources": [],
+  "command_timeout": 900,
+  "task_timeout": 1800,
+  "commands": [
+    "set -euo pipefail\ntest \"$(git rev-parse HEAD)\" = \"4e2bf05aca4b60115da6c1584920f6ee278e3534\"\ngit mv frontend/src/components/content/contentBlocks.ts frontend/src/components/content/contentBlockUtils.ts\npython3 - <<'PY'\nfrom pathlib import Path\nroot = Path('frontend/src')\nreplacements = {\n    'content/contentBlocks': 'content/contentBlockUtils',\n    './contentBlocks': './contentBlockUtils',\n}\nchanged = []\nfor path in root.rglob('*'):\n    if path.suffix not in {'.ts', '.tsx'}:\n        continue\n    text = path.read_text()\n    new = text\n    for old, repl in replacements.items():\n        new = new.replace(old, repl)\n    if new != text:\n        path.write_text(new)\n        changed.append(path.as_posix())\nprint('updated_import_files=' + ','.join(changed))\nPY\nif git grep -n -E '[\"'\"'](\\./|\\.\\./|\\.\\./\\.\\./).*contentBlocks[\"'\"']' -- frontend/src; then echo 'stale contentBlocks import remains'; exit 31; fi\ngit diff --check\ncd frontend\nnpm ci\nnpm run typecheck\nVITE_API_BASE_URL= npm run build\ncd ..\ngit status --short\ngit add frontend/src\ngit commit -m 'Fix content block module casing for macOS'\ngit push origin HEAD:work/fix-content-block-case-collision"
+  ]
+}
