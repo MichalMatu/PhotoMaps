@@ -1,0 +1,13 @@
+{
+  "id": "20260912-photomap-reconcile-push-010",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/reconcile-main-develop",
+  "allow_write": true,
+  "resources": [],
+  "command_timeout": 180,
+  "task_timeout": 420,
+  "commands": [
+    "set -euo pipefail\ngit status --short --branch\nif ! git merge-base --is-ancestor origin/develop HEAD; then\n  git merge --no-ff origin/develop -m 'Reconcile develop product work into main line'\nfi\necho '=== CANDIDATE ==='\ngit log -1 --oneline --decorate\nprintf 'contains develop: ' && git merge-base --is-ancestor origin/develop HEAD && echo yes\nprintf 'contains main: ' && git merge-base --is-ancestor origin/main HEAD && echo yes\ngit push origin HEAD:work/reconcile-main-develop"
+  ]
+}
