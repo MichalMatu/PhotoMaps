@@ -78,7 +78,8 @@ def test_rejecting_uploaded_photo_removes_public_derivatives(client_session, tmp
     public_path = approved_body["public_path"]
     thumb_path = approved_body["thumb_path"]
 
-    assert (tmp_path / "public" / public_path.removeprefix("/media/")).is_file()
+    assert public_path == f"/api/places/{place.id}/photos/{photo_id}/media/image"
+    assert client.get(public_path).status_code == 200
     assert (tmp_path / "public" / thumb_path.removeprefix("/media/")).is_file()
 
     real_commit = session.commit
@@ -104,7 +105,6 @@ def test_rejecting_uploaded_photo_removes_public_derivatives(client_session, tmp
     assert photo is not None
     assert photo.public_path is None
     assert photo.thumb_path is None
-    assert not (tmp_path / "public" / public_path.removeprefix("/media/")).exists()
     assert not (tmp_path / "public" / thumb_path.removeprefix("/media/")).exists()
     assert client.get(public_path).status_code == 404
     assert client.get(thumb_path).status_code == 404
@@ -366,14 +366,14 @@ def test_admin_png_photo_upload_preserves_public_png_alpha(client_session, tmp_p
     )
     assert review_response.status_code == 200
     body = review_response.json()
-    assert body["public_path"].endswith(".png")
+    assert body["public_path"] == f"/api/places/{place.id}/photos/{pending_body['id']}/media/image"
     assert body["thumb_path"].endswith(".png")
 
-    public_file = tmp_path / "public" / body["public_path"].removeprefix("/media/")
+    original_file = tmp_path / "private" / session.get(Photo, pending_body["id"]).original_path
     thumb_file = tmp_path / "public" / body["thumb_path"].removeprefix("/media/")
-    with Image.open(public_file) as public_image:
-        assert public_image.mode == "RGBA"
-        assert public_image.getchannel("A").getextrema()[0] < 255
+    with Image.open(original_file) as original_image:
+        assert original_image.mode == "RGBA"
+        assert original_image.getchannel("A").getextrema()[0] < 255
     with Image.open(thumb_file) as thumb_image:
         assert thumb_image.mode == "RGBA"
         assert thumb_image.getchannel("A").getextrema()[0] < 255
@@ -403,13 +403,15 @@ def test_admin_photo_upload_preserves_public_image_resolution(client_session, tm
     )
     assert review_response.status_code == 200
     body = review_response.json()
-    public_file = tmp_path / "public" / body["public_path"].removeprefix("/media/")
+    photo = session.get(Photo, pending_body["id"])
+    assert photo is not None
+    original_file = tmp_path / "private" / photo.original_path
     thumb_file = tmp_path / "public" / body["thumb_path"].removeprefix("/media/")
-    with Image.open(public_file) as public_image:
-        assert public_image.size == original_size
+    with Image.open(original_file) as original_image:
+        assert original_image.size == original_size
     with Image.open(thumb_file) as thumb_image:
         assert thumb_image.size == (520, 520)
-    assert thumb_file.stat().st_size < public_file.stat().st_size
+    assert thumb_file.stat().st_size < original_file.stat().st_size
 
 
 def test_admin_photo_upload_cleans_files_when_database_save_fails(
@@ -527,7 +529,6 @@ def test_photo_rejection_keeps_public_files_when_database_save_fails(
     public_path = approved_response.json()["public_path"]
     thumb_path = approved_response.json()["thumb_path"]
     audio_public_path = approved_response.json()["audio"]["public_path"]
-    public_file = tmp_path / "public" / public_path.removeprefix("/media/")
     thumb_file = tmp_path / "public" / thumb_path.removeprefix("/media/")
     audio_public_file = tmp_path / "public" / audio_public_path.removeprefix("/media/")
 
@@ -550,7 +551,7 @@ def test_photo_rejection_keeps_public_files_when_database_save_fails(
     assert photo.public_path == public_path
     assert photo.thumb_path == thumb_path
     assert photo.audio_public_path == audio_public_path
-    assert public_file.is_file()
+    assert client.get(public_path).status_code == 200
     assert thumb_file.is_file()
     assert audio_public_file.is_file()
     assert not (tmp_path / "private" / ".quarantine" / "photo-public").exists()
