@@ -1,0 +1,9 @@
+{
+  "id": "20260912-photomap-public-original-core-013",
+  "status": "failed",
+  "failure_reason": "invalid_task_file",
+  "started_at": null,
+  "finished_at": "2026-09-12T03:36:14.684932+00:00",
+  "daemon_version": "4.18.20",
+  "error": "JSONDecodeError: Invalid control character at: line 11 column 2618 (char 2909)"
+}
