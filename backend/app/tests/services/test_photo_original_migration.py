@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from PIL import Image
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.models.photo import Photo
 from app.services.photo_media import public_photo_image_url_for
@@ -89,4 +90,34 @@ def test_photo_original_migration_refuses_missing_source_or_thumb(client_session
     assert report["summary"]["db_applied"] is False
     assert photo.public_path.startswith("/media/")
     assert public.is_file()
+    assert thumb.is_file()
+
+
+def test_photo_original_migration_keeps_legacy_file_when_database_commit_fails(
+    client_session,
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    _client, session = client_session
+    photo, original, public, thumb = legacy_photo(session, tmp_path)
+    old_url = photo.public_path
+    source_bytes = original.read_bytes()
+    legacy_bytes = public.read_bytes()
+
+    def fail_commit() -> None:
+        raise SQLAlchemyError("commit failed")
+
+    monkeypatch.setattr(session, "commit", fail_commit)
+    report = run_photo_original_serving_migration(session, apply_changes=True)
+    session.expire_all()
+    persisted_photo = session.get(Photo, photo.id)
+
+    assert report["status"] == "error"
+    assert report["summary"]["db_applied"] is False
+    assert report["summary"]["deleted_bytes"] == 0
+    assert {item["code"] for item in report["issues"]} == {"database_update_failed"}
+    assert persisted_photo is not None
+    assert persisted_photo.public_path == old_url
+    assert original.read_bytes() == source_bytes
+    assert public.read_bytes() == legacy_bytes
     assert thumb.is_file()
