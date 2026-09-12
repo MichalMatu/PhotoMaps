@@ -20,7 +20,10 @@ def load_migration_module():
 
 
 @pytest.mark.parametrize("purged_table", ["photo", "memory"])
-def test_downgrade_preflights_all_purged_originals_before_schema_changes(monkeypatch, purged_table: str) -> None:
+def test_downgrade_preflights_all_purged_originals_before_schema_changes(
+    monkeypatch,
+    purged_table: str,
+) -> None:
     migration = load_migration_module()
     monkeypatch.setattr(migration, "columns_for", lambda _table_name: {"original_path"})
     monkeypatch.setattr(
