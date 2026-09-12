@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-fix-client-test-indices-024",
+  "task_digest": "f12b8cd16d4083b504cd964fb83ce29e6ccac42663f3bc4dd8a49bc1bd8cb300",
+  "idle_timeout": 300,
+  "task_timeout": 600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T04:26:27.310749+00:00",
+  "attempt_id": "4cfbd020c46bf125509bbd67",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 45229,
+  "updated_at": "2026-09-12T04:26:27.310894+00:00",
+  "pid": 45229
+}
