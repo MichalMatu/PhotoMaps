@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-copy-verified-backup-to-mac-050",
+  "task_digest": "32c9ee7de2b5c0f96eb57c2f9f759259073b21870b858cacdafe4f8c7c6c8e16",
+  "idle_timeout": 3600,
+  "task_timeout": 14400,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T09:23:30.478128+00:00",
+  "attempt_id": "0700a0cea17eb6f922fa721a",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 71509,
+  "updated_at": "2026-09-12T09:23:30.478179+00:00",
+  "pid": 71509
+}
