@@ -16,7 +16,7 @@ def write_file(root: Path, relative_path: str, content: bytes = b"image") -> Pat
     return path
 
 
-def test_private_original_retention_dry_run_does_not_change_files_or_models(client_session, tmp_path: Path) -> None:
+def test_private_original_retention_preserves_approved_photo_source(client_session, tmp_path: Path) -> None:
     _client, session = client_session
     place = create_place(session)
     private_root = tmp_path / "private"
@@ -41,19 +41,19 @@ def test_private_original_retention_dry_run_does_not_change_files_or_models(clie
 
     report = run_private_original_retention(
         session,
-        apply_changes=False,
+        apply_changes=True,
         approved_retention_days=30,
         now=datetime(2026, 3, 1, tzinfo=UTC),
     )
 
     assert report["status"] == "ok"
-    assert report["summary"]["actions"]["approved_replaced"] == 1
-    assert report["actions"][0]["applied"] is False
+    assert report["summary"]["actions"]["approved_replaced"] == 0
+    assert report["summary"]["actions"]["total"] == 0
     assert original_file.read_bytes() == b"original"
     assert photo.original_path == original_path
 
 
-def test_private_original_retention_apply_replaces_approved_and_removes_rejected(
+def test_private_original_retention_apply_replaces_approved_memory_and_removes_rejected_photo(
     client_session,
     tmp_path: Path,
 ) -> None:
