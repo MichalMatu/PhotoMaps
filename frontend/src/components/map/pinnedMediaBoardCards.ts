@@ -11,7 +11,7 @@ import {
   type StoredPinnedMediaCard,
 } from "./pinnedMediaBoardTypes";
 
-function pinnedMediaCardId(placeId: string, kind: PinMediaDraft["kind"], itemId: string) {
+function pinnedMediaCardId(placeId: string, kind: PinMediaDraft["item"]["kind"], itemId: string) {
   return `${placeId}:${kind}:${itemId}`;
 }
 
@@ -20,12 +20,20 @@ export function upsertPinnedMediaCard(
   draft: PinMediaDraft,
   bounds: PinnedMediaBounds,
 ): PinMediaResult {
-  const id = pinnedMediaCardId(draft.placeId, draft.kind, draft.itemId);
+  const id = pinnedMediaCardId(draft.placeId, draft.item.kind, draft.item.id);
   const currentCard = cards.find((card) => card.id === id);
 
   if (currentCard) {
+    const cardsWithFreshSnapshot = cards.map((card) =>
+      card.id === id
+        ? {
+            ...card,
+            itemSnapshot: draft.item,
+          }
+        : card,
+    );
     return {
-      cards: bringPinnedMediaCardToFront(cards, id),
+      cards: bringPinnedMediaCardToFront(cardsWithFreshSnapshot, id),
       status: "updated",
     };
   }
@@ -40,8 +48,9 @@ export function upsertPinnedMediaCard(
       {
         createdAt: Date.now(),
         id,
-        itemId: draft.itemId,
-        kind: draft.kind,
+        itemId: draft.item.id,
+        itemSnapshot: draft.item,
+        kind: draft.item.kind,
         layout: defaultPinnedMediaLayout({
           aspectRatio: draft.aspectRatio,
           bounds,
@@ -96,10 +105,13 @@ export function resolvePinnedMediaCards(
 
   for (const card of cards) {
     const place = placesById.get(card.placeId);
-    const item = place ? findPlaceGalleryItem(place, { id: card.itemId, kind: card.kind }) : null;
+    const liveItem = place ? findPlaceGalleryItem(place, { id: card.itemId, kind: card.kind }) : null;
+    const storedItem =
+      card.itemSnapshot?.id === card.itemId && card.itemSnapshot.kind === card.kind ? card.itemSnapshot : null;
+    const item = liveItem ?? storedItem;
 
     if (place && item) {
-      resolvedCards.push({ ...card, item, place });
+      resolvedCards.push({ ...card, item, itemSnapshot: item, place });
     }
   }
 
@@ -111,6 +123,7 @@ export function toStoredPinnedMediaCard(card: ResolvedPinnedMediaCard): StoredPi
     createdAt: card.createdAt,
     id: card.id,
     itemId: card.itemId,
+    itemSnapshot: card.item,
     kind: card.kind,
     layout: card.layout,
     placeId: card.placeId,
