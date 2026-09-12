@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-admin-lazy-loading-076",
+  "task_digest": "91ee560ebef72604353fb7afc8833856f0ad51fcd86afe84e6560f5edf5cca1f",
+  "idle_timeout": 300,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T19:44:21.831511+00:00",
+  "attempt_id": "749c2fefd1e898c49074f5a1",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 47561,
+  "updated_at": "2026-09-12T19:44:21.831638+00:00",
+  "pid": 47561
+}
