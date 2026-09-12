@@ -1,14 +1,13 @@
 {
-  "event": "task_started",
+  "event": "task_finished",
   "task_id": "20260912-photomap-trackpad-zoom-069",
   "task_digest": "59ff5e37aa0fb422ff55a87efb7737137fda54a56b957cd3f2741e73246e01b6",
-  "idle_timeout": 300,
-  "task_timeout": 1800,
-  "memory_limit_mb": 4096,
-  "started_at": "2026-09-12T19:03:24.965621+00:00",
+  "status": "failed",
+  "failure_reason": "command_failed",
+  "finished_at": "2026-09-12T19:03:27.127445+00:00",
   "attempt_id": "7630aa10663569b86e3d388f",
   "daemon_version": "4.18.20",
   "daemon_pid": 2123,
-  "updated_at": "2026-09-12T19:03:24.965744+00:00",
+  "updated_at": "2026-09-12T19:03:27.393481+00:00",
   "pid": 2123
 }
