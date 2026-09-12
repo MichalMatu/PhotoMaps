@@ -1,0 +1,60 @@
+{
+  "id": "20260912-photomap-production-db-path-audit-038",
+  "status": "done",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "started_at": "2026-09-12T07:21:41.896383+00:00",
+  "command_timeout": 600,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail\nEXPECTED=3997b2a0bc2bbdb30a4aa0fbf62648c32b6bb52d\ngit fetch origin main\ntest \"$(git rev-parse origin/main)\" = \"$EXPECTED\"\nssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'bash -s' <<'REMOTE'\nset -euo pipefail\ncd /home/michal/src/PhotoMaps\necho production_head=$(git rev-parse HEAD)\necho service_state=$(sudo -n systemctl is-active photomap.service)\nsudo -n systemctl show photomap.service -p MainPID -p WorkingDirectory -p ExecStart -p Environment -p EnvironmentFiles --no-pager\nPID=$(sudo -n systemctl show photomap.service -p MainPID --value)\necho main_pid=$PID\necho open_database_fds\nsudo -n ls -l /proc/$PID/fd | grep app.db || true\necho candidate_app_db_files\nfind /home/michal/src/PhotoMaps -type f -name app.db -print\nPYTHONPATH=backend backend/.venv/bin/python - <<'PY'\nfrom pathlib import Path\nfrom app.core.config import DATABASE_PATH, DATABASE_URL\nprint('ssh_config_database_url=' + DATABASE_URL)\nprint('ssh_config_database_path=' + str(DATABASE_PATH))\nprint('ssh_config_database_exists=' + str(Path(DATABASE_PATH).exists()))\nPY\nREMOTE",
+      "exit_code": 0,
+      "output": "From https://github.com/MichalMatu/PhotoMaps\n * branch            main       -> FETCH_HEAD\nproduction_head=a47d2e8c42f084965ac4bc63ea98d18e7ca68409\nservice_state=active\nMainPID=3501\nExecStart={ path=/home/michal/src/PhotoMaps/backend/.venv/bin/python ; argv[]=/home/michal/src/PhotoMaps/backend/.venv/bin/python /home/michal/src/PhotoMaps/server.py ; ignore_errors=no ; start_time=[Sat 2026-09-12 08:01:57 CEST] ; stop_time=[n/a] ; pid=3501 ; code=(null) ; status=0/0 }\nEnvironment=\nWorkingDirectory=/home/michal/src/PhotoMaps\nmain_pid=3501\nopen_database_fds\nlrwx------ 1 michal michal 64 Sep 12 09:21 16 -> /home/michal/src/PhotoMaps/backend/data/app.db\nlrwx------ 1 michal michal 64 Sep 12 09:21 25 -> /home/michal/src/PhotoMaps/backend/data/app.db\nlrwx------ 1 michal michal 64 Sep 12 09:21 28 -> /home/michal/src/PhotoMaps/backend/data/app.db\nlrwx------ 1 michal michal 64 Sep 12 09:21 29 -> /home/michal/src/PhotoMaps/backend/data/app.db\nlrwx------ 1 michal michal 64 Sep 12 09:21 30 -> /home/michal/src/PhotoMaps/backend/data/app.db\ncandidate_app_db_files\n/home/michal/src/PhotoMaps/backend/data/app.db\nssh_config_database_url=sqlite:////home/michal/src/PhotoMaps/backend/data/app.db\nssh_config_database_path=/home/michal/src/PhotoMaps/backend/data/app.db\nssh_config_database_exists=True\n",
+      "elapsed_seconds": 7.686,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 4.91,
+      "output_policy": "stream",
+      "captured_output_chars": 1294,
+      "output_truncated": false,
+      "current_rss_mb": 3.98,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 7.686
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.113
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.078
+  },
+  "finished_at": "2026-09-12T07:21:51.342723+00:00",
+  "task_digest": "f535d373c08594d416a29b94c92cec4c6f038965259d30f73bde80c4eed63158",
+  "idle_timeout": 300,
+  "task_timeout": 900,
+  "memory_limit_mb": 4096,
+  "attempt_id": "e9e021f4fa174a1835e55db1",
+  "daemon_version": "4.18.20"
+}
