@@ -1,0 +1,9 @@
+{
+  "event": "invalid_task_rejected",
+  "status": "failed",
+  "failure_reason": "invalid_task_file",
+  "updated_at": "2026-09-12T11:11:24.215479+00:00",
+  "task_id": "20260912-photomap-working-copy-audit-056",
+  "daemon_version": "4.18.20",
+  "pid": 37585
+}
