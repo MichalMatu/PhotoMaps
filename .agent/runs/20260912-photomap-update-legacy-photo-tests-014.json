@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-update-legacy-photo-tests-014",
+  "task_digest": "7f188c0ca3ebb35e756feba1f224292ac9c40cb5c980b8d4094c15d5bdbe9879",
+  "idle_timeout": 300,
+  "task_timeout": 600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T03:53:20.484646+00:00",
+  "attempt_id": "d8a0cb2d9eaf89ab320072b3",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 98135,
+  "updated_at": "2026-09-12T03:53:20.484728+00:00",
+  "pid": 98135
+}
