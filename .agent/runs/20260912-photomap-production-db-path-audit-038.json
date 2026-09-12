@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-production-db-path-audit-038",
+  "task_digest": "f535d373c08594d416a29b94c92cec4c6f038965259d30f73bde80c4eed63158",
+  "idle_timeout": 300,
+  "task_timeout": 900,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T07:21:41.896347+00:00",
+  "attempt_id": "e9e021f4fa174a1835e55db1",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 32906,
+  "updated_at": "2026-09-12T07:21:41.896414+00:00",
+  "pid": 32906
+}
