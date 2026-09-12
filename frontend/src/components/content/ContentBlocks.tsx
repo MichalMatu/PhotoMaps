@@ -1,7 +1,7 @@
 import { ExternalLink } from "lucide-react";
 
 import type { ContentBlock } from "../../api/types";
-import { safeContentBlockUrl } from "./contentBlocks";
+import { safeContentBlockUrl } from "./contentBlockUtils";
 
 type Props = {
   blocks: ContentBlock[];

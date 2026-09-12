@@ -1,4 +1,4 @@
-import { contentBlocksTextForTts, emptyContentBlock, normalizeContentBlocks } from "../content/contentBlocks";
+import { contentBlocksTextForTts, emptyContentBlock, normalizeContentBlocks } from "../content/contentBlockUtils";
 
 export const normalizePlaceArticleBlocks = normalizeContentBlocks;
 

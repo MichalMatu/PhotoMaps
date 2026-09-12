@@ -1,5 +1,5 @@
 import type { ContentBlock, Guide, GuideKind, GuidePayload, GuideRoutePoint, GuideStatus } from "../../api/types";
-import { normalizeContentBlocks } from "../content/contentBlocks";
+import { normalizeContentBlocks } from "../content/contentBlockUtils";
 
 export type GuideStatusFilter = GuideStatus | "all";
 

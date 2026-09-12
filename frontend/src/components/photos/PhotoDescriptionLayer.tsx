@@ -2,7 +2,7 @@ import { FileText } from "lucide-react";
 
 import type { ContentBlock } from "../../api/types";
 import { ContentBlocks } from "../content/ContentBlocks";
-import { contentBlocksTextForTts, normalizeContentBlocks } from "../content/contentBlocks";
+import { contentBlocksTextForTts, normalizeContentBlocks } from "../content/contentBlockUtils";
 import { TtsButton } from "../ui/TtsButton";
 
 type PhotoDescriptionActionsProps = {

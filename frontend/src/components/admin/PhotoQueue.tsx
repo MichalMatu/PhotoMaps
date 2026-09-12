@@ -22,7 +22,7 @@ import type {
   ReviewFinalStatus,
   ReviewStatus,
 } from "../../api/types";
-import { emptyContentBlock } from "../content/contentBlocks";
+import { emptyContentBlock } from "../content/contentBlockUtils";
 import { AdminMediaCityAlbums } from "./AdminMediaCityAlbums";
 import { PhotoQueueItem } from "./PhotoQueueItem";
 import { PhotoTextEditModal } from "./PhotoTextEditModal";

@@ -11,7 +11,7 @@ import {
 } from "../../api/media";
 import { updatePlaceCover } from "../../api/places";
 import type { AdminPhoto, ContentBlock, ContentBlockType, Place, ReviewFinalStatus } from "../../api/types";
-import { emptyContentBlock } from "../content/contentBlocks";
+import { emptyContentBlock } from "../content/contentBlockUtils";
 import { validateAudioFile } from "../ui/audioAttachment";
 import { uploadAndApproveAdminPlacePhoto } from "./adminPhotoUpload";
 import { canSubmitPhotoUpload } from "./photoUploadState";

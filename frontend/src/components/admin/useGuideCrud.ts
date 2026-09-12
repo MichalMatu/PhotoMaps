@@ -11,7 +11,7 @@ import type {
   GuideStatus,
 } from "../../api/types";
 import { slugify } from "../../utils/slugify";
-import { emptyContentBlock } from "../content/contentBlocks";
+import { emptyContentBlock } from "../content/contentBlockUtils";
 import { errorDetails, type OperationError } from "../ui/ErrorModal";
 import { guidePayloadFromState } from "./guideActionsState";
 

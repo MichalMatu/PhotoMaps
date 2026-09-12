@@ -1,5 +1,5 @@
 import type { AdminMediaAudioFilter, AdminMemory, AdminPhoto, Report } from "../../api/types";
-import { contentBlocksTextForTts } from "../content/contentBlocks";
+import { contentBlocksTextForTts } from "../content/contentBlockUtils";
 
 export type AdminModerationAudioFilter = AdminMediaAudioFilter;
 
