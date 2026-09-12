@@ -1,0 +1,14 @@
+{
+  "id": "20260912-photomap-copy-review-062",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 300,
+  "idle_timeout": 300,
+  "task_timeout": 600,
+  "commands": [
+    "set -euo pipefail; DB=\"$HOME/agent-workspace/review/photomap-2026-09-12/app.db\"; DB=\"$DB\" python3 - <<'PY'\nimport json, os, sqlite3\nc=sqlite3.connect(os.environ['DB']); c.row_factory=sqlite3.Row\nphoto_stats=c.execute(\"select count(*) n, sum(case when length(coalesce(description_blocks,''))>1000 then 1 else 0 end) over_1k, sum(case when length(coalesce(description_blocks,''))>3000 then 1 else 0 end) over_3k, sum(case when length(coalesce(description_blocks,''))>6000 then 1 else 0 end) over_6k from photo where status='approved'\").fetchone()\nplace_stats=c.execute(\"select count(*) n, sum(case when length(coalesce(article_blocks,''))>1000 then 1 else 0 end) over_1k, sum(case when length(coalesce(article_blocks,''))>3000 then 1 else 0 end) over_3k, sum(case when length(coalesce(article_blocks,''))>6000 then 1 else 0 end) over_6k from place where status='published'\").fetchone()\nprint('approved_photo_description_stats='+json.dumps(dict(photo_stats),ensure_ascii=False))\nprint('published_place_article_stats='+json.dumps(dict(place_stats),ensure_ascii=False))\nrows=c.execute(\"select ph.id,ph.place_id,p.title,ph.caption,length(coalesce(ph.description_blocks,'')) chars from photo ph join place p on p.id=ph.place_id where ph.status='approved' order by chars desc limit 15\").fetchall()\nprint('longest_photo_descriptions='+json.dumps([dict(r) for r in rows],ensure_ascii=False,separators=(',',':')))\nrows=c.execute(\"select id,title,length(coalesce(article_blocks,'')) chars,length(coalesce(description,'')) lead_chars from place where status='published' order by chars desc limit 15\").fetchall()\nprint('longest_place_articles='+json.dumps([dict(r) for r in rows],ensure_ascii=False,separators=(',',':')))\nc.close()\nPY"
+  ]
+}
