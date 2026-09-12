@@ -9,7 +9,6 @@ const STORAGE_KEY = "photomap:pinned-media-board:v1";
 
 test("pinned full-gallery photo survives reload when it is absent from map preview data", async ({ page }) => {
   await page.setViewportSize({ height: 820, width: 1280 });
-  await page.addInitScript((storageKey) => window.localStorage.removeItem(storageKey), STORAGE_KEY);
   await mockSharedApi(page);
 
   const hiddenPhoto = {
@@ -62,6 +61,8 @@ test("pinned full-gallery photo survives reload when it is absent from map previ
   );
 
   await page.goto("/");
+  await page.evaluate((storageKey) => window.localStorage.removeItem(storageKey), STORAGE_KEY);
+  await page.reload();
   await clickMapMarker(page, places[0].title);
   await clickMapMarker(page, hiddenPhoto.caption);
 
