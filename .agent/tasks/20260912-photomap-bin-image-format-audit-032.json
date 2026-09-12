@@ -1,0 +1,13 @@
+{
+  "id": "20260912-photomap-bin-image-format-audit-032",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 600,
+  "task_timeout": 900,
+  "commands": [
+    "set -euo pipefail\nEXPECTED=ca165a9d57fcde4da19b2a649cb1792ffe961405\ntest \"$(git rev-parse HEAD)\" = \"$EXPECTED\"\nssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'bash -s' <<'REMOTE'\nset -euo pipefail\ncd /home/michal/src/PhotoMaps\ntest \"$(git rev-parse HEAD)\" = \"ca165a9d57fcde4da19b2a649cb1792ffe961405\"\nPYTHONPATH=backend backend/.venv/bin/python - <<'PY'\nfrom collections import Counter\nfrom PIL import Image\nfrom sqlmodel import Session, create_engine, select\nfrom app.core.config import DATABASE_URL\nfrom app.models.photo import Photo\nfrom app.services.photo_media import private_photo_image_path, photo_image_media_type\nengine=create_engine(DATABASE_URL, connect_args={'check_same_thread': False})\ncounts=Counter()\nmimes=Counter()\nfailed=[]\nsamples={}\nwith Session(engine) as s:\n    photos=list(s.exec(select(Photo).where(Photo.status=='approved').order_by(Photo.id)).all())\nfor p in photos:\n    if not p.original_path.lower().endswith('.bin'):\n        continue\n    path=private_photo_image_path(p)\n    try:\n        with Image.open(path) as im:\n            fmt=str(im.format)\n    except Exception as exc:\n        fmt='ERROR:' + type(exc).__name__\n        failed.append((p.id, str(path), repr(exc)))\n    counts[fmt]+=1\n    mime=photo_image_media_type(path)\n    mimes[mime]+=1\n    samples.setdefault(fmt, (p.id, str(path), mime))\nprint('bin_count=' + str(sum(counts.values())))\nprint('formats=' + repr(dict(counts)))\nprint('helper_mimes=' + repr(dict(mimes)))\nprint('samples=' + repr(samples))\nprint('failures=' + repr(failed[:10]))\nPY\nREMOTE"
+  ]
+}
