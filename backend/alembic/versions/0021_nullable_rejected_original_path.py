@@ -39,6 +39,7 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    tables_to_alter: list[str] = []
     for table_name in ("photo", "memory"):
         columns = columns_for(table_name)
         if "original_path" not in columns:
@@ -48,5 +49,8 @@ def downgrade() -> None:
             raise RuntimeError(
                 f"Cannot downgrade 0021: {table_name} has {purged_rows} rows with purged original_path"
             )
+        tables_to_alter.append(table_name)
+
+    for table_name in tables_to_alter:
         with op.batch_alter_table(table_name) as batch_op:
             batch_op.alter_column("original_path", existing_type=sa.String(), nullable=False)
