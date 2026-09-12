@@ -1,0 +1,13 @@
+{
+  "id": "20260912-photomap-worktree-bootstrap-068",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 300,
+  "task_timeout": 600,
+  "commands": [
+    "set -euo pipefail\nprintf 'head=' && git rev-parse HEAD\nprintf 'branch=' && git branch --show-current\nprintf 'dirty=' && if test -n \"$(git status --porcelain)\"; then echo yes; git status --short; exit 2; else echo no; fi\ngit fetch origin main\ntest \"$(git rev-parse HEAD)\" = \"$(git rev-parse origin/main)\""
+  ]
+}
