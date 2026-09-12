@@ -42,6 +42,7 @@ export type StoredPinnedMediaCard = {
   createdAt: number;
   id: string;
   itemId: string;
+  itemSnapshot?: PlaceMapVisualItem;
   kind: PinnedMediaKind;
   layout: PinnedMediaLayout;
   placeId: string;
@@ -54,8 +55,7 @@ export type ResolvedPinnedMediaCard = StoredPinnedMediaCard & {
 
 export type PinMediaDraft = {
   aspectRatio?: number | null;
-  itemId: string;
-  kind: PinnedMediaKind;
+  item: PlaceMapVisualItem;
   placeId: string;
   sourceRect?: RectLike | null;
 };
