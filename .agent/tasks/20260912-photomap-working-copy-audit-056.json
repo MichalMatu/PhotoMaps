@@ -1,0 +1,13 @@
+{
+  "id": "20260912-photomap-working-copy-audit-056",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "command_timeout": 300,
+  "idle_timeout": 300,
+  "task_timeout": 600,
+  "commands": [
+    "set -euo pipefail; SRC=\"$HOME/Desktop/PhotoMaps-full-backup-2026-09-12-053\"; DST=\"$HOME/Desktop/PhotoMaps-working-review-2026-09-12\"; echo src_exists=$(test -d \"$SRC\" && echo yes || echo no); echo dst_exists=$(test -e \"$DST\" && echo yes || echo no); if test -e \"$DST\"; then echo dst_files=$(find \"$DST\" -type f | wc -l | tr -d ' '); echo dst_kb=$(du -sk \"$DST\" | cut -f1); fi; echo cp_usage_start; cp -h 2>&1 | head -20 || true; echo cp_usage_end; diskutil info \"$HOME/Desktop\" 2>/dev/null | grep -E 'File System Personality|Type|Volume Name|Device Node|Solid State' || true; df -h \"$HOME/Desktop\""
+  ]
+}
