@@ -14,6 +14,7 @@ import { MAP_DISPLAY_CONFIG } from "./mapDisplayConfig";
 import { MapInteractionLock } from "./mapInteractionLock";
 import { MapPhotoGalleryGlass } from "./MapPhotoGalleryGlass";
 import { MapPhotoGalleryPane } from "./MapPhotoGalleryPane";
+import { MapTrackpadZoom } from "./MapTrackpadZoom";
 import { PhotoDetailModal } from "./PhotoDetailModal";
 import { PinnedMediaBoard, type PinnedMediaPlaceProjector } from "./PinnedMediaBoard";
 import { PlaceMarker } from "./PlaceMarker";
@@ -489,6 +490,7 @@ export function PlaceMap({
         zoomSnap={MAP_DISPLAY_CONFIG.mapContainer.zoomSnap}
       >
         <MapSizeUpdater />
+        <MapTrackpadZoom />
         <MapProjectionTracker onProjectorChange={handleProjectorChange} />
         <DistanceMeasureTool />
         <ZoomControl position={MAP_DISPLAY_CONFIG.mapControls.zoomControlPosition} />
