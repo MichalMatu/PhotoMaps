@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-switch-production-main-011",
+  "task_digest": "5091a0351a9a8c669a947d4dee241b1ea8e370a8297aa1f4be289b07f7ad1737",
+  "idle_timeout": 300,
+  "task_timeout": 420,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T03:25:12.918920+00:00",
+  "attempt_id": "af082ef0665d81363978590e",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 69367,
+  "updated_at": "2026-09-12T03:25:12.918974+00:00",
+  "pid": 69367
+}
