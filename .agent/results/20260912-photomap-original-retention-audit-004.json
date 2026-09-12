@@ -1,0 +1,60 @@
+{
+  "id": "20260912-photomap-original-retention-audit-004",
+  "status": "done",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "started_at": "2026-09-12T03:09:50.986175+00:00",
+  "command_timeout": 300,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail\nssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'bash -s' <<'REMOTE'\nset -eu\npid=$(pgrep -f '[p]ython.*server.py' | head -n 1 || true)\nif [ -z \"$pid\" ]; then echo 'PhotoMap server process not found'; exit 2; fi\ncwd=$(readlink -f \"/proc/$pid/cwd\")\nexe=$(readlink -f \"/proc/$pid/exe\")\nPID=\"$pid\" CWD=\"$cwd\" \"$exe\" - <<'PY'\nimport os\nimport sqlite3\nfrom collections import Counter\nfrom pathlib import Path\n\npid=os.environ['PID']; cwd=Path(os.environ['CWD'])\nproc_env={}\nfor item in Path(f'/proc/{pid}/environ').read_bytes().split(b'\\0'):\n    if b'=' in item:\n        k,v=item.split(b'=',1); proc_env[k.decode(errors='replace')]=v.decode(errors='replace')\nbackend=cwd/'backend'\ndata=Path(proc_env.get('PHOTOMAP_DATA_DIR',str(backend/'data'))).expanduser()\ndb_url=proc_env.get('DATABASE_URL',f'sqlite:///{data/\"app.db\"}')\nif not db_url.startswith('sqlite:///'): raise SystemExit('Expected sqlite database')\ndb=Path(db_url.removeprefix('sqlite:///'))\nif not db.is_absolute(): db=(cwd/db).resolve()\nconn=sqlite3.connect(f'file:{db}?mode=ro',uri=True); conn.row_factory=sqlite3.Row\ntry:\n    rows=conn.execute('SELECT id, place_id, status, original_path, public_path, approved_at, created_at FROM photo ORDER BY created_at').fetchall()\nfinally:\n    conn.close()\n\ndef kind(path):\n    name=Path(path).name\n    if '-retained' in name: return 'retained'\n    if '-original' in name: return 'original'\n    return 'other'\n\nall_counts=Counter(kind(r['original_path']) for r in rows)\nstatus_counts=Counter((r['status'],kind(r['original_path'])) for r in rows)\nprint('=== ORIGINAL PATH CLASSIFICATION ===')\nprint('total_rows='+str(len(rows)))\nfor k in sorted(all_counts): print(f'{k}={all_counts[k]}')\nprint('=== BY STATUS ===')\nfor (status,k),n in sorted(status_counts.items()): print(f'{status}.{k}={n}')\nretained=[r for r in rows if kind(r['original_path'])=='retained']\nprint(f'retained_rows={len(retained)}')\nif retained:\n    print('retained_samples:')\n    for r in retained[:20]: print(f'  id={r[\"id\"]} status={r[\"status\"]} approved_at={r[\"approved_at\"]} original_path={r[\"original_path\"]}')\nprint('created_at_min='+str(rows[0]['created_at'] if rows else None))\nprint('created_at_max='+str(rows[-1]['created_at'] if rows else None))\napproved_dates=[r['approved_at'] for r in rows if r['approved_at']]\nprint('approved_at_min='+str(min(approved_dates) if approved_dates else None))\nprint('approved_at_max='+str(max(approved_dates) if approved_dates else None))\nPY\nREMOTE",
+      "exit_code": 0,
+      "output": "=== ORIGINAL PATH CLASSIFICATION ===\ntotal_rows=1238\noriginal=1238\n=== BY STATUS ===\napproved.original=1188\nrejected.original=50\nretained_rows=0\ncreated_at_min=2026-06-22 10:30:10.865216\ncreated_at_max=2026-07-21 16:55:30.209747\napproved_at_min=2026-06-22 10:30:10.865051\napproved_at_max=2026-07-21 16:55:30.408248\n",
+      "elapsed_seconds": 2.357,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 6.58,
+      "output_policy": "stream",
+      "captured_output_chars": 315,
+      "output_truncated": false,
+      "current_rss_mb": 6.58,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 2.357
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.116
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.083
+  },
+  "finished_at": "2026-09-12T03:09:54.986756+00:00",
+  "task_digest": "9a5d942bc350581e4f3c6f0719e9963577fda776734e8bfd53ea7ae3233d747d",
+  "idle_timeout": 300,
+  "task_timeout": 600,
+  "memory_limit_mb": 4096,
+  "attempt_id": "45e7f92f5b7448fc9ef15f97",
+  "daemon_version": "4.18.20"
+}
