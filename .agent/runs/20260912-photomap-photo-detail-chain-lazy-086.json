@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-photo-detail-chain-lazy-086",
+  "task_digest": "065393322670ea9b4abf0afc1172f685d9f62b83a210bbd6a6767e29afdb8916",
+  "idle_timeout": 300,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T21:24:47.487645+00:00",
+  "attempt_id": "edad463d4bafeb42204369b7",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 37881,
+  "updated_at": "2026-09-12T21:24:47.487778+00:00",
+  "pid": 37881
+}
