@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "daemon_version": "4.10.0",
+  "daemon_version": "4.18.20",
   "state": "idle",
-  "pid": 24415,
-  "updated_at": "2026-08-27T12:59:22.967274+00:00",
-  "self_revision": "1a6e73c1aa58421158492b5c5b365493a7c90eea",
+  "pid": 14442,
+  "updated_at": "2026-09-12T02:30:23.196290+00:00",
+  "self_revision": "0bb99d790dbed19a528b4cb8ac238432134b5660",
   "poll_seconds": 15,
   "self_update_seconds": 60,
   "command_timeout_default": 900,
@@ -21,8 +21,9 @@
   "repository": "MichalMatu/PhotoMaps",
   "control_branch": "agent-control",
   "default_branch": "main",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
   "execution_model": "multi_repository_worker",
-  "worker_pid": 24415,
-  "supervisor_pid": 1293,
-  "last_task_id": "20260827-migrate-photomaps-to-matrixhub-v2"
+  "worker_pid": 14442,
+  "supervisor_pid": 1497,
+  "execution_variant": "parallel"
 }
