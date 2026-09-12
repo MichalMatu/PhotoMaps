@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-production-original-apply-030",
+  "task_digest": "35a7e0e01b402c021e1fe39f597a86750fe04785529f04c1ef13ad83561ffbbc",
+  "idle_timeout": 300,
+  "task_timeout": 2400,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T05:36:11.598291+00:00",
+  "attempt_id": "50da550ae0001733dafa2464",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 18442,
+  "updated_at": "2026-09-12T05:36:11.598501+00:00",
+  "pid": 18442
+}
