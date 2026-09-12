@@ -126,6 +126,7 @@ export function usePinnedMediaBoard(places: PlaceMapItem[]): UsePinnedMediaBoard
       {
         aspectRatio: request.aspectRatio,
         itemId: request.item.id,
+        itemSnapshot: request.item,
         kind: request.item.kind,
         placeId: request.place.id,
         sourceRect: request.sourceRect,
