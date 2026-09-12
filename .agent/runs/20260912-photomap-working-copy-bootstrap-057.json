@@ -1,14 +1,13 @@
 {
-  "event": "task_started",
+  "event": "task_finished",
   "task_id": "20260912-photomap-working-copy-bootstrap-057",
   "task_digest": "0a036339e17759d40d17d42a4ebfd83d821dce37739ef34f16ca2fa429a3aea5",
-  "idle_timeout": 900,
-  "task_timeout": 3600,
-  "memory_limit_mb": 4096,
-  "started_at": "2026-09-12T11:12:46.516881+00:00",
+  "status": "failed",
+  "failure_reason": "command_failed",
+  "finished_at": "2026-09-12T11:12:48.611992+00:00",
   "attempt_id": "791661722b71562622b7df49",
   "daemon_version": "4.18.20",
   "daemon_pid": 39019,
-  "updated_at": "2026-09-12T11:12:46.517039+00:00",
+  "updated_at": "2026-09-12T11:12:48.894176+00:00",
   "pid": 39019
 }
