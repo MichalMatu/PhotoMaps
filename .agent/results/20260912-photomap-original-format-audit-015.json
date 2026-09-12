@@ -1,0 +1,60 @@
+{
+  "id": "20260912-photomap-original-format-audit-015",
+  "status": "done",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "started_at": "2026-09-12T03:54:39.214617+00:00",
+  "command_timeout": 180,
+  "edits": {},
+  "commands": [
+    {
+      "command": "ssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'cd /home/michal/src/PhotoMaps && backend/.venv/bin/python - <<\"PY\"\nimport sqlite3\nfrom collections import Counter\nfrom pathlib import Path\nroot=Path(\"backend/storage/private\")\nconn=sqlite3.connect(\"backend/data/app.db\")\nrows=conn.execute(\"select id, original_path from photo\").fetchall()\nconn.close()\next=Counter(); sizes=[]; missing=[]\nfor pid, rel in rows:\n    p=root/rel\n    ext[p.suffix.lower() or \"<none>\"] += 1\n    if p.is_file(): sizes.append((p.stat().st_size,pid,rel))\n    else: missing.append((pid,rel))\nprint(\"extensions\", dict(sorted(ext.items())))\nprint(\"missing\", len(missing))\nprint(\"largest\")\nfor size,pid,rel in sorted(sizes, reverse=True)[:15]: print(size,pid,rel)\nPY'",
+      "exit_code": 0,
+      "output": "extensions {'.bin': 94, '.jpeg': 4, '.jpg': 1139, '.png': 1}\nmissing 0\nlargest\n25554220 fff94cf1-4c54-42fc-8e73-d46651e94d2b photos/2fb09b8e-bf51-460c-8b60-7e02890ee29a/7b635cba-44a9-46c5-8893-42f597a9bc39-original.jpg\n23792598 f3bdc447-a81b-4dd9-a56e-059122b1a8ed photos/9cc86758-0cc6-4df4-b08d-46d6075ff98c/10025f10-217d-496c-bc34-f3e252a0f1fd-original.jpg\n23455952 4b532f5e-27f7-46dc-acde-7276c362ec47 photos/c84cf56b-7015-4e6a-85d1-b58bea821095/311e0e53-b803-4607-9f0f-71705c140c19-original.jpg\n21552118 f81ac742-b01b-40d7-90c4-72c02d4368bf photos/40ad240f-9389-4e80-9872-79870373d179/c35e23da-6904-46e6-adb0-00b3e0e3b9c9-original.jpg\n21524374 e8f9ef1b-13f1-4a94-984c-647776e781dc photos/ab6b0034-75b4-46d4-a3ab-5216122cb12c/ce76dfd4-3132-4e6f-a290-fbf38b74cd1a-original.jpg\n19091920 a88120e7-c200-4514-9902-b7224bbd8ebc photos/f2ad5a53-2636-4175-9c80-a5b3413fbb5a/a87c9527-bbeb-4d2f-af61-fa65c625d804-original.jpg\n19028852 4e6ed573-d90b-4ab0-b852-762f640e2da9 photos/5865ef63-c67c-47a3-8d61-7f78d7a0b1e7/6316d6ad-d5bc-4b2a-b7f2-5b3b8c1c9d1e-original.jpg\n18227393 3227896f-8337-41ab-8f95-c7fc5d02b119 photos/100bf87b-629a-4fea-ad7a-d2f6835c8c06/0a78d38c-93ee-40c2-8329-80571d2a0079-original.jpg\n17037762 e154aa4d-f0f4-486f-93cd-6fad3e3b9d05 photos/3689b5ac-883d-407a-afcd-5365e50a9485/baa6624d-e75e-4013-bad2-fa9fc59abdbd-original.jpg\n16758765 bf6cb49a-736b-4417-b58c-3789c5c613c0 photos/f2ad5a53-2636-4175-9c80-a5b3413fbb5a/a61d0c3b-ed2a-4aab-ac30-9f03d8831152-original.jpg\n16514542 78cbba27-9cae-4e22-b670-2234c15694e8 photos/74e42c83-792a-4817-a7f9-6a008f049804/4ae1ee19-2256-4b96-a222-6d0d01c1a1a9-original.jpg\n16382458 5ea7580e-ce07-48d0-9f70-fc815c2ee1f8 photos/2dd46736-3679-4480-8cca-c27c22a464a0/50345102-6135-45d4-ad51-374ebfb4f947-original.jpg\n16322680 9b88f172-ec1f-45dc-940a-b73e0f7a3bc5 photos/2a7005e9-8dee-48b3-8f52-2cb183dd2d1f/0df031f1-667a-451b-b710-c9e02ab24c30-original.jpg\n16118778 0505de5f-982b-4a7e-b158-c8a6169d594a photos/8711b6b8-9d20-48a2-beef-0f4979b78179/ce8af9e7-44f2-48f2-abc7-8a320c43b9e2-original.jpg\n15252820 5a6b7a06-44bb-4043-9c1c-31b739c275ca photos/4d012566-41b3-40dd-aa05-ad372d2e400f/9bbb3696-a652-40ef-912d-77f6615a1290-original.jpg\n",
+      "elapsed_seconds": 2.808,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 4.66,
+      "output_policy": "stream",
+      "captured_output_chars": 2179,
+      "output_truncated": false,
+      "current_rss_mb": 4.66,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 2.808
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.133
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.066
+  },
+  "finished_at": "2026-09-12T03:54:43.803327+00:00",
+  "task_digest": "8273bf9923d37bc308f55e9ac22902e884b5c075213ebe03eeb2a8817231db38",
+  "idle_timeout": 300,
+  "task_timeout": 300,
+  "memory_limit_mb": 4096,
+  "attempt_id": "307e94ddae89c58e65c80ff7",
+  "daemon_version": "4.18.20"
+}
