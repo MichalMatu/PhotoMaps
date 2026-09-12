@@ -6,7 +6,7 @@ import { getGuide, getGuides } from "../api/guides";
 import { mediaUrl } from "../api/http";
 import type { PublicGuide, PublicGuideDetail, PublicGuidePlacePreview } from "../api/types";
 import { ContentBlocks } from "../components/content/ContentBlocks";
-import { contentBlocksTextForTts } from "../components/content/contentBlocks";
+import { contentBlocksTextForTts } from "../components/content/contentBlockUtils";
 import { GuideRouteMap } from "../components/guides/GuideRouteMap";
 import { buildGoogleMapsWalkingRouteUrl } from "../components/guides/googleMapsRoute";
 import { AppShell } from "../components/layout/AppShell";

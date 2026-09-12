@@ -1,7 +1,7 @@
 import type { ContentBlock, ContentBlockType } from "../../api/types";
 import { SettingField } from "../ui/SettingField";
 import { CONTENT_BLOCK_FIELD_HELP } from "./contentBlockFieldHelp";
-import { CONTENT_BLOCK_TYPES, contentBlockLabel } from "./contentBlocks";
+import { CONTENT_BLOCK_TYPES, contentBlockLabel } from "./contentBlockUtils";
 
 type Props = {
   blocks: ContentBlock[];

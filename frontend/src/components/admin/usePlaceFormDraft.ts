@@ -12,7 +12,7 @@ import type {
 } from "../../api/types";
 import { DEFAULT_PLACE_PRIORITY } from "../../config/placePriority";
 import { slugify } from "../../utils/slugify";
-import { emptyContentBlock } from "../content/contentBlocks";
+import { emptyContentBlock } from "../content/contentBlockUtils";
 import { emptyPlaceArticleBlock, normalizePlaceArticleBlocks } from "../places/placeArticleBlocks";
 import {
   placeCustomFieldFormValues,

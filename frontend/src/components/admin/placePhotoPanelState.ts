@@ -1,5 +1,5 @@
 import type { AdminPhoto, ContentBlock, PhotoUpdatePayload, PhotoUploadPayload } from "../../api/types";
-import { normalizeContentBlocks } from "../content/contentBlocks";
+import { normalizeContentBlocks } from "../content/contentBlockUtils";
 
 export type PhotoAttributionDraft = {
   attributionAuthor: string;
