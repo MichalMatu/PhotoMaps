@@ -96,8 +96,9 @@ export function AdminPlacesModalLayer({
   }, []);
 
   useEffect(() => {
+    const guard = photoPreviewRequestGuard.current;
     if (!photoPreviewPlaceId) {
-      photoPreviewRequestGuard.current.invalidate();
+      guard.invalidate();
       setPhotoPreviewPhotos([]);
       setPhotoPreviewError(null);
       setIsPhotoPreviewLoading(false);
@@ -107,7 +108,7 @@ export function AdminPlacesModalLayer({
     void refreshPhotoPreviewPhotos(photoPreviewPlaceId);
 
     return () => {
-      photoPreviewRequestGuard.current.invalidate();
+      guard.invalidate();
     };
   }, [photoPreviewPlaceId, refreshPhotoPreviewPhotos]);
 
