@@ -48,6 +48,12 @@ SECURITY_HEADERS = {
 }
 
 
+def is_public_image_path(path: str) -> bool:
+    return path.startswith("/media/") or (
+        path.startswith("/api/places/") and "/photos/" in path and path.endswith("/media/image")
+    )
+
+
 async def security_headers_middleware(
     request: Request,
     call_next: Callable[[Request], Awaitable[Response]],
@@ -68,7 +74,7 @@ async def security_headers_middleware(
     if request.url.path == "/admin" or request.url.path.startswith("/api/admin/"):
         response.headers["Cache-Control"] = "no-store"
         response.headers["Pragma"] = "no-cache"
-    elif request.url.path.startswith("/media/"):
+    elif is_public_image_path(request.url.path):
         response.headers["Cache-Control"] = "public, max-age=0, must-revalidate"
         response.headers["CDN-Cache-Control"] = "no-store"
         response.headers["Cloudflare-CDN-Cache-Control"] = "no-store"
