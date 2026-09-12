@@ -1,0 +1,60 @@
+{
+  "id": "20260912-photomap-copy-review-062",
+  "status": "done",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "started_at": "2026-09-12T11:22:40.395916+00:00",
+  "command_timeout": 300,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail; DB=\"$HOME/agent-workspace/review/photomap-2026-09-12/app.db\"; DB=\"$DB\" python3 - <<'PY'\nimport json, os, sqlite3\nc=sqlite3.connect(os.environ['DB']); c.row_factory=sqlite3.Row\nphoto_stats=c.execute(\"select count(*) n, sum(case when length(coalesce(description_blocks,''))>1000 then 1 else 0 end) over_1k, sum(case when length(coalesce(description_blocks,''))>3000 then 1 else 0 end) over_3k, sum(case when length(coalesce(description_blocks,''))>6000 then 1 else 0 end) over_6k from photo where status='approved'\").fetchone()\nplace_stats=c.execute(\"select count(*) n, sum(case when length(coalesce(article_blocks,''))>1000 then 1 else 0 end) over_1k, sum(case when length(coalesce(article_blocks,''))>3000 then 1 else 0 end) over_3k, sum(case when length(coalesce(article_blocks,''))>6000 then 1 else 0 end) over_6k from place where status='published'\").fetchone()\nprint('approved_photo_description_stats='+json.dumps(dict(photo_stats),ensure_ascii=False))\nprint('published_place_article_stats='+json.dumps(dict(place_stats),ensure_ascii=False))\nrows=c.execute(\"select ph.id,ph.place_id,p.title,ph.caption,length(coalesce(ph.description_blocks,'')) chars from photo ph join place p on p.id=ph.place_id where ph.status='approved' order by chars desc limit 15\").fetchall()\nprint('longest_photo_descriptions='+json.dumps([dict(r) for r in rows],ensure_ascii=False,separators=(',',':')))\nrows=c.execute(\"select id,title,length(coalesce(article_blocks,'')) chars,length(coalesce(description,'')) lead_chars from place where status='published' order by chars desc limit 15\").fetchall()\nprint('longest_place_articles='+json.dumps([dict(r) for r in rows],ensure_ascii=False,separators=(',',':')))\nc.close()\nPY",
+      "exit_code": 0,
+      "output": "approved_photo_description_stats={\"n\": 1188, \"over_1k\": 1123, \"over_3k\": 1123, \"over_6k\": 657}\npublished_place_article_stats={\"n\": 195, \"over_1k\": 0, \"over_3k\": 0, \"over_6k\": 0}\nlongest_photo_descriptions=[{\"id\":\"4a04817a-5a05-4271-bb2d-0787d50103f8\",\"place_id\":\"16e25ece-bf9a-4dc3-a8d1-d39e86ca810f\",\"title\":\"Synagoga pod Białym Bocianem\",\"caption\":\"Klasycystyczna fasada Synagogi pod Białym Bocianem od dziedzińca\",\"chars\":10146},{\"id\":\"eb0856a3-c533-45bf-9d9f-ac559cd7640e\",\"place_id\":\"40ad240f-9389-4e80-9872-79870373d179\",\"title\":\"Archikatedra św. Jana Chrzciciela\",\"caption\":\"Prezbiterium ze stallami w archikatedrze św. Jana Chrzciciela\",\"chars\":9524},{\"id\":\"ace40c35-58c5-4ca5-abc6-c76602410857\",\"place_id\":\"48f11b08-33b3-4359-bb0b-d4b37d44b911\",\"title\":\"Wyspa Opatowicka\",\"caption\":\"Kanał Opatowicki i zielony brzeg Wyspy Opatowickiej\",\"chars\":9321},{\"id\":\"0b07e3fb-2a8d-4591-a892-71b3bfcfa6fb\",\"place_id\":\"40ad240f-9389-4e80-9872-79870373d179\",\"title\":\"Archikatedra św. Jana Chrzciciela\",\"caption\":\"Dwie wieże archikatedry nad placem Katedralnym\",\"chars\":8825},{\"id\":\"af355064-5e56-457e-b23b-14035b78507b\",\"place_id\":\"a3298528-f7a4-4162-bf48-dc1623ced9b0\",\"title\":\"Wieża ciśnień Borek\",\"caption\":\"Fontanna Nimfa i Tryton u stóp Wieży ciśnień Borek\",\"chars\":8808},{\"id\":\"b59d4d57-d9b3-4d77-b294-9ce417205110\",\"place_id\":\"c873e5bc-e061-4e69-a04a-8badf9c46ae4\",\"title\":\"Most Grunwaldzki\",\"caption\":\"Most Grunwaldzki nad Odrą z charakterystyczną stalową konstrukcją\",\"chars\":8486},{\"id\":\"72bacc7b-9e7e-427f-9812-65aeb5fad5cf\",\"place_id\":\"c873e5bc-e061-4e69-a04a-8badf9c46ae4\",\"title\":\"Most Grunwaldzki\",\"caption\":\"Most Grunwaldzki\",\"chars\":8405},{\"id\":\"944fa910-f620-453d-a845-f75eea88c74d\",\"place_id\":\"c873e5bc-e061-4e69-a04a-8badf9c46ae4\",\"title\":\"Most Grunwaldzki\",\"caption\":\"Most Grunwaldzki\",\"chars\":8339},{\"id\":\"e74d251e-2264-4842-9d61-e7ac0ef3a673\",\"place_id\":\"461d0324-c760-4008-a0a5-edc1415889f6\",\"title\":\"Stadion Olimpijski\",\"caption\":\"Zadaszona trybuna i tor żużlowy Stadionu Olimpijskiego\",\"chars\":8333},{\"id\":\"abd7e52d-6758-4651-bc56-e18670adfd7c\",\"place_id\":\"71ab486e-2eca-4793-84ad-995de57bd601\",\"title\":\"Kopalnia Złota w Złotym Stoku\",\"caption\":\"Wejście do Muzeum Kopalni Złota w Złotym Stoku pod stromym zboczem\",\"chars\":8320},{\"id\":\"94a1b877-0615-43c2-8c21-59b574c0f5cf\",\"place_id\":\"c873e5bc-e061-4e69-a04a-8badf9c46ae4\",\"title\":\"Most Grunwaldzki\",\"caption\":\"Most Grunwaldzki w ujęciu spacerowym\",\"chars\":8153},{\"id\":\"0cca6b4d-c0b5-42ab-bc37-e3e85659b524\",\"place_id\":\"c873e5bc-e061-4e69-a04a-8badf9c46ae4\",\"title\":\"Most Grunwaldzki\",\"caption\":\"Most Grunwaldzki\",\"chars\":8054},{\"id\":\"5021c1f5-c226-4ec7-a331-e5eb442a297d\",\"place_id\":\"c873e5bc-e061-4e69-a04a-8badf9c46ae4\",\"title\":\"Most Grunwaldzki\",\"caption\":\"Pylon i lampa Mostu Grunwaldzkiego\",\"chars\":8008},{\"id\":\"59d462ec-0404-4e74-ac8a-ac7ee4cba183\",\"place_id\":\"c873e5bc-e061-4e69-a04a-8badf9c46ae4\",\"title\":\"Most Grunwaldzki\",\"caption\":\"Most Grunwaldzki od strony torowiska\",\"chars\":7986},{\"id\":\"ce524225-03b3-4f1b-a566-6a293e6ca72f\",\"place_id\":\"c873e5bc-e061-4e69-a04a-8badf9c46ae4\",\"title\":\"Most Grunwaldzki\",\"caption\":\"Niebieskie światło na Moście Grunwaldzkim\",\"chars\":7968}]\nlongest_place_articles=[{\"id\":\"74f0f694-76fa-4444-b6f3-194d1ca58c9b\",\"title\":\"Rynek Wrocław\",\"chars\":838,\"lead_chars\":97},{\"id\":\"92e912b9-d7b0-4a85-941d-d924fe707a70\",\"title\":\"Zamek Leśnica i Park Leśnicki\",\"chars\":818,\"lead_chars\":108},{\"id\":\"1429a84c-4a8b-461b-a9dd-4654288a5a7e\",\"title\":\"WuWA - osiedle Werkbundu\",\"chars\":813,\"lead_chars\":105},{\"id\":\"2d1c0c10-a551-43bc-8b60-ad489fd0b404\",\"title\":\"Most Oławski i nabrzeże Oławy\",\"chars\":811,\"lead_chars\":91},{\"id\":\"16e25ece-bf9a-4dc3-a8d1-d39e86ca810f\",\"title\":\"Synagoga pod Białym Bocianem\",\"chars\":790,\"lead_chars\":101},{\"id\":\"2371e4f7-a106-45d9-b4d9-07f539c99aaf\",\"title\":\"Park Grabiszyński i Cmentarz Żołnierzy Włoskich\",\"chars\":767,\"lead_chars\":91},{\"id\":\"48f11b08-33b3-4359-bb0b-d4b37d44b911\",\"title\":\"Wyspa Opatowicka\",\"chars\":763,\"lead_chars\":98},{\"id\":\"a3298528-f7a4-4162-bf48-dc1623ced9b0\",\"title\":\"Wieża ciśnień Borek\",\"chars\":761,\"lead_chars\":102},{\"id\":\"461d0324-c760-4008-a0a5-edc1415889f6\",\"title\":\"Stadion Olimpijski\",\"chars\":753,\"lead_chars\":97},{\"id\":\"833d6ea6-ed47-4af4-a4fb-e0ade0aacdf6\",\"title\":\"Kolorowe Podwórka na Nadodrzu\",\"chars\":748,\"lead_chars\":92},{\"id\":\"4827233c-606b-4561-991d-17849fb2f798\",\"title\":\"Pomnik Anonimowego Przechodnia\",\"chars\":746,\"lead_chars\":94},{\"id\":\"c84cf56b-7015-4e6a-85d1-b58bea821095\",\"title\":\"Manhattan przy placu Grunwaldzkim\",\"chars\":745,\"lead_chars\":104},{\"id\":\"d9d0a301-a336-4ae7-b269-41778705a37a\",\"title\":\"Schronisko PTTK Na Śnieżniku\",\"chars\":735,\"lead_chars\":108},{\"id\":\"e60599dc-0348-47d0-9053-1ebc44274efa\",\"title\":\"Park Południowy\",\"chars\":731,\"lead_chars\":94},{\"id\":\"7af5dbcf-3713-4812-b9e3-868156755b75\",\"title\":\"Most Piaskowy\",\"chars\":724,\"lead_chars\":71}]\n",
+      "elapsed_seconds": 0.621,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 7.81,
+      "output_policy": "stream",
+      "captured_output_chars": 4836,
+      "output_truncated": false,
+      "current_rss_mb": 7.81,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 0.621
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.17
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.095
+  },
+  "finished_at": "2026-09-12T11:22:43.235224+00:00",
+  "task_digest": "49eb5c32eeeccbed2cf66dbcc408cbed8ddd0795a25c92b73501d2cf47c2c896",
+  "idle_timeout": 300,
+  "task_timeout": 600,
+  "memory_limit_mb": 4096,
+  "attempt_id": "fcd335c1138c587cde89546d",
+  "daemon_version": "4.18.20"
+}
