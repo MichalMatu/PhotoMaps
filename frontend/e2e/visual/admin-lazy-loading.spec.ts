@@ -43,18 +43,18 @@ test("admin loads hidden section queues only when they are opened", async ({ pag
   expect(requests.memories).toBe(0);
   expect(requests.reports).toBe(0);
 
-  const moderationSections = page.getByRole("group", { name: "Sekcje moderacji" });
-  await moderationSections.getByRole("button", { name: /Pamiątki/ }).click();
+  const moderationSections = page.getByRole("tablist", { name: "Sekcje moderacji" });
+  await moderationSections.getByRole("tab", { name: /Pamiątki/ }).click();
   await expect.poll(() => requests.memories).toBe(1);
-  await moderationSections.getByRole("button", { name: /Zdjęcia/ }).click();
-  await moderationSections.getByRole("button", { name: /Pamiątki/ }).click();
+  await moderationSections.getByRole("tab", { name: /Zdjęcia/ }).click();
+  await moderationSections.getByRole("tab", { name: /Pamiątki/ }).click();
   await page.waitForTimeout(100);
   expect(requests.memories).toBe(1);
 
-  await moderationSections.getByRole("button", { name: /Zgłoszenia/ }).click();
+  await moderationSections.getByRole("tab", { name: /Zgłoszenia/ }).click();
   await expect.poll(() => requests.reports).toBe(1);
-  await moderationSections.getByRole("button", { name: /Zdjęcia/ }).click();
-  await moderationSections.getByRole("button", { name: /Zgłoszenia/ }).click();
+  await moderationSections.getByRole("tab", { name: /Zdjęcia/ }).click();
+  await moderationSections.getByRole("tab", { name: /Zgłoszenia/ }).click();
   await page.waitForTimeout(100);
   expect(requests.reports).toBe(1);
 });
