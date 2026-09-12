@@ -1,0 +1,60 @@
+{
+  "id": "20260912-photomap-switch-production-main-011",
+  "status": "done",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": true,
+  "started_at": "2026-09-12T03:25:12.918948+00:00",
+  "command_timeout": 180,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail\nssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'bash -s' <<'REMOTE'\nset -euo pipefail\ncd /home/michal/src/PhotoMaps\nif [ -n \"$(git status --porcelain)\" ]; then\n  echo 'production checkout is dirty; refusing to switch'\n  git status --short --branch\n  exit 10\nfi\nold=$(git rev-parse HEAD)\necho \"old_head=$old\"\ngit fetch origin main\ngit checkout -B main origin/main\nnew=$(git rev-parse HEAD)\necho \"new_head=$new\"\ngit merge-base --is-ancestor \"$old\" \"$new\"\necho 'old_develop_is_ancestor=yes'\nruntime_diff=$(git diff --name-only \"$old\"..\"$new\" -- backend/app frontend/src server.py)\nif [ -n \"$runtime_diff\" ]; then\n  echo 'unexpected_runtime_diff:'\n  printf '%s\\n' \"$runtime_diff\"\n  exit 11\nfi\necho 'runtime_diff=none'\necho 'health:'\ncurl -fsS http://127.0.0.1:8000/health\necho\necho 'status:'\ngit status --short --branch\necho 'branches-before-cleanup:'\ngit branch -vv\nif git show-ref --verify --quiet refs/heads/develop; then\n  git branch -d develop\nfi\necho 'branches-after-cleanup:'\ngit branch -vv\nREMOTE",
+      "exit_code": 0,
+      "output": "old_head=6d92e66d6c04049ea02d725823e061a2e00a6ec9\nFrom https://github.com/MichalMatu/PhotoMaps\n * branch            main       -> FETCH_HEAD\n   2fc99f1..57cda1d  main       -> origin/main\nbranch 'main' set up to track 'origin/main'.\nSwitched to a new branch 'main'\nnew_head=57cda1d0a971ebd1bd3324b3c91288dbf3f6fc71\nold_develop_is_ancestor=yes\nruntime_diff=none\nhealth:\n{\"status\":\"ok\"}\nstatus:\n## main...origin/main\nbranches-before-cleanup:\n  develop 6d92e66 [origin/develop] perf: slim public map preview by deferring photo description blocks\n* main    57cda1d [origin/main] Merge develop product history into main\nDeleted branch develop (was 6d92e66).\nbranches-after-cleanup:\n* main 57cda1d [origin/main] Merge develop product history into main\n",
+      "elapsed_seconds": 4.159,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 6.53,
+      "output_policy": "stream",
+      "captured_output_chars": 746,
+      "output_truncated": false,
+      "current_rss_mb": 6.53,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 4.159
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.078
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.065
+  },
+  "finished_at": "2026-09-12T03:25:19.023700+00:00",
+  "task_digest": "5091a0351a9a8c669a947d4dee241b1ea8e370a8297aa1f4be289b07f7ad1737",
+  "idle_timeout": 300,
+  "task_timeout": 420,
+  "memory_limit_mb": 4096,
+  "attempt_id": "af082ef0665d81363978590e",
+  "daemon_version": "4.18.20"
+}
