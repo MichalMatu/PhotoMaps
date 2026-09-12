@@ -1,0 +1,14 @@
+{
+  "id": "20260912-photomap-reconcile-merge-test-009",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/reconcile-main-develop",
+  "allow_write": true,
+  "resources": [],
+  "command_timeout": 2400,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail\ngit status --short --branch\ngit merge --no-ff origin/develop -m 'Reconcile develop product work into main line'\nmake check\ngit status --short --branch\ngit push origin HEAD:work/reconcile-main-develop\ngit log -1 --oneline --decorate"
+  ]
+}
