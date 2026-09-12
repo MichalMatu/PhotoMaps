@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-worktree-bootstrap-068",
+  "task_digest": "4b7e128865a88c6b9cf4a726ccaea9a927299e3cac57e463f9d6b06f74aaa6f6",
+  "idle_timeout": 300,
+  "task_timeout": 600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T18:52:22.115861+00:00",
+  "attempt_id": "7d3d8ee8add93cfe857039da",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 91150,
+  "updated_at": "2026-09-12T18:52:22.115920+00:00",
+  "pid": 91150
+}
