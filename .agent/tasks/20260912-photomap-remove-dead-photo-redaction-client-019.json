@@ -1,0 +1,13 @@
+{
+  "id": "20260912-photomap-remove-dead-photo-redaction-client-019",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/public-original-media",
+  "allow_write": true,
+  "resources": [],
+  "command_timeout": 300,
+  "task_timeout": 600,
+  "commands": [
+    "perl -0pi -e 's/\\nexport function redactAdminPhoto\\(photoId: string, payload: MediaRedactionPayload\\): Promise<MediaRedactionReport> \\{\\n  return request<MediaRedactionReport>\\(`\\/api\\/admin\\/photos\\/\\$\\{photoId\\}\\/redaction`, \\{\\n    method: \\\"POST\\\",\\n    body: JSON.stringify\\(payload\\),\\n  \\}\\);\\n\\}\\n//s' frontend/src/api/media.ts; sed -i '' '/  redactAdminPhoto,/d' frontend/src/api/client.test.ts; perl -0pi -e 's/posts polygon redactions to photo and memory endpoints/posts polygon redactions to the memory endpoint/' frontend/src/api/client.test.ts; perl -0pi -e 's/    const report = await redactAdminPhoto\\(\"photo-1\", payload\\);\\n    await redactAdminMemory\\(\"memory-1\", payload\\);/    const report = await redactAdminMemory(\"memory-1\", payload);/' frontend/src/api/client.test.ts; sed -i '' '/api\\/admin\\/photos\\/photo-1\\/redaction/d' frontend/src/api/client.test.ts; perl -0pi -e 's/fetchMock\\.mock\\.calls\\[1\\]\\[0\\]/fetchMock.mock.calls[0][0]/' frontend/src/api/client.test.ts; test -z \"$(grep -R -F 'redactAdminPhoto' frontend/src frontend/e2e || true)\"; git diff --check; git add frontend/src/api/media.ts frontend/src/api/client.test.ts; git commit -m 'Remove dead photo redaction client'; git push origin HEAD:work/public-original-media"
+  ]
+}
