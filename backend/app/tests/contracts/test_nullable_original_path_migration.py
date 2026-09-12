@@ -4,10 +4,7 @@ from pathlib import Path
 import pytest
 
 MIGRATION_PATH = (
-    Path(__file__).resolve().parents[3]
-    / "alembic"
-    / "versions"
-    / "0021_nullable_rejected_original_path.py"
+    Path(__file__).resolve().parents[3] / "alembic" / "versions" / "0021_nullable_rejected_original_path.py"
 )
 
 
