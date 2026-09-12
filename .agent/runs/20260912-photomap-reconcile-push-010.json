@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-reconcile-push-010",
+  "task_digest": "bbf9c80080d98ecefb3f26e7f350af3ccf1ba4ef0327801016c2db8e4a7aaccf",
+  "idle_timeout": 300,
+  "task_timeout": 420,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T03:19:46.453909+00:00",
+  "attempt_id": "33ebbe273a225f0a1806fe93",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 64861,
+  "updated_at": "2026-09-12T03:19:46.453974+00:00",
+  "pid": 64861
+}
