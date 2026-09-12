@@ -7,18 +7,20 @@ import { errorDetails, type OperationError } from "../ui/ErrorModal";
 import { toggleGuidePlaceSelection } from "./guidePlaceSelection";
 
 type UseGuidePlaceSelectionArgs = {
+  commitGuideDetail: (guideId: string, guideDetail: GuideDetail) => boolean;
   guideDetail: GuideDetail | null;
+  isGuideSelected: (guideId: string) => boolean;
   onChanged: () => Promise<void>;
   selectedGuide: Guide | null;
-  setGuideDetail: (guideDetail: GuideDetail | null) => void;
   setOperationError: (error: OperationError | null) => void;
 };
 
 export function useGuidePlaceSelection({
+  commitGuideDetail,
   guideDetail,
+  isGuideSelected,
   onChanged,
   selectedGuide,
-  setGuideDetail,
   setOperationError,
 }: UseGuidePlaceSelectionArgs) {
   const [placeQuery, setPlaceQuery] = useState("");
@@ -46,27 +48,29 @@ export function useGuidePlaceSelection({
     if (!selectedGuide || selectedPlaceIds.length === 0) {
       return;
     }
+    const guideId = selectedGuide.id;
     setOperationError(null);
     try {
       let detail: GuideDetail | null = null;
       const currentPlaceCount = guideDetail?.places.length ?? 0;
       for (const [index, selectedPlaceId] of selectedPlaceIds.entries()) {
-        detail = await addPlaceToGuide(selectedGuide.id, {
+        detail = await addPlaceToGuide(guideId, {
           place_id: selectedPlaceId,
           sort_order: currentPlaceCount + index,
         });
       }
-      if (detail) {
-        setGuideDetail(detail);
+      if (detail && commitGuideDetail(guideId, detail)) {
+        clearGuidePlaceSelection();
       }
-      clearGuidePlaceSelection();
       await onChanged();
     } catch (reason) {
-      setOperationError({
-        details: errorDetails(reason),
-        message: "Nie udało się dodać miejsc do trasy. Spróbuj ponownie.",
-        title: "Nie udało się dodać miejsc",
-      });
+      if (isGuideSelected(guideId)) {
+        setOperationError({
+          details: errorDetails(reason),
+          message: "Nie udało się dodać miejsc do trasy. Spróbuj ponownie.",
+          title: "Nie udało się dodać miejsc",
+        });
+      }
     }
   }
 
@@ -74,17 +78,20 @@ export function useGuidePlaceSelection({
     if (!selectedGuide) {
       return;
     }
+    const guideId = selectedGuide.id;
     setOperationError(null);
     try {
-      const detail = await removePlaceFromGuide(selectedGuide.id, nextPlaceId);
-      setGuideDetail(detail);
+      const detail = await removePlaceFromGuide(guideId, nextPlaceId);
+      commitGuideDetail(guideId, detail);
       await onChanged();
     } catch (reason) {
-      setOperationError({
-        details: errorDetails(reason),
-        message: "Nie udało się usunąć miejsca z trasy. Spróbuj ponownie.",
-        title: "Nie udało się usunąć miejsca",
-      });
+      if (isGuideSelected(guideId)) {
+        setOperationError({
+          details: errorDetails(reason),
+          message: "Nie udało się usunąć miejsca z trasy. Spróbuj ponownie.",
+          title: "Nie udało się usunąć miejsca",
+        });
+      }
     }
   }
 
