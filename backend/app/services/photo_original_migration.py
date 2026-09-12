@@ -49,7 +49,13 @@ def run_photo_original_serving_migration(session: Session, *, apply_changes: boo
         reclaimable_bytes = legacy_path.stat().st_size if legacy_path.is_file() and legacy_path != thumb_path else 0
         if not legacy_path.exists():
             issues.append(issue("warning", "legacy_public_derivative_missing", photo, legacy_path.as_posix()))
-        candidates.append((photo, legacy_path if legacy_path != thumb_path else None, reclaimable_bytes))
+        candidates.append(
+            (
+                photo,
+                legacy_path if legacy_path != thumb_path else None,
+                reclaimable_bytes,
+            )
+        )
         actions.append(
             {
                 "photo_id": photo.id,
@@ -105,8 +111,9 @@ def run_photo_original_serving_migration(session: Session, *, apply_changes: boo
                     )
 
     issue_counts = {
-        severity: sum(1 for item in issues if item["severity"] == severity)
-        for severity in ("error", "warning", "info")
+        "error": sum(1 for item in issues if item["severity"] == "error"),
+        "warning": sum(1 for item in issues if item["severity"] == "warning"),
+        "info": sum(1 for item in issues if item["severity"] == "info"),
     }
     reclaimable_bytes = sum(item["reclaimable_bytes"] for item in actions)
     deleted_bytes = sum(item["reclaimable_bytes"] for item in actions if item["file_deleted"])
