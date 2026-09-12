@@ -14,11 +14,11 @@ async function unlockAdmin(page: Page) {
 
 test("photo albums ignore stale responses after a fast status change", async ({ page }) => {
   const pendingPhoto = { ...rynekCover, approved_at: null, status: "pending" as const };
-  const approvedPhoto = { ...nadodrzeCover, status: "approved" as const };
+  const rejectedPhoto = { ...nadodrzeCover, approved_at: null, status: "rejected" as const };
   let pendingRequests = 0;
-  let approvedRequests = 0;
+  let rejectedRequests = 0;
 
-  await mockAdminApi(page, { adminPhotoList: [pendingPhoto, approvedPhoto] });
+  await mockAdminApi(page, { adminPhotoList: [pendingPhoto, rejectedPhoto] });
   await page.route(`${API_URL}/api/admin/photos/albums**`, async (route) => {
     const status = new URL(route.request().url()).searchParams.get("status");
     if (status === "pending") {
@@ -29,10 +29,10 @@ test("photo albums ignore stale responses after a fast status change", async ({ 
       });
       return;
     }
-    if (status === "approved") {
-      approvedRequests += 1;
+    if (status === "rejected") {
+      rejectedRequests += 1;
       await route.fulfill({
-        json: [{ cover_photo: approvedPhoto, photo_count: 1, place_id: approvedPhoto.place_id }],
+        json: [{ cover_photo: rejectedPhoto, photo_count: 1, place_id: rejectedPhoto.place_id }],
       });
       return;
     }
@@ -48,9 +48,9 @@ test("photo albums ignore stale responses after a fast status change", async ({ 
 
   await page
     .getByRole("tablist", { name: "Status zdjęć" })
-    .getByRole("tab", { name: /Zatwierdzone/ })
+    .getByRole("tab", { name: /Odrzucone/ })
     .click();
-  await expect.poll(() => approvedRequests > 0).toBe(true);
+  await expect.poll(() => rejectedRequests > 0).toBe(true);
 
   await page.getByRole("button", { name: /Pokaż media miasta Wrocław/ }).click();
   await expect(page.getByText(adminPlaces[1].title, { exact: true })).toBeVisible();
