@@ -1,14 +1,13 @@
 {
-  "event": "task_started",
+  "event": "task_finished",
   "task_id": "20260912-photomap-local-review-bootstrap-054",
   "task_digest": "1eea680437ee75a9599049617527b28a9d3f16bb73ed89140cccca8e301dcde6",
-  "idle_timeout": 900,
-  "task_timeout": 3600,
-  "memory_limit_mb": 4096,
-  "started_at": "2026-09-12T10:59:05.493747+00:00",
+  "status": "failed",
+  "failure_reason": "command_failed",
+  "finished_at": "2026-09-12T10:59:07.998380+00:00",
   "attempt_id": "3a8fa656becdde821a7e279e",
   "daemon_version": "4.18.20",
   "daemon_pid": 10192,
-  "updated_at": "2026-09-12T10:59:05.493859+00:00",
+  "updated_at": "2026-09-12T10:59:08.437169+00:00",
   "pid": 10192
 }
