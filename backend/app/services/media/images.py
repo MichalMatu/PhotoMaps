@@ -70,8 +70,10 @@ def static_public_storage_path(public_url_path: str | None) -> Path | None:
     return public_storage_path(public_url_path)
 
 
-def delete_stored_image(original_path: str, public_path: str | None, thumb_path: str | None) -> None:
-    paths = [storage_path(PRIVATE_STORAGE_DIR, original_path)]
+def delete_stored_image(original_path: str | None, public_path: str | None, thumb_path: str | None) -> None:
+    paths = []
+    if original_path is not None:
+        paths.append(storage_path(PRIVATE_STORAGE_DIR, original_path))
     for public_url_path in (public_path, thumb_path):
         static_path = static_public_storage_path(public_url_path)
         if static_path is not None:
