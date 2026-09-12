@@ -128,29 +128,17 @@ export function useAdminPanelData(): Result {
     resetData();
   }, [resetData]);
 
-  const refreshAll = useCallback(async () => {
+  const refreshInitialData = useCallback(async () => {
     await Promise.all([
       refreshAppConfig(),
       refreshCategories(),
       refreshCities(),
-      refreshGuides(),
-      refreshMemories("pending"),
       refreshModerationCounts(),
       refreshPlaces(),
-      refreshReports("open"),
     ]);
     setAccessMessage(null);
     setLoadError(null);
-  }, [
-    refreshAppConfig,
-    refreshCategories,
-    refreshCities,
-    refreshGuides,
-    refreshMemories,
-    refreshModerationCounts,
-    refreshPlaces,
-    refreshReports,
-  ]);
+  }, [refreshAppConfig, refreshCategories, refreshCities, refreshModerationCounts, refreshPlaces]);
 
   const refreshMapPlaces = useCallback(async () => {
     try {
@@ -167,7 +155,12 @@ export function useAdminPanelData(): Result {
     await refreshCategories();
   }, [refreshCategories]);
   const refreshGuidesResult = useCallback(async () => {
-    await refreshGuides();
+    try {
+      await refreshGuides();
+    } catch (reason) {
+      setLoadError(adminLoadError(reason));
+      throw reason;
+    }
   }, [refreshGuides]);
   const refreshMemoriesResult = useCallback(
     async (status?: ReviewStatus | "all") => {
@@ -252,7 +245,7 @@ export function useAdminPanelData(): Result {
       return;
     }
 
-    refreshAll().catch((reason: unknown) => {
+    refreshInitialData().catch((reason: unknown) => {
       if (reason instanceof ApiError && (reason.status === 401 || reason.status === 503)) {
         clearAdminSessionToken();
         setAdminToken("");
@@ -263,7 +256,7 @@ export function useAdminPanelData(): Result {
       }
       setLoadError(adminLoadError(reason));
     });
-  }, [adminToken, refreshAll, resetData]);
+  }, [adminToken, refreshInitialData, resetData]);
 
   return {
     accessMessage,

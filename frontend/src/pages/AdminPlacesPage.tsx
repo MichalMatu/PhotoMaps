@@ -14,6 +14,7 @@ import { useAdminPlaceManagement } from "../components/admin/useAdminPlaceManage
 import { useAdminModerationRefreshActions } from "../components/admin/useAdminModerationRefreshActions";
 import { useAdminPlaceRefreshActions } from "../components/admin/useAdminPlaceRefreshActions";
 import { useAdminSectionState } from "../components/admin/useAdminSectionState";
+import { useAdminSectionDataLoader } from "../components/admin/useAdminSectionDataLoader";
 import { SEOHead } from "../components/ui/SEOHead";
 
 function AdminPlacesSEOHead() {
@@ -87,6 +88,17 @@ export function AdminPlacesPage() {
     moderationCounts,
     reports,
   });
+  useAdminSectionDataLoader({
+    activeModerationSection,
+    activeSection,
+    adminToken,
+    memoryStatusFilter,
+    refreshGuides,
+    refreshMemories,
+    refreshReports,
+    reportStatusFilter,
+  });
+
   const placeRefreshActions = useAdminPlaceRefreshActions({
     activeSection,
     adminToken,
@@ -117,12 +129,10 @@ export function AdminPlacesPage() {
 
   function handleMemoryStatusFilterChange(status: typeof memoryStatusFilter) {
     setMemoryStatusFilter(status);
-    refreshMemories(status).catch(() => undefined);
   }
 
   function handleReportStatusFilterChange(status: typeof reportStatusFilter) {
     setReportStatusFilter(status);
-    refreshReports(status).catch(() => undefined);
   }
 
   if (!adminToken) {
