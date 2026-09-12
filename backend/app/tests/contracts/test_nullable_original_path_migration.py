@@ -19,13 +19,14 @@ def load_migration_module():
     return module
 
 
-def test_downgrade_refuses_to_invent_paths_for_purged_originals(monkeypatch) -> None:
+@pytest.mark.parametrize("purged_table", ["photo", "memory"])
+def test_downgrade_preflights_all_purged_originals_before_schema_changes(monkeypatch, purged_table: str) -> None:
     migration = load_migration_module()
     monkeypatch.setattr(migration, "columns_for", lambda _table_name: {"original_path"})
     monkeypatch.setattr(
         migration,
         "null_original_path_count",
-        lambda table_name: 1 if table_name == "photo" else 0,
+        lambda table_name: 1 if table_name == purged_table else 0,
     )
 
     def forbidden_batch_alter_table(_table_name):
@@ -35,6 +36,6 @@ def test_downgrade_refuses_to_invent_paths_for_purged_originals(monkeypatch) -> 
 
     with pytest.raises(
         RuntimeError,
-        match=r"Cannot downgrade 0021: photo has 1 rows with purged original_path",
+        match=rf"Cannot downgrade 0021: {purged_table} has 1 rows with purged original_path",
     ):
         migration.downgrade()
