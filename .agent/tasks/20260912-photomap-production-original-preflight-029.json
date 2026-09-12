@@ -1,0 +1,13 @@
+{
+  "id": "20260912-photomap-production-original-preflight-029",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": true,
+  "resources": [],
+  "command_timeout": 1200,
+  "task_timeout": 1800,
+  "commands": [
+    "set -euo pipefail\nEXPECTED=ca165a9d57fcde4da19b2a649cb1792ffe961405\ntest \"$(git rev-parse HEAD)\" = \"$EXPECTED\"\ncd frontend\nnpm ci\nVITE_API_BASE_URL= npm run build\ntest -f dist/index.html\ncd ..\nssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'bash -s' <<'REMOTE'\nset -euo pipefail\nEXPECTED=ca165a9d57fcde4da19b2a649cb1792ffe961405\ncd /home/michal/src/PhotoMaps\nsudo -n true\nif [ -n \"$(git status --porcelain)\" ]; then\n  echo 'production checkout dirty; refusing deploy'\n  git status --short --branch\n  exit 20\nfi\ngit fetch origin main\ngit checkout main\ngit merge --ff-only origin/main\ntest \"$(git rev-parse HEAD)\" = \"$EXPECTED\"\nmkdir -p .dev\nSNAP=.dev/app.db.pre-original-migration-ca165a9.sqlite\nif [ ! -e \"$SNAP\" ]; then cp -a backend/data/app.db \"$SNAP\"; fi\nbackend/.venv/bin/python - <<'PY'\nimport sqlite3\nconn = sqlite3.connect('backend/data/app.db')\ntry:\n    result = conn.execute('PRAGMA integrity_check').fetchone()[0]\n    print('sqlite_integrity_before=' + str(result))\n    if result != 'ok':\n        raise SystemExit(21)\nfinally:\n    conn.close()\nPY\nmake schema-check\nmake migrate-photo-originals ARGS=\"--output-json .dev/photo-original-preflight-ca165a9.json\"\nbackend/.venv/bin/python - <<'PY'\nimport json\nfrom pathlib import Path\np = Path('.dev/photo-original-preflight-ca165a9.json')\nr = json.loads(p.read_text())\ns = r['summary']\nprint('preflight_summary=' + json.dumps(s, sort_keys=True))\nif s['issues']['by_severity']['error'] != 0:\n    raise SystemExit(22)\nif s['candidates'] + s['already_migrated'] != s['approved_photos']:\n    raise SystemExit(23)\nif s['approved_photos'] == 0:\n    raise SystemExit(24)\nPY\necho '=== DISK BEFORE ==='\ndu -sb backend/storage\ndf -B1 / | tail -n1\necho 'production_head='$(git rev-parse HEAD)\nREMOTE\nSTAGE=.dev/frontend-dist-ca165a9\ntar -C frontend/dist -cf - . | ssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 \"cd /home/michal/src/PhotoMaps && rm -rf '$STAGE' && mkdir -p '$STAGE' && tar -C '$STAGE' -xf - && test -f '$STAGE/index.html'\"\necho preflight_and_frontend_stage_ready"
+  ]
+}
