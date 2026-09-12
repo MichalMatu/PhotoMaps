@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-review-batch1-060",
+  "task_digest": "b5bdf25c6d3bbf0cae013eb962b5926739dffbb150f03dfa9d7da75a9650b923",
+  "idle_timeout": 300,
+  "task_timeout": 600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T11:16:50.892798+00:00",
+  "attempt_id": "cd065f9866d4bb3bedb0dec6",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 48048,
+  "updated_at": "2026-09-12T11:16:50.892857+00:00",
+  "pid": 48048
+}
