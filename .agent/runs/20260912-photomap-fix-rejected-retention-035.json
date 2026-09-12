@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-fix-rejected-retention-035",
+  "task_digest": "ca6db7fcc4d2ae340cf82c1325667db04ddf9120b7acffdc6af79ff97084740a",
+  "idle_timeout": 300,
+  "task_timeout": 1800,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T06:21:32.881429+00:00",
+  "attempt_id": "d1f12f795e6563529f1f5ac5",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 62819,
+  "updated_at": "2026-09-12T06:21:32.881537+00:00",
+  "pid": 62819
+}
