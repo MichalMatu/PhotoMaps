@@ -19,6 +19,8 @@ Software-only buildy i testy moga byc wykonywane w sandboxie ChatGPT z zaleznosc
 - [Kierunek produktu](docs/product-direction.md)
 - [Sandbox / ChatGPT Library](docs/SANDBOX_EXECUTION_FLOW.md)
 - [Content pipeline](docs/content-pipeline.md)
+- [Workflow mediow redakcyjnych](docs/editorial-media-workflow.md)
+- [Operacje, diagnostyka i storage](docs/ops.md)
 - [Opisy TTS zdjec](docs/create_tts.md)
 - [Prompt miniatur miejsc](docs/image_generation/place-thumbnails.md)
 - [Assety redakcyjne](assets/README.md)

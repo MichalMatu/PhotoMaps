@@ -22,6 +22,8 @@ Backend odpowiada za FastAPI, SQLite/Alembic, modele domenowe, publiczne i admin
 - Publiczne endpointy zwracaja tylko `published` miejsca oraz tylko zatwierdzone publiczne media.
 - Publiczne odpowiedzi nigdy nie moga ujawnic `original_path` ani sciezek do prywatnego storage.
 - Redakcyjne `Photo` zachowuje kanoniczny oryginal w private storage; zatwierdzony publiczny endpoint serwuje ten plik bez pelnej pochodnej, a pipeline generuje tylko osobna miniaturke. `Memory` nadal uzywa private original + public derivative + thumb. Skalowanie jest dopuszczalne tylko dla miniaturek/preview, a limity bajtow i pikseli sa wysokimi bezpiecznikami, nie narzedziem obnizania jakosci.
+- `original_path` jest wymagany dla `pending` i `approved`. Moze byc `NULL` tylko dla `rejected` po swiadomej retencji prywatnego oryginalu. Retencja zapisuje `NULL` w DB przed kasowaniem pliku; blad commita musi pozostawic plik na dysku, a blad kasowania moze najwyzej zostawic orphan do bezpiecznego cleanupu.
+- Po purge odrzuconego medium adminowy podglad zwraca kontrolowane `404`, a ponowne zatwierdzenie `422`; usuniecie rekordu musi pozostac idempotentne mimo `original_path = NULL`.
 - Publiczne i adminowe przeplywy API maja byc osobne, nawet jesli uzywaja tych samych modeli i serwisow.
 - Route'y maja byc cienkie; walidacja domenowa, liczniki, review i usuwanie zaleznosci naleza do serwisow.
 - Zmiana modelu wymaga migracji albo jawnej aktualizacji schematu oraz testu.
