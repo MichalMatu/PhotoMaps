@@ -1,0 +1,9 @@
+{
+  "id": "20260912-photomap-document-original-serving-020",
+  "status": "failed",
+  "failure_reason": "invalid_task_file",
+  "started_at": null,
+  "finished_at": "2026-09-12T04:12:51.719123+00:00",
+  "daemon_version": "4.18.20",
+  "error": "JSONDecodeError: Expecting ',' delimiter: line 11 column 6442 (char 6737)"
+}
