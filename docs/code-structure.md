@@ -54,6 +54,15 @@ Publiczna mapa trzyma reguły wizualnego układu w małych helperach w `frontend
 
 Pierwszy widok mapy renderuje elementy z lekkiego `map preview` (bez `description_blocks` zdjęć). Rozwinięta galeria miejsca po kliknięciu pobiera lekką publiczną listę zdjęć miejsca i pokazuje wszystkie zatwierdzone zdjęcia w wachlarzu. Opis TTS jednego medium ładuje endpoint detail zdjęcia dopiero w modalu. Nie ma stałego niskiego limitu widocznych miniaturek: obszar ma rosnąć na większych ekranach i dla gęstszych zestawów, ale musi pozostać bez nachodzenia kafli i bez wychodzenia poza ramkę mapy. Ten kontrakt chronią testy jednostkowe `mapMotion.test.ts` oraz E2E `frontend/e2e/visual/map-gallery-sizing.spec.ts` i `frontend/e2e/visual/map.spec.ts`.
 
+## Media Storage Contract
+
+- Redakcyjne `Photo`: jeden niemodyfikowalny oryginal w `backend/storage/private`, publiczny endpoint `/api/places/{place_id}/photos/{photo_id}/media/image` serwuje dokladnie jego bajty dla zatwierdzonego zdjecia, a fizycznie generowana jest tylko miniatura.
+- `Memory`: prywatny oryginal + osobna publiczna pochodna + miniatura.
+- `original_path` jest niepusty dla `pending` i `approved`. `NULL` oznacza tylko swiadomie usuniety prywatny oryginal rekordu `rejected` po retencji.
+- Retencja jest fail-safe dla wszystkich destrukcyjnych zmian: rejected commitują `original_path = NULL` przed unlinkiem, a approved `Memory` commitują ścieżkę retained przed usunięciem poprzedniego oryginału. Niepowodzenie DB nie może zostawić martwego wskaźnika; niepowodzenie unlink może najwyżej zostawić orphan wykrywany przez diagnostykę.
+- Diagnostyka traktuje `NULL` jako poprawny tylko dla purged `rejected`; brak oryginalu w pozostalych stanach jest bledem.
+- Publiczne payloady nigdy nie ujawniaja `original_path` ani prywatnych sciezek storage.
+
 ## Refactor Closure
 
 Większy refaktor kończy się adekwatną weryfikacją i spójnym commit/push:

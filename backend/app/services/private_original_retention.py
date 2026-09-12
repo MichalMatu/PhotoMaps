@@ -41,6 +41,7 @@ def run_private_original_retention(
     current_time = now or datetime.now(UTC)
     actions: list[dict[str, Any]] = []
     issues: list[dict[str, Any]] = []
+    approved_deletions: list[tuple[MediaRetentionTarget, Path]] = []
     rejected_deletions: list[tuple[MediaRetentionTarget, Path]] = []
 
     for target in retention_targets(session):
@@ -54,7 +55,7 @@ def run_private_original_retention(
                 continue
             if as_utc(target.approved_at) > current_time - timedelta(days=approved_retention_days):
                 continue
-            actions.append(retain_approved_original(target, apply_changes, issues))
+            actions.append(retain_approved_original(target, apply_changes, issues, approved_deletions))
         elif target.status == "rejected":
             if as_utc(target.created_at) > current_time - timedelta(days=rejected_retention_days):
                 continue
@@ -68,10 +69,25 @@ def run_private_original_retention(
                 actions.append(action_item)
 
     if apply_changes:
-        # Persist the fact that rejected originals are no longer retained before
-        # deleting rejected source files. A database failure therefore leaves each
-        # rejected source intact instead of creating a stale database reference.
+        # Persist every new retention reference before deleting any source file.
+        # A database failure therefore leaves the old source intact; at worst the
+        # prepared approved replacement is an orphan that diagnostics can detect.
         session.commit()
+        for target, private_path in approved_deletions:
+            try:
+                private_path.unlink(missing_ok=True)
+            except OSError:
+                issues.append(
+                    issue(
+                        "warning",
+                        "approved_original_delete_failed",
+                        target,
+                        (
+                            "Database retention state was saved, but the superseded private original "
+                            f"could not be deleted: {private_path}"
+                        ),
+                    )
+                )
         for target, private_path in rejected_deletions:
             try:
                 private_path.unlink(missing_ok=True)
@@ -155,6 +171,7 @@ def retain_approved_original(
     target: MediaRetentionTarget,
     apply_changes: bool,
     issues: list[dict[str, Any]],
+    approved_deletions: list[tuple[MediaRetentionTarget, Path]],
 ) -> dict[str, Any]:
     if target.original_path is None:
         issues.append(issue("error", "approved_original_path_missing", target, "Approved media has no original path."))
@@ -180,9 +197,9 @@ def retain_approved_original(
     if apply_changes:
         replacement_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(public_path, replacement_path)
-        if private_path != replacement_path:
-            private_path.unlink(missing_ok=True)
         target.model.original_path = replacement_relative
+        if private_path != replacement_path and private_path.exists():
+            approved_deletions.append((target, private_path))
 
     return action("replace_approved_original", target, replacement_relative, applied=apply_changes)
 

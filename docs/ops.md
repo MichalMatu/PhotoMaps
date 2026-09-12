@@ -155,9 +155,19 @@ Dry-run sprawdza wszystkie zatwierdzone zdjęcia, obecność kanonicznego orygin
 
 ## Retencja Prywatnych Oryginałów
 
-Retencja prywatnych oryginałów działa jako ręczny skrypt operacyjny. Zatwierdzone `Photo` są wyłączone z tej retencji: ich kanoniczny oryginał pozostaje źródłem publicznego obrazu i nie może być zastąpiony pochodną. Dla zatwierdzonych `Memory` po zadanym czasie prywatny oryginał może zostać zastąpiony kopią publicznej pochodnej. Odrzucone `Photo` i `Memory` mogą stracić prywatny oryginał po osiągnięciu progu retencji.
+Retencja prywatnych oryginałów działa jako ręczny skrypt operacyjny i zawsze powinna zaczynać się od backupu oraz dry-runu.
+
+- zatwierdzone `Photo` są zawsze pomijane: ich kanoniczny oryginał pozostaje źródłem publicznego obrazu;
+- zatwierdzone `Memory` po zadanym czasie mogą zastąpić prywatny oryginał kopią publicznej pochodnej, ale `original_path` nadal pozostaje niepusty;
+- odrzucone `Photo` i `Memory` po osiągnięciu progu retencji mogą całkowicie stracić prywatny oryginał; wtedy `original_path` jest ustawiany na `NULL`.
+
+Dla rejected media kolejność operacji jest częścią kontraktu bezpieczeństwa: najpierw zapisujemy w DB `original_path = NULL` i commitujemy transakcję, a dopiero potem usuwamy plik. Jeśli commit się nie powiedzie, plik pozostaje na dysku. Jeśli późniejszy unlink się nie powiedzie, DB pozostaje spójna, a plik jest bezpiecznym orphanem do wykrycia i usunięcia przez diagnostykę/cleanup.
+Ta sama zasada dotyczy zatwierdzonych `Memory`: najpierw tworzona jest kopia retained i zapisywana jej ścieżka w DB, commit musi się udać, a dopiero potem usuwany jest poprzedni prywatny oryginał. Awaria commita może zostawić dodatkowy orphan, ale nie może skasować źródła wskazywanego przez bazę.
+
+`original_path = NULL` jest poprawnym stanem tylko dla `rejected` po retencji. Dla `pending` i `approved` diagnostyka traktuje brak ścieżki jako błąd. Po purge adminowy podgląd odrzuconego medium zwraca `404`, a próba ponownego zatwierdzenia zwraca kontrolowane `422` zamiast błędu filesystemu. Usunięcie rekordu pozostaje idempotentne.
 
 ```bash
+./scripts/backup_local_data.sh --apply
 python3 scripts/retain_private_originals.py --dry-run
 python3 scripts/retain_private_originals.py --dry-run --json
 python3 scripts/retain_private_originals.py --apply
@@ -169,6 +179,25 @@ Domyślnie zatwierdzone `Memory` są kwalifikowane po `30` dniach od `approved_a
 ```bash
 python3 scripts/retain_private_originals.py --dry-run --approved-days 60 --rejected-days 7
 ```
+
+Jeśli celem jest wyłącznie purge rejected media, bez retencji zatwierdzonych `Memory`, użyj bardzo wysokiego progu approved i sprawdź w dry-runie, że `approved_replaced == 0`:
+
+```bash
+python3 scripts/retain_private_originals.py --dry-run --approved-days 1000000 --rejected-days 0 --json
+python3 scripts/retain_private_originals.py --apply --approved-days 1000000 --rejected-days 0 --output-json .dev/retain-rejected.json
+```
+
+### Checkpoint migracji produkcyjnej 2026-09-12
+
+Ten checkpoint jest historycznym punktem odniesienia do kolejnych audytów, nie źródłem bieżących liczników runtime.
+
+- migracja storage `Photo` zakończona: `1188` zatwierdzonych zdjęć używa endpointu oryginału, `0` zatwierdzonych rekordów używa starego pełnego `/media/...`;
+- poprawiono MIME dla `13` oryginałów MPO (`image/jpeg`), przy zachowaniu bajtów 1:1;
+- migracja `0021_nullable_rejected_original_path` wdrożona;
+- purge rejected: `50` `Photo`, `0` `Memory`; po apply wszystkie te rekordy mają `original_path = NULL`;
+- końcowy storage po obu cleanupach: `4545161614` B;
+- końcowa diagnostyka: `0` error, `0` warning, `0` info, `0` private orphanów i `0` public orphanów;
+- SQLite `PRAGMA integrity_check`: `ok`.
 
 ## Ręczna Redakcja Mediów
 

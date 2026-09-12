@@ -261,17 +261,15 @@ def audit_private_media_path(
     path = safe_child(private_storage_dir, safe_rel)
     if path.exists():
         expected_private.add(safe_rel)
-    elif required:
+    else:
         add_issue(
             issues,
             "error",
             f"{media_kind}_original_missing",
             target,
-            "Private original file is missing.",
+            "Stored private original path points to a missing file.",
             path=safe_rel,
         )
-        return
-    else:
         return
     if check_images:
         image_info(path, issues, target)

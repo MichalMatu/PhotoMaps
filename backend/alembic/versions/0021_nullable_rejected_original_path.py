@@ -24,6 +24,11 @@ def columns_for(table_name: str) -> set[str]:
     return {column["name"] for column in sa.inspect(op.get_bind()).get_columns(table_name)}
 
 
+def null_original_path_count(table_name: str) -> int:
+    result = op.get_bind().execute(sa.text(f"SELECT COUNT(*) FROM {table_name} WHERE original_path IS NULL"))
+    return int(result.scalar_one())
+
+
 def upgrade() -> None:
     for table_name in ("photo", "memory"):
         columns = columns_for(table_name)
@@ -34,16 +39,18 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    tables_to_alter: list[str] = []
     for table_name in ("photo", "memory"):
         columns = columns_for(table_name)
         if "original_path" not in columns:
             continue
-        op.execute(
-            sa.text(
-                f"UPDATE {table_name} "
-                "SET original_path = '__retained__/deleted-original' "
-                "WHERE original_path IS NULL"
+        purged_rows = null_original_path_count(table_name)
+        if purged_rows:
+            raise RuntimeError(
+                f"Cannot downgrade 0021: {table_name} has {purged_rows} rows with purged original_path"
             )
-        )
+        tables_to_alter.append(table_name)
+
+    for table_name in tables_to_alter:
         with op.batch_alter_table(table_name) as batch_op:
             batch_op.alter_column("original_path", existing_type=sa.String(), nullable=False)
