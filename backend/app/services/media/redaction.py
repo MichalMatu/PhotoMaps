@@ -100,6 +100,15 @@ def redact_media_image(
             }
         )
         return redaction_report(kind, media_id, apply_changes, actions, issues)
+    if media.original_path is None:
+        issues.append(
+            {
+                "severity": "error",
+                "code": "private_original_not_retained",
+                "message": "Private original is no longer retained for this rejected media.",
+            }
+        )
+        return redaction_report(kind, media_id, apply_changes, actions, issues)
 
     paths = media_paths(media)
     private_path = paths["private_original"]
@@ -161,8 +170,12 @@ def media_for(session: Session, kind: str, media_id: str) -> Photo | Memory | No
 
 
 def media_paths(media: Photo | Memory) -> dict[str, Path | None]:
+    if media.original_path is None:
+        private_original = None
+    else:
+        private_original = images.storage_path(images.PRIVATE_STORAGE_DIR, media.original_path)
     return {
-        "private_original": images.storage_path(images.PRIVATE_STORAGE_DIR, media.original_path),
+        "private_original": private_original,
         "public": images.public_storage_path(media.public_path) if media.public_path is not None else None,
         "thumb": images.public_storage_path(media.thumb_path) if media.thumb_path is not None else None,
     }

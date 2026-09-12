@@ -44,6 +44,8 @@ def cleanup_stored_upload(
 
 
 def publish_photo_media(photo: Photo) -> None:
+    if photo.original_path is None:
+        raise HTTPException(status_code=422, detail="Photo original is no longer retained")
     photo.thumb_path = publish_image_thumbnail(photo.original_path)
     photo.public_path = public_photo_image_url_for(photo)
 

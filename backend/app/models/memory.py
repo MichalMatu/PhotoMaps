@@ -15,7 +15,7 @@ class Memory(SQLModel, table=True):
     author_city: str | None = Field(default=None, max_length=40)
     caption: str = Field(max_length=80)
     memory_text: str = Field(max_length=240)
-    original_path: str
+    original_path: str | None = None
     public_path: str | None = None
     thumb_path: str | None = None
     audio_original_path: str | None = None

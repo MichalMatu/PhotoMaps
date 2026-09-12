@@ -109,6 +109,7 @@ def test_private_original_retention_apply_replaces_approved_memory_and_removes_r
     )
     session.refresh(memory)
     session.refresh(photo)
+    assert memory.original_path is not None
     retained_file = private_root / memory.original_path
 
     assert report["status"] == "ok"
@@ -118,7 +119,7 @@ def test_private_original_retention_apply_replaces_approved_memory_and_removes_r
     assert retained_file.read_bytes() == b"public-derivative"
     assert memory.original_path.endswith("-retained.jpg")
     assert not rejected_original_file.exists()
-    assert photo.original_path == rejected_original
+    assert photo.original_path is None
 
 
 def test_local_data_diagnostics_allows_retained_rejected_private_original(
