@@ -16,6 +16,7 @@ import { useAdminPlaceRefreshActions } from "../components/admin/useAdminPlaceRe
 import { useAdminSectionState } from "../components/admin/useAdminSectionState";
 import { useAdminSectionDataLoader } from "../components/admin/useAdminSectionDataLoader";
 import { SEOHead } from "../components/ui/SEOHead";
+import "../styles/admin-entry.css";
 
 function AdminPlacesSEOHead() {
   return (
