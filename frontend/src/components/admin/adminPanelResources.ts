@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { getAdminAppConfig } from "../../api/appConfig";
 import { getAdminCategories } from "../../api/categories";
@@ -22,6 +22,7 @@ import type {
   ReportStatus,
   ReviewStatus,
 } from "../../api/types";
+import { createLatestRequestGuard, type LatestRequestGuard } from "./latestRequestGuard";
 
 const ADMIN_QUEUE_PAGE_SIZE = 100;
 
@@ -56,14 +57,26 @@ const EMPTY_MODERATION_COUNTS: AdminModerationCounts = {
 
 function useAdminResource<T>(initialValue: T, load: () => Promise<T>): AdminResource<T> {
   const [value, setValue] = useState<T>(initialValue);
+  const requestGuard = useRef<LatestRequestGuard>(createLatestRequestGuard());
   const refresh = useCallback(async () => {
+    const guard = requestGuard.current;
+    const token = guard.begin();
     const nextValue = await load();
-    setValue(nextValue);
+    if (guard.isCurrent(token)) {
+      setValue(nextValue);
+    }
     return nextValue;
   }, [load]);
-  const reset = useCallback(() => setValue(initialValue), [initialValue]);
+  const replaceValue = useCallback((nextValue: T) => {
+    requestGuard.current.invalidate();
+    setValue(nextValue);
+  }, []);
+  const reset = useCallback(() => {
+    requestGuard.current.invalidate();
+    setValue(initialValue);
+  }, [initialValue]);
 
-  return { refresh, reset, setValue, value };
+  return { refresh, reset, setValue: replaceValue, value };
 }
 
 function useAdminPagedResource<T, TStatus extends AdminQueueStatus>(
@@ -72,45 +85,63 @@ function useAdminPagedResource<T, TStatus extends AdminQueueStatus>(
   const [value, setValue] = useState<T[]>([]);
   const [hasMore, setHasMore] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const requestGuard = useRef<LatestRequestGuard>(createLatestRequestGuard());
   const refresh = useCallback(
     async (status?: TStatus | "all") => {
+      const guard = requestGuard.current;
+      const token = guard.begin();
+      setIsLoadingMore(false);
       const nextValue = await load({
         limit: ADMIN_QUEUE_PAGE_SIZE,
         offset: 0,
         status: status && status !== "all" ? status : undefined,
       });
-      setValue(nextValue);
-      setHasMore(nextValue.length === ADMIN_QUEUE_PAGE_SIZE);
+      if (guard.isCurrent(token)) {
+        setValue(nextValue);
+        setHasMore(nextValue.length === ADMIN_QUEUE_PAGE_SIZE);
+      }
       return nextValue;
     },
     [load],
   );
   const loadMore = useCallback(
     async (status?: TStatus | "all") => {
+      const guard = requestGuard.current;
+      const token = guard.begin();
+      const currentValue = value;
       setIsLoadingMore(true);
       try {
         const nextPage = await load({
           limit: ADMIN_QUEUE_PAGE_SIZE,
-          offset: value.length,
+          offset: currentValue.length,
           status: status && status !== "all" ? status : undefined,
         });
-        const nextValue = [...value, ...nextPage];
-        setValue(nextValue);
-        setHasMore(nextPage.length === ADMIN_QUEUE_PAGE_SIZE);
+        const nextValue = [...currentValue, ...nextPage];
+        if (guard.isCurrent(token)) {
+          setValue(nextValue);
+          setHasMore(nextPage.length === ADMIN_QUEUE_PAGE_SIZE);
+        }
         return nextValue;
       } finally {
-        setIsLoadingMore(false);
+        if (guard.isCurrent(token)) {
+          setIsLoadingMore(false);
+        }
       }
     },
     [load, value],
   );
+  const replaceValue = useCallback((nextValue: T[]) => {
+    requestGuard.current.invalidate();
+    setValue(nextValue);
+  }, []);
   const reset = useCallback(() => {
+    requestGuard.current.invalidate();
     setValue([]);
     setHasMore(false);
     setIsLoadingMore(false);
   }, []);
 
-  return { hasMore, isLoadingMore, loadMore, refresh, reset, setValue, value };
+  return { hasMore, isLoadingMore, loadMore, refresh, reset, setValue: replaceValue, value };
 }
 
 export function useAdminSettingsResources() {
