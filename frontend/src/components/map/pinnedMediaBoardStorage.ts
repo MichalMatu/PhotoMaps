@@ -1,3 +1,5 @@
+import type { AudioAttachment } from "../../api/types";
+import type { PlaceMapVisualItem } from "./placePreview";
 import {
   MAX_PINNED_MEDIA_CARDS,
   type PinnedMediaLayout,
@@ -64,8 +66,59 @@ function isStoredPinnedMediaCard(value: unknown): value is StoredPinnedMediaCard
     typeof card.itemId === "string" &&
     (card.kind === "photo" || card.kind === "memory") &&
     Number.isFinite(card.createdAt) &&
-    isPinnedMediaLayout(card.layout)
+    isPinnedMediaLayout(card.layout) &&
+    (card.itemSnapshot === undefined || isPinnedMediaItemSnapshot(card.itemSnapshot, card.kind, card.itemId))
   );
+}
+
+function isPinnedMediaItemSnapshot(value: unknown, kind: "photo" | "memory", itemId: string): value is PlaceMapVisualItem {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const item = value as Partial<PlaceMapVisualItem>;
+  if (
+    item.id !== itemId ||
+    item.kind !== kind ||
+    !isNullableString(item.caption) ||
+    typeof item.public_path !== "string" ||
+    typeof item.thumb_path !== "string" ||
+    !isAudioAttachment(item.audio)
+  ) {
+    return false;
+  }
+
+  if (item.kind === "memory") {
+    return true;
+  }
+
+  return (
+    isNullableString(item.attribution_author) &&
+    isNullableString(item.attribution_source_url) &&
+    isNullableString(item.attribution_license) &&
+    isNullableString(item.attribution_license_url)
+  );
+}
+
+function isAudioAttachment(value: unknown): value is AudioAttachment | null {
+  if (value === null) {
+    return true;
+  }
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const audio = value as Partial<AudioAttachment>;
+  return (
+    typeof audio.public_path === "string" &&
+    typeof audio.mime_type === "string" &&
+    Number.isFinite(audio.size_bytes) &&
+    Number.isFinite(audio.duration_seconds)
+  );
+}
+
+function isNullableString(value: unknown): value is string | null {
+  return value === null || typeof value === "string";
 }
 
 function isPinnedMediaLayout(value: unknown): value is PinnedMediaLayout {
