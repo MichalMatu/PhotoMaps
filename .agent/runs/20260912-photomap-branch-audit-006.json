@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-branch-audit-006",
+  "task_digest": "4474b2f3e38fe83825639030cff13f4e0eecebcb42bc63cec07199a30aa3098d",
+  "idle_timeout": 300,
+  "task_timeout": 420,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T03:16:37.137930+00:00",
+  "attempt_id": "bd5f12b8e1a7625d23be0d5f",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 61384,
+  "updated_at": "2026-09-12T03:16:37.138078+00:00",
+  "pid": 61384
+}
