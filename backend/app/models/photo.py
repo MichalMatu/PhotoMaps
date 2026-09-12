@@ -12,7 +12,7 @@ def utc_now() -> datetime:
 class Photo(SQLModel, table=True):
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     place_id: str = Field(foreign_key="place.id", index=True)
-    original_path: str
+    original_path: str | None = None
     public_path: str | None = None
     thumb_path: str | None = None
     audio_original_path: str | None = None
