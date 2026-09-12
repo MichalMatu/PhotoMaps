@@ -69,7 +69,11 @@ export function MediaRedactionModal({ isApplying = false, media, onApply, onClos
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
         >
-          <AdminMediaImage className="media-redaction-image" alt={media.caption ?? title} src={media.admin_public_path} />
+          <AdminMediaImage
+            className="media-redaction-image"
+            alt={media.caption ?? title}
+            src={media.admin_public_path}
+          />
           <svg className="media-redaction-overlay" aria-hidden="true" viewBox="0 0 1 1" preserveAspectRatio="none">
             {[...redactions, ...(draftRedaction ? [draftRedaction] : [])].map((redaction, index) => {
               const isDraft = index >= redactions.length;
