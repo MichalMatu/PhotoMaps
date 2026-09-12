@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-desktop-path-audit-058",
+  "task_digest": "25610330164a436108a869606ae927e3ff11993f06ade727988a2e82fc90fc83",
+  "idle_timeout": 300,
+  "task_timeout": 600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T11:13:48.926087+00:00",
+  "attempt_id": "b46bfa8f4dde06dc73b911a1",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 41728,
+  "updated_at": "2026-09-12T11:13:48.926213+00:00",
+  "pid": 41728
+}
