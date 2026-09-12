@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260913-photomap-marker-projection-benchmark-100",
+  "task_digest": "65416ab3a37657eaee44e13b654a7d733a02ef68c3fb89f29c0f4a7b4535ca3d",
+  "idle_timeout": 300,
+  "task_timeout": 1800,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T23:50:30.665288+00:00",
+  "attempt_id": "3dfcb97cd2f9d1b99571f397",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 75029,
+  "updated_at": "2026-09-12T23:50:30.665340+00:00",
+  "pid": 75029
+}
