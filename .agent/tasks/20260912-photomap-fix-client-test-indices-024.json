@@ -1,0 +1,13 @@
+{
+  "id": "20260912-photomap-fix-client-test-indices-024",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/public-original-media",
+  "allow_write": true,
+  "resources": [],
+  "command_timeout": 300,
+  "task_timeout": 600,
+  "commands": [
+    "python3 - <<'PY'\nfrom pathlib import Path\np = Path('frontend/src/api/client.test.ts')\ns = p.read_text()\nold_queue = 'expect(fetchMock.mock.calls[0][0]).toBe(\"http://127.0.0.1:8000/api/admin/memories?limit=25&status=approved\");'\nnew_queue = 'expect(fetchMock.mock.calls[1][0]).toBe(\"http://127.0.0.1:8000/api/admin/memories?limit=25&status=approved\");'\nold_redaction = 'expect(fetchMock.mock.calls[1][0]).toBe(\"http://127.0.0.1:8000/api/admin/memories/memory-1/redaction\");'\nnew_redaction = 'expect(fetchMock.mock.calls[0][0]).toBe(\"http://127.0.0.1:8000/api/admin/memories/memory-1/redaction\");'\nif s.count(old_queue) != 1:\n    raise SystemExit(f'queue assertion count: {s.count(old_queue)}')\nif s.count(old_redaction) != 1:\n    raise SystemExit(f'redaction assertion count: {s.count(old_redaction)}')\ns = s.replace(old_queue, new_queue, 1).replace(old_redaction, new_redaction, 1)\np.write_text(s)\nPY\ngit diff --check\ngit diff -- frontend/src/api/client.test.ts\ngit add frontend/src/api/client.test.ts\ngit commit -m 'Fix frontend request test call indices'\ngit push origin HEAD:work/public-original-media"
+  ]
+}
