@@ -4,14 +4,12 @@ import type {
   PlaceMapMemoryPreviewItem,
   PlaceMapPhoto,
   PlaceMapPhotoPreviewItem,
-  ContentBlock,
 } from "../../api/types";
 
 export type PlaceMapVisualItem =
   | {
       audio: Photo["audio"];
       caption: string | null;
-      description_blocks: ContentBlock[];
       attribution_author: string | null;
       attribution_source_url: string | null;
       attribution_license: string | null;
@@ -34,7 +32,6 @@ function photoVisualItem(photo: Photo | PlaceMapPhoto | PlaceMapPhotoPreviewItem
   return {
     audio: photo.audio,
     caption: photo.caption,
-    description_blocks: photo.description_blocks,
     attribution_author: photo.attribution_author,
     attribution_source_url: photo.attribution_source_url,
     attribution_license: photo.attribution_license,

@@ -13,12 +13,15 @@ class PhotoRead(SQLModel):
     public_path: str
     thumb_path: str
     caption: str | None
-    description_blocks: list[ContentBlock]
     attribution_author: str | None
     attribution_source_url: str | None
     attribution_license: str | None
     attribution_license_url: str | None
     audio: AudioAttachment | None
+
+
+class PhotoDetailRead(PhotoRead):
+    description_blocks: list[ContentBlock]
 
 
 class PhotoAdminRead(SQLModel):

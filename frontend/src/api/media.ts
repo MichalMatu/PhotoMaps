@@ -13,6 +13,7 @@ import type {
   Memory,
   MemoryUpdatePayload,
   Photo,
+  PhotoDetail,
   PhotoUploadPayload,
   PhotoUpdatePayload,
   ReviewFinalStatus,
@@ -71,6 +72,10 @@ export function getPlaceMemories(placeId: string): Promise<Memory[]> {
 
 export function getPlacePhotos(placeId: string): Promise<Photo[]> {
   return request<Photo[]>(`/api/places/${placeId}/photos`);
+}
+
+export function getPlacePhoto(placeId: string, photoId: string): Promise<PhotoDetail> {
+  return request<PhotoDetail>(`/api/places/${placeId}/photos/${encodeURIComponent(photoId)}`);
 }
 
 export function getPlaceMemory(placeId: string, memoryId: string): Promise<Memory> {

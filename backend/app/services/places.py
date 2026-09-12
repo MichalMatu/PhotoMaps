@@ -253,6 +253,20 @@ def list_public_place_photos(session: Session, place: Place) -> list[Photo]:
     return photos
 
 
+def get_public_place_photo(session: Session, place_id: str, photo_id: str) -> Photo:
+    place = ensure_public_place(place_id, session)
+    photo = session.get(Photo, photo_id)
+    if (
+        photo is None
+        or photo.place_id != place.id
+        or photo.status != "approved"
+        or photo.public_path is None
+        or photo.thumb_path is None
+    ):
+        raise HTTPException(status_code=404, detail="Photo not found")
+    return photo
+
+
 def map_preview_items_for_place(
     place: Place,
     photos_by_place_id: dict[str, list[Photo]],

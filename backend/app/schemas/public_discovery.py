@@ -5,7 +5,7 @@ from sqlmodel import SQLModel
 from app.schemas.category import CategoryRead
 from app.schemas.city import CityRead
 from app.schemas.content import ContentBlock
-from app.schemas.photo import PhotoRead
+from app.schemas.photo import PhotoDetailRead
 
 
 class PublicDiscoveryRead(SQLModel):
@@ -42,5 +42,5 @@ class PublicPlaceIndexRead(SQLModel):
 
 class PublicPlaceDetailRead(PublicPlaceIndexRead):
     article_blocks: list[ContentBlock]
-    photos: list[PhotoRead]
-    cover_photo: PhotoRead | None
+    photos: list[PhotoDetailRead]
+    cover_photo: PhotoDetailRead | None

@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -6,6 +7,10 @@ import type { PlaceMapItem } from "../../api/types";
 import { TtsProvider } from "../ui/TtsProvider";
 import { PhotoDetailModal } from "./PhotoDetailModal";
 import type { PlaceMapVisualItem } from "./placePreview";
+
+vi.mock("../../api/media", () => ({
+  getPlacePhoto: vi.fn(),
+}));
 
 vi.mock("../ui/SystemModal", () => ({
   SystemModal: (props: { children?: ReactNode; headerActions?: ReactNode; title: string }) => (
@@ -74,7 +79,6 @@ function photoItem(overrides: Partial<PlaceMapVisualItem> = {}): PlaceMapVisualI
     attribution_license_url: null,
     attribution_source_url: null,
     caption: "Zamek Książ ponad zielenią",
-    description_blocks: [{ type: "paragraph", text: "Zamek Książ widziany ponad zielenią wąwozu Pełcznicy." }],
     id: "photo-ksiaz",
     kind: "photo",
     public_path: "/media/ksiaz.jpg",
@@ -100,17 +104,26 @@ function stubSpeechSynthesis() {
 }
 
 function renderModal(item: PlaceMapVisualItem) {
+  const client = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
   return renderToStaticMarkup(
-    <TtsProvider>
-      <PhotoDetailModal
-        customFieldDefinitions={[]}
-        isAudioAutoplayEnabled={false}
-        item={item}
-        place={place}
-        onClose={noop}
-        onReport={noop}
-      />
-    </TtsProvider>,
+    <QueryClientProvider client={client}>
+      <TtsProvider>
+        <PhotoDetailModal
+          customFieldDefinitions={[]}
+          isAudioAutoplayEnabled={false}
+          item={item}
+          place={place}
+          onClose={noop}
+          onReport={noop}
+        />
+      </TtsProvider>
+    </QueryClientProvider>,
   );
 }
 
@@ -119,20 +132,10 @@ describe("PhotoDetailModal", () => {
     vi.unstubAllGlobals();
   });
 
-  it("renders description and TTS actions for a photo with description", () => {
+  it("does not render photo description actions until photo detail is loaded", () => {
     stubSpeechSynthesis();
 
     const markup = renderModal(photoItem());
-
-    expect(markup).toContain('aria-label="Pokaż opis zdjęcia"');
-    expect(markup).toContain('aria-label="Odczytaj opis zdjęcia"');
-    expect(markup).toContain("tts-button--icon");
-  });
-
-  it("does not render photo description actions when the photo has no description", () => {
-    stubSpeechSynthesis();
-
-    const markup = renderModal(photoItem({ description_blocks: [] }));
 
     expect(markup).not.toContain("Pokaż opis zdjęcia");
     expect(markup).not.toContain("Odczytaj opis zdjęcia");
