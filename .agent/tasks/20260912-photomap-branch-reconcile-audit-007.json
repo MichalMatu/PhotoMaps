@@ -1,0 +1,13 @@
+{
+  "id": "20260912-photomap-branch-reconcile-audit-007",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 180,
+  "task_timeout": 420,
+  "commands": [
+    "set -euo pipefail\necho '=== REMOTE MAIN VS DEVELOP ==='\nprintf 'counts origin/main...origin/develop: ' && git rev-list --left-right --count origin/main...origin/develop\nprintf 'merge-base: ' && git merge-base origin/main origin/develop\necho\necho '--- commits only on origin/main ---'\ngit log --oneline --decorate --no-merges origin/develop..origin/main\necho\necho '--- commits only on origin/develop ---'\ngit log --oneline --decorate --no-merges origin/main..origin/develop\necho\necho '--- patch equivalence: git cherry origin/main origin/develop ---'\ngit cherry origin/main origin/develop || true\necho\necho '--- patch equivalence: git cherry origin/develop origin/main ---'\ngit cherry origin/develop origin/main || true\necho\necho '--- diff stat origin/main..origin/develop ---'\ngit diff --stat origin/main..origin/develop\necho\necho '--- changed files origin/main..origin/develop ---'\ngit diff --name-status origin/main..origin/develop"
+  ]
+}
