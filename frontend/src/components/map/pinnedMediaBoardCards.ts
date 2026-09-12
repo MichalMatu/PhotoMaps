@@ -11,7 +11,7 @@ import {
   type StoredPinnedMediaCard,
 } from "./pinnedMediaBoardTypes";
 
-function pinnedMediaCardId(placeId: string, kind: PinMediaDraft["item"]["kind"], itemId: string) {
+function pinnedMediaCardId(placeId: string, kind: PinMediaDraft["kind"], itemId: string) {
   return `${placeId}:${kind}:${itemId}`;
 }
 
@@ -20,18 +20,20 @@ export function upsertPinnedMediaCard(
   draft: PinMediaDraft,
   bounds: PinnedMediaBounds,
 ): PinMediaResult {
-  const id = pinnedMediaCardId(draft.placeId, draft.item.kind, draft.item.id);
+  const id = pinnedMediaCardId(draft.placeId, draft.kind, draft.itemId);
   const currentCard = cards.find((card) => card.id === id);
 
   if (currentCard) {
-    const cardsWithFreshSnapshot = cards.map((card) =>
-      card.id === id
-        ? {
-            ...card,
-            itemSnapshot: draft.item,
-          }
-        : card,
-    );
+    const cardsWithFreshSnapshot = draft.itemSnapshot
+      ? cards.map((card) =>
+          card.id === id
+            ? {
+                ...card,
+                itemSnapshot: draft.itemSnapshot,
+              }
+            : card,
+        )
+      : cards;
     return {
       cards: bringPinnedMediaCardToFront(cardsWithFreshSnapshot, id),
       status: "updated",
@@ -48,9 +50,9 @@ export function upsertPinnedMediaCard(
       {
         createdAt: Date.now(),
         id,
-        itemId: draft.item.id,
-        itemSnapshot: draft.item,
-        kind: draft.item.kind,
+        itemId: draft.itemId,
+        ...(draft.itemSnapshot ? { itemSnapshot: draft.itemSnapshot } : {}),
+        kind: draft.kind,
         layout: defaultPinnedMediaLayout({
           aspectRatio: draft.aspectRatio,
           bounds,
