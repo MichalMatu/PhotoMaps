@@ -1,4 +1,4 @@
-.PHONY: help scripts scripts-readme start stop restart status logs check api-flow api-contract e2e smoke perf-smoke quality dev health server-start server-stop server-restart server-status server-logs tunnel-start tunnel-stop tunnel-status tunnel-logs autostart autostart-start autostart-stop autostart-status serwerstart serwerstop diagnose-data diagnose-architecture schema-check backup backup-apply cleanup-media cleanup-media-apply retain-originals retain-originals-apply import-city import-city-apply audit-prompt place-inventory export-place-research export-city-research export-all-research reset-dev-data redact-media
+.PHONY: help scripts scripts-readme start stop restart status logs check api-flow api-contract e2e smoke perf-smoke quality dev health server-start server-stop server-restart server-status server-logs tunnel-start tunnel-stop tunnel-status tunnel-logs autostart autostart-start autostart-stop autostart-status serwerstart serwerstop diagnose-data diagnose-architecture schema-check backup backup-apply cleanup-media cleanup-media-apply retain-originals retain-originals-apply migrate-photo-originals migrate-photo-originals-apply import-city import-city-apply audit-prompt place-inventory export-place-research export-city-research export-all-research reset-dev-data redact-media
 
 PYTHON ?= $(shell if [ -x backend/.venv/bin/python ]; then printf '%s' backend/.venv/bin/python; else printf '%s' python3; fi)
 MANIFEST ?= content/cities/wroclaw/manifest.json
@@ -24,14 +24,16 @@ scripts:
 		'  make export-place-research' \
 		'' \
 		'Dane lokalne i storage:' \
-		'  make diagnose-data            diagnostyka lokalnej bazy i storage' \
-		'  make backup                   dry-run backupu' \
-		'  make backup-apply             realny backup do backups/local-*' \
-		'  make cleanup-media            dry-run usuwania osieroconych mediów' \
-		'  make cleanup-media-apply      realne usunięcie osieroconych mediów' \
-		'  make retain-originals         dry-run retencji prywatnych oryginałów' \
-		'  make retain-originals-apply   realna retencja prywatnych oryginałów' \
-		'  make reset-dev-data           reset lokalnej bazy i storage dev' \
+		'  make diagnose-data                 diagnostyka lokalnej bazy i storage' \
+		'  make backup                        dry-run backupu' \
+		'  make backup-apply                  realny backup do backups/local-*' \
+		'  make cleanup-media                 dry-run usuwania osieroconych mediów' \
+		'  make cleanup-media-apply           realne usunięcie osieroconych mediów' \
+		'  make retain-originals              dry-run retencji prywatnych oryginałów' \
+		'  make retain-originals-apply        realna retencja prywatnych oryginałów' \
+		'  make migrate-photo-originals       dry-run przejścia Photo na publiczny oryginał + thumb' \
+		'  make migrate-photo-originals-apply aktualizacja DB i usunięcie starych full derivatives' \
+		'  make reset-dev-data                reset lokalnej bazy i storage dev' \
 		'' \
 		'Audyt opisów i research:' \
 		'  make audit-prompt CITY="Wrocław" PLACE="Rynek"' \
@@ -130,6 +132,12 @@ retain-originals:
 retain-originals-apply:
 	@$(PYTHON) scripts/retain_private_originals.py --apply
 
+migrate-photo-originals:
+	@$(PYTHON) scripts/migrate_photo_original_serving.py --dry-run $(ARGS)
+
+migrate-photo-originals-apply:
+	@$(PYTHON) scripts/migrate_photo_original_serving.py --apply $(ARGS)
+
 import-city:
 	@$(PYTHON) scripts/content/import_city.py --dry-run "$(MANIFEST)"
 
@@ -156,7 +164,7 @@ reset-dev-data:
 
 redact-media:
 	@if [ -z "$(strip $(ARGS))" ]; then \
-		printf '%s\n' 'Użycie: make redact-media ARGS="--dry-run --kind photo --id <id> --rect 0.1,0.1,0.4,0.3"'; \
+		printf '%s\n' 'Użycie: make redact-media ARGS="--dry-run --kind memory --id <id> --rect 0.1,0.1,0.4,0.3"'; \
 		exit 2; \
 	fi
 	@$(PYTHON) scripts/redact_media_image.py $(ARGS)
