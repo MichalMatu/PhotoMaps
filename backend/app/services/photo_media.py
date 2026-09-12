@@ -8,6 +8,7 @@ from app.services.media import images
 
 IMAGE_MEDIA_TYPES = {
     "JPEG": "image/jpeg",
+    "MPO": "image/jpeg",
     "PNG": "image/png",
     "WEBP": "image/webp",
 }

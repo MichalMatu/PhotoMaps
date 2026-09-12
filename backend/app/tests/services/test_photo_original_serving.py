@@ -3,6 +3,7 @@ from pathlib import Path
 from PIL import Image
 
 from app.models.photo import Photo
+from app.services import photo_media
 from app.services.admin_photos import review_admin_photo
 from app.services.media import images
 from app.services.photo_media import public_photo_image_url_for
@@ -66,6 +67,21 @@ def test_original_endpoint_detects_image_type_for_bin_source(client_session, tmp
     assert response.status_code == 200
     assert response.headers["content-type"] == "image/jpeg"
     assert response.content == source_bytes
+
+
+def test_photo_image_media_type_treats_mpo_as_jpeg(monkeypatch, tmp_path: Path) -> None:
+    class FakeMpoImage:
+        format = "MPO"
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+    monkeypatch.setattr(photo_media.Image, "open", lambda *_args, **_kwargs: FakeMpoImage())
+
+    assert photo_media.photo_image_media_type(tmp_path / "source-original.bin") == "image/jpeg"
 
 
 def test_original_endpoint_hides_nonapproved_and_nonpublic_photos(client_session, tmp_path: Path) -> None:
