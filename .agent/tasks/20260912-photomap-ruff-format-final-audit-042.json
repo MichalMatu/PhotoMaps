@@ -1,0 +1,13 @@
+{
+  "id": "20260912-photomap-ruff-format-final-audit-042",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/final-storage-docs-audit",
+  "allow_write": true,
+  "resources": [],
+  "command_timeout": 600,
+  "task_timeout": 900,
+  "commands": [
+    "set -euo pipefail\nBRANCH=work/final-storage-docs-audit\nEXPECTED=dc578feb4255552db221ffc694312d236c390daa\ngit fetch origin \"$BRANCH\"\ngit checkout \"$BRANCH\"\ngit reset --hard \"origin/$BRANCH\"\ntest \"$(git rev-parse HEAD)\" = \"$EXPECTED\"\ntest -z \"$(git status --porcelain)\"\nVENV=$(mktemp -d /tmp/photomaps-ruff-XXXXXX)\npython3 -m venv \"$VENV\"\n\"$VENV/bin/python\" -m pip install -q ruff==0.8.4\n\"$VENV/bin/ruff\" format backend/app/tests/contracts/test_nullable_original_path_migration.py\n\"$VENV/bin/ruff\" format --check backend/app/tests/contracts/test_nullable_original_path_migration.py\nrm -rf \"$VENV\"\ngit diff --check\ngit diff -- backend/app/tests/contracts/test_nullable_original_path_migration.py\nif git diff --quiet; then\n  echo ruff_no_changes\nelse\n  git add backend/app/tests/contracts/test_nullable_original_path_migration.py\n  git commit -m \"Apply Ruff formatting to migration test\"\n  git push origin \"$BRANCH\"\nfi\necho formatted_head=$(git rev-parse HEAD)\n"
+  ]
+}
