@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-public-original-audit-012",
+  "task_digest": "b09d278f295b77de19af82c16af1677bc18558d9852ea305c3c2a6799381b590",
+  "idle_timeout": 300,
+  "task_timeout": 600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T03:31:31.842545+00:00",
+  "attempt_id": "4349dfa92dc2f4fb9579b2d2",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 78021,
+  "updated_at": "2026-09-12T03:31:31.842720+00:00",
+  "pid": 78021
+}
