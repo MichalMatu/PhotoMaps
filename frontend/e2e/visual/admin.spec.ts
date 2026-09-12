@@ -615,7 +615,7 @@ test("admin place photo gallery exposes moderator tools in responsive media view
     await expect(galleryDialog).toBeVisible();
     await expect(galleryDialog.getByRole("button", { name: "Pełny ekran" })).toBeVisible();
     await expect(galleryDialog.getByRole("button", { name: "Pokaż opis zdjęcia" })).toBeVisible();
-    await expect(galleryDialog.getByRole("button", { name: "Anonimizuj" })).toBeVisible();
+    await expect(galleryDialog.getByRole("button", { name: "Anonimizuj" })).toHaveCount(0);
     await expect(galleryDialog.getByRole("button", { name: "Edytuj tekst" })).toBeVisible();
     await expect(galleryDialog.locator(".admin-photo-gallery-sidebar")).toBeVisible();
     await expect(galleryDialog.locator(".admin-photo-gallery-copy")).toContainText("Krótki podpis zdjęcia Rynku");

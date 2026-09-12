@@ -210,7 +210,6 @@ export function MemoryQueue({ categories, cities, memories, places, onReviewed }
       {memoryToRedact ? (
         <MediaRedactionModal
           isApplying={isApplyingRedaction}
-          kind="memory"
           media={memoryToRedact}
           onApply={handleApplyRedaction}
           onClose={() => setMemoryToRedact(null)}
