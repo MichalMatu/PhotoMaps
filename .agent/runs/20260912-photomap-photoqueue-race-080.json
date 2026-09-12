@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-photoqueue-race-080",
+  "task_digest": "5eb9b3b49408fb5d361c3f1b7f80a14b01945430aee8b212d3c5cd13249fcd68",
+  "idle_timeout": 300,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T20:19:26.344586+00:00",
+  "attempt_id": "01c0be48d515d10cc8b2f9aa",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 77780,
+  "updated_at": "2026-09-12T20:19:26.344743+00:00",
+  "pid": 77780
+}
