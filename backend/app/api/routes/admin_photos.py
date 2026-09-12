@@ -36,6 +36,8 @@ router = APIRouter(prefix="/api/admin/photos", tags=["admin photos"], dependenci
 
 def private_photo_image_path(photo_id: str, session: Session):
     photo = get_admin_photo(session, photo_id)
+    if photo.original_path is None:
+        raise HTTPException(status_code=404, detail="Photo media not found")
     path = images.storage_path(images.PRIVATE_STORAGE_DIR, photo.original_path)
     if not path.exists():
         raise HTTPException(status_code=404, detail="Photo media not found")
