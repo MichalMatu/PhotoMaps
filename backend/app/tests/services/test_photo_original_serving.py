@@ -42,6 +42,32 @@ def test_approval_keeps_source_bytes_and_creates_only_thumbnail(client_session, 
     assert response.content == source_bytes
 
 
+def test_original_endpoint_detects_image_type_for_bin_source(client_session, tmp_path: Path) -> None:
+    client, session = client_session
+    place = create_place(session)
+    original_path = f"photos/{place.id}/source-original.bin"
+    source_bytes = write_jpeg(tmp_path / "private" / original_path)
+    photo = Photo(
+        place_id=place.id,
+        original_path=original_path,
+        public_path="placeholder",
+        thumb_path=f"/media/photos/{place.id}/source-thumb.jpg",
+        status="approved",
+    )
+    session.add(photo)
+    session.commit()
+    session.refresh(photo)
+    photo.public_path = public_photo_image_url_for(photo)
+    session.add(photo)
+    session.commit()
+
+    response = client.get(photo.public_path)
+
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "image/jpeg"
+    assert response.content == source_bytes
+
+
 def test_original_endpoint_hides_nonapproved_and_nonpublic_photos(client_session, tmp_path: Path) -> None:
     client, session = client_session
     place = create_place(session)
