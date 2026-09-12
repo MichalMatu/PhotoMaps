@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260912-photomap-production-readonly-audit-001",
+  "task_digest": "2783b52ff63a3de48cc638da94829b267ae2ce7d22ec51128eb4f841eefed7dc",
+  "idle_timeout": 300,
+  "task_timeout": 600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-12T03:02:57.496782+00:00",
+  "attempt_id": "55c0eb4cd9f8545e8d78ac39",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 47457,
+  "updated_at": "2026-09-12T03:02:57.496918+00:00",
+  "pid": 47457
+}
