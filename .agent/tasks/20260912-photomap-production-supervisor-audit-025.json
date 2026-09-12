@@ -1,0 +1,13 @@
+{
+  "id": "20260912-photomap-production-supervisor-audit-025",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 120,
+  "task_timeout": 300,
+  "commands": [
+    "set -euo pipefail\nssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'cd /home/michal/src/PhotoMaps && echo ===GIT=== && git status --short --branch && git rev-parse HEAD && echo ===PROCESS=== && pid=$(pgrep -f \"[p]ython.*server.py\" | head -n1) && ps -o pid,ppid,lstart,cmd -p $pid && ppid=$(ps -o ppid= -p $pid | tr -d \" \" ) && ps -o pid,ppid,lstart,cmd -p $ppid && echo ===SYSTEM_SERVICE=== && systemctl status photomap.service --no-pager 2>&1 || true && echo ===USER_SERVICE=== && systemctl --user status photomap.service --no-pager 2>&1 || true'"
+  ]
+}
