@@ -6,6 +6,7 @@ from PIL import Image
 from app.models.memory import Memory
 from app.models.photo import Photo
 from app.services.local_data_diagnostics import run_local_data_diagnostics
+from app.services.photo_media import public_photo_image_url_for
 from app.tests.support import create_place
 
 
@@ -21,7 +22,6 @@ def test_local_data_diagnostics_pass_for_consistent_media(client_session, tmp_pa
     public_root = tmp_path / "public"
     place = create_place(session)
     photo_original = f"photos/{place.id}/photo-original.jpg"
-    photo_public = f"photos/{place.id}/photo.jpg"
     photo_thumb = f"photos/{place.id}/photo-thumb.jpg"
     memory_original = f"memories/{place.id}/memory-original.jpg"
     memory_public = f"memories/{place.id}/memory.jpg"
@@ -29,17 +29,18 @@ def test_local_data_diagnostics_pass_for_consistent_media(client_session, tmp_pa
 
     for relative_path in (photo_original, memory_original):
         write_image(private_root, relative_path)
-    for relative_path in (photo_public, photo_thumb, memory_public, memory_thumb):
+    for relative_path in (photo_thumb, memory_public, memory_thumb):
         write_image(public_root, relative_path)
 
     photo = Photo(
         place_id=place.id,
         original_path=photo_original,
-        public_path=f"/media/{photo_public}",
+        public_path=None,
         thumb_path=f"/media/{photo_thumb}",
         status="approved",
         approved_at=datetime(2026, 1, 1, tzinfo=UTC),
     )
+    photo.public_path = public_photo_image_url_for(photo)
     memory = Memory(
         place_id=place.id,
         caption="Pocztówka",
