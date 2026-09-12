@@ -1,0 +1,13 @@
+{
+  "id": "20260912-photomap-remove-photo-redaction-e2e-016",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/public-original-media",
+  "allow_write": true,
+  "resources": [],
+  "command_timeout": 600,
+  "task_timeout": 900,
+  "commands": [
+    "perl -0pi -e 's/getByRole\\(\\\"button\\\", \\{ name: \\\"Anonimizuj\\\" \\}\\)\\)\\.toBeVisible\\(\\)/getByRole(\\\"button\\\", { name: \\\"Anonimizuj\\\" })\\).toHaveCount(0)/' frontend/e2e/visual/admin.spec.ts && cd frontend && npm run typecheck && cd .. && git diff --check"
+  ]
+}
