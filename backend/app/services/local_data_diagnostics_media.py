@@ -238,6 +238,16 @@ def audit_private_media_path(
     required: bool = True,
 ) -> None:
     target = f"{media_kind}:{media_id}:original_path"
+    if relative_path is None:
+        if required:
+            add_issue(
+                issues,
+                "error",
+                f"{media_kind}_original_path_missing",
+                target,
+                "Media that is still retained must have a private original path.",
+            )
+        return
     safe_rel = safe_relative_path(relative_path)
     if safe_rel is None:
         add_issue(
