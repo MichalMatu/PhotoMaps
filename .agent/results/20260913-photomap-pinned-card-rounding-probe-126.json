@@ -1,0 +1,60 @@
+{
+  "id": "20260913-photomap-pinned-card-rounding-probe-126",
+  "status": "done",
+  "mode": "commands",
+  "work_branch": "work/photomap-straighten-20260912",
+  "allow_write": false,
+  "started_at": "2026-09-13T07:38:51.098582+00:00",
+  "command_timeout": 1800,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail\nBRANCH=work/photomap-straighten-20260912\nSHA=578281bf750d7c86792ba4d6ccde505a7678c01f\ngit fetch origin \"$BRANCH\"\ntest \"$(git rev-parse origin/$BRANCH)\" = \"$SHA\"\ntest -z \"$(git status --porcelain)\"\ngit switch --detach \"$SHA\"\ntest \"$(git rev-parse HEAD)\" = \"$SHA\"\nVENV=$(mktemp -d /tmp/photomap-rounding-126-XXXXXX)\ntrap 'rm -rf \"$VENV\"; ./scripts/devctl.sh stop >/dev/null 2>&1 || true' EXIT\npython3 -m venv \"$VENV\"\n\"$VENV/bin/python\" -m pip install -q -r backend/requirements.txt\ncd frontend\nPYTHON=\"$VENV/bin/python\" npm run test:e2e -- e2e/visual/map.spec.ts --project=chromium --grep 'pinned media portrait cards can shrink to the tile minimum' --repeat-each=5 --workers=1\ncd ..\ntest -z \"$(git status --porcelain)\"\nprintf 'verified_sha=%s\\n' \"$SHA\"\ntrap - EXIT\nrm -rf \"$VENV\"\n./scripts/devctl.sh stop >/dev/null 2>&1 || true",
+      "exit_code": 0,
+      "output": "From https://github.com/MichalMatu/PhotoMaps\n * branch            work/photomap-straighten-20260912 -> FETCH_HEAD\nHEAD is now at 578281b Format audited frontend changes\n\n[notice] A new release of pip is available: 25.3 -> 26.2.1\n[notice] To update, run: /private/tmp/photomap-rounding-126-syuug9/bin/python -m pip install --upgrade pip\n\n> test:e2e\n> ../scripts/quality/e2e.sh e2e/visual/map.spec.ts --project=chromium --grep pinned media portrait cards can shrink to the tile minimum --repeat-each=5 --workers=1\n\nBackend: http://127.0.0.1:18080, PID 84045\nFrontend: http://127.0.0.1:15174, PID 84140\n\nMapa: http://127.0.0.1:15174\nAPI:  http://127.0.0.1:18080\n(node:84162) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n\nRunning 5 tests using 1 worker\n\n(node:84166) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n  ✓  1 [chromium] › e2e/visual/map.spec.ts:931:5 › pinned media portrait cards can shrink to the tile minimum (1.5s)\n(node:84234) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n  ✓  2 [chromium] › e2e/visual/map.spec.ts:931:5 › pinned media portrait cards can shrink to the tile minimum (689ms)\n(node:84277) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n  ✓  3 [chromium] › e2e/visual/map.spec.ts:931:5 › pinned media portrait cards can shrink to the tile minimum (619ms)\n(node:84318) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n  ✓  4 [chromium] › e2e/visual/map.spec.ts:931:5 › pinned media portrait cards can shrink to the tile minimum (503ms)\n(node:84350) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n  ✓  5 [chromium] › e2e/visual/map.spec.ts:931:5 › pinned media portrait cards can shrink to the tile minimum (476ms)\n\n  5 passed (7.5s)\nverified_sha=578281bf750d7c86792ba4d6ccde505a7678c01f\n",
+      "elapsed_seconds": 36.879,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 630.06,
+      "output_policy": "stream",
+      "captured_output_chars": 2500,
+      "output_truncated": false,
+      "current_rss_mb": 435.09,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 36.879
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.14
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.083
+  },
+  "finished_at": "2026-09-13T07:39:29.837431+00:00",
+  "task_digest": "93c8e87569b264ce5f3ce47e8e7fcb27060a2aef94e6c5ed34424680005355eb",
+  "idle_timeout": 300,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "attempt_id": "d25a073de866af0445a912ad",
+  "daemon_version": "4.18.20"
+}
