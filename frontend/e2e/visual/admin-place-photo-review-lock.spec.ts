@@ -98,12 +98,14 @@ test("place photo upload freezes its draft and ignores duplicate submit events",
 
   const uploadModal = page.getByRole("dialog", { name: "Dodaj zdjęcie" });
   const photoInput = uploadModal.locator("input#photo-upload-file");
+  const captionInput = uploadModal.getByRole("textbox", { name: "Podpis", exact: true });
+  const authorInput = uploadModal.getByRole("textbox", { name: "Autor", exact: true });
   await photoInput.setInputFiles({
     buffer: PHOTO_BUFFER,
     mimeType: "image/jpeg",
     name: "place-photo.jpg",
   });
-  await uploadModal.getByLabel("Podpis").fill("Nowe zdjęcie");
+  await captionInput.fill("Nowe zdjęcie");
 
   const form = uploadModal.locator("form#photo-upload-form-modal");
   await form.evaluate((element: HTMLFormElement) => {
@@ -113,8 +115,8 @@ test("place photo upload freezes its draft and ignores duplicate submit events",
 
   await expect.poll(() => uploadRequests).toBe(1);
   await expect(photoInput).toBeDisabled();
-  await expect(uploadModal.getByLabel("Podpis")).toBeDisabled();
-  await expect(uploadModal.getByLabel("Autor")).toBeDisabled();
+  await expect(captionInput).toBeDisabled();
+  await expect(authorInput).toBeDisabled();
 
   releaseUpload();
   await expect(uploadModal).toBeHidden();
