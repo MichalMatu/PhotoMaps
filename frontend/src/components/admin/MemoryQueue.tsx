@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useRef, useState } from "react";
 
 import { bumpMediaCacheRevision } from "../../api/http";
 import {
@@ -35,7 +35,10 @@ export function MemoryQueue({ categories, cities, memories, places, onReviewed }
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isApplyingRedaction, setIsApplyingRedaction] = useState(false);
+  const isSavingMemoryRef = useRef(false);
   const [isSavingMemory, setIsSavingMemory] = useState(false);
+  const reviewingMemoryIdsRef = useRef(new Set<string>());
+  const [reviewingMemoryIds, setReviewingMemoryIds] = useState<Set<string>>(() => new Set());
   const [memoryTextDraft, setMemoryTextDraft] = useState("");
   const [memoryToDelete, setMemoryToDelete] = useState<AdminMemory | null>(null);
   const [memoryToRedact, setMemoryToRedact] = useState<AdminMemory | null>(null);
@@ -48,11 +51,20 @@ export function MemoryQueue({ categories, cities, memories, places, onReviewed }
   const { collapsePlace, expandedPlaceId, togglePlace } = useAdminMediaExpansion(memoryGroups);
 
   async function handleReview(memoryId: string, status: ReviewFinalStatus) {
+    if (reviewingMemoryIdsRef.current.has(memoryId)) {
+      return;
+    }
+
+    reviewingMemoryIdsRef.current.add(memoryId);
+    setReviewingMemoryIds(new Set(reviewingMemoryIdsRef.current));
     try {
       await reviewMemory(memoryId, status);
       await onReviewed();
     } catch (reason) {
       setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się zmienić statusu pamiątki.");
+    } finally {
+      reviewingMemoryIdsRef.current.delete(memoryId);
+      setReviewingMemoryIds(new Set(reviewingMemoryIdsRef.current));
     }
   }
 
@@ -103,6 +115,11 @@ export function MemoryQueue({ categories, cities, memories, places, onReviewed }
 
   async function handleSaveMemory(event: FormEvent<HTMLFormElement>, memoryId: string) {
     event.preventDefault();
+    if (isSavingMemoryRef.current) {
+      return;
+    }
+
+    isSavingMemoryRef.current = true;
     setIsSavingMemory(true);
     setErrorMessage(null);
     try {
@@ -121,6 +138,7 @@ export function MemoryQueue({ categories, cities, memories, places, onReviewed }
     } catch (reason) {
       setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się zapisać pamiątki.");
     } finally {
+      isSavingMemoryRef.current = false;
       setIsSavingMemory(false);
     }
   }
@@ -175,6 +193,7 @@ export function MemoryQueue({ categories, cities, memories, places, onReviewed }
               authorNameDraft={authorNameDraft}
               captionDraft={captionDraft}
               isEditing={editingMemoryId === memory.id}
+              isReviewing={reviewingMemoryIds.has(memory.id)}
               isSavingMemory={isSavingMemory}
               key={memory.id}
               memory={memory}
