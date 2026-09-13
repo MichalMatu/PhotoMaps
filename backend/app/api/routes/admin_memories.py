@@ -25,6 +25,7 @@ from app.services.memory_fields import (
     normalize_required_text,
 )
 from app.services.memory_uploads import delete_memory_audio, delete_memory_files, replace_memory_audio
+from app.services.reports import delete_reports_for_target
 from app.services.review import (
     apply_memory_deleted,
     ensure_final_review_status,
@@ -211,6 +212,7 @@ def delete_memory(memory_id: str, session: Session = Depends(get_session)) -> No
         raise HTTPException(status_code=404, detail="Place not found")
 
     apply_memory_deleted(memory, place)
+    delete_reports_for_target(session, "memory", memory.id)
     session.delete(memory)
     session.add(place)
     session.commit()
