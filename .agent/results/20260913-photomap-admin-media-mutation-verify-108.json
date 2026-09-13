@@ -1,0 +1,61 @@
+{
+  "id": "20260913-photomap-admin-media-mutation-verify-108",
+  "status": "failed",
+  "mode": "commands",
+  "work_branch": "work/photomap-straighten-20260912",
+  "allow_write": false,
+  "started_at": "2026-09-13T01:25:24.786413+00:00",
+  "command_timeout": 1800,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail\nSHA=843aab7a52f43a76901628241dda8761dd946446\nBRANCH=work/photomap-straighten-20260912\ngit fetch origin \"$BRANCH\"\ntest \"$(git rev-parse origin/$BRANCH)\" = \"$SHA\"\ntest -z \"$(git status --porcelain)\"\ngit merge --ff-only origin/$BRANCH\ntest \"$(git rev-parse HEAD)\" = \"$SHA\"\nVENV=$(mktemp -d /tmp/photomap-admin-media-mutation-108-XXXXXX)\ntrap 'rm -rf \"$VENV\"; ./scripts/devctl.sh stop >/dev/null 2>&1 || true' EXIT\npython3 -m venv \"$VENV\"\n\"$VENV/bin/python\" -m pip install -q -r backend/requirements.txt\ncd frontend\nPYTHON=\"$VENV/bin/python\" npm run test:e2e -- e2e/visual/admin-media-mutation-lock.spec.ts --project=chromium --grep-invert 'visual:'\nnpm run lint\nnpm run build\nPYTHON=\"$VENV/bin/python\" npm run test:e2e -- e2e/visual/admin-media-mutation-lock.spec.ts e2e/visual/admin-queue-race.spec.ts e2e/visual/admin.spec.ts --project=chromium --grep-invert 'visual:'\ncd ..\ngit diff --check\ntest -z \"$(git status --porcelain)\"\ntrap - EXIT\nrm -rf \"$VENV\"\n./scripts/devctl.sh stop >/dev/null 2>&1 || true",
+      "exit_code": 1,
+      "output": "From https://github.com/MichalMatu/PhotoMaps\n * branch            work/photomap-straighten-20260912 -> FETCH_HEAD\nAlready up to date.\n\n[notice] A new release of pip is available: 25.3 -> 26.2.1\n[notice] To update, run: /private/tmp/photomap-admin-media-mutation-108-SjvNfe/bin/python -m pip install --upgrade pip\n\n> test:e2e\n> ../scripts/quality/e2e.sh e2e/visual/admin-media-mutation-lock.spec.ts --project=chromium --grep-invert visual:\n\nBackend: http://127.0.0.1:18080, PID 57250\nFrontend: http://127.0.0.1:15174, PID 57369\n\nMapa: http://127.0.0.1:15174\nAPI:  http://127.0.0.1:18080\n(node:57387) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n\nRunning 3 tests using 3 workers\n\n(node:57400) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:57399) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n(node:57401) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n  ✓  3 [chromium] › e2e/visual/admin-media-mutation-lock.spec.ts:74:5 › memory moderation locks competing decisions for one pending memory (2.5s)\n  ✓  1 [chromium] › e2e/visual/admin-media-mutation-lock.spec.ts:108:5 › memory save blocks switching the editor until the request finishes (2.7s)\n  ✘  2 [chromium] › e2e/visual/admin-media-mutation-lock.spec.ts:40:5 › photo moderation locks competing decisions for one pending photo (12.2s)\n\n\n  1) [chromium] › e2e/visual/admin-media-mutation-lock.spec.ts:40:5 › photo moderation locks competing decisions for one pending photo \n\n    Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n    Locator: locator('.admin-media-item').first()\n    Expected substring: \u001b[32m\"Rynek od strony przejścia\"\u001b[39m\n    Timeout: 10000ms\n    Error: element(s) not found\n\n    Call log:\n    \u001b[2m  - Expect \"toContainText\" with timeout 10000ms\u001b[22m\n    \u001b[2m  - waiting for locator('.admin-media-item').first()\u001b[22m\n\n\n      56 |   await openModeration(page, /Zdjęcia/);\n      57 |   const item = page.locator(\".admin-media-item\").first();\n    > 58 |   await expect(item).toContainText(pendingPhoto.caption ?? \"\");\n         |                      ^\n      59 |   const approve = item.getByRole(\"button\", { name: \"Zatwierdź\" });\n      60 |   const reject = item.getByRole(\"button\", { name: \"Odrzuć\" });\n      61 |\n        at /Users/michal/agent-workspace/repos/photomaps/work/frontend/e2e/visual/admin-media-mutation-lock.spec.ts:58:22\n\n    Error Context: test-results/visual-admin-media-mutatio-c2136-sions-for-one-pending-photo-chromium/error-context.md\n\n  1 failed\n    [chromium] › e2e/visual/admin-media-mutation-lock.spec.ts:40:5 › photo moderation locks competing decisions for one pending photo \n  2 passed (13.2s)\n",
+      "elapsed_seconds": 41.567,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 974.12,
+      "output_policy": "stream",
+      "captured_output_chars": 3186,
+      "output_truncated": false,
+      "current_rss_mb": 2.97,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "failed",
+      "elapsed_seconds": 41.567
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.091
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.077
+  },
+  "failure_reason": "command_failed",
+  "finished_at": "2026-09-13T01:26:08.329180+00:00",
+  "task_digest": "68fd9c7a14dfd6031ed53e7f43f7e9c4e3007767195334f873ccf8da40c7d889",
+  "idle_timeout": 300,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "attempt_id": "eebd30ed9b6cf76095d45891",
+  "daemon_version": "4.18.20"
+}
