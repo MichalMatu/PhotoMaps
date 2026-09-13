@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260913-photomap-photo-cover-mutation-verify-110",
+  "task_digest": "f281408c61bf861e659ddf2189759fcf1982fb208b55c53694267b896cbed585",
+  "idle_timeout": 300,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-13T01:47:44.417104+00:00",
+  "attempt_id": "5b0992b4b59308683cc8afca",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 77265,
+  "updated_at": "2026-09-13T01:47:44.417154+00:00",
+  "pid": 77265
+}
