@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260913-photomap-public-get-verify-134",
+  "task_digest": "9471dcb20eb0fa496b2090ab6d554f6f7d98ecf7c1d663ef09b791ca370e317d",
+  "idle_timeout": 300,
+  "task_timeout": 600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-13T08:40:36.985543+00:00",
+  "attempt_id": "013003b0c2030a3848dbed33",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 81437,
+  "updated_at": "2026-09-13T08:40:36.985590+00:00",
+  "pid": 81437
+}
