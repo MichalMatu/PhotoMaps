@@ -5,6 +5,7 @@ from PIL import Image
 from app.core import public_submission_security
 from app.core.rate_limit import RateLimitPolicy
 from app.models.memory import Memory
+from app.models.report import Report
 from app.services.tokens import claim_token_hash
 from app.tests.support import ADMIN_HEADERS, create_place, image_upload
 
@@ -52,6 +53,10 @@ def test_memory_claim_update_and_delete_use_same_token(client_session, tmp_path:
     public_file = tmp_path / "public" / memory.public_path.removeprefix("/media/")
     thumb_file = tmp_path / "public" / memory.thumb_path.removeprefix("/media/")
     public_dir = public_file.parent
+    report = Report(target_type="memory", target_id=memory_id, reason="wrong_data")
+    session.add(report)
+    session.commit()
+    session.refresh(report)
 
     rejected_claim = client.post(
         f"/api/places/{place.id}/memories/{memory_id}/claim",
@@ -90,6 +95,7 @@ def test_memory_claim_update_and_delete_use_same_token(client_session, tmp_path:
     assert delete_response.status_code == 204
     assert public_response.json() == []
     assert session.get(Memory, memory_id) is None
+    assert session.get(Report, report.id) is None
     assert place.memory_count == 0
     assert session.get(type(place), place.id).memory_count == 0
     assert not private_file.exists()
