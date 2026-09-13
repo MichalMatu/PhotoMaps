@@ -1,0 +1,61 @@
+{
+  "id": "20260913-photomap-final-audit-gate-123",
+  "status": "failed",
+  "mode": "commands",
+  "work_branch": "work/photomap-straighten-20260912",
+  "allow_write": false,
+  "started_at": "2026-09-13T07:07:19.755065+00:00",
+  "command_timeout": 3600,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail\nBRANCH=work/photomap-straighten-20260912\nSHA=eca60d3932ef1ab3ad2f99957a4271eab3e8c77b\nMAIN_SHA=dcd99f07faf9e159a1b6b3f0b76ccff1e9db8ce1\ngit fetch origin \"$BRANCH\" main\ntest \"$(git rev-parse origin/$BRANCH)\" = \"$SHA\"\ntest \"$(git rev-parse origin/main)\" = \"$MAIN_SHA\"\ntest -z \"$(git status --porcelain)\"\ngit switch --detach \"$SHA\"\ntest \"$(git rev-parse HEAD)\" = \"$SHA\"\ngit diff --check \"$MAIN_SHA\" \"$SHA\"\nVENV=$(mktemp -d /tmp/photomap-final-123-XXXXXX)\ntrap 'rm -rf \"$VENV\"; ./scripts/devctl.sh stop >/dev/null 2>&1 || true' EXIT\npython3 -m venv \"$VENV\"\n\"$VENV/bin/python\" -m pip install -q -r backend/requirements.txt\n\"$VENV/bin/python\" -m pytest -q backend\ncd frontend\nnpm run format:check\nnpm run lint\nnpm run knip\nnpm run build\nnpm run test\nPYTHON=\"$VENV/bin/python\" npm run test:e2e -- --project=chromium --grep-invert 'visual:'\ncd ..\ntest -z \"$(git status --porcelain)\"\ngit fetch origin \"$BRANCH\" main\ntest \"$(git rev-parse origin/$BRANCH)\" = \"$SHA\"\ntest \"$(git rev-parse origin/main)\" = \"$MAIN_SHA\"\nprintf 'verified_sha=%s\\nmain_sha=%s\\n' \"$SHA\" \"$MAIN_SHA\"\ntrap - EXIT\nrm -rf \"$VENV\"\n./scripts/devctl.sh stop >/dev/null 2>&1 || true",
+      "exit_code": 1,
+      "output": "From https://github.com/MichalMatu/PhotoMaps\n * branch            work/photomap-straighten-20260912 -> FETCH_HEAD\n * branch            main       -> FETCH_HEAD\nHEAD is now at eca60d3 Test transactional memory reviews\n\n[notice] A new release of pip is available: 25.3 -> 26.2.1\n[notice] To update, run: /private/tmp/photomap-final-123-hHArHu/bin/python -m pip install --upgrade pip\n........................................................................ [ 22%]\n........................................................................ [ 44%]\n........................................................................ [ 67%]\n........................................................................ [ 89%]\n.................................                                        [100%]\n=============================== warnings summary ===============================\n../../../../../../private/tmp/photomap-final-123-hHArHu/lib/python3.13/site-packages/fastapi/testclient.py:1\n  /private/tmp/photomap-final-123-hHArHu/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n../../../../../../private/tmp/photomap-final-123-hHArHu/lib/python3.13/site-packages/starlette/testclient.py:53\n  /private/tmp/photomap-final-123-hHArHu/lib/python3.13/site-packages/starlette/testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.\n    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n321 passed, 2 warnings in 22.80s\n\n> format:check\n> prettier --check .\n\nChecking formatting...\n[warn] e2e/visual/admin-guide-detail-race.spec.ts\n[warn] e2e/visual/admin-guide-mutation-race.spec.ts\n[warn] e2e/visual/admin-place-photo-review-lock.spec.ts\n[warn] e2e/visual/admin-queue-race.spec.ts\n[warn] e2e/visual/memory-owner-delete-race.spec.ts\n[warn] src/components/admin/PhotoAttributionFields.tsx\n[warn] src/components/admin/PhotoQueue.tsx\n[warn] src/components/admin/useGuideActions.ts\n[warn] src/components/map/pinnedMediaBoardStorage.ts\n[warn] src/components/map/PlaceMap.tsx\n[warn] Code style issues found in 10 files. Run Prettier with --write to fix.\n",
+      "elapsed_seconds": 46.911,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 411.08,
+      "output_policy": "stream",
+      "captured_output_chars": 2397,
+      "output_truncated": false,
+      "current_rss_mb": 3.31,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "failed",
+      "elapsed_seconds": 46.911
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.111
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.08
+  },
+  "failure_reason": "command_failed",
+  "finished_at": "2026-09-13T07:08:08.525178+00:00",
+  "task_digest": "6e448094c07c6ebfe1f8068c4fcf7b6f1118968083520adcf6cb817dbdae41f4",
+  "idle_timeout": 300,
+  "task_timeout": 7200,
+  "memory_limit_mb": 4096,
+  "attempt_id": "0cf5e0f2bab702c08e01147a",
+  "daemon_version": "4.18.20"
+}
