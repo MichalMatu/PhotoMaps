@@ -76,6 +76,7 @@ export function MemoryUploadForm({
         <FileInputControl
           accept="image/*"
           describedBy={fieldErrors.file ? "memory-file-error" : undefined}
+          disabled={isSaving}
           file={file}
           inputKey={`image-${fileInputKey}`}
           isInvalid={Boolean(fieldErrors.file)}
@@ -99,6 +100,7 @@ export function MemoryUploadForm({
         <FileInputControl
           accept={AUDIO_FILE_ACCEPT}
           describedBy={fieldErrors.audioFile ? "memory-audio-file-error" : undefined}
+          disabled={isSaving}
           file={audioFile}
           inputKey={`audio-${fileInputKey}`}
           isInvalid={Boolean(fieldErrors.audioFile)}
@@ -121,6 +123,7 @@ export function MemoryUploadForm({
         <input
           aria-describedby={fieldErrors.caption ? "memory-caption-error" : undefined}
           aria-invalid={Boolean(fieldErrors.caption)}
+          disabled={isSaving}
           maxLength={MEMORY_CAPTION_MAX_LENGTH}
           value={caption}
           onChange={(event) => onCaptionChange(event.target.value)}
@@ -148,6 +151,7 @@ export function MemoryUploadForm({
         <textarea
           aria-describedby={fieldErrors.memoryText ? "memory-text-error" : undefined}
           aria-invalid={Boolean(fieldErrors.memoryText)}
+          disabled={isSaving}
           maxLength={MEMORY_TEXT_MAX_LENGTH}
           rows={3}
           value={memoryText}
@@ -172,6 +176,7 @@ export function MemoryUploadForm({
           <input
             aria-describedby={fieldErrors.authorName ? "memory-author-name-error" : undefined}
             aria-invalid={Boolean(fieldErrors.authorName)}
+            disabled={isSaving}
             maxLength={MEMORY_AUTHOR_MAX_LENGTH}
             value={authorName}
             onChange={(event) => onAuthorNameChange(event.target.value)}
@@ -193,6 +198,7 @@ export function MemoryUploadForm({
           <input
             aria-describedby={fieldErrors.authorCity ? "memory-author-city-error" : undefined}
             aria-invalid={Boolean(fieldErrors.authorCity)}
+            disabled={isSaving}
             maxLength={MEMORY_AUTHOR_MAX_LENGTH}
             value={authorCity}
             onChange={(event) => onAuthorCityChange(event.target.value)}
@@ -204,6 +210,7 @@ export function MemoryUploadForm({
           aria-describedby={fieldErrors.hasConsent ? "memory-consent-error" : undefined}
           aria-invalid={Boolean(fieldErrors.hasConsent)}
           checked={hasConsent}
+          disabled={isSaving}
           type="checkbox"
           onChange={(event) => onConsentChange(event.target.checked)}
         />
