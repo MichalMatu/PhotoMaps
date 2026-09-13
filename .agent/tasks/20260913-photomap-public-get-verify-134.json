@@ -1,0 +1,14 @@
+{
+  "id": "20260913-photomap-public-get-verify-134",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/photomap-straighten-20260912",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 300,
+  "task_timeout": 600,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail; echo ROOT; curl -fsS -o /tmp/photomap-root.html -w '%{http_code}\\n' --max-time 20 https://photomap.pl/; echo HEALTH; curl -fsS -w '\\n%{http_code}\\n' --max-time 20 https://photomap.pl/health; echo ASSETS; grep -o '/assets/[^\" ]*' /tmp/photomap-root.html | sort -u; echo PI; ssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'cd /home/michal/src/PhotoMaps; echo HEAD=$(git rev-parse HEAD); ./scripts/serverctl.sh status; printf LAN=; curl -sS -o /dev/null -w \"%{http_code}\\n\" --max-time 3 http://192.168.0.23:8000/health || true'"
+  ]
+}
