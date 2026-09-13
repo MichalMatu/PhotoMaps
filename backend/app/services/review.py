@@ -71,6 +71,16 @@ def apply_photo_deleted(photo: Photo, place: Place, session: Session) -> None:
     place.updated_at = datetime.now(UTC)
 
 
+def apply_memory_review_state(memory: Memory, place: Place, status: str) -> None:
+    ensure_final_review_status(status)
+
+    previous_status = memory.status
+    memory.status = status
+    memory.approved_at = datetime.now(UTC) if status == "approved" else None
+    place.memory_count = update_review_count(place.memory_count, previous_status, status)
+    place.updated_at = datetime.now(UTC)
+
+
 def review_memory(memory: Memory, place: Place, status: str) -> None:
     ensure_final_review_status(status)
 
@@ -80,10 +90,7 @@ def review_memory(memory: Memory, place: Place, status: str) -> None:
     elif previous_status == "approved" or memory.public_path is not None or memory.thumb_path is not None:
         unpublish_memory_media(memory)
 
-    memory.status = status
-    memory.approved_at = datetime.now(UTC) if status == "approved" else None
-    place.memory_count = update_review_count(place.memory_count, previous_status, status)
-    place.updated_at = datetime.now(UTC)
+    apply_memory_review_state(memory, place, status)
 
 
 def apply_memory_deleted(memory: Memory, place: Place) -> None:
