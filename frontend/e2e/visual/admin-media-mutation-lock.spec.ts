@@ -54,7 +54,8 @@ test("photo moderation locks competing decisions for one pending photo", async (
 
   await unlockAdmin(page);
   await openModeration(page, /Zdjęcia/);
-  const item = page.locator(".admin-media-item").filter({ hasText: pendingPhoto.caption ?? "" }).first();
+  const item = page.locator(".admin-media-item").first();
+  await expect(item).toContainText(pendingPhoto.caption ?? "");
   const approve = item.getByRole("button", { name: "Zatwierdź" });
   const reject = item.getByRole("button", { name: "Odrzuć" });
 
@@ -87,7 +88,8 @@ test("memory moderation locks competing decisions for one pending memory", async
 
   await unlockAdmin(page);
   await openModeration(page, /Pamiątki/);
-  const item = page.locator(".admin-media-item").filter({ hasText: memory.caption }).first();
+  const item = page.locator(".admin-media-item").first();
+  await expect(item).toContainText(memory.caption);
   const approve = item.getByRole("button", { name: "Zatwierdź" });
   const reject = item.getByRole("button", { name: "Odrzuć" });
 
@@ -128,8 +130,12 @@ test("memory save blocks switching the editor until the request finishes", async
 
   await unlockAdmin(page);
   await openModeration(page, /Pamiątki/);
-  const firstItem = page.locator(".admin-media-item").filter({ hasText: firstMemory.caption }).first();
-  const secondItem = page.locator(".admin-media-item").filter({ hasText: secondMemory.caption }).first();
+  const items = page.locator(".admin-media-item");
+  await expect(items).toHaveCount(2);
+  const firstItem = items.nth(0);
+  const secondItem = items.nth(1);
+  await expect(firstItem).toContainText(firstMemory.caption);
+  await expect(secondItem).toContainText(secondMemory.caption);
 
   await firstItem.getByRole("button", { name: "Edytuj pamiątkę" }).click();
   const saveButton = firstItem.getByRole("button", { name: "Zapisz" });
