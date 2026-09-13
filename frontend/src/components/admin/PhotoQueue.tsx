@@ -64,6 +64,8 @@ export function PhotoQueue({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const reviewingPhotoIdsRef = useRef(new Set<string>());
   const [reviewingPhotoIds, setReviewingPhotoIds] = useState<Set<string>>(() => new Set());
+  const coverMutatingPlaceIdsRef = useRef(new Set<string>());
+  const [coverMutatingPlaceIds, setCoverMutatingPlaceIds] = useState<Set<string>>(() => new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSavingCaption, setIsSavingCaption] = useState(false);
   const [photoToDelete, setPhotoToDelete] = useState<AdminPhoto | null>(null);
@@ -125,22 +127,34 @@ export function PhotoQueue({
     }
   }
 
-  async function handleSetCover(photo: AdminPhoto) {
+  async function runCoverMutation(placeId: string, mutation: () => Promise<unknown>, fallbackMessage: string) {
+    if (coverMutatingPlaceIdsRef.current.has(placeId)) {
+      return;
+    }
+
+    coverMutatingPlaceIdsRef.current.add(placeId);
+    setCoverMutatingPlaceIds(new Set(coverMutatingPlaceIdsRef.current));
     try {
-      await setCoverPhoto(photo.id);
+      await mutation();
       await onChanged();
     } catch (reason) {
-      setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się ustawić zdjęcia głównego.");
+      setErrorMessage(reason instanceof Error ? reason.message : fallbackMessage);
+    } finally {
+      coverMutatingPlaceIdsRef.current.delete(placeId);
+      setCoverMutatingPlaceIds(new Set(coverMutatingPlaceIdsRef.current));
     }
   }
 
+  async function handleSetCover(photo: AdminPhoto) {
+    await runCoverMutation(photo.place_id, () => setCoverPhoto(photo.id), "Nie udało się ustawić zdjęcia głównego.");
+  }
+
   async function handleClearCover(photo: AdminPhoto) {
-    try {
-      await updatePlaceCover(photo.place_id, null);
-      await onChanged();
-    } catch (reason) {
-      setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się zdjąć zdjęcia głównego.");
-    }
+    await runCoverMutation(
+      photo.place_id,
+      () => updatePlaceCover(photo.place_id, null),
+      "Nie udało się zdjąć zdjęcia głównego.",
+    );
   }
 
   function handleTogglePlace(placeId: string) {
@@ -256,6 +270,7 @@ export function PhotoQueue({
               <PhotoQueueItem
                 group={group}
                 isReviewing={reviewingPhotoIds.has(photo.id)}
+                isSettingCover={coverMutatingPlaceIds.has(group.placeId)}
                 key={photo.id}
                 photo={photo}
                 onDelete={setPhotoToDelete}
@@ -282,6 +297,7 @@ export function PhotoQueue({
                 <PhotoQueueItem
                   group={group}
                   isReviewing={reviewingPhotoIds.has(photo.id)}
+                  isSettingCover={coverMutatingPlaceIds.has(group.placeId)}
                   key={photo.id}
                   photo={photo}
                   onDelete={setPhotoToDelete}
