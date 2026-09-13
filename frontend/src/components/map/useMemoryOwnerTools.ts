@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { deleteMemory, updateMemory, verifyMemoryClaim } from "../../api/media";
@@ -50,6 +50,9 @@ export function useMemoryOwnerTools({
   placeId,
 }: UseMemoryOwnerToolsArgs): MemoryOwnerToolsModel {
   const queryClient = useQueryClient();
+  const activeItemKeyRef = useRef(itemKey);
+  const isMountedRef = useRef(false);
+  activeItemKeyRef.current = itemKey;
   const [claimToken, setClaimToken] = useState("");
   const [draftAuthorCity, setDraftAuthorCity] = useState("");
   const [draftAuthorName, setDraftAuthorName] = useState("");
@@ -62,6 +65,14 @@ export function useMemoryOwnerTools({
   const [isOwnerToolsOpen, setIsOwnerToolsOpen] = useState(false);
   const [operationError, setOperationError] = useState<OperationError | null>(null);
   const [ownerSuccessMessage, setOwnerSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     setClaimToken("");
@@ -77,6 +88,10 @@ export function useMemoryOwnerTools({
     setOperationError(null);
     setOwnerSuccessMessage(null);
   }, [itemKey, memory?.author_city, memory?.author_name, memory?.caption, memory?.memory_text]);
+
+  function isCurrentOwnerItem(operationItemKey: string) {
+    return isMountedRef.current && activeItemKeyRef.current === operationItemKey;
+  }
 
   function handleToggleOwnerTools() {
     setIsOwnerToolsOpen((current) => !current);
@@ -94,14 +109,21 @@ export function useMemoryOwnerTools({
       return;
     }
 
+    const operationItemKey = itemKey;
     setIsOwnerSaving(true);
     setOperationError(null);
     setOwnerSuccessMessage(null);
     try {
       await verifyMemoryClaim(placeId, memory.id, claimToken.trim());
+      if (!isCurrentOwnerItem(operationItemKey)) {
+        return;
+      }
       setIsClaimVerified(true);
       setHasClaimSubmitted(false);
     } catch (reason) {
+      if (!isCurrentOwnerItem(operationItemKey)) {
+        return;
+      }
       setIsClaimVerified(false);
       setOperationError({
         details: errorDetails(reason),
@@ -109,7 +131,9 @@ export function useMemoryOwnerTools({
         title: "Nie udało się odblokować pamiątki",
       });
     } finally {
-      setIsOwnerSaving(false);
+      if (isCurrentOwnerItem(operationItemKey)) {
+        setIsOwnerSaving(false);
+      }
     }
   }
 
@@ -129,6 +153,7 @@ export function useMemoryOwnerTools({
       return;
     }
 
+    const operationItemKey = itemKey;
     setIsOwnerSaving(true);
     setOperationError(null);
     setOwnerSuccessMessage(null);
@@ -142,16 +167,24 @@ export function useMemoryOwnerTools({
       });
       await queryClient.invalidateQueries({ queryKey: ["places-map"] });
       await queryClient.invalidateQueries({ queryKey: ["place-memories", placeId] });
+      if (!isCurrentOwnerItem(operationItemKey)) {
+        return;
+      }
       setHasEditSubmitted(false);
       setOwnerSuccessMessage("Zapisano zmiany.");
     } catch (reason) {
+      if (!isCurrentOwnerItem(operationItemKey)) {
+        return;
+      }
       setOperationError({
         details: errorDetails(reason),
         message: "Nie udało się zapisać zmian w pamiątce. Sprawdź dane i spróbuj ponownie.",
         title: "Nie udało się zapisać pamiątki",
       });
     } finally {
-      setIsOwnerSaving(false);
+      if (isCurrentOwnerItem(operationItemKey)) {
+        setIsOwnerSaving(false);
+      }
     }
   }
 
@@ -160,6 +193,7 @@ export function useMemoryOwnerTools({
       return;
     }
 
+    const operationItemKey = itemKey;
     setIsOwnerSaving(true);
     setOperationError(null);
     setOwnerSuccessMessage(null);
@@ -167,8 +201,15 @@ export function useMemoryOwnerTools({
       await deleteMemory(placeId, memory.id, claimToken.trim());
       await queryClient.invalidateQueries({ queryKey: ["places-map"] });
       await queryClient.invalidateQueries({ queryKey: ["place-memories", placeId] });
+      if (!isCurrentOwnerItem(operationItemKey)) {
+        return;
+      }
+      setIsOwnerSaving(false);
       onDeleted();
     } catch (reason) {
+      if (!isCurrentOwnerItem(operationItemKey)) {
+        return;
+      }
       setOperationError({
         details: errorDetails(reason),
         message: "Nie udało się trwale usunąć pamiątki. Spróbuj ponownie.",
