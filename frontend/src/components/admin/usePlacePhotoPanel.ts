@@ -44,6 +44,7 @@ export function usePlacePhotoPanel({ onChanged, photos, place }: UsePlacePhotoPa
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const reviewingPhotoIdsRef = useRef(new Set<string>());
   const [reviewingPhotoIds, setReviewingPhotoIds] = useState<Set<string>>(() => new Set());
+  const uploadingRef = useRef(false);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [inputKey, setInputKey] = useState(0);
@@ -83,10 +84,11 @@ export function usePlacePhotoPanel({ onChanged, photos, place }: UsePlacePhotoPa
   }
 
   async function handleUpload() {
-    if (!file) {
+    if (!file || uploadingRef.current) {
       return;
     }
 
+    uploadingRef.current = true;
     setErrorMessage(null);
     setIsUploading(true);
     try {
@@ -106,6 +108,7 @@ export function usePlacePhotoPanel({ onChanged, photos, place }: UsePlacePhotoPa
     } catch (reason) {
       setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się dodać zdjęcia.");
     } finally {
+      uploadingRef.current = false;
       setIsUploading(false);
     }
   }
