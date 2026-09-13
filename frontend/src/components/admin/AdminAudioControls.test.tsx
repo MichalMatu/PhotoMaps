@@ -40,6 +40,21 @@ describe("AdminAudioControls", () => {
     expect(markup).not.toContain("Audio do medium");
   });
 
+  it("locks the file picker when parent media actions are busy", () => {
+    const markup = renderToStaticMarkup(
+      <AdminAudioControls
+        audio={null}
+        disabled
+        inputKeyPrefix="photo-audio"
+        onDeleteAudio={noop}
+        onError={() => undefined}
+        onSaveAudio={noop}
+      />,
+    );
+
+    expect(markup).toMatch(/class="file-input-control-native" disabled=""/);
+  });
+
   it("renders replace and delete actions for an existing attachment", () => {
     const markup = renderToStaticMarkup(
       <AdminAudioControls
