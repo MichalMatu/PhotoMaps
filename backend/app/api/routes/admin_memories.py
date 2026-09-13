@@ -16,6 +16,7 @@ from app.schemas.contract_types import ReviewStatus
 from app.schemas.media_redaction import MediaRedactionPayload, MediaRedactionReport
 from app.schemas.memory import MemoryAdminRead, MemoryAdminUpdate, MemoryReview
 from app.serializers.memory import memory_to_admin_read
+from app.services.admin_memories import review_admin_memory
 from app.services.media import images
 from app.services.memory_fields import (
     MAX_MEMORY_AUTHOR_LENGTH,
@@ -26,12 +27,7 @@ from app.services.memory_fields import (
 )
 from app.services.memory_uploads import delete_memory_audio, delete_memory_files, replace_memory_audio
 from app.services.reports import delete_reports_for_target
-from app.services.review import (
-    apply_memory_deleted,
-    ensure_final_review_status,
-    ensure_visible_review_status,
-    review_memory,
-)
+from app.services.review import apply_memory_deleted, ensure_visible_review_status
 
 router = APIRouter(prefix="/api/admin/memories", tags=["admin memories"], dependencies=[Depends(require_admin_token)])
 
@@ -131,22 +127,7 @@ def review_place_memory(
     payload: MemoryReview,
     session: Session = Depends(get_session),
 ) -> MemoryAdminRead:
-    ensure_final_review_status(payload.status)
-
-    memory = session.get(Memory, memory_id)
-    if memory is None:
-        raise HTTPException(status_code=404, detail="Memory not found")
-
-    place = session.get(Place, memory.place_id)
-    if place is None:
-        raise HTTPException(status_code=404, detail="Place not found")
-
-    review_memory(memory, place, payload.status)
-    session.add(memory)
-    session.add(place)
-    session.commit()
-    session.refresh(memory)
-    return memory_to_admin_read(memory)
+    return memory_to_admin_read(review_admin_memory(session, memory_id, payload.status))
 
 
 @router.patch("/{memory_id}", response_model=MemoryAdminRead)
