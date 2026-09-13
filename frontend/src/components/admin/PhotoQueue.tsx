@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { bumpMediaCacheRevision } from "../../api/http";
 import {
@@ -62,6 +62,8 @@ export function PhotoQueue({
   });
   const [editingPhotoId, setEditingPhotoId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const reviewingPhotoIdsRef = useRef(new Set<string>());
+  const [reviewingPhotoIds, setReviewingPhotoIds] = useState<Set<string>>(() => new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSavingCaption, setIsSavingCaption] = useState(false);
   const [photoToDelete, setPhotoToDelete] = useState<AdminPhoto | null>(null);
@@ -106,11 +108,20 @@ export function PhotoQueue({
   }, [collapsePlace, loadAlbums, refreshKey, resetPlacePhotos]);
 
   async function handleReview(photoId: string, status: ReviewFinalStatus) {
+    if (reviewingPhotoIdsRef.current.has(photoId)) {
+      return;
+    }
+
+    reviewingPhotoIdsRef.current.add(photoId);
+    setReviewingPhotoIds(new Set(reviewingPhotoIdsRef.current));
     try {
       await reviewPhoto(photoId, status);
       await onChanged();
     } catch (reason) {
       setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się zmienić statusu zdjęcia.");
+    } finally {
+      reviewingPhotoIdsRef.current.delete(photoId);
+      setReviewingPhotoIds(new Set(reviewingPhotoIdsRef.current));
     }
   }
 
@@ -244,6 +255,7 @@ export function PhotoQueue({
             renderItem={(photo, group) => (
               <PhotoQueueItem
                 group={group}
+                isReviewing={reviewingPhotoIds.has(photo.id)}
                 key={photo.id}
                 photo={photo}
                 onDelete={setPhotoToDelete}
@@ -269,6 +281,7 @@ export function PhotoQueue({
               return group.items.map((photo) => (
                 <PhotoQueueItem
                   group={group}
+                  isReviewing={reviewingPhotoIds.has(photo.id)}
                   key={photo.id}
                   photo={photo}
                   onDelete={setPhotoToDelete}
