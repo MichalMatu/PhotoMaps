@@ -5,6 +5,7 @@ import { CONTENT_BLOCK_TYPES, contentBlockLabel } from "./contentBlockUtils";
 
 type Props = {
   blocks: ContentBlock[];
+  disabled?: boolean;
   idPrefix?: string;
   legend: string;
   onAddBlock: (type: ContentBlockType) => void;
@@ -15,6 +16,7 @@ type Props = {
 
 export function ContentBlockEditor({
   blocks,
+  disabled = false,
   idPrefix = "content-block",
   legend,
   onAddBlock,
@@ -30,6 +32,7 @@ export function ContentBlockEditor({
           <div className="content-block-editor-row place-article-block-editor" key={index}>
             <SettingField id={`${idPrefix}-${index}-format`} label="Format" hint={CONTENT_BLOCK_FIELD_HELP.format}>
               <select
+                disabled={disabled}
                 value={block.type}
                 onChange={(event) => onUpdateBlockType(index, event.target.value as ContentBlockType)}
               >
@@ -48,6 +51,7 @@ export function ContentBlockEditor({
                   hint={CONTENT_BLOCK_FIELD_HELP["link-label"]}
                 >
                   <input
+                    disabled={disabled}
                     value={block.text}
                     onChange={(event) => onUpdateBlock(index, { ...block, text: event.target.value })}
                     required
@@ -59,6 +63,7 @@ export function ContentBlockEditor({
                   hint={CONTENT_BLOCK_FIELD_HELP["link-url"]}
                 >
                   <input
+                    disabled={disabled}
                     type="url"
                     value={block.url}
                     onChange={(event) => onUpdateBlock(index, { ...block, url: event.target.value })}
@@ -70,6 +75,7 @@ export function ContentBlockEditor({
               <SettingField id={`${idPrefix}-${index}-text`} label="Treść" hint={CONTENT_BLOCK_FIELD_HELP.text}>
                 <textarea
                   className="content-block-text place-article-block-text"
+                  disabled={disabled}
                   rows={block.type === "paragraph" ? 5 : 2}
                   value={block.text}
                   onChange={(event) => onUpdateBlock(index, { ...block, text: event.target.value })}
@@ -78,6 +84,7 @@ export function ContentBlockEditor({
             )}
             <button
               className="ui-button ui-button--ghost place-article-remove-button"
+              disabled={disabled}
               type="button"
               onClick={() => onRemoveBlock(index)}
             >
@@ -88,7 +95,13 @@ export function ContentBlockEditor({
       </div>
       <div className="content-block-add-actions place-article-add-actions">
         {CONTENT_BLOCK_TYPES.map((type) => (
-          <button className="ui-button ui-button--secondary" key={type} type="button" onClick={() => onAddBlock(type)}>
+          <button
+            className="ui-button ui-button--secondary"
+            disabled={disabled}
+            key={type}
+            type="button"
+            onClick={() => onAddBlock(type)}
+          >
             {contentBlockLabel(type)}
           </button>
         ))}
