@@ -1,0 +1,60 @@
+{
+  "id": "20260913-photomap-pi-runtime-diagnose-132",
+  "status": "done",
+  "mode": "commands",
+  "work_branch": "work/photomap-straighten-20260912",
+  "allow_write": false,
+  "started_at": "2026-09-13T08:23:43.024032+00:00",
+  "command_timeout": 900,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail; ssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'cd /home/michal/src/PhotoMaps; echo ===GIT===; git rev-parse HEAD; git status --porcelain; echo ===STATUS===; ./scripts/serverctl.sh status || true; echo ===PROCESS===; pgrep -af \"server.py|python.*PhotoMaps\" || true; echo ===LISTEN===; ss -ltnp 2>/dev/null | grep :8000 || true; echo ===HEALTH===; curl -v --max-time 3 http://127.0.0.1:8000/health 2>&1 || true; echo ===SERVER_LOG===; tail -n 200 .dev/server.log 2>/dev/null || true; echo ===MEMORY===; free -h; echo ===OOM_DMESG===; sudo -n dmesg 2>/dev/null | tail -n 120 | grep -Ei \"oom|out of memory|killed process|python|node\" || true; echo ===DIST===; ls -lh frontend/dist/index.html; find frontend/dist/assets -maxdepth 1 -type f | wc -l'",
+      "exit_code": 0,
+      "output": "===GIT===\n578281bf750d7c86792ba4d6ccde505a7678c01f\n===STATUS===\nPubliczny runtime PhotoMap:\n8771\n\nPhotoMap runtime port 8000:\nCOMMAND  PID   USER FD   TYPE DEVICE SIZE/OFF NODE NAME\npython  8771 michal 13u  IPv4  90714      0t0  TCP 127.0.0.1:8000 (LISTEN)\nPhotoMap runtime health: OK\n===PROCESS===\n8771 /home/michal/src/PhotoMaps/backend/.venv/bin/python /home/michal/src/PhotoMaps/server.py\n8826 bash -c cd /home/michal/src/PhotoMaps; echo ===GIT===; git rev-parse HEAD; git status --porcelain; echo ===STATUS===; ./scripts/serverctl.sh status || true; echo ===PROCESS===; pgrep -af \"server.py|python.*PhotoMaps\" || true; echo ===LISTEN===; ss -ltnp 2>/dev/null | grep :8000 || true; echo ===HEALTH===; curl -v --max-time 3 http://127.0.0.1:8000/health 2>&1 || true; echo ===SERVER_LOG===; tail -n 200 .dev/server.log 2>/dev/null || true; echo ===MEMORY===; free -h; echo ===OOM_DMESG===; sudo -n dmesg 2>/dev/null | tail -n 120 | grep -Ei \"oom|out of memory|killed process|python|node\" || true; echo ===DIST===; ls -lh frontend/dist/index.html; find frontend/dist/assets -maxdepth 1 -type f | wc -l\n===LISTEN===\nLISTEN 0      2048       127.0.0.1:8000       0.0.0.0:*    users:((\"python\",pid=8771,fd=13))\n===HEALTH===\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 127.0.0.1:8000...\n* Connected to 127.0.0.1 (127.0.0.1) port 8000\n* using HTTP/1.x\n> GET /health HTTP/1.1\n> Host: 127.0.0.1:8000\n> User-Agent: curl/8.14.1\n> Accept: */*\n> \n* Request completely sent off\n< HTTP/1.1 200 OK\n< date: Sun, 13 Sep 2026 08:23:44 GMT\n< content-length: 15\n< content-type: application/json\n< x-request-id: 0a4cac749a4340349bd7b618103ebda3\n< content-security-policy: default-src 'self'; base-uri 'self'; connect-src 'self' https:; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src 'none'; img-src 'self' data: blob: https:; manifest-src 'self'; media-src 'self' blob: https:; object-src 'none'; script-src 'self' 'nonce-MhknisIO2_jTIPo9rWKTiv2R'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; upgrade-insecure-requests\n< cross-origin-opener-policy: same-origin\n< permissions-policy: camera=(), geolocation=(self), microphone=(), payment=(), usb=()\n< referrer-policy: strict-origin-when-cross-origin\n< x-content-type-options: nosniff\n< x-frame-options: DENY\n< strict-transport-security: max-age=63072000; includeSubDomains; preload\n< \n{ [15 bytes data]\n\n100    15  100    15    0     0   1075      0 --:--:-- --:--:-- --:--:--  1153\n* Connection #0 to host 127.0.0.1 left intact\n{\"status\":\"ok\"}===SERVER_LOG===\n[2026-09-13 10:20:53] start server http://127.0.0.1:8000\nINFO  [alembic.runtime.migration] Context impl SQLiteImpl.\nINFO  [alembic.runtime.migration] Will assume non-transactional DDL.\nINFO:     Started server process [8771]\nINFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)\nINFO:     127.0.0.1:44238 - \"GET /health HTTP/1.1\" 200 OK\nINFO:     127.0.0.1:44246 - \"GET /health HTTP/1.1\" 200 OK\n===MEMORY===\n               total        used        free      shared  buff/cache   available\nMem:           416Mi       215Mi       135Mi       620Ki       122Mi       200Mi\nSwap:          415Mi        24Mi       391Mi\n===OOM_DMESG===\n[    9.707990] systemd[1]: Starting systemd-tmpfiles-setup-dev-early.service - Create Static Device Nodes in /dev gracefully...\n[   11.804131] bcm2835-isp bcm2835-isp: Device node output[0] registered as /dev/video13\n[   11.804950] bcm2835-isp bcm2835-isp: Device node capture[0] registered as /dev/video14\n[   11.810497] bcm2835-isp bcm2835-isp: Device node capture[1] registered as /dev/video15\n[   11.813080] bcm2835-isp bcm2835-isp: Device node stats[2] registered as /dev/video16\n[   11.813136] bcm2835-isp bcm2835-isp: Register output node 0 with media controller\n[   11.813154] bcm2835-isp bcm2835-isp: Register capture node 1 with media controller\n[   11.813167] bcm2835-isp bcm2835-isp: Register capture node 2 with media controller\n[   11.813180] bcm2835-isp bcm2835-isp: Register capture node 3 with media controller\n[   11.830105] bcm2835-isp bcm2835-isp: Device node output[0] registered as /dev/video20\n[   11.831322] bcm2835-isp bcm2835-isp: Device node capture[0] registered as /dev/video21\n[   11.832268] bcm2835-isp bcm2835-isp: Device node capture[1] registered as /dev/video22\n[   11.832988] bcm2835-isp bcm2835-isp: Device node stats[2] registered as /dev/video23\n[   11.833023] bcm2835-isp bcm2835-isp: Register output node 0 with media controller\n[   11.833039] bcm2835-isp bcm2835-isp: Register capture node 1 with media controller\n[   11.833050] bcm2835-isp bcm2835-isp: Register capture node 2 with media controller\n[   11.833061] bcm2835-isp bcm2835-isp: Register capture node 3 with media controller\n===DIST===\n-rw-r--r-- 1 michal michal 3.0K Sep 13 10:20 frontend/dist/index.html\n11\n",
+      "elapsed_seconds": 2.357,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 6.53,
+      "output_policy": "stream",
+      "captured_output_chars": 5002,
+      "output_truncated": false,
+      "current_rss_mb": 6.53,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 2.357
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.075
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.068
+  },
+  "finished_at": "2026-09-13T08:23:46.908660+00:00",
+  "task_digest": "3319e68db7421ad13c72bbf7ce6fe6b4aad95052e93f74e5e50d6a5abb55c9fb",
+  "idle_timeout": 300,
+  "task_timeout": 1800,
+  "memory_limit_mb": 4096,
+  "attempt_id": "ec3282bc3930c1481d5908d0",
+  "daemon_version": "4.18.20"
+}
