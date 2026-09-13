@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import "../styles/content-pages.css";
 
 import { mediaUrl } from "../api/http";
 import { getPlacePhotos } from "../api/media";
