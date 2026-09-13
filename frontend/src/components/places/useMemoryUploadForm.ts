@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { QueryClient } from "@tanstack/react-query";
 
 import { uploadPlaceMemory } from "../../api/media";
@@ -24,6 +24,7 @@ export function useMemoryUploadForm({ claimToken, onUploaded, placeId, queryClie
   const [memoryText, setMemoryText] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [operationError, setOperationError] = useState<OperationError | null>(null);
+  const savingRef = useRef(false);
 
   function resetForm() {
     setAuthorCity("");
@@ -39,6 +40,9 @@ export function useMemoryUploadForm({ claimToken, onUploaded, placeId, queryClie
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (savingRef.current) {
+      return;
+    }
     setHasSubmitted(true);
 
     const nextFieldErrors = validateMemoryUploadForm({
@@ -55,6 +59,7 @@ export function useMemoryUploadForm({ claimToken, onUploaded, placeId, queryClie
       return;
     }
 
+    savingRef.current = true;
     setIsSaving(true);
     setOperationError(null);
     try {
@@ -79,6 +84,7 @@ export function useMemoryUploadForm({ claimToken, onUploaded, placeId, queryClie
         title: "Nie udało się dodać pamiątki",
       });
     } finally {
+      savingRef.current = false;
       setIsSaving(false);
     }
   }
