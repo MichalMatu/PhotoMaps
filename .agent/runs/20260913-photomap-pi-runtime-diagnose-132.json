@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260913-photomap-pi-runtime-diagnose-132",
+  "task_digest": "3319e68db7421ad13c72bbf7ce6fe6b4aad95052e93f74e5e50d6a5abb55c9fb",
+  "idle_timeout": 300,
+  "task_timeout": 1800,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-13T08:23:43.023926+00:00",
+  "attempt_id": "ec3282bc3930c1481d5908d0",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 53873,
+  "updated_at": "2026-09-13T08:23:43.024114+00:00",
+  "pid": 53873
+}
