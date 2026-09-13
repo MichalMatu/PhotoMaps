@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260913-photomap-admin-media-mutation-verify-109",
+  "task_digest": "6d113a0467d5899be70813f15c965e03282fe289b54cce338e613182cc912ef7",
+  "idle_timeout": 300,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-13T01:37:09.486938+00:00",
+  "attempt_id": "5f2ec3eefc16e395b0ed176d",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 67208,
+  "updated_at": "2026-09-13T01:37:09.486993+00:00",
+  "pid": 67208
+}
