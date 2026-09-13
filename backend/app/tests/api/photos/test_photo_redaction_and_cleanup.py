@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from app.models.photo import Photo
+from app.models.report import Report
 from app.tests.support import ADMIN_HEADERS, create_place, detailed_image_upload
 
 
@@ -141,7 +142,7 @@ def test_public_photo_list_returns_cover_first(client_session) -> None:
     assert response.json()[0]["attribution_source_url"] == "https://commons.wikimedia.org/wiki/File:Cover.jpg"
 
 
-def test_admin_delete_photo_removes_record_files_and_updates_place(client_session, tmp_path: Path) -> None:
+def test_admin_delete_photo_removes_record_files_reports_and_updates_place(client_session, tmp_path: Path) -> None:
     client, session = client_session
     place = create_place(session)
 
@@ -189,6 +190,10 @@ def test_admin_delete_photo_removes_record_files_and_updates_place(client_sessio
     session.commit()
     session.refresh(first_photo)
     session.refresh(second_photo)
+    report = Report(target_type="photo", target_id=first_photo.id, reason="bad_photo")
+    session.add(report)
+    session.commit()
+    session.refresh(report)
     place.photo_count = 2
     place.cover_photo_id = first_photo.id
     session.add(place)
@@ -199,6 +204,7 @@ def test_admin_delete_photo_removes_record_files_and_updates_place(client_sessio
 
     assert response.status_code == 204
     assert session.get(Photo, first_photo.id) is None
+    assert session.get(Report, report.id) is None
     assert place.photo_count == 1
     assert place.cover_photo_id == second_photo.id
     assert not private_file.exists()
