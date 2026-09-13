@@ -1,0 +1,14 @@
+{
+  "id": "20260913-photomap-cover-invariant-verify-120",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/photomap-straighten-20260912",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 1800,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail\nBRANCH=work/photomap-straighten-20260912\nSHA=d894abc44d5ef6800ff2418ae2bfaa717fd76688\ngit fetch origin \"$BRANCH\"\ntest \"$(git rev-parse origin/$BRANCH)\" = \"$SHA\"\ntest -z \"$(git status --porcelain)\"\ngit switch --detach \"$SHA\"\ntest \"$(git rev-parse HEAD)\" = \"$SHA\"\nVENV=$(mktemp -d /tmp/photomap-cover-120-XXXXXX)\ntrap 'rm -rf \"$VENV\"' EXIT\npython3 -m venv \"$VENV\"\n\"$VENV/bin/python\" -m pip install -q -r backend/requirements.txt\n\"$VENV/bin/python\" -m pytest -q backend/app/tests/services/test_admin_services.py backend/app/tests/services/test_admin_photo_workflows.py\ngit diff --check 14ff20515041a23a1cf9aa509d4f079c6a62a1f7 \"$SHA\"\ntest -z \"$(git status --porcelain)\"\nprintf 'verified_sha=%s\\n' \"$SHA\"\ntrap - EXIT\nrm -rf \"$VENV\""
+  ]
+}
