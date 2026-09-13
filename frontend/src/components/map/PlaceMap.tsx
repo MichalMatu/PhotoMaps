@@ -314,7 +314,14 @@ function PlaceLayer({
     return new Map<string, MarkerDisplayOffset>(collisionLayouts.map((layout) => [layout.id, layout.offset]));
   }, [markerProjectedPlaces, viewportHeight, viewportWidth, zoom]);
   const { closePlaceGallery, expandedPlace, expandedPlaceId, isGalleryInteractionLocked, togglePlaceGallery } =
-    useCenteredPlaceGallery(map, markerPlaces);
+    useCenteredPlaceGallery(map, places);
+  const renderedMarkerPlaces = useMemo(() => {
+    if (!expandedPlace || markerPlaces.some((place) => place.id === expandedPlace.id)) {
+      return markerPlaces;
+    }
+
+    return [...markerPlaces, expandedPlace];
+  }, [expandedPlace, markerPlaces]);
   const expandedPlacePhotosQuery = useQuery({
     queryKey: ["place", expandedPlace?.id, "photos"],
     queryFn: () => getPlacePhotos(expandedPlace?.id ?? ""),
@@ -324,12 +331,12 @@ function PlaceLayer({
   const expandedPlacePhotos = expandedPlacePhotosQuery.data ?? null;
   const galleryItemsByPlaceId = useMemo(() => {
     return new Map(
-      markerPlaces.map((place) => [
+      renderedMarkerPlaces.map((place) => [
         place.id,
         getPlaceGalleryItems(place, expandedPlaceId === place.id ? expandedPlacePhotos : null),
       ]),
     );
-  }, [expandedPlaceId, expandedPlacePhotos, markerPlaces]);
+  }, [expandedPlaceId, expandedPlacePhotos, renderedMarkerPlaces]);
   const detailPlace = visualDetail ? (places.find((place) => place.id === visualDetail.placeId) ?? null) : null;
   const detailPlacePhotos = detailPlace?.id === expandedPlace?.id ? expandedPlacePhotos : null;
   const detailItem =
@@ -383,7 +390,7 @@ function PlaceLayer({
       <MapInteractionLock isLocked={isGalleryInteractionLocked} />
       <MapPhotoGalleryPane />
       <MapPhotoGalleryGlass place={expandedPlace} onClose={closePlaceGallery} />
-      {markerPlaces.map((place, index) => (
+      {renderedMarkerPlaces.map((place, index) => (
         <PlaceMarker
           key={`${placesMotionSignature}:${place.id}`}
           place={place}
