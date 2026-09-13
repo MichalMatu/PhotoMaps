@@ -5,6 +5,7 @@ import { AdminActionIconButton } from "./AdminActionIconButton";
 
 type Props = {
   isCover: boolean;
+  isReviewing?: boolean;
   isSettingCover?: boolean;
   photo: AdminPhoto;
   onClearCover?: () => void;
@@ -17,6 +18,7 @@ type Props = {
 
 export function AdminPhotoActionBar({
   isCover,
+  isReviewing = false,
   isSettingCover = false,
   photo,
   onClearCover,
@@ -32,9 +34,10 @@ export function AdminPhotoActionBar({
   return (
     <div className="admin-media-card-actions">
       {onPreview ? <AdminPhotoActionButton icon={Eye} label="Podgląd" onClick={onPreview} /> : null}
-      <AdminPhotoActionButton icon={Pencil} label="Edytuj tekst" onClick={onEditText} />
+      <AdminPhotoActionButton disabled={isReviewing} icon={Pencil} label="Edytuj tekst" onClick={onEditText} />
       {photo.status !== "approved" ? (
         <AdminPhotoActionButton
+          disabled={isReviewing}
           icon={photo.status === "rejected" ? Undo2 : Check}
           label={approveLabel}
           tone="primary"
@@ -43,6 +46,7 @@ export function AdminPhotoActionBar({
       ) : null}
       {photo.status !== "rejected" ? (
         <AdminPhotoActionButton
+          disabled={isReviewing}
           icon={photo.status === "approved" ? EyeOff : X}
           label={rejectLabel}
           tone="secondary"
@@ -50,17 +54,22 @@ export function AdminPhotoActionBar({
         />
       ) : null}
       {photo.status === "approved" && !isCover && onSetCover ? (
-        <AdminPhotoActionButton disabled={isSettingCover} icon={Star} label="Ustaw jako główne" onClick={onSetCover} />
+        <AdminPhotoActionButton
+          disabled={isReviewing || isSettingCover}
+          icon={Star}
+          label="Ustaw jako główne"
+          onClick={onSetCover}
+        />
       ) : null}
       {isCover && onClearCover ? (
         <AdminPhotoActionButton
-          disabled={isSettingCover}
+          disabled={isReviewing || isSettingCover}
           icon={StarOff}
           label="Zdejmij główne"
           onClick={onClearCover}
         />
       ) : null}
-      <AdminPhotoActionButton icon={Trash2} label="Usuń" tone="danger" onClick={onDelete} />
+      <AdminPhotoActionButton disabled={isReviewing} icon={Trash2} label="Usuń" tone="danger" onClick={onDelete} />
     </div>
   );
 }
