@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260913-photomap-tag-merge-deploy-130",
+  "task_digest": "cc8e184b27c1f863b255d7d853ea923281aacbd0f0df1beec8e63cc3f6ebf179",
+  "idle_timeout": 300,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-13T08:15:50.156805+00:00",
+  "attempt_id": "71f2120197232215663b3be9",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 37491,
+  "updated_at": "2026-09-13T08:15:50.156920+00:00",
+  "pid": 37491
+}
