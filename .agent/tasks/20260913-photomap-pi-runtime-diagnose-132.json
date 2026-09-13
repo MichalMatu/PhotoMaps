@@ -1,0 +1,14 @@
+{
+  "id": "20260913-photomap-pi-runtime-diagnose-132",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/photomap-straighten-20260912",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 900,
+  "task_timeout": 1800,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail; ssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'cd /home/michal/src/PhotoMaps; echo ===GIT===; git rev-parse HEAD; git status --porcelain; echo ===STATUS===; ./scripts/serverctl.sh status || true; echo ===PROCESS===; pgrep -af \"server.py|python.*PhotoMaps\" || true; echo ===LISTEN===; ss -ltnp 2>/dev/null | grep :8000 || true; echo ===HEALTH===; curl -v --max-time 3 http://127.0.0.1:8000/health 2>&1 || true; echo ===SERVER_LOG===; tail -n 200 .dev/server.log 2>/dev/null || true; echo ===MEMORY===; free -h; echo ===OOM_DMESG===; sudo -n dmesg 2>/dev/null | tail -n 120 | grep -Ei \"oom|out of memory|killed process|python|node\" || true; echo ===DIST===; ls -lh frontend/dist/index.html; find frontend/dist/assets -maxdepth 1 -type f | wc -l'"
+  ]
+}
