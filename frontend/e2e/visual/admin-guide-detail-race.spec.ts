@@ -37,10 +37,7 @@ test("guide details ignore a stale response after switching guides", async ({ pa
   await page.getByLabel("Token").fill(ADMIN_TOKEN);
   await page.getByRole("button", { name: "Wejdź do panelu" }).click();
   await expect(page.getByRole("navigation", { name: "Sekcje panelu admina" })).toBeVisible();
-  await page
-    .getByRole("navigation", { name: "Sekcje panelu admina" })
-    .getByRole("button", { name: /Trasy/ })
-    .click();
+  await page.getByRole("navigation", { name: "Sekcje panelu admina" }).getByRole("button", { name: /Trasy/ }).click();
 
   const firstGuideRow = page.locator(".guide-row").filter({ hasText: adminGuides[0].title });
   const secondGuideRow = page.locator(".guide-row").filter({ hasText: adminGuides[1].title });

@@ -40,9 +40,7 @@ test("memory owner modal stays locked until delete finishes", async ({ page }) =
 
   const editOwner = page.getByRole("dialog", { name: "Edytuj pamiątkę" });
   await expect(editOwner).toBeVisible();
-  const deleteRequest = page.waitForRequest(
-    (request) => request.url() === memoryUrl && request.method() === "DELETE",
-  );
+  const deleteRequest = page.waitForRequest((request) => request.url() === memoryUrl && request.method() === "DELETE");
   await editOwner.getByRole("button", { name: "Usuń" }).click();
   await deleteRequest;
 

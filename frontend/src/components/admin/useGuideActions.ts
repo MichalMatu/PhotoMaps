@@ -18,17 +18,11 @@ export function useGuideActions({ guides, onChanged }: UseGuideActionsArgs) {
   const [selectedGuideId, setSelectedGuideId] = useState<string>("");
   const selectedGuide = guides.find((guide) => guide.id === selectedGuideId) ?? null;
   const guideStatusCounts = useMemo(() => countGuideStatuses(guides), [guides]);
-  const {
-    commitGuideDetail,
-    guideDetail,
-    isGuideDetailLoading,
-    isGuideSelected,
-    refreshGuideDetail,
-    setGuideDetail,
-  } = useGuideDetail({
-    onError: setOperationError,
-    selectedGuideId,
-  });
+  const { commitGuideDetail, guideDetail, isGuideDetailLoading, isGuideSelected, refreshGuideDetail, setGuideDetail } =
+    useGuideDetail({
+      onError: setOperationError,
+      selectedGuideId,
+    });
   const guidePlaceSelection = useGuidePlaceSelection({
     commitGuideDetail,
     guideDetail,

@@ -56,11 +56,20 @@ test("memory queue ignores a stale response after a fast status change", async (
   });
 
   await unlockAdmin(page);
-  await page.getByRole("navigation", { name: "Sekcje panelu admina" }).getByRole("button", { name: /Moderacja/ }).click();
-  await page.getByRole("tablist", { name: "Sekcje moderacji" }).getByRole("tab", { name: /Pamiątki/ }).click();
+  await page
+    .getByRole("navigation", { name: "Sekcje panelu admina" })
+    .getByRole("button", { name: /Moderacja/ })
+    .click();
+  await page
+    .getByRole("tablist", { name: "Sekcje moderacji" })
+    .getByRole("tab", { name: /Pamiątki/ })
+    .click();
   await expect.poll(() => pendingRequests > 0).toBe(true);
 
-  await page.getByRole("tablist", { name: "Status pamiątek" }).getByRole("tab", { name: /Odrzucone/ }).click();
+  await page
+    .getByRole("tablist", { name: "Status pamiątek" })
+    .getByRole("tab", { name: /Odrzucone/ })
+    .click();
   await expect.poll(() => rejectedRequests > 0).toBe(true);
 
   const cityToggle = page.getByRole("button", { name: /Pokaż media miasta Wrocław/ });

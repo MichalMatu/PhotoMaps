@@ -76,15 +76,8 @@ export function PhotoQueue({
     }),
     [moderationFilters.audio, moderationFilters.placeId, moderationFilters.query, statusFilter],
   );
-  const {
-    albums,
-    isAlbumsLoading,
-    loadAlbums,
-    loadPlacePhotos,
-    loadingPlaceIds,
-    placePhotosById,
-    resetPlacePhotos,
-  } = usePhotoQueueData({ filterOptions: photoFilterOptions, onError: setErrorMessage });
+  const { albums, isAlbumsLoading, loadAlbums, loadPlacePhotos, loadingPlaceIds, placePhotosById, resetPlacePhotos } =
+    usePhotoQueueData({ filterOptions: photoFilterOptions, onError: setErrorMessage });
 
   const photoGroups = useMemo(
     () =>

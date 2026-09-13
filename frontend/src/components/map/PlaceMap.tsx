@@ -498,7 +498,9 @@ export function PlaceMap({
       >
         <MapSizeUpdater />
         <MapTrackpadZoom />
-        {showPinnedMedia && cards.length > 0 ? <MapProjectionTracker onProjectorChange={handleProjectorChange} /> : null}
+        {showPinnedMedia && cards.length > 0 ? (
+          <MapProjectionTracker onProjectorChange={handleProjectorChange} />
+        ) : null}
         <DistanceMeasureTool />
         <ZoomControl position={MAP_DISPLAY_CONFIG.mapControls.zoomControlPosition} />
         <TileLayer attribution={MAP_DISPLAY_CONFIG.tileLayer.attribution} url={MAP_DISPLAY_CONFIG.tileLayer.url} />

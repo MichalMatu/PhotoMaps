@@ -15,12 +15,7 @@ type Props = {
   onChange: (draft: PhotoAttributionDraft) => void;
 };
 
-export function PhotoAttributionFields({
-  disabled = false,
-  draft,
-  idPrefix = "photo-attribution",
-  onChange,
-}: Props) {
+export function PhotoAttributionFields({ disabled = false, draft, idPrefix = "photo-attribution", onChange }: Props) {
   function updateField(field: keyof PhotoAttributionDraft, value: string) {
     onChange({ ...draft, [field]: value });
   }

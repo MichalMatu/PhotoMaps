@@ -73,7 +73,11 @@ function isStoredPinnedMediaCard(value: unknown): value is StoredPinnedMediaCard
   );
 }
 
-function isPinnedMediaItemSnapshot(value: unknown, kind: "photo" | "memory", itemId: string): value is PlaceMapVisualItem {
+function isPinnedMediaItemSnapshot(
+  value: unknown,
+  kind: "photo" | "memory",
+  itemId: string,
+): value is PlaceMapVisualItem {
   if (!value || typeof value !== "object") {
     return false;
   }

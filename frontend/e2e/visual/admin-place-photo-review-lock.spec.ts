@@ -43,7 +43,10 @@ test("place photo panel locks competing review decisions for one photo", async (
   });
 
   const panel = await openPlacePhotoPanel(page);
-  const card = panel.locator(".admin-media-item").filter({ hasText: pendingPhoto.caption ?? "" }).first();
+  const card = panel
+    .locator(".admin-media-item")
+    .filter({ hasText: pendingPhoto.caption ?? "" })
+    .first();
   const approve = card.getByRole("button", { name: "Zatwierdź" });
   const reject = card.getByRole("button", { name: "Odrzuć" });
 
