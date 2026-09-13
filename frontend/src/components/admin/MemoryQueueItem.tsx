@@ -15,6 +15,7 @@ type Props = {
   authorNameDraft: string;
   captionDraft: string;
   isEditing: boolean;
+  isReviewing: boolean;
   isSavingMemory: boolean;
   memory: AdminMemory;
   memoryTextDraft: string;
@@ -38,6 +39,7 @@ export function MemoryQueueItem({
   authorNameDraft,
   captionDraft,
   isEditing,
+  isReviewing,
   isSavingMemory,
   memory,
   memoryTextDraft,
@@ -55,6 +57,8 @@ export function MemoryQueueItem({
   onSaveMemory,
   onStartMemoryEdit,
 }: Props) {
+  const isItemMutationBusy = isReviewing || isSavingMemory;
+
   return (
     <article className="ui-card admin-media-item">
       <AdminMediaImage
@@ -73,6 +77,7 @@ export function MemoryQueueItem({
             <label>
               Podpis
               <input
+                disabled={isItemMutationBusy}
                 maxLength={MEMORY_CAPTION_MAX_LENGTH}
                 required
                 value={captionDraft}
@@ -82,6 +87,7 @@ export function MemoryQueueItem({
             <label>
               Myśl / wspomnienie
               <textarea
+                disabled={isItemMutationBusy}
                 maxLength={MEMORY_TEXT_MAX_LENGTH}
                 required
                 value={memoryTextDraft}
@@ -92,6 +98,7 @@ export function MemoryQueueItem({
               <label>
                 Imię
                 <input
+                  disabled={isItemMutationBusy}
                   maxLength={MEMORY_AUTHOR_MAX_LENGTH}
                   value={authorNameDraft}
                   onChange={(event) => onAuthorNameDraftChange(event.target.value)}
@@ -100,6 +107,7 @@ export function MemoryQueueItem({
               <label>
                 Miasto
                 <input
+                  disabled={isItemMutationBusy}
                   maxLength={MEMORY_AUTHOR_MAX_LENGTH}
                   value={authorCityDraft}
                   onChange={(event) => onAuthorCityDraftChange(event.target.value)}
@@ -107,10 +115,15 @@ export function MemoryQueueItem({
               </label>
             </div>
             <div className="review-actions">
-              <button className="ui-button ui-button--primary" type="submit" disabled={isSavingMemory}>
+              <button className="ui-button ui-button--primary" type="submit" disabled={isItemMutationBusy}>
                 {isSavingMemory ? "Zapisywanie..." : "Zapisz"}
               </button>
-              <button className="ui-button ui-button--ghost" type="button" onClick={onCancelMemoryEdit}>
+              <button
+                className="ui-button ui-button--ghost"
+                type="button"
+                disabled={isItemMutationBusy}
+                onClick={onCancelMemoryEdit}
+              >
                 Anuluj
               </button>
             </div>
@@ -134,6 +147,7 @@ export function MemoryQueueItem({
             <button
               className="ui-button ui-button--ghost admin-media-link-button"
               type="button"
+              disabled={isItemMutationBusy}
               onClick={() => onStartMemoryEdit(memory)}
             >
               Edytuj pamiątkę
@@ -142,7 +156,7 @@ export function MemoryQueueItem({
         )}
         <div className="review-actions">
           {memory.status !== "approved" ? (
-            <button type="button" onClick={() => onReview(memory.id, "approved")}>
+            <button type="button" disabled={isItemMutationBusy} onClick={() => onReview(memory.id, "approved")}>
               {memory.status === "rejected" ? "Przywróć" : "Zatwierdź"}
             </button>
           ) : null}
@@ -150,15 +164,26 @@ export function MemoryQueueItem({
             <button
               className="ui-button ui-button--secondary"
               type="button"
+              disabled={isItemMutationBusy}
               onClick={() => onReview(memory.id, "rejected")}
             >
               {memory.status === "approved" ? "Ukryj" : "Odrzuć"}
             </button>
           ) : null}
-          <button className="ui-button ui-button--ghost" type="button" onClick={() => onRedact(memory)}>
+          <button
+            className="ui-button ui-button--ghost"
+            type="button"
+            disabled={isItemMutationBusy}
+            onClick={() => onRedact(memory)}
+          >
             Anonimizuj
           </button>
-          <button className="ui-button ui-button--danger" type="button" onClick={() => onDelete(memory)}>
+          <button
+            className="ui-button ui-button--danger"
+            type="button"
+            disabled={isItemMutationBusy}
+            onClick={() => onDelete(memory)}
+          >
             Usuń
           </button>
         </div>
