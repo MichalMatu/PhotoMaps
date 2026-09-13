@@ -36,7 +36,7 @@ def test_admin_category_service_archives_and_blocks_used_force_delete(client_ses
     assert exc_info.value.status_code == 409
 
 
-def test_admin_place_service_validates_cover_photo_ownership_and_status(client_session) -> None:
+def test_admin_place_service_validates_cover_photo_ownership_status_and_media(client_session) -> None:
     _client, session = client_session
     place = create_place(session, slug="cover-owner")
     other_place = create_place(session, slug="cover-other", lat=51.12, lon=17.04)
@@ -47,6 +47,11 @@ def test_admin_place_service_validates_cover_photo_ownership_and_status(client_s
         thumb_path="/media/photos/pending-thumb.jpg",
         status="pending",
     )
+    unpublished_photo = Photo(
+        place_id=place.id,
+        original_path="photos/unpublished-original.jpg",
+        status="approved",
+    )
     other_photo = Photo(
         place_id=other_place.id,
         original_path="photos/other-original.jpg",
@@ -55,17 +60,22 @@ def test_admin_place_service_validates_cover_photo_ownership_and_status(client_s
         status="approved",
     )
     session.add(pending_photo)
+    session.add(unpublished_photo)
     session.add(other_photo)
     session.commit()
     session.refresh(pending_photo)
+    session.refresh(unpublished_photo)
     session.refresh(other_photo)
 
     with pytest.raises(HTTPException) as pending_exc:
         update_admin_place(session, place.id, PlaceUpdate(cover_photo_id=pending_photo.id))
+    with pytest.raises(HTTPException) as unpublished_exc:
+        update_admin_place(session, place.id, PlaceUpdate(cover_photo_id=unpublished_photo.id))
     with pytest.raises(HTTPException) as owner_exc:
         update_admin_place(session, place.id, PlaceUpdate(cover_photo_id=other_photo.id))
 
     assert pending_exc.value.status_code == 422
+    assert unpublished_exc.value.status_code == 422
     assert owner_exc.value.status_code == 422
 
 
