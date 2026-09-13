@@ -99,6 +99,7 @@ export function AdminAudioControls({
         <FileInputControl
           accept={AUDIO_FILE_ACCEPT}
           describedBy={audioError ? audioErrorId : undefined}
+          disabled={isBusy}
           file={audioFile}
           inputKey={`${inputKeyPrefix}-${inputKey}`}
           isInvalid={Boolean(audioError)}
