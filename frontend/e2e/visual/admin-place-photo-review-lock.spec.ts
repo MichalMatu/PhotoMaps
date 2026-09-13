@@ -97,7 +97,8 @@ test("place photo upload freezes its draft and ignores duplicate submit events",
   await panel.getByRole("button", { name: `Dodaj zdjęcie do miejsca ${adminPlaces[0].title}` }).click();
 
   const uploadModal = page.getByRole("dialog", { name: "Dodaj zdjęcie" });
-  await uploadModal.getByLabel("Zdjęcie").setInputFiles({
+  const photoInput = uploadModal.locator("input#photo-upload-file");
+  await photoInput.setInputFiles({
     buffer: PHOTO_BUFFER,
     mimeType: "image/jpeg",
     name: "place-photo.jpg",
@@ -111,7 +112,7 @@ test("place photo upload freezes its draft and ignores duplicate submit events",
   });
 
   await expect.poll(() => uploadRequests).toBe(1);
-  await expect(uploadModal.getByLabel("Zdjęcie")).toBeDisabled();
+  await expect(photoInput).toBeDisabled();
   await expect(uploadModal.getByLabel("Podpis")).toBeDisabled();
   await expect(uploadModal.getByLabel("Autor")).toBeDisabled();
 
