@@ -76,8 +76,8 @@ def ensure_cover_photo(session: Session, place_id: str, cover_photo_id: str | No
     photo = session.get(Photo, cover_photo_id)
     if photo is None or photo.place_id != place_id:
         raise HTTPException(status_code=422, detail="Cover photo must belong to place")
-    if photo.status != "approved":
-        raise HTTPException(status_code=422, detail="Cover photo must be approved")
+    if photo.status != "approved" or photo.public_path is None or photo.thumb_path is None:
+        raise HTTPException(status_code=422, detail="Cover photo must be approved and published")
 
 
 def normalize_custom_fields_for_api(custom_fields: dict | None, session: Session) -> dict:
