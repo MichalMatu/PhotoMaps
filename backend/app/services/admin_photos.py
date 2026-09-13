@@ -28,6 +28,7 @@ from app.services.photo_uploads import (
     delete_photo_files,
     replace_photo_audio,
 )
+from app.services.reports import delete_reports_for_target
 from app.services.review import (
     apply_photo_deleted,
     ensure_final_review_status,
@@ -303,6 +304,7 @@ def delete_admin_photo(session: Session, photo_id: str) -> None:
     place = get_photo_place(session, photo)
 
     apply_photo_deleted(photo, place, session)
+    delete_reports_for_target(session, "photo", photo.id)
     session.delete(photo)
     session.add(place)
     session.commit()
