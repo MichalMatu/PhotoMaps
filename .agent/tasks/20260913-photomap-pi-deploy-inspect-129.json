@@ -1,0 +1,17 @@
+{
+  "id": "20260913-photomap-pi-deploy-inspect-129",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/photomap-straighten-20260912",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 900,
+  "task_timeout": 1800,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail; cd /Users/michal/agent-workspace/repos/photomaps/work; git fetch origin main work/photomap-straighten-20260912 --tags; test \"$(git rev-parse origin/main)\" = dcd99f07faf9e159a1b6b3f0b76ccff1e9db8ce1; test \"$(git rev-parse origin/work/photomap-straighten-20260912)\" = 578281bf750d7c86792ba4d6ccde505a7678c01f; echo REMOTE_TAGS; git ls-remote --tags origin 'refs/tags/pre-photomap-audit-20260913*' || true",
+    "set -euo pipefail; ssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'hostname; hostname -I; cd /home/michal/src/PhotoMaps; echo BRANCH=$(git branch --show-current); echo HEAD=$(git rev-parse HEAD); echo STATUS_BEGIN; git status --porcelain; echo STATUS_END; git remote -v | head -n 2'",
+    "set -euo pipefail; ssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'cd /home/michal/src/PhotoMaps; ./scripts/serverctl.sh status || true; echo TUNNEL; ./scripts/serverctl.sh tunnel-status || true; echo LISTEN; ss -ltnp 2>/dev/null | grep -E \"(:8000|:5174|:80|:443)\" || true; echo PROCESSES; pgrep -af \"server.py|cloudflared|nginx|caddy\" || true; echo ENV_BIND; if [ -f .env ]; then grep -E \"^(PHOTOMAP_SERVER_HOST|PHOTOMAP_SERVER_PORT|PHOTOMAP_PUBLIC_SITE_URL)=\" .env || true; fi; echo TUNNEL_INGRESS; if [ -f .cloudflared/config.yml ]; then grep -E \"hostname:|service:\" .cloudflared/config.yml || true; fi; if [ -f /etc/cloudflared/config.yml ]; then grep -E \"hostname:|service:\" /etc/cloudflared/config.yml || true; fi'",
+    "set -euo pipefail; ssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'IP=$(hostname -I); IP=${IP%% *}; printf \"loopback_health=\"; curl -sS -o /dev/null -w \"%{http_code}\\n\" --max-time 5 http://127.0.0.1:8000/health || true; printf \"lan_health=\"; curl -sS -o /dev/null -w \"%{http_code}\\n\" --max-time 5 http://$IP:8000/health || true; echo LAN_IP=$IP'"
+  ]
+}
