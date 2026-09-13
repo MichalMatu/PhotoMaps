@@ -39,6 +39,7 @@ function pendingMemory(id: string, caption: string): AdminMemory {
 
 test("photo moderation locks competing decisions for one pending photo", async ({ page }) => {
   const pendingPhoto: AdminPhoto = { ...rynekCover, approved_at: null, status: "pending" };
+  let placePhotoRequests = 0;
   let reviewRequests = 0;
   let releaseReview!: () => void;
   const reviewGate = new Promise<void>((resolve) => {
@@ -46,6 +47,14 @@ test("photo moderation locks competing decisions for one pending photo", async (
   });
 
   await mockAdminApi(page, { adminPhotoList: [pendingPhoto], adminPlaceList: [adminPlaces[0]] });
+  await page.route(`${API_URL}/api/admin/places/${adminPlaces[0].id}/photos**`, async (route) => {
+    if (route.request().method() !== "GET") {
+      await route.fallback();
+      return;
+    }
+    placePhotoRequests += 1;
+    await route.fulfill({ json: [pendingPhoto] });
+  });
   await page.route(`${API_URL}/api/admin/photos/${pendingPhoto.id}/review`, async (route) => {
     reviewRequests += 1;
     await reviewGate;
@@ -54,6 +63,7 @@ test("photo moderation locks competing decisions for one pending photo", async (
 
   await unlockAdmin(page);
   await openModeration(page, /Zdjęcia/);
+  await expect.poll(() => placePhotoRequests).toBe(1);
   const item = page.locator(".admin-media-item").first();
   await expect(item).toContainText(pendingPhoto.caption ?? "");
   const approve = item.getByRole("button", { name: "Zatwierdź" });
