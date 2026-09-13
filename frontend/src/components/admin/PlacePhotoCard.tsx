@@ -6,6 +6,7 @@ import { PhotoAttributionSummary } from "./PhotoAttributionFields";
 
 type Props = {
   isCover: boolean;
+  isReviewing: boolean;
   isSettingCover: boolean;
   photo: AdminPhoto;
   placeTitle: string;
@@ -19,6 +20,7 @@ type Props = {
 
 export function PlacePhotoCard({
   isCover,
+  isReviewing,
   isSettingCover,
   photo,
   placeTitle,
@@ -55,6 +57,7 @@ export function PlacePhotoCard({
         <PhotoAttributionSummary photo={photo} />
         <AdminPhotoActionBar
           isCover={isCover}
+          isReviewing={isReviewing}
           isSettingCover={isSettingCover}
           photo={photo}
           onClearCover={onClearCover}

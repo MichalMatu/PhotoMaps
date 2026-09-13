@@ -100,6 +100,7 @@ function renderGallery(photos: AdminPhoto[]) {
     <TtsProvider>
       <AdminPhotoGalleryModal
         currentPhotoId="photo-1"
+        isReviewing={false}
         isSettingCover={false}
         photos={photos}
         place={place()}

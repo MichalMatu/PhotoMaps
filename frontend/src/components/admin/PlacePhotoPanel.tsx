@@ -44,6 +44,7 @@ export function PlacePhotoPanel({ cities, onChanged, photos, place }: Props) {
           return (
             <PlacePhotoCard
               isCover={isCover}
+              isReviewing={panel.reviewingPhotoIds.has(photo.id)}
               isSettingCover={panel.isSettingCover}
               key={photo.id}
               photo={photo}
@@ -103,6 +104,7 @@ export function PlacePhotoPanel({ cities, onChanged, photos, place }: Props) {
       {galleryPhotoId ? (
         <AdminPhotoGalleryModal
           currentPhotoId={galleryPhotoId}
+          isReviewing={panel.reviewingPhotoIds.has(galleryPhotoId)}
           isSettingCover={panel.isSettingCover}
           photos={panel.sortedPhotos}
           place={place}

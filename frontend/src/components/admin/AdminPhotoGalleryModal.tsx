@@ -17,6 +17,7 @@ import { SystemModal } from "./SystemModal";
 
 type Props = {
   currentPhotoId: string;
+  isReviewing: boolean;
   isSettingCover: boolean;
   photos: AdminPhoto[];
   place: Place;
@@ -34,6 +35,7 @@ type Props = {
 
 export function AdminPhotoGalleryModal({
   currentPhotoId,
+  isReviewing,
   isSettingCover,
   photos,
   place,
@@ -169,6 +171,7 @@ export function AdminPhotoGalleryModal({
           <aside className="admin-photo-gallery-sidebar" aria-label="Narzędzia zdjęcia">
             <AdminPhotoActionBar
               isCover={isCover}
+              isReviewing={isReviewing}
               isSettingCover={isSettingCover}
               photo={photo}
               onClearCover={onClearCover}

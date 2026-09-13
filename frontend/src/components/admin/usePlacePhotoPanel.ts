@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import { bumpMediaCacheRevision } from "../../api/http";
 import {
@@ -42,6 +42,8 @@ export function usePlacePhotoPanel({ onChanged, photos, place }: UsePlacePhotoPa
   });
   const [editingPhotoId, setEditingPhotoId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const reviewingPhotoIdsRef = useRef(new Set<string>());
+  const [reviewingPhotoIds, setReviewingPhotoIds] = useState<Set<string>>(() => new Set());
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [inputKey, setInputKey] = useState(0);
@@ -135,12 +137,21 @@ export function usePlacePhotoPanel({ onChanged, photos, place }: UsePlacePhotoPa
   }
 
   async function handleReview(photoId: string, status: ReviewFinalStatus) {
+    if (reviewingPhotoIdsRef.current.has(photoId)) {
+      return;
+    }
+
+    reviewingPhotoIdsRef.current.add(photoId);
+    setReviewingPhotoIds(new Set(reviewingPhotoIdsRef.current));
     setErrorMessage(null);
     try {
       await reviewPhoto(photoId, status);
       await onChanged();
     } catch (reason) {
       setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się zmienić statusu zdjęcia.");
+    } finally {
+      reviewingPhotoIdsRef.current.delete(photoId);
+      setReviewingPhotoIds(new Set(reviewingPhotoIdsRef.current));
     }
   }
 
@@ -288,6 +299,7 @@ export function usePlacePhotoPanel({ onChanged, photos, place }: UsePlacePhotoPa
     photoToDelete,
     removeDescriptionBlock,
     removeDescriptionDraftBlock,
+    reviewingPhotoIds,
     setAudioFile,
     setAttributionDraft,
     setCaption,
