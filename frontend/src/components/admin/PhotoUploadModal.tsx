@@ -119,7 +119,12 @@ export function PhotoUploadModal({
         ) : (
           <>
             <SettingField id="photo-upload-city" label="Miasto" hint={ADMIN_MEDIA_FIELD_HELP.city}>
-              <select value={cityId} onChange={(event) => onCityChange(event.target.value)} required>
+              <select
+                disabled={isUploading}
+                value={cityId}
+                onChange={(event) => onCityChange(event.target.value)}
+                required
+              >
                 <option value="">Wybierz miasto</option>
                 {sortedCities.map((city) => (
                   <option value={city.id} key={city.id}>
@@ -131,7 +136,7 @@ export function PhotoUploadModal({
             <SettingField id="photo-upload-place" label="Miejsce" hint={ADMIN_MEDIA_FIELD_HELP.place}>
               <select
                 value={placeId}
-                disabled={!cityId}
+                disabled={isUploading || !cityId}
                 onChange={(event) => onPlaceChange(event.target.value)}
                 required
               >
@@ -151,7 +156,13 @@ export function PhotoUploadModal({
           hint={ADMIN_MEDIA_FIELD_HELP["photo-file"]}
           describedByProp="describedBy"
         >
-          <FileInputControl accept="image/*" file={file} inputKey={`image-${inputKey}`} onChange={onFileChange} />
+          <FileInputControl
+            accept="image/*"
+            disabled={isUploading}
+            file={file}
+            inputKey={`image-${inputKey}`}
+            onChange={onFileChange}
+          />
         </SettingField>
         <SettingField
           id="photo-upload-audio"
@@ -169,6 +180,7 @@ export function PhotoUploadModal({
           <FileInputControl
             accept={AUDIO_FILE_ACCEPT}
             describedBy={audioError ? "admin-photo-audio-error" : undefined}
+            disabled={isUploading}
             file={audioFile}
             inputKey={`audio-${inputKey}`}
             isInvalid={Boolean(audioError)}
@@ -177,6 +189,7 @@ export function PhotoUploadModal({
         </SettingField>
         <SettingField id="photo-upload-caption" label="Podpis" hint={ADMIN_MEDIA_FIELD_HELP.caption}>
           <input
+            disabled={isUploading}
             maxLength={PHOTO_CAPTION_MAX_LENGTH}
             value={caption}
             onChange={(event) => onCaptionChange(event.target.value)}
@@ -184,6 +197,7 @@ export function PhotoUploadModal({
         </SettingField>
         <ContentBlockEditor
           blocks={descriptionBlocks}
+          disabled={isUploading}
           idPrefix="photo-upload-description"
           legend="Opis zdjęcia"
           onAddBlock={onAddDescriptionBlock}
@@ -192,6 +206,7 @@ export function PhotoUploadModal({
           onUpdateBlockType={onUpdateDescriptionBlockType}
         />
         <PhotoAttributionFields
+          disabled={isUploading}
           draft={attributionDraft}
           idPrefix="photo-upload-attribution"
           onChange={onAttributionDraftChange}
