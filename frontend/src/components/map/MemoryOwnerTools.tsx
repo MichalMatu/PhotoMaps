@@ -25,6 +25,7 @@ export function MemoryOwnerTools({ tools }: Props) {
       {tools.isOwnerToolsOpen ? (
         <SystemModal
           eyebrow="Pamiątki"
+          isBusy={tools.isOwnerSaving}
           showActions={false}
           size={ownerModalSize}
           title={ownerModalTitle}
