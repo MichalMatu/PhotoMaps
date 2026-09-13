@@ -1,0 +1,14 @@
+{
+  "id": "20260913-photomap-final-format-124",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/photomap-straighten-20260912",
+  "allow_write": true,
+  "resources": [],
+  "command_timeout": 1800,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail\nBRANCH=work/photomap-straighten-20260912\nBASE=eca60d3932ef1ab3ad2f99957a4271eab3e8c77b\ngit fetch origin \"$BRANCH\"\ntest \"$(git rev-parse origin/$BRANCH)\" = \"$BASE\"\ntest -z \"$(git status --porcelain)\"\ngit switch --detach \"$BASE\"\ntest \"$(git rev-parse HEAD)\" = \"$BASE\"\ncd frontend\nnpx prettier --write e2e/visual/admin-guide-detail-race.spec.ts e2e/visual/admin-guide-mutation-race.spec.ts e2e/visual/admin-place-photo-review-lock.spec.ts e2e/visual/admin-queue-race.spec.ts e2e/visual/memory-owner-delete-race.spec.ts src/components/admin/PhotoAttributionFields.tsx src/components/admin/PhotoQueue.tsx src/components/admin/useGuideActions.ts src/components/map/pinnedMediaBoardStorage.ts src/components/map/PlaceMap.tsx\nnpm run format:check\ncd ..\ngit diff --check\nEXPECTED=$(printf '%s\\n' frontend/e2e/visual/admin-guide-detail-race.spec.ts frontend/e2e/visual/admin-guide-mutation-race.spec.ts frontend/e2e/visual/admin-place-photo-review-lock.spec.ts frontend/e2e/visual/admin-queue-race.spec.ts frontend/e2e/visual/memory-owner-delete-race.spec.ts frontend/src/components/admin/PhotoAttributionFields.tsx frontend/src/components/admin/PhotoQueue.tsx frontend/src/components/admin/useGuideActions.ts frontend/src/components/map/pinnedMediaBoardStorage.ts frontend/src/components/map/PlaceMap.tsx | sort)\nACTUAL=$(git diff --name-only | sort)\ntest \"$ACTUAL\" = \"$EXPECTED\"\ngit add -- frontend/e2e/visual/admin-guide-detail-race.spec.ts frontend/e2e/visual/admin-guide-mutation-race.spec.ts frontend/e2e/visual/admin-place-photo-review-lock.spec.ts frontend/e2e/visual/admin-queue-race.spec.ts frontend/e2e/visual/memory-owner-delete-race.spec.ts frontend/src/components/admin/PhotoAttributionFields.tsx frontend/src/components/admin/PhotoQueue.tsx frontend/src/components/admin/useGuideActions.ts frontend/src/components/map/pinnedMediaBoardStorage.ts frontend/src/components/map/PlaceMap.tsx\ngit commit -m 'Format audited frontend changes'\nSHA=$(git rev-parse HEAD)\ngit push origin HEAD:\"$BRANCH\"\ngit fetch origin \"$BRANCH\"\ntest \"$(git rev-parse origin/$BRANCH)\" = \"$SHA\"\ntest -z \"$(git status --porcelain)\"\nprintf 'published_sha=%s\\n' \"$SHA\""
+  ]
+}
