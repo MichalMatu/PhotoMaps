@@ -1,0 +1,14 @@
+{
+  "id": "20260913-photomap-place-photo-review-lock-113",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/photomap-straighten-20260912",
+  "allow_write": true,
+  "resources": [],
+  "command_timeout": 1800,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail\nBRANCH=work/photomap-straighten-20260912\nREMOTE_BASE=24b8c780834c77a9ff779f38880cca6aac0650a9\nLOCAL_FIX=e1fd4a8\ngit fetch origin \"$BRANCH\"\ntest \"$(git rev-parse origin/$BRANCH)\" = \"$REMOTE_BASE\"\ntest -z \"$(git status --porcelain)\"\ntest \"$(git rev-parse --short=7 HEAD)\" = \"$LOCAL_FIX\"\npython3 - <<'PY'\nfrom pathlib import Path\np = Path('frontend/src/components/admin/AdminPhotoGalleryModal.test.tsx')\ntext = p.read_text()\nold = '        currentPhotoId=\"photo-1\"\\n        isSettingCover={false}'\nnew = '        currentPhotoId=\"photo-1\"\\n        isReviewing={false}\\n        isSettingCover={false}'\nif text.count(old) != 1:\n    raise SystemExit(f'expected exactly one gallery test insertion point, got {text.count(old)}')\np.write_text(text.replace(old, new))\nPY\ngit diff --check\ngit add frontend/src/components/admin/AdminPhotoGalleryModal.test.tsx\ngit commit -m 'Update gallery test for review lock'\nNEW_SHA=$(git rev-parse HEAD)\nVENV=$(mktemp -d /tmp/photomap-place-photo-review-113-XXXXXX)\ntrap 'rm -rf \"$VENV\"; ./scripts/devctl.sh stop >/dev/null 2>&1 || true' EXIT\npython3 -m venv \"$VENV\"\n\"$VENV/bin/python\" -m pip install -q -r backend/requirements.txt\ncd frontend\nnpm run lint\nnpm run build\nnpm run test -- src/components/admin/AdminPhotoGalleryModal.test.tsx\nPYTHON=\"$VENV/bin/python\" npm run test:e2e -- e2e/visual/admin-place-photo-review-lock.spec.ts e2e/visual/admin-media-mutation-lock.spec.ts e2e/visual/admin.spec.ts --project=chromium --grep-invert 'visual:'\ncd ..\ngit diff --check\ntest -z \"$(git status --porcelain)\"\ngit push origin HEAD:\"$BRANCH\"\ngit fetch origin \"$BRANCH\"\ntest \"$(git rev-parse origin/$BRANCH)\" = \"$NEW_SHA\"\nprintf 'published_sha=%s\\n' \"$NEW_SHA\"\ntrap - EXIT\nrm -rf \"$VENV\"\n./scripts/devctl.sh stop >/dev/null 2>&1 || true"
+  ]
+}
