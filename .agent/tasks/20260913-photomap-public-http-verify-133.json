@@ -1,0 +1,14 @@
+{
+  "id": "20260913-photomap-public-http-verify-133",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/photomap-straighten-20260912",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 300,
+  "task_timeout": 600,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail; curl -fsSI --max-time 20 https://photomap.pl/; curl -fsS --max-time 20 https://photomap.pl/health"
+  ]
+}
