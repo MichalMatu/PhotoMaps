@@ -4,6 +4,7 @@ from pathlib import Path
 from PIL import Image
 
 from app.models.memory import Memory
+from app.models.report import Report
 from app.services.media import audio as audio_service
 from app.services.tokens import claim_token_hash
 from app.tests.support import ADMIN_HEADERS, audio_upload, create_place, detailed_image_upload, image_upload
@@ -268,7 +269,7 @@ def test_admin_can_redact_memory_by_polygon(client_session, tmp_path: Path) -> N
     assert_blurred_pixel(image_pixel(public_file, (16, 16)))
 
 
-def test_admin_delete_memory_removes_record_files_and_updates_place(client_session, tmp_path: Path) -> None:
+def test_admin_delete_memory_removes_record_files_reports_and_updates_place(client_session, tmp_path: Path) -> None:
     client, session = client_session
     place = create_place(session)
 
@@ -309,6 +310,10 @@ def test_admin_delete_memory_removes_record_files_and_updates_place(client_sessi
     session.add(memory)
     session.commit()
     session.refresh(memory)
+    report = Report(target_type="memory", target_id=memory.id, reason="wrong_data")
+    session.add(report)
+    session.commit()
+    session.refresh(report)
     place.memory_count = 1
     session.add(place)
     session.commit()
@@ -318,6 +323,7 @@ def test_admin_delete_memory_removes_record_files_and_updates_place(client_sessi
 
     assert response.status_code == 204
     assert session.get(Memory, memory.id) is None
+    assert session.get(Report, report.id) is None
     assert place.memory_count == 0
     assert not private_file.exists()
     assert not private_audio_file.exists()
