@@ -1,0 +1,14 @@
+{
+  "id": "20260913-photomap-report-target-cleanup-verify-121",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/photomap-straighten-20260912",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 1800,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail\nBRANCH=work/photomap-straighten-20260912\nBASE=d894abc44d5ef6800ff2418ae2bfaa717fd76688\nSHA=1b8f52c78b4be3b70ba05f09326dbc49d491a1cc\ngit fetch origin \"$BRANCH\"\ntest \"$(git rev-parse origin/$BRANCH)\" = \"$SHA\"\ntest -z \"$(git status --porcelain)\"\ngit switch --detach \"$SHA\"\ntest \"$(git rev-parse HEAD)\" = \"$SHA\"\ngit diff --check \"$BASE\" \"$SHA\"\nVENV=$(mktemp -d /tmp/photomap-reports-121-XXXXXX)\ntrap 'rm -rf \"$VENV\"' EXIT\npython3 -m venv \"$VENV\"\n\"$VENV/bin/python\" -m pip install -q -r backend/requirements.txt\n\"$VENV/bin/python\" -m pytest -q backend/app/tests/api/photos/test_photo_redaction_and_cleanup.py backend/app/tests/api/memories/test_admin_memory_moderation.py backend/app/tests/api/memories/test_memory_claims.py backend/app/tests/api/reports/test_reports_api.py\ntest -z \"$(git status --porcelain)\"\nprintf 'verified_sha=%s\\n' \"$SHA\"\ntrap - EXIT\nrm -rf \"$VENV\""
+  ]
+}
