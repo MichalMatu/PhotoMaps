@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260913-photomap-pi-recover-deploy-131",
+  "task_digest": "481d557225e4067b8ce86e98e6d75b4868309381f2f864e7f201cb1d5c89f141",
+  "idle_timeout": 300,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-13T08:20:39.474866+00:00",
+  "attempt_id": "ed5e9837ed81b2d7cd92aa25",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 45692,
+  "updated_at": "2026-09-13T08:20:39.474932+00:00",
+  "pid": 45692
+}
