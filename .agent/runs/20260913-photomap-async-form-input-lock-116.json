@@ -1,0 +1,9 @@
+{
+  "event": "invalid_task_rejected",
+  "status": "failed",
+  "failure_reason": "invalid_task_file",
+  "updated_at": "2026-09-13T06:15:39.848542+00:00",
+  "task_id": "20260913-photomap-async-form-input-lock-116",
+  "daemon_version": "4.18.20",
+  "pid": 77106
+}
