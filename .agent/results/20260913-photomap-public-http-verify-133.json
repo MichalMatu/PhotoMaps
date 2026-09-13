@@ -1,0 +1,61 @@
+{
+  "id": "20260913-photomap-public-http-verify-133",
+  "status": "failed",
+  "mode": "commands",
+  "work_branch": "work/photomap-straighten-20260912",
+  "allow_write": false,
+  "started_at": "2026-09-13T08:34:38.763428+00:00",
+  "command_timeout": 300,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail; curl -fsSI --max-time 20 https://photomap.pl/; curl -fsS --max-time 20 https://photomap.pl/health",
+      "exit_code": 56,
+      "output": "curl: (56) The requested URL returned error: 405\nHTTP/2 405 \ndate: Sun, 13 Sep 2026 08:34:40 GMT\ncontent-type: application/json\ncontent-length: 79\nallow: GET\ncontent-security-policy: default-src 'self'; base-uri 'self'; connect-src 'self' https:; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src 'none'; img-src 'self' data: blob: https:; manifest-src 'self'; media-src 'self' blob: https:; object-src 'none'; script-src 'self' 'nonce-N8apoazl4hASsqFTYkVAZAFV'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; upgrade-insecure-requests\ncross-origin-opener-policy: same-origin\npermissions-policy: camera=(), geolocation=(self), microphone=(), payment=(), usb=()\nreferrer-policy: strict-origin-when-cross-origin\nstrict-transport-security: max-age=63072000; includeSubDomains; preload\nx-content-type-options: nosniff\nx-frame-options: DENY\nx-request-id: b875246444214d029f7e59b14be32575\ncf-cache-status: DYNAMIC\nspeculation-rules: \"/cdn-cgi/speculation\"\nreport-to: {\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=GxHs5byTRvjdBXtveUD08PJ4YJvF8THaWn2VUrTDzT9%2FZZgNNtwPRjBMkXNahO0En6hWmQJEkDtltXBvcTrQjBSut2zm7%2B3HiNnSTi%2Fxib%2Fcoke2rE6hHtohEKgNow%3D%3D\"}]}\nnel: {\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}\nserver: cloudflare\ncf-ray: a3a5d06a4cf65020-WAW\nalt-svc: h3=\":443\"; ma=86400\n\n",
+      "elapsed_seconds": 0.639,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 2.02,
+      "output_policy": "stream",
+      "captured_output_chars": 1388,
+      "output_truncated": false,
+      "current_rss_mb": 2.02,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "failed",
+      "elapsed_seconds": 0.639
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.076
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.071
+  },
+  "failure_reason": "command_failed",
+  "finished_at": "2026-09-13T08:34:40.947954+00:00",
+  "task_digest": "c542334c48816cc2a4df531d4aa307e3340b65f007e756c00baf9c563adcb5e0",
+  "idle_timeout": 300,
+  "task_timeout": 600,
+  "memory_limit_mb": 4096,
+  "attempt_id": "5df8144bc8b4242b253c5469",
+  "daemon_version": "4.18.20"
+}
