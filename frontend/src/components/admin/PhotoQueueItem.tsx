@@ -9,6 +9,7 @@ import { PhotoAttributionSummary } from "./PhotoAttributionFields";
 type Props = {
   group: AdminMediaPlaceGroup<AdminPhoto>;
   isReviewing: boolean;
+  isSettingCover: boolean;
   onClearCover: (photo: AdminPhoto) => void;
   onDelete: (photo: AdminPhoto) => void;
   onDeleteAudio: (photo: AdminPhoto) => Promise<void>;
@@ -23,6 +24,7 @@ type Props = {
 export function PhotoQueueItem({
   group,
   isReviewing,
+  isSettingCover,
   onClearCover,
   onDelete,
   onDeleteAudio,
@@ -62,6 +64,7 @@ export function PhotoQueueItem({
         <AdminPhotoActionBar
           isCover={isCover}
           isReviewing={isReviewing}
+          isSettingCover={isSettingCover}
           photo={photo}
           onClearCover={() => onClearCover(photo)}
           onDelete={() => onDelete(photo)}
