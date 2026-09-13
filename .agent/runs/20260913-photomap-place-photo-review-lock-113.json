@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260913-photomap-place-photo-review-lock-113",
+  "task_digest": "e88f9445fc23a05c74d8300af269d09c88533e35a7c681c22e69a2aa20cf10a6",
+  "idle_timeout": 300,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-13T02:20:48.168435+00:00",
+  "attempt_id": "c1f686881e7eb3687fa42e55",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 6999,
+  "updated_at": "2026-09-13T02:20:48.168483+00:00",
+  "pid": 6999
+}
