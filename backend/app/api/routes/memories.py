@@ -15,6 +15,7 @@ from app.services.memory_fields import (
 )
 from app.services.memory_uploads import create_memory_from_upload, delete_memory_files
 from app.services.places import ensure_public_place
+from app.services.reports import delete_reports_for_target
 from app.services.review import apply_memory_deleted
 from app.services.tokens import verify_claim_token
 
@@ -146,6 +147,7 @@ def delete_place_memory(
     require_memory_claim(memory, payload.claim_token)
 
     apply_memory_deleted(memory, place)
+    delete_reports_for_target(session, "memory", memory.id)
     session.delete(memory)
     session.add(place)
     session.commit()
