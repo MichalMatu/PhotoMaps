@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260913-photomap-centered-gallery-density-fix-103",
+  "task_digest": "f4b0c23dae73c161bc3327ee4f1bda8b43974489cd7fc3ef29273a74e8d9f571",
+  "idle_timeout": 300,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-13T00:35:16.033007+00:00",
+  "attempt_id": "e4cef4ee97d3ba6fd4b15075",
+  "daemon_version": "4.18.20",
+  "daemon_pid": 12825,
+  "updated_at": "2026-09-13T00:35:16.033057+00:00",
+  "pid": 12825
+}
