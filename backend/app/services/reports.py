@@ -6,6 +6,7 @@ from app.models.guide import Guide
 from app.models.memory import Memory
 from app.models.photo import Photo
 from app.models.place import Place
+from app.models.report import Report
 from app.services.public_guides import public_guide_has_visible_places
 
 REPORT_TARGET_TYPES = {"place", "photo", "memory", "guide"}
@@ -20,6 +21,13 @@ def ensure_report_target_type(target_type: str) -> None:
 def ensure_report_status(status: str) -> None:
     if status not in REPORT_STATUSES:
         raise HTTPException(status_code=422, detail="Unsupported report status")
+
+
+def delete_reports_for_target(session: Session, target_type: str, target_id: str) -> None:
+    for report in session.exec(
+        select(Report).where(Report.target_type == target_type).where(Report.target_id == target_id)
+    ).all():
+        session.delete(report)
 
 
 def ensure_public_report_target(session: Session, target_type: str, target_id: str) -> None:
