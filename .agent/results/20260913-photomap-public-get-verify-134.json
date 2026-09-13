@@ -1,0 +1,60 @@
+{
+  "id": "20260913-photomap-public-get-verify-134",
+  "status": "done",
+  "mode": "commands",
+  "work_branch": "work/photomap-straighten-20260912",
+  "allow_write": false,
+  "started_at": "2026-09-13T08:40:36.985567+00:00",
+  "command_timeout": 300,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail; echo ROOT; curl -fsS -o /tmp/photomap-root.html -w '%{http_code}\\n' --max-time 20 https://photomap.pl/; echo HEALTH; curl -fsS -w '\\n%{http_code}\\n' --max-time 20 https://photomap.pl/health; echo ASSETS; grep -o '/assets/[^\" ]*' /tmp/photomap-root.html | sort -u; echo PI; ssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'cd /home/michal/src/PhotoMaps; echo HEAD=$(git rev-parse HEAD); ./scripts/serverctl.sh status; printf LAN=; curl -sS -o /dev/null -w \"%{http_code}\\n\" --max-time 3 http://192.168.0.23:8000/health || true'",
+      "exit_code": 0,
+      "output": "ROOT\n200\nHEALTH\n{\"status\":\"ok\"}\n200\nASSETS\n/assets/index-BQpb-v8A.css\n/assets/index-ChGpEC5_.js\n/assets/map-vendor-CIGW-MKW.css\n/assets/map-vendor-DB9AUs6p.js\n/assets/public-map-BeSc-jNS.js\n/assets/query-vendor-DpdqhrzD.js\n/assets/react-vendor-GxMAwJfR.js\nPI\nHEAD=578281bf750d7c86792ba4d6ccde505a7678c01f\nPubliczny runtime PhotoMap:\n8771\n\nPhotoMap runtime port 8000:\nCOMMAND  PID   USER FD   TYPE DEVICE SIZE/OFF NODE NAME\npython  8771 michal 13u  IPv4  90714      0t0  TCP 127.0.0.1:8000 (LISTEN)\nPhotoMap runtime health: OK\nLAN=curl: (7) Failed to connect to 192.168.0.23 port 8000 after 0 ms: Could not connect to server\n000\n",
+      "elapsed_seconds": 1.168,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 3.72,
+      "output_policy": "stream",
+      "captured_output_chars": 628,
+      "output_truncated": false,
+      "current_rss_mb": 3.72,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 1.168
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.073
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.067
+  },
+  "finished_at": "2026-09-13T08:40:39.573969+00:00",
+  "task_digest": "9471dcb20eb0fa496b2090ab6d554f6f7d98ecf7c1d663ef09b791ca370e317d",
+  "idle_timeout": 300,
+  "task_timeout": 600,
+  "memory_limit_mb": 4096,
+  "attempt_id": "013003b0c2030a3848dbed33",
+  "daemon_version": "4.18.20"
+}
