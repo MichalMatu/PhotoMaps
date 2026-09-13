@@ -1,16 +1,16 @@
 {
   "event": "command_started",
   "phase": "commands",
-  "index": 1,
+  "index": 2,
   "total": 4,
-  "command": "set -euo pipefail\nREPO=/Users/michal/agent-workspace/repos/photomaps/work\nMAIN_SHA=dcd99f07faf9e159a1b6b3f0b76ccff1e9db8ce1\nWORK_SHA=578281bf750d7c86792ba4d6ccde505a7678c01f\nTAG=pre-photomap-audit-20260913\nBRANCH=work/photomap-straighten-20260912\ncd \"$REPO\"\ngit fetch origin main \"$BRANCH\" --tags\ntest \"$(git rev-parse origin/main)\" = \"$MAIN_SHA\"\ntest \"$(git rev-parse origin/$BRANCH)\" = \"$WORK_SHA\"\ntest -z \"$(git status --porcelain)\"\nif git show-ref --verify --quiet \"refs/tags/$TAG\" || git ls-remote --exit-code --tags origin \"refs/tags/$TAG\" >/dev/null 2>&1; then echo \"tag already exists: $TAG\"; exit 1; fi\ngit merge-base --is-ancestor \"$MAIN_SHA\" \"$WORK_SHA\"\ngit tag -a \"$TAG\" \"$MAIN_SHA\" -m 'Rollback point before audited PhotoMap merge on 2026-09-13'\ngit push origin \"refs/tags/$TAG\"\ngit push origin \"$WORK_SHA:refs/heads/main\"\ngit fetch origin main --tags\ntest \"$(git rev-parse origin/main)\" = \"$WORK_SHA\"\ntest \"$(git rev-parse \"$TAG^{commit}\")\" = \"$MAIN_SHA\"\necho TAG=$TAG\necho TAG_SHA=$(git rev-parse \"$TAG^{commit}\")\necho MAIN_SHA=$(git rev-parse origin/main)",
-  "pid": 37749,
+  "command": "set -euo pipefail\nWORK_SHA=578281bf750d7c86792ba4d6ccde505a7678c01f\nssh -o BatchMode=yes -o ConnectTimeout=10 michal@192.168.0.23 'set -euo pipefail; cd /home/michal/src/PhotoMaps; test -z \"$(git status --porcelain)\"; test \"$(git branch --show-current)\" = main; git fetch origin main --tags; git pull --ff-only origin main; test \"$(git rev-parse HEAD)\" = 578281bf750d7c86792ba4d6ccde505a7678c01f; ./scripts/serverctl.sh restart; ./scripts/serverctl.sh status; ./scripts/serverctl.sh tunnel-status; echo ---LISTEN---; ss -ltnp 2>/dev/null | grep :8000; echo ---TUNNEL_INGRESS---; sudo -n grep -E \"hostname:|service:\" /etc/cloudflared/config.yml 2>/dev/null || true; echo DEPLOYED_SHA=$(git rev-parse HEAD)'",
+  "pid": 37978,
   "timeout": 1800,
   "idle_timeout": 300,
   "memory_limit_mb": 4096,
-  "started_at": "2026-09-13T08:15:52.512320+00:00",
-  "stage_name": "command-1",
-  "stage_index": 1,
+  "started_at": "2026-09-13T08:16:00.950156+00:00",
+  "stage_name": "command-2",
+  "stage_index": 2,
   "stage_total": 4,
   "stage_phase": "commands",
   "task_id": "20260913-photomap-tag-merge-deploy-130",
@@ -18,5 +18,5 @@
   "task_digest": "cc8e184b27c1f863b255d7d853ea923281aacbd0f0df1beec8e63cc3f6ebf179",
   "daemon_version": "4.18.20",
   "daemon_pid": 37491,
-  "updated_at": "2026-09-13T08:15:52.512874+00:00"
+  "updated_at": "2026-09-13T08:16:01.053029+00:00"
 }
