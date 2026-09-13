@@ -9,12 +9,18 @@ import {
 import type { PhotoAttributionDraft } from "./placePhotoPanelState";
 
 type Props = {
+  disabled?: boolean;
   draft: PhotoAttributionDraft;
   idPrefix?: string;
   onChange: (draft: PhotoAttributionDraft) => void;
 };
 
-export function PhotoAttributionFields({ draft, idPrefix = "photo-attribution", onChange }: Props) {
+export function PhotoAttributionFields({
+  disabled = false,
+  draft,
+  idPrefix = "photo-attribution",
+  onChange,
+}: Props) {
   function updateField(field: keyof PhotoAttributionDraft, value: string) {
     onChange({ ...draft, [field]: value });
   }
@@ -25,6 +31,7 @@ export function PhotoAttributionFields({ draft, idPrefix = "photo-attribution", 
       <div className="photo-attribution-grid">
         <SettingField id={`${idPrefix}-author`} label="Autor" hint={ADMIN_MEDIA_FIELD_HELP["attribution-author"]}>
           <input
+            disabled={disabled}
             maxLength={PHOTO_ATTRIBUTION_AUTHOR_MAX_LENGTH}
             value={draft.attributionAuthor}
             onChange={(event) => updateField("attributionAuthor", event.target.value)}
@@ -32,6 +39,7 @@ export function PhotoAttributionFields({ draft, idPrefix = "photo-attribution", 
         </SettingField>
         <SettingField id={`${idPrefix}-license`} label="Licencja" hint={ADMIN_MEDIA_FIELD_HELP["attribution-license"]}>
           <input
+            disabled={disabled}
             maxLength={PHOTO_ATTRIBUTION_LICENSE_MAX_LENGTH}
             value={draft.attributionLicense}
             onChange={(event) => updateField("attributionLicense", event.target.value)}
@@ -43,6 +51,7 @@ export function PhotoAttributionFields({ draft, idPrefix = "photo-attribution", 
           hint={ADMIN_MEDIA_FIELD_HELP["attribution-source-url"]}
         >
           <input
+            disabled={disabled}
             maxLength={PHOTO_ATTRIBUTION_URL_MAX_LENGTH}
             type="url"
             value={draft.attributionSourceUrl}
@@ -55,6 +64,7 @@ export function PhotoAttributionFields({ draft, idPrefix = "photo-attribution", 
           hint={ADMIN_MEDIA_FIELD_HELP["attribution-license-url"]}
         >
           <input
+            disabled={disabled}
             maxLength={PHOTO_ATTRIBUTION_URL_MAX_LENGTH}
             type="url"
             value={draft.attributionLicenseUrl}
