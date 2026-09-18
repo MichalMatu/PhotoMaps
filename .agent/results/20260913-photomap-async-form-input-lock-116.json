@@ -1,9 +1,0 @@
-{
-  "id": "20260913-photomap-async-form-input-lock-116",
-  "status": "failed",
-  "failure_reason": "invalid_task_file",
-  "started_at": null,
-  "finished_at": "2026-09-13T06:15:36.558848+00:00",
-  "daemon_version": "4.18.20",
-  "error": "JSONDecodeError: Invalid control character at: line 12 column 8738 (char 9065)"
-}
