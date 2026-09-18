@@ -1,0 +1,17 @@
+{
+  "id": "20260919-photomap-project-audit-001",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 1800,
+  "task_timeout": 5400,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail\ngit fetch origin main\ntest \"$(git rev-parse origin/main)\" = \"578281bf750d7c86792ba4d6ccde505a7678c01f\"\ntest \"$(git rev-parse HEAD)\" = \"578281bf750d7c86792ba4d6ccde505a7678c01f\"\nprintf '%s\\n' '=== STATE ==='\ngit status --short\nprintf '%s\\n' '=== SOURCE METRICS ==='\npython3 - <<'PY'\nfrom pathlib import Path\nroots=[Path('backend/app'),Path('frontend/src'),Path('scripts')]\nexts={'.py','.ts','.tsx','.js','.jsx','.css','.sh'}\nrows=[]\nfor root in roots:\n    for p in root.rglob('*'):\n        if p.is_file() and p.suffix in exts:\n            try: n=sum(1 for _ in p.open('r',encoding='utf-8',errors='ignore'))\n            except OSError: continue\n            rows.append((n,str(p)))\nprint('files',len(rows),'loc',sum(n for n,_ in rows))\nprint('top_30_by_loc')\nfor n,p in sorted(rows,reverse=True)[:30]: print(f'{n:5d} {p}')\nfor label,root in [('backend_tests',Path('backend/app/tests')),('frontend_unit',Path('frontend/src')),('frontend_e2e',Path('frontend/e2e'))]:\n    pats=['test_*.py','*.test.ts','*.test.tsx','*.spec.ts']\n    files=set()\n    for pat in pats: files.update(root.rglob(pat))\n    print(label,len(files))\nPY",
+    "set -euo pipefail\nprintf '%s\\n' '=== MAINTENANCE SIGNALS ==='\nfor pat in 'TODO|FIXME|HACK|XXX' 'except Exception' 'type: ignore' 'eslint-disable' 'shell=True|os.system\\(|subprocess\\.'; do\n  printf '\\n-- %s --\\n' \"$pat\"\n  rg -n --glob '!frontend/e2e/**/*.spec.ts-snapshots/**' --glob '!backend/.venv/**' --glob '!frontend/node_modules/**' \"$pat\" backend frontend scripts server.py || true\ndone\nprintf '%s\\n' '=== DUPLICATE / LEGACY NAME SIGNALS ==='\nrg -n --glob '!frontend/node_modules/**' 'Wroclaw|Wrocław|legacy|deprecated|compat|fallback' backend/app frontend/src scripts docs | head -n 250 || true",
+    "set -euo pipefail\nprintf '%s\\n' '=== PYTHON STRUCTURE ==='\npython3 - <<'PY'\nimport ast\nfrom pathlib import Path\nfor p in Path('backend/app').rglob('*.py'):\n    if '/tests/' in str(p): continue\n    try: src=p.read_text(encoding='utf-8'); tree=ast.parse(src)\n    except Exception: continue\n    findings=[]\n    for node in ast.walk(tree):\n        if isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef,ast.ClassDef)) and getattr(node,'end_lineno',None):\n            size=node.end_lineno-node.lineno+1\n            limit=90 if isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef)) else 300\n            if size>=limit: findings.append((size,type(node).__name__,node.name,node.lineno))\n    if findings:\n        print(p)\n        for item in sorted(findings,reverse=True): print(' ',item)\nPY\nprintf '%s\\n' '=== ROUTE/SERVICE FILE SIZES ==='\nwc -l backend/app/api/*.py backend/app/api/**/*.py backend/app/services/*.py 2>/dev/null | sort -nr | head -n 40 || true\nprintf '%s\\n' '=== FRONTEND LARGE FILES ==='\nfind frontend/src -type f \\( -name '*.ts' -o -name '*.tsx' -o -name '*.css' \\) -print0 | xargs -0 wc -l | sort -nr | head -n 40",
+    "set -euo pipefail\nprintf '%s\\n' '=== FULL CHECK ==='\nmake check\nprintf '%s\\n' '=== FINAL CLEAN STATUS ==='\ngit diff --check\ntest -z \"$(git status --porcelain)\""
+  ]
+}
