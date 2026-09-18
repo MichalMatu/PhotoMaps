@@ -26,7 +26,16 @@ def get_admin_token() -> str | None:
 
 
 def get_claim_token_secret() -> str:
-    return os.getenv("CLAIM_TOKEN_SECRET", "dev-claim-token-secret")
+    configured_secret = os.getenv("CLAIM_TOKEN_SECRET", "").strip()
+    if configured_secret:
+        return configured_secret
+    if IS_PRODUCTION:
+        raise RuntimeError("CLAIM_TOKEN_SECRET must be configured in production")
+    return "dev-claim-token-secret"
+
+
+def validate_runtime_security_config() -> None:
+    get_claim_token_secret()
 
 
 BASE_DIR = Path(__file__).resolve().parents[2]

@@ -37,6 +37,7 @@ from app.core.config import (
     OPENAPI_URL,
     PUBLIC_STORAGE_DIR,
     REDOC_URL,
+    validate_runtime_security_config,
 )
 from app.core.public_submission_security import RequestBodyLimitMiddleware, submission_security_middleware
 from app.core.request_context import (
@@ -51,6 +52,7 @@ from app.db.session import create_db_and_tables
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    validate_runtime_security_config()
     create_db_and_tables()
     yield
 
