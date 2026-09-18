@@ -1,0 +1,61 @@
+{
+  "id": "20260919-photomap-trackpad-e2e-011",
+  "status": "failed",
+  "mode": "commands",
+  "work_branch": "work/photomap-green-main-20260919",
+  "allow_write": true,
+  "started_at": "2026-09-18T22:47:01.291040+00:00",
+  "command_timeout": 1800,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail\ntest \"$(git rev-parse HEAD)\" = \"c88166cb9b5b6522d2976c08f98a35278fa073b3\"\npython3 -c \"import base64,pathlib; pathlib.Path('frontend/e2e/visual/map-trackpad-zoom.spec.ts').write_bytes(base64.b64decode('aW1wb3J0IHsgZXhwZWN0LCB0ZXN0LCB0eXBlIFBhZ2UgfSBmcm9tICJAcGxheXdyaWdodC90ZXN0IjsKCmltcG9ydCB7IG1vY2tTaGFyZWRBcGkgfSBmcm9tICIuLi9zdXBwb3J0L3Zpc3VhbEFwaSI7Cgphc3luYyBmdW5jdGlvbiBtYXJrZXJXaWR0aChwYWdlOiBQYWdlKSB7CiAgY29uc3QgYm94ID0gYXdhaXQgcGFnZS5sb2NhdG9yKCIucGxhY2UtcGhvdG8tbWFya2VyIikuZmlyc3QoKS5ib3VuZGluZ0JveCgpOwogIGlmICghYm94KSB7CiAgICB0aHJvdyBuZXcgRXJyb3IoIk1hcCBtYXJrZXIgaXMgbm90IHZpc2libGUuIik7CiAgfQogIHJldHVybiBib3gud2lkdGg7Cn0KCmFzeW5jIGZ1bmN0aW9uIGRpc3BhdGNoUGluY2gocGFnZTogUGFnZSwgZGVsdGFZOiBudW1iZXIpIHsKICBjb25zdCBtYXAgPSBwYWdlLmxvY2F0b3IoIi5wbGFjZS1tYXAiKTsKICBjb25zdCBib3ggPSBhd2FpdCBtYXAuYm91bmRpbmdCb3goKTsKICBpZiAoIWJveCkgewogICAgdGhyb3cgbmV3IEVycm9yKCJNYXAgaXMgbm90IHZpc2libGUuIik7CiAgfQoKICBhd2FpdCBtYXAuZGlzcGF0Y2hFdmVudCgIndoZWVsIiwgewogICAgYnViYmxlczogdHJ1ZSwKICAgIGNhbmNlbGFibGU6IHRydWUsCiAgICBjbGllbnRYOiBib3gueCArIGJveC53aWR0aCAvIDIsCiAgICBjbGllbnRZOiBib3gueSArIGJveC5oZWlnaHQgLyAyLAogICAgY3RybEtleTogdHJ1ZSwKICAgIGRlbHRhTW9kZTogMCwKICAgIGRlbHRhWSwKICB9KTsKfQoKYXN5bmMgZnVuY3Rpb24gZGlzcGF0Y2hHcmFkdWFsUGluY2hTdGVwKHBhZ2U6IFBhZ2UpIHsKICBmb3IgKGxldCBpbmRleCA9IDA7IGluZGV4IDwgNDsgaW5kZXggKz0gMSkgewogICAgYXdhaXQgZGlzcGF0Y2hQaW5jaChwYWdlLCAtMTIpOwogIH0KfQoKYXN5bmMgZnVuY3Rpb24gc2V0dGxlZE1hcmtlcldpZHRoKHBhZ2U6IFBhZ2UpIHsKICBhd2FpdCBwYWdlLndhaXRGb3JUaW1lb3V0KDM1MCk7CiAgcmV0dXJuIG1hcmtlcldpZHRoKHBhZ2UpOwp9Cgp0ZXN0KCJNYWMtc3R5bGUgdHJhY2twYWQgcGluY2ggem9vbSBpcyBncmFkdWFsIGFuZCByYXRlIGxpbWl0ZWQiLCBhc3luYyAoeyBwYWdlIH0pID0+IHsKICBhd2FpdCBwYWdlLnNldFZpZXdwb3J0U2l6ZSh7IGhlaWdodDogODIwLCB3aWR0aDogMTI4MCB9KTsKICBhd2FpdCBtb2NrU2hhcmVkQXBpKHBhZ2UpOwogIGF3YWl0IHBhZ2UuZ290bygiLyIpOwogIGF3YWl0IGV4cGVjdChwYWdlLmxvY2F0b3IoIi5wbGFjZS1waG90by1tYXJrZXIiKS5maXJzdCgpKS50b0JlVmlzaWJsZSgpOwoKICBjb25zdCBpbml0aWFsV2lkdGggPSBhd2FpdCBtYXJrZXJXaWR0aChwYWdlKTsKICBhd2FpdCBkaXNwYXRjaEdyYWR1YWxQaW5jaFN0ZXAocGFnZSk7CiAgYXdhaXQgZXhwZWN0LnBvbGwoKCkgPT4gbWFya2VyV2lkdGgocGFnZSkpLnRvQmVHcmVhdGVyVGhhbihpbml0aWFsV2lkdGgpOwogIGNvbnN0IG9uZVN0ZXBXaWR0aCA9IGF3YWl0IHNldHRsZWRNYXJrZXJXaWR0aChwYWdlKTsKCiAgYXdhaXQgcGFnZS5yZWxvYWQoKTsKICBhd2FpdCBleHBlY3QocGFnZS5sb2NhdG9yKCIucGxhY2UtcGhvdG8tbWFya2VyIikuZmlyc3QoKSkudG9CZVZpc2libGUoKTsKICBjb25zdCBidXJzdEluaXRpYWxXaWR0aCA9IGF3YWl0IG1hcmtlcldpZHRoKHBhZ2UpOwogIGF3YWl0IGRpc3BhdGNoR3JhZHVhbFBpbmNoU3RlcChwYWdlKTsKICBhd2FpdCBkaXNwYXRjaFBpbmNoKHBhZ2UsIC02MDApOwogIGF3YWl0IGV4cGVjdC5wb2xsKCgpID0+IG1hcmtlcldpZHRoKHBhZ2UpKS50b0JlR3JlYXRlclRoYW4oYnVyc3RJbml0aWFsV2lkdGgpOwogIGNvbnN0IHJhdGVMaW1pdGVkQnVyc3RXaWR0aCA9IGF3YWl0IHNldHRsZWRNYXJrZXJXaWR0aChwYWdlKTsKCiAgZXhwZWN0KE1hdGguYWJzKHJhdGVMaW1pdGVkQnVyc3RXaWR0aCAtIG9uZVN0ZXBXaWR0aCkpLnRvQmVMZXNzVGhhbigxKTsKfSk7Cg=='))\"\ncd frontend\nnpm run format:check\nnpx vitest run src/components/map/trackpadZoom.test.ts\nnpm run test:e2e -- --project=chromium e2e/visual/map-trackpad-zoom.spec.ts --repeat-each=5\ncd ..\ngit diff --check",
+      "exit_code": 1,
+      "output": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import base64,pathlib; pathlib.Path('frontend/e2e/visual/map-trackpad-zoom.spec.ts').write_bytes(base64.b64decode('aW1wb3J0IHsgZXhwZWN0LCB0ZXN0LCB0eXBlIFBhZ2UgfSBmcm9tICJAcGxheXdyaWdodC90ZXN0IjsKCmltcG9ydCB7IG1vY2tTaGFyZWRBcGkgfSBmcm9tICIuLi9zdXBwb3J0L3Zpc3VhbEFwaSI7Cgphc3luYyBmdW5jdGlvbiBtYXJrZXJXaWR0aChwYWdlOiBQYWdlKSB7CiAgY29uc3QgYm94ID0gYXdhaXQgcGFnZS5sb2NhdG9yKCIucGxhY2UtcGhvdG8tbWFya2VyIikuZmlyc3QoKS5ib3VuZGluZ0JveCgpOwogIGlmICghYm94KSB7CiAgICB0aHJvdyBuZXcgRXJyb3IoIk1hcCBtYXJrZXIgaXMgbm90IHZpc2libGUuIik7CiAgfQogIHJldHVybiBib3gud2lkdGg7Cn0KCmFzeW5jIGZ1bmN0aW9uIGRpc3BhdGNoUGluY2gocGFnZTogUGFnZSwgZGVsdGFZOiBudW1iZXIpIHsKICBjb25zdCBtYXAgPSBwYWdlLmxvY2F0b3IoIi5wbGFjZS1tYXAiKTsKICBjb25zdCBib3ggPSBhd2FpdCBtYXAuYm91bmRpbmdCb3goKTsKICBpZiAoIWJveCkgewogICAgdGhyb3cgbmV3IEVycm9yKCJNYXAgaXMgbm90IHZpc2libGUuIik7CiAgfQoKICBhd2FpdCBtYXAuZGlzcGF0Y2hFdmVudCgIndoZWVsIiwgewogICAgYnViYmxlczogdHJ1ZSwKICAgIGNhbmNlbGFibGU6IHRydWUsCiAgICBjbGllbnRYOiBib3gueCArIGJveC53aWR0aCAvIDIsCiAgICBjbGllbnRZOiBib3gueSArIGJveC5oZWlnaHQgLyAyLAogICAgY3RybEtleTogdHJ1ZSwKICAgIGRlbHRhTW9kZTogMCwKICAgIGRlbHRhWSwKICB9KTsKfQoKYXN5bmMgZnVuY3Rpb24gZGlzcGF0Y2hHcmFkdWFsUGluY2hTdGVwKHBhZ2U6IFBhZ2UpIHsKICBmb3IgKGxldCBpbmRleCA9IDA7IGluZGV4IDwgNDsgaW5kZXggKz0gMSkgewogICAgYXdhaXQgZGlzcGF0Y2hQaW5jaChwYWdlLCAtMTIpOwogIH0KfQoKYXN5bmMgZnVuY3Rpb24gc2V0dGxlZE1hcmtlcldpZHRoKHBhZ2U6IFBhZ2UpIHsKICBhd2FpdCBwYWdlLndhaXRGb3JUaW1lb3V0KDM1MCk7CiAgcmV0dXJuIG1hcmtlcldpZHRoKHBhZ2UpOwp9Cgp0ZXN0KCJNYWMtc3R5bGUgdHJhY2twYWQgcGluY2ggem9vbSBpcyBncmFkdWFsIGFuZCByYXRlIGxpbWl0ZWQiLCBhc3luYyAoeyBwYWdlIH0pID0+IHsKICBhd2FpdCBwYWdlLnNldFZpZXdwb3J0U2l6ZSh7IGhlaWdodDogODIwLCB3aWR0aDogMTI4MCB9KTsKICBhd2FpdCBtb2NrU2hhcmVkQXBpKHBhZ2UpOwogIGF3YWl0IHBhZ2UuZ290bygiLyIpOwogIGF3YWl0IGV4cGVjdChwYWdlLmxvY2F0b3IoIi5wbGFjZS1waG90by1tYXJrZXIiKS5maXJzdCgpKS50b0JlVmlzaWJsZSgpOwoKICBjb25zdCBpbml0aWFsV2lkdGggPSBhd2FpdCBtYXJrZXJXaWR0aChwYWdlKTsKICBhd2FpdCBkaXNwYXRjaEdyYWR1YWxQaW5jaFN0ZXAocGFnZSk7CiAgYXdhaXQgZXhwZWN0LnBvbGwoKCkgPT4gbWFya2VyV2lkdGgocGFnZSkpLnRvQmVHcmVhdGVyVGhhbihpbml0aWFsV2lkdGgpOwogIGNvbnN0IG9uZVN0ZXBXaWR0aCA9IGF3YWl0IHNldHRsZWRNYXJrZXJXaWR0aChwYWdlKTsKCiAgYXdhaXQgcGFnZS5yZWxvYWQoKTsKICBhd2FpdCBleHBlY3QocGFnZS5sb2NhdG9yKCIucGxhY2UtcGhvdG8tbWFya2VyIikuZmlyc3QoKSkudG9CZVZpc2libGUoKTsKICBjb25zdCBidXJzdEluaXRpYWxXaWR0aCA9IGF3YWl0IG1hcmtlcldpZHRoKHBhZ2UpOwogIGF3YWl0IGRpc3BhdGNoR3JhZHVhbFBpbmNoU3RlcChwYWdlKTsKICBhd2FpdCBkaXNwYXRjaFBpbmNoKHBhZ2UsIC02MDApOwogIGF3YWl0IGV4cGVjdC5wb2xsKCgpID0+IG1hcmtlcldpZHRoKHBhZ2UpKS50b0JlR3JlYXRlclRoYW4oYnVyc3RJbml0aWFsV2lkdGgpOwogIGNvbnN0IHJhdGVMaW1pdGVkQnVyc3RXaWR0aCA9IGF3YWl0IHNldHRsZWRNYXJrZXJXaWR0aChwYWdlKTsKCiAgZXhwZWN0KE1hdGguYWJzKHJhdGVMaW1pdGVkQnVyc3RXaWR0aCAtIG9uZVN0ZXBXaWR0aCkpLnRvQmVMZXNzVGhhbigxKTsKfSk7Cg=='))\n                                                                                                     ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.13/3.13.9_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/base64.py\", line 88, in b64decode\n    return binascii.a2b_base64(s, strict_mode=validate)\n           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\nbinascii.Error: Invalid base64-encoded string: number of data characters (2593) cannot be 1 more than a multiple of 4\n",
+      "elapsed_seconds": 0.427,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 4.45,
+      "output_policy": "stream",
+      "captured_output_chars": 5880,
+      "output_truncated": false,
+      "current_rss_mb": 4.45,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 2,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 2,
+      "stage_phase": "commands",
+      "outcome": "failed",
+      "elapsed_seconds": 0.427
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.073
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.067
+  },
+  "failure_reason": "command_failed",
+  "finished_at": "2026-09-18T22:47:03.140921+00:00",
+  "task_digest": "03668f3f12d0b64c7379c9e77b92bbf283a4f28543cacb2e4c388059ce244584",
+  "idle_timeout": 300,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "attempt_id": "971bd0ec7128a55114ac03e4",
+  "daemon_version": "4.18.22"
+}
