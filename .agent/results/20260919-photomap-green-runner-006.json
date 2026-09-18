@@ -1,0 +1,88 @@
+{
+  "id": "20260919-photomap-green-runner-006",
+  "status": "done",
+  "mode": "commands",
+  "work_branch": "work/photomap-green-main-20260919",
+  "allow_write": true,
+  "started_at": "2026-09-18T22:34:58.486938+00:00",
+  "command_timeout": 1800,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail\ntest \"$(git rev-parse HEAD)\" = \"578281bf750d7c86792ba4d6ccde505a7678c01f\"\npython3 - <<'PY'\nfrom pathlib import Path\n\ndef rep(path, old, new):\n    p=Path(path); text=p.read_text(); n=text.count(old)\n    if n != 1: raise SystemExit(f'{path}: expected 1 match, got {n}')\n    p.write_text(text.replace(old,new))\n\nrep('backend/app/tests/services/test_admin_memory_review_transactions.py',\n'def test_memory_rejection_commit_failure_keeps_existing_public_media(client_session, tmp_path: Path, monkeypatch) -> None:\\n',\n'def test_memory_rejection_commit_failure_keeps_existing_public_media(\\n    client_session, tmp_path: Path, monkeypatch\\n) -> None:\\n')\n\nfor path in ('scripts/check.sh','scripts/dev_backend.sh','scripts/devctl.sh','scripts/serverctl.sh'):\n    p=Path(path); text=p.read_text()\n    text=text.replace('PYTHON_BIN=\"${PYTHON:-python3}\"','PYTHON_BIN=\"${PYTHON:-}\"',1)\n    old='if [ -x \"$ROOT_DIR/backend/.venv/bin/python\" ]; then\\n  PYTHON_BIN=\"$ROOT_DIR/backend/.venv/bin/python\"\\nfi'\n    new='if [ -z \"$PYTHON_BIN\" ]; then\\n  if [ -x \"$ROOT_DIR/backend/.venv/bin/python\" ]; then\\n    PYTHON_BIN=\"$ROOT_DIR/backend/.venv/bin/python\"\\n  else\\n    PYTHON_BIN=python3\\n  fi\\nfi'\n    if old not in text: raise SystemExit(f'{path}: python selector not found')\n    text=text.replace(old,new,1)\n    anchor='PYTHON_BIN=\"${PYTHON:-}\"\\n'\n    if 'DATA_DIR=\"${PHOTOMAP_DATA_DIR' not in text:\n        text=text.replace(anchor, anchor+'DATA_DIR=\"${PHOTOMAP_DATA_DIR:-$ROOT_DIR/backend/data}\"\\nSTORAGE_DIR=\"${PHOTOMAP_STORAGE_DIR:-$ROOT_DIR/backend/storage}\"\\n',1)\n    text=text.replace('\"$ROOT_DIR/backend/data\"','\"$DATA_DIR\"')\n    text=text.replace('\"$ROOT_DIR/backend/storage/private\"','\"$STORAGE_DIR/private\"')\n    text=text.replace('\"$ROOT_DIR/backend/storage/public\"','\"$STORAGE_DIR/public\"')\n    p.write_text(text)\n\np=Path('scripts/dev/services.sh'); text=p.read_text()\ntext=text.replace('\"$ROOT_DIR/backend/data\"','\"$DATA_DIR\"').replace('\"$ROOT_DIR/backend/storage/private\"','\"$STORAGE_DIR/private\"').replace('\"$ROOT_DIR/backend/storage/public\"','\"$STORAGE_DIR/public\"')\np.write_text(text)\nPY\ngit diff --check\npython3 -m compileall -q backend/app\ngit status --short",
+      "exit_code": 0,
+      "output": " M backend/app/tests/services/test_admin_memory_review_transactions.py\n M scripts/check.sh\n M scripts/dev/services.sh\n M scripts/dev_backend.sh\n M scripts/devctl.sh\n M scripts/serverctl.sh\n",
+      "elapsed_seconds": 0.368,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 4.33,
+      "output_policy": "stream",
+      "captured_output_chars": 189,
+      "output_truncated": false,
+      "current_rss_mb": 4.33,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 2,
+      "stage_phase": "commands"
+    },
+    {
+      "command": "set -euo pipefail\ngit add backend/app/tests/services/test_admin_memory_review_transactions.py scripts/check.sh scripts/dev_backend.sh scripts/devctl.sh scripts/dev/services.sh scripts/serverctl.sh\ngit diff --cached --check\ngit commit -m 'Fix project runner environment handling'\ngit push origin HEAD:work/photomap-green-main-20260919",
+      "exit_code": 0,
+      "output": "[agent-work 4e395af] Fix project runner environment handling\n 6 files changed, 51 insertions(+), 25 deletions(-)\nTo https://github.com/MichalMatu/PhotoMaps.git\n   578281b..4e395af  HEAD -> work/photomap-green-main-20260919\n",
+      "elapsed_seconds": 7.498,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 21.58,
+      "output_policy": "stream",
+      "captured_output_chars": 223,
+      "output_truncated": false,
+      "current_rss_mb": 21.56,
+      "stage_name": "command-2",
+      "stage_index": 2,
+      "stage_total": 2,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 2,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 0.368
+    },
+    {
+      "stage_name": "command-2",
+      "stage_index": 2,
+      "stage_total": 2,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 7.498
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.073
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.066
+  },
+  "finished_at": "2026-09-18T22:35:07.784908+00:00",
+  "task_digest": "4d46b31df4be90010ee6a181089c1f09552a45c06cc64754f1079ab7e9266063",
+  "idle_timeout": 300,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "attempt_id": "0f8f55a3586f620dc57e9a89",
+  "daemon_version": "4.18.22"
+}
