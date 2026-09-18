@@ -1,0 +1,14 @@
+{
+  "id": "20260919-photomap-frontend-deps-audit-015",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 1800,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail\ntest \"$(git rev-parse HEAD)\" = \"f4afaff647ad5ceaf55d21e8f17a2ee06042b2c7\"\ncd frontend\nnpm ci >/tmp/photomap-npm-ci.log 2>&1\necho '=== package.json ==='\ncat package.json\necho '=== npm audit ==='\nnpm audit --json || true\necho '=== npm outdated ==='\nnpm outdated || true\ncd ..\ngit diff --check\ntest -z \"$(git status --porcelain)\""
+  ]
+}
