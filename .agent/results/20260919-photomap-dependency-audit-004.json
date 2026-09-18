@@ -1,0 +1,60 @@
+{
+  "id": "20260919-photomap-dependency-audit-004",
+  "status": "done",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "started_at": "2026-09-18T22:27:32.213618+00:00",
+  "command_timeout": 1200,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -u\ntest \"$(git rev-parse HEAD)\" = \"578281bf750d7c86792ba4d6ccde505a7678c01f\" || exit 1\ncd frontend\nfor MODE in all prod; do\n  TMP=$(mktemp /tmp/photomap-npm-audit-XXXXXX.json)\n  if [ \"$MODE\" = prod ]; then npm audit --omit=dev --json >\"$TMP\" 2>/dev/null || true; else npm audit --json >\"$TMP\" 2>/dev/null || true; fi\n  echo \"=== npm audit $MODE ===\"\n  node - \"$TMP\" <<'NODE'\nconst fs=require('fs'); const p=process.argv[2]; let x={}; try{x=JSON.parse(fs.readFileSync(p,'utf8'))}catch(e){console.log('audit-json-unavailable');process.exit(0)}\nconsole.log('summary',JSON.stringify(x.metadata?.vulnerabilities||{}));\nfor (const [name,v] of Object.entries(x.vulnerabilities||{}).sort((a,b)=>String(a[1].severity).localeCompare(String(b[1].severity)))) {\n const via=(v.via||[]).map(z=>typeof z==='string'?z:(z.title||z.source||'advisory')).slice(0,3);\n console.log(JSON.stringify({name,severity:v.severity,isDirect:v.isDirect,range:v.range,fixAvailable:v.fixAvailable,via}));\n}\nNODE\n  rm -f \"$TMP\"\ndone\ngit status --short",
+      "exit_code": 0,
+      "output": "=== npm audit all ===\nsummary {\"info\":0,\"low\":0,\"moderate\":4,\"high\":6,\"critical\":1,\"total\":11}\n{\"name\":\"vitest\",\"severity\":\"critical\",\"isDirect\":true,\"range\":\"<=4.1.10\",\"fixAvailable\":{\"name\":\"vitest\",\"version\":\"5.0.1\",\"isSemVerMajor\":true},\"via\":[\"@vitest/mocker\",\"When Vitest UI server is listening, arbitrary file can be read and executed\",\"Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock\"]}\n{\"name\":\"brace-expansion\",\"severity\":\"high\",\"isDirect\":false,\"range\":\"3.0.0 - 5.0.8\",\"fixAvailable\":true,\"via\":[\"brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups\",\"brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash\",\"brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation\"]}\n{\"name\":\"browserslist\",\"severity\":\"high\",\"isDirect\":false,\"range\":\"<=4.28.6\",\"fixAvailable\":true,\"via\":[\"Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM\",\"Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats)\"]}\n{\"name\":\"nanoid\",\"severity\":\"high\",\"isDirect\":false,\"range\":\"<=3.3.17\",\"fixAvailable\":true,\"via\":[\"nanoid: non-secure generators can loop indefinitely with negative size\",\"nanoid: custom generators can loop indefinitely when size is zero\"]}\n{\"name\":\"postcss\",\"severity\":\"high\",\"isDirect\":false,\"range\":\"<=8.5.22\",\"fixAvailable\":true,\"via\":[\"PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset\",\"PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure\"]}\n{\"name\":\"smol-toml\",\"severity\":\"high\",\"isDirect\":false,\"range\":\"<=1.7.0\",\"fixAvailable\":true,\"via\":[\"smol-toml: Denial of Service via malformed TOML documents\"]}\n{\"name\":\"vite\",\"severity\":\"high\",\"isDirect\":false,\"range\":\"<=6.4.2\",\"fixAvailable\":{\"name\":\"vitest\",\"version\":\"5.0.1\",\"isSemVerMajor\":true},\"via\":[\"Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling\",\"launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows\",\"vite: `server.fs.deny` bypass on Windows alternate paths\"]}\n{\"name\":\"@vitest/mocker\",\"severity\":\"moderate\",\"isDirect\":false,\"range\":\"<=4.1.10\",\"fixAvailable\":{\"name\":\"vitest\",\"version\":\"5.0.1\",\"isSemVerMajor\":true},\"via\":[\"Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock\",\"vite\"]}\n{\"name\":\"baseline-browser-mapping\",\"severity\":\"moderate\",\"isDirect\":false,\"range\":\">=2.0.0 <2.11.0\",\"fixAvailable\":true,\"via\":[\"baseline-browser-mapping process termination on invalid input causes denial of service\"]}\n{\"name\":\"esbuild\",\"severity\":\"moderate\",\"isDirect\":false,\"range\":\"<=0.24.2\",\"fixAvailable\":{\"name\":\"vitest\",\"version\":\"5.0.1\",\"isSemVerMajor\":true},\"via\":[\"esbuild enables any website to send any requests to the development server and read the response\"]}\n{\"name\":\"vite-node\",\"severity\":\"moderate\",\"isDirect\":false,\"range\":\"<=2.2.0-beta.2\",\"fixAvailable\":{\"name\":\"vitest\",\"version\":\"5.0.1\",\"isSemVerMajor\":true},\"via\":[\"vite\"]}\n=== npm audit prod ===\nsummary {\"info\":0,\"low\":0,\"moderate\":1,\"high\":3,\"critical\":0,\"total\":4}\n{\"name\":\"browserslist\",\"severity\":\"high\",\"isDirect\":false,\"range\":\"<=4.28.6\",\"fixAvailable\":true,\"via\":[\"Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM\",\"Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats)\"]}\n{\"name\":\"nanoid\",\"severity\":\"high\",\"isDirect\":false,\"range\":\"<=3.3.17\",\"fixAvailable\":true,\"via\":[\"nanoid: non-secure generators can loop indefinitely with negative size\",\"nanoid: custom generators can loop indefinitely when size is zero\"]}\n{\"name\":\"postcss\",\"severity\":\"high\",\"isDirect\":false,\"range\":\"<=8.5.22\",\"fixAvailable\":true,\"via\":[\"PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset\",\"PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure\"]}\n{\"name\":\"baseline-browser-mapping\",\"severity\":\"moderate\",\"isDirect\":false,\"range\":\">=2.0.0 <2.11.0\",\"fixAvailable\":true,\"via\":[\"baseline-browser-mapping process termination on invalid input causes denial of service\"]}\n",
+      "elapsed_seconds": 2.53,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 2048,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 105.61,
+      "output_policy": "stream",
+      "captured_output_chars": 4414,
+      "output_truncated": false,
+      "current_rss_mb": 105.61,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 2.53
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.074
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.068
+  },
+  "finished_at": "2026-09-18T22:27:36.198531+00:00",
+  "task_digest": "89040b9e75bf80ef8a21bb8aea1aa70627f0872329087925878a8a981f2ca17d",
+  "idle_timeout": 300,
+  "task_timeout": 2400,
+  "memory_limit_mb": 2048,
+  "attempt_id": "258fd762f0a90d63a2a2e956",
+  "daemon_version": "4.18.22"
+}
