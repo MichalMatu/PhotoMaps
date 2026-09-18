@@ -1,0 +1,17 @@
+{
+  "id": "20260919-photomap-trackpad-e2e-010",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/photomap-green-main-20260919",
+  "allow_write": true,
+  "resources": [],
+  "command_timeout": 1800,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail\ntest \"$(git rev-parse HEAD)\" = \"c88166cb9b5b6522d2976c08f98a35278fa073b3\"\npython3 - <<'PY'\nfrom pathlib import Path\np=Path('frontend/e2e/visual/map-trackpad-zoom.spec.ts')\ntext=p.read_text(encoding='utf-8')\nold='''test(\"Mac-style trackpad pinch zoom is gradual and rate limited\", async ({ page }) => {\n  await page.setViewportSize({ height: 820, width: 1280 });\n  await mockSharedApi(page);\n  await page.goto(\"/\");\n  await expect(page.locator(\".place-photo-marker\").first()).toBeVisible();\n\n  const initialWidth = await markerWidth(page);\n  for (let index = 0; index < 4; index += 1) {\n    await dispatchPinch(page, -12);\n  }\n\n  await expect.poll(() => markerWidth(page)).toBeGreaterThan(initialWidth);\n  const afterGradualPinch = await markerWidth(page);\n\n  await dispatchPinch(page, -600);\n  await page.waitForTimeout(25);\n  expect(Math.abs((await markerWidth(page)) - afterGradualPinch)).toBeLessThan(1);\n\n  await page.waitForTimeout(70);\n  await dispatchPinch(page, -1);\n  await expect.poll(() => markerWidth(page)).toBeGreaterThan(afterGradualPinch);\n});\n'''
+new='''async function dispatchGradualPinchStep(page: Page) {\n  for (let index = 0; index < 4; index += 1) {\n    await dispatchPinch(page, -12);\n  }\n}\n\nasync function settledMarkerWidth(page: Page) {\n  await page.waitForTimeout(350);\n  return markerWidth(page);\n}\n\ntest(\"Mac-style trackpad pinch zoom is gradual and rate limited\", async ({ page }) => {\n  await page.setViewportSize({ height: 820, width: 1280 });\n  await mockSharedApi(page);\n  await page.goto(\"/\");\n  await expect(page.locator(\".place-photo-marker\").first()).toBeVisible();\n\n  const initialWidth = await markerWidth(page);\n  await dispatchGradualPinchStep(page);\n  await expect.poll(() => markerWidth(page)).toBeGreaterThan(initialWidth);\n  const oneStepWidth = await settledMarkerWidth(page);\n\n  await page.reload();\n  await expect(page.locator(\".place-photo-marker\").first()).toBeVisible();\n  const burstInitialWidth = await markerWidth(page);\n  await dispatchGradualPinchStep(page);\n  await dispatchPinch(page, -600);\n  await expect.poll(() => markerWidth(page)).toBeGreaterThan(burstInitialWidth);\n  const rateLimitedBurstWidth = await settledMarkerWidth(page);\n\n  expect(Math.abs(rateLimitedBurstWidth - oneStepWidth)).toBeLessThan(1);\n});\n'''
+if text.count(old) != 1:\n    raise SystemExit('expected original trackpad test block once')\np.write_text(text.replace(old,new),encoding='utf-8')\nPY\ncd frontend\nnpm run format:check\nnpm run test -- --run src/components/map/trackpadZoom.test.ts\nnpm run test:e2e -- --project=chromium e2e/visual/map-trackpad-zoom.spec.ts --repeat-each=5\ncd ..\ngit diff --check",
+    "set -euo pipefail\ngit add frontend/e2e/visual/map-trackpad-zoom.spec.ts\ngit diff --cached --check\ngit commit -m 'Stabilize trackpad zoom E2E assertion'\ngit push origin HEAD:work/photomap-green-main-20260919"
+  ]
+}
