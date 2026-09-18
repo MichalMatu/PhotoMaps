@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260919-photomap-trackpad-verify-014",
+  "task_digest": "06425b1364949fc660bdfbfbad0ea0b00de3ed7299c296c7d617939a65057423",
+  "idle_timeout": 300,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-18T22:49:18.809027+00:00",
+  "attempt_id": "d886fc796be0311394047a88",
+  "daemon_version": "4.18.22",
+  "daemon_pid": 89518,
+  "updated_at": "2026-09-18T22:49:18.809085+00:00",
+  "pid": 89518
+}
