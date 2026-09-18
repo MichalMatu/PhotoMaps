@@ -1,0 +1,14 @@
+{
+  "id": "20260919-photomap-trackpad-verify-014",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/photomap-green-main-20260919",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 1800,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail\ntest \"$(git rev-parse HEAD)\" = \"8b895546209d5d8025362aa6d120f8cc4b067744\"\nVENV=$(mktemp -d /tmp/photomap-trackpad-venv-XXXXXX)\ntrap 'rm -rf \"$VENV\"; ./scripts/devctl.sh stop >/dev/null 2>&1 || true' EXIT\npython3 -m venv \"$VENV\"\n\"$VENV/bin/python\" -m pip install -q -r backend/requirements.txt\ncd frontend\nnpx vitest run src/components/map/trackpadZoom.test.ts\nPYTHON=\"$VENV/bin/python\" npm run test:e2e -- --project=chromium e2e/visual/map-trackpad-zoom.spec.ts --repeat-each=5\ncd ..\ngit diff --check\ntest -z \"$(git status --porcelain)\""
+  ]
+}
