@@ -1,0 +1,34 @@
+{
+  "id": "20260919-photomap-frontend-deps-update-017",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/photomap-frontend-deps-20260919",
+  "allow_write": true,
+  "resources": [],
+  "workflow_policy": "efficient-verification-v1",
+  "command_timeout": 7200,
+  "task_timeout": 10800,
+  "memory_limit_mb": 4096,
+  "steps": [
+    {
+      "name": "update-frontend-dependencies",
+      "verification_level": "work",
+      "timeout": 1800,
+      "command": "set -euo pipefail\ntest \"$(git rev-parse HEAD)\" = \"f4afaff647ad5ceaf55d21e8f17a2ee06042b2c7\"\ncd frontend\nnpm ci\nnpm install --save-dev vitest@^5.0.1 @vitejs/plugin-react@^4.7.0 typescript@^5.9.3 vite@^6.4.3\nnpm update\nnpm audit fix\nnpm install --save-dev prettier@3.8.4\ncd ..\ngit diff --check\nchanged=$(git diff --name-only | sort)\ntest \"$changed\" = $'frontend/package-lock.json\\nfrontend/package.json'"
+    }
+  ],
+  "verify_steps": [
+    {
+      "name": "frontend-security-and-tests",
+      "verification_level": "focused",
+      "timeout": 2400,
+      "command": "set -euo pipefail\ncd frontend\nnpm audit --audit-level=moderate\nnpm run format:check\nnpm run lint\nnpm run knip\nnpm test\nnpm run build\ncd ..\ngit diff --check"
+    },
+    {
+      "name": "full-project-quality",
+      "verification_level": "full",
+      "timeout": 7200,
+      "command": "set -euo pipefail\nVENV=$(mktemp -d /tmp/photomap-deps-venv-XXXXXX)\ntrap 'rm -rf \"$VENV\"; ./scripts/devctl.sh stop >/dev/null 2>&1 || true' EXIT\npython3 -m venv \"$VENV\"\n\"$VENV/bin/python\" -m pip install -q -r backend/requirements.txt\nPYTHON=\"$VENV/bin/python\" make quality\ngit diff --check\nchanged=$(git diff --name-only | sort)\ntest \"$changed\" = $'frontend/package-lock.json\\nfrontend/package.json'"
+    }
+  ]
+}
