@@ -572,13 +572,13 @@ test("admin place photo gallery exposes moderator tools in responsive media view
 
     const photoPanelDialog = page.getByRole("dialog", { name: "Zdjęcia miejsca" });
     await expect(photoPanelDialog).toBeVisible();
+    const photoCards = photoPanelDialog.locator(".place-photo-strip .admin-media-item");
+    await expect(photoCards).toHaveCount(adminPhotoList.length);
 
     if (width >= 1200) {
       const panelBox = await getRoundedBox(photoPanelDialog);
       expect(panelBox.width).toBeGreaterThanOrEqual(1400);
 
-      const photoCards = photoPanelDialog.locator(".place-photo-strip .admin-media-item");
-      await expect(photoCards).toHaveCount(adminPhotoList.length);
       const cardBoxes = await getRoundedBoxes(photoCards);
       const firstRowTop = cardBoxes[0].top;
       expect(cardBoxes.filter((box) => Math.abs(box.top - firstRowTop) <= 1)).toHaveLength(adminPhotoList.length);
