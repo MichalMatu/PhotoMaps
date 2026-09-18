@@ -1,0 +1,14 @@
+{
+  "id": "20260919-photomap-dependency-audit-004",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 1200,
+  "task_timeout": 2400,
+  "memory_limit_mb": 2048,
+  "commands": [
+    "set -u\ntest \"$(git rev-parse HEAD)\" = \"578281bf750d7c86792ba4d6ccde505a7678c01f\" || exit 1\ncd frontend\nfor MODE in all prod; do\n  TMP=$(mktemp /tmp/photomap-npm-audit-XXXXXX.json)\n  if [ \"$MODE\" = prod ]; then npm audit --omit=dev --json >\"$TMP\" 2>/dev/null || true; else npm audit --json >\"$TMP\" 2>/dev/null || true; fi\n  echo \"=== npm audit $MODE ===\"\n  node - \"$TMP\" <<'NODE'\nconst fs=require('fs'); const p=process.argv[2]; let x={}; try{x=JSON.parse(fs.readFileSync(p,'utf8'))}catch(e){console.log('audit-json-unavailable');process.exit(0)}\nconsole.log('summary',JSON.stringify(x.metadata?.vulnerabilities||{}));\nfor (const [name,v] of Object.entries(x.vulnerabilities||{}).sort((a,b)=>String(a[1].severity).localeCompare(String(b[1].severity)))) {\n const via=(v.via||[]).map(z=>typeof z==='string'?z:(z.title||z.source||'advisory')).slice(0,3);\n console.log(JSON.stringify({name,severity:v.severity,isDirect:v.isDirect,range:v.range,fixAvailable:v.fixAvailable,via}));\n}\nNODE\n  rm -f \"$TMP\"\ndone\ngit status --short"
+  ]
+}
