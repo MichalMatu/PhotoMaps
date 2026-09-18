@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260919-photomap-frontend-deps-update-016",
+  "task_digest": "3ad7197e8f82765b33cc54032e45bb9a4cdcadbb9b03b1ea4596d0c35d675ca7",
+  "idle_timeout": 300,
+  "task_timeout": 10800,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-18T23:07:24.466515+00:00",
+  "attempt_id": "6e010f56bf0a29d8e86083f0",
+  "daemon_version": "4.18.22",
+  "daemon_pid": 18807,
+  "updated_at": "2026-09-18T23:07:24.466661+00:00",
+  "pid": 18807
+}
