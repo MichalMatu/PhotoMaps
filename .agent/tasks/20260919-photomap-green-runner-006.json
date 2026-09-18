@@ -1,0 +1,15 @@
+{
+  "id": "20260919-photomap-green-runner-006",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/photomap-green-main-20260919",
+  "allow_write": true,
+  "resources": [],
+  "command_timeout": 1800,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail\ntest \"$(git rev-parse HEAD)\" = \"578281bf750d7c86792ba4d6ccde505a7678c01f\"\npython3 - <<'PY'\nfrom pathlib import Path\n\ndef rep(path, old, new):\n    p=Path(path); text=p.read_text(); n=text.count(old)\n    if n != 1: raise SystemExit(f'{path}: expected 1 match, got {n}')\n    p.write_text(text.replace(old,new))\n\nrep('backend/app/tests/services/test_admin_memory_review_transactions.py',\n'def test_memory_rejection_commit_failure_keeps_existing_public_media(client_session, tmp_path: Path, monkeypatch) -> None:\\n',\n'def test_memory_rejection_commit_failure_keeps_existing_public_media(\\n    client_session, tmp_path: Path, monkeypatch\\n) -> None:\\n')\n\nfor path in ('scripts/check.sh','scripts/dev_backend.sh','scripts/devctl.sh','scripts/serverctl.sh'):\n    p=Path(path); text=p.read_text()\n    text=text.replace('PYTHON_BIN=\"${PYTHON:-python3}\"','PYTHON_BIN=\"${PYTHON:-}\"',1)\n    old='if [ -x \"$ROOT_DIR/backend/.venv/bin/python\" ]; then\\n  PYTHON_BIN=\"$ROOT_DIR/backend/.venv/bin/python\"\\nfi'\n    new='if [ -z \"$PYTHON_BIN\" ]; then\\n  if [ -x \"$ROOT_DIR/backend/.venv/bin/python\" ]; then\\n    PYTHON_BIN=\"$ROOT_DIR/backend/.venv/bin/python\"\\n  else\\n    PYTHON_BIN=python3\\n  fi\\nfi'\n    if old not in text: raise SystemExit(f'{path}: python selector not found')\n    text=text.replace(old,new,1)\n    anchor='PYTHON_BIN=\"${PYTHON:-}\"\\n'\n    if 'DATA_DIR=\"${PHOTOMAP_DATA_DIR' not in text:\n        text=text.replace(anchor, anchor+'DATA_DIR=\"${PHOTOMAP_DATA_DIR:-$ROOT_DIR/backend/data}\"\\nSTORAGE_DIR=\"${PHOTOMAP_STORAGE_DIR:-$ROOT_DIR/backend/storage}\"\\n',1)\n    text=text.replace('\"$ROOT_DIR/backend/data\"','\"$DATA_DIR\"')\n    text=text.replace('\"$ROOT_DIR/backend/storage/private\"','\"$STORAGE_DIR/private\"')\n    text=text.replace('\"$ROOT_DIR/backend/storage/public\"','\"$STORAGE_DIR/public\"')\n    p.write_text(text)\n\np=Path('scripts/dev/services.sh'); text=p.read_text()\ntext=text.replace('\"$ROOT_DIR/backend/data\"','\"$DATA_DIR\"').replace('\"$ROOT_DIR/backend/storage/private\"','\"$STORAGE_DIR/private\"').replace('\"$ROOT_DIR/backend/storage/public\"','\"$STORAGE_DIR/public\"')\np.write_text(text)\nPY\ngit diff --check\npython3 -m compileall -q backend/app\ngit status --short",
+    "set -euo pipefail\ngit add backend/app/tests/services/test_admin_memory_review_transactions.py scripts/check.sh scripts/dev_backend.sh scripts/devctl.sh scripts/dev/services.sh scripts/serverctl.sh\ngit diff --cached --check\ngit commit -m 'Fix project runner environment handling'\ngit push origin HEAD:work/photomap-green-main-20260919"
+  ]
+}
