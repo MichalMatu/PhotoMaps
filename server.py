@@ -61,6 +61,13 @@ def recover_photo_media_quarantine() -> dict[str, int]:
         return recover_photo_media_quarantines(session)
 
 
+def validate_runtime_config() -> None:
+    configure_import_path()
+    from app.core.config import validate_runtime_security_config
+
+    validate_runtime_security_config()
+
+
 def create_app():
     configure_import_path()
 
@@ -77,6 +84,7 @@ def main() -> int:
         return 0
 
     load_local_env()
+    validate_runtime_config()
 
     try:
         runtime_app = create_app()

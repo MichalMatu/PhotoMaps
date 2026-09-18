@@ -2,16 +2,22 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PYTHON_BIN="${PYTHON:-python3}"
+PYTHON_BIN="${PYTHON:-}"
+DATA_DIR="${PHOTOMAP_DATA_DIR:-$ROOT_DIR/backend/data}"
+STORAGE_DIR="${PHOTOMAP_STORAGE_DIR:-$ROOT_DIR/backend/storage}"
 
-if [ -x "$ROOT_DIR/backend/.venv/bin/python" ]; then
-  PYTHON_BIN="$ROOT_DIR/backend/.venv/bin/python"
+if [ -z "$PYTHON_BIN" ]; then
+  if [ -x "$ROOT_DIR/backend/.venv/bin/python" ]; then
+    PYTHON_BIN="$ROOT_DIR/backend/.venv/bin/python"
+  else
+    PYTHON_BIN=python3
+  fi
 fi
 
 mkdir -p \
-  "$ROOT_DIR/backend/data" \
-  "$ROOT_DIR/backend/storage/private" \
-  "$ROOT_DIR/backend/storage/public"
+  "$DATA_DIR" \
+  "$STORAGE_DIR/private" \
+  "$STORAGE_DIR/public"
 
 cd "$ROOT_DIR/backend"
 "$PYTHON_BIN" -m alembic -c alembic.ini upgrade head

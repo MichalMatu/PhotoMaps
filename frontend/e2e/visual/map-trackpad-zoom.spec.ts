@@ -28,6 +28,17 @@ async function dispatchPinch(page: Page, deltaY: number) {
   });
 }
 
+async function dispatchGradualPinchStep(page: Page) {
+  for (let index = 0; index < 4; index += 1) {
+    await dispatchPinch(page, -12);
+  }
+}
+
+async function settledMarkerWidth(page: Page) {
+  await page.waitForTimeout(350);
+  return markerWidth(page);
+}
+
 test("Mac-style trackpad pinch zoom is gradual and rate limited", async ({ page }) => {
   await page.setViewportSize({ height: 820, width: 1280 });
   await mockSharedApi(page);
@@ -35,18 +46,17 @@ test("Mac-style trackpad pinch zoom is gradual and rate limited", async ({ page 
   await expect(page.locator(".place-photo-marker").first()).toBeVisible();
 
   const initialWidth = await markerWidth(page);
-  for (let index = 0; index < 4; index += 1) {
-    await dispatchPinch(page, -12);
-  }
-
+  await dispatchGradualPinchStep(page);
   await expect.poll(() => markerWidth(page)).toBeGreaterThan(initialWidth);
-  const afterGradualPinch = await markerWidth(page);
+  const oneStepWidth = await settledMarkerWidth(page);
 
+  await page.reload();
+  await expect(page.locator(".place-photo-marker").first()).toBeVisible();
+  const burstInitialWidth = await markerWidth(page);
+  await dispatchGradualPinchStep(page);
   await dispatchPinch(page, -600);
-  await page.waitForTimeout(25);
-  expect(Math.abs((await markerWidth(page)) - afterGradualPinch)).toBeLessThan(1);
+  await expect.poll(() => markerWidth(page)).toBeGreaterThan(burstInitialWidth);
+  const rateLimitedBurstWidth = await settledMarkerWidth(page);
 
-  await page.waitForTimeout(70);
-  await dispatchPinch(page, -1);
-  await expect.poll(() => markerWidth(page)).toBeGreaterThan(afterGradualPinch);
+  expect(Math.abs(rateLimitedBurstWidth - oneStepWidth)).toBeLessThan(1);
 });

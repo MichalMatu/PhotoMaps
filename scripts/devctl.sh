@@ -3,7 +3,9 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DEV_DIR="${DEV_DIR:-$ROOT_DIR/.dev}"
-PYTHON_BIN="${PYTHON:-python3}"
+PYTHON_BIN="${PYTHON:-}"
+DATA_DIR="${PHOTOMAP_DATA_DIR:-$ROOT_DIR/backend/data}"
+STORAGE_DIR="${PHOTOMAP_STORAGE_DIR:-$ROOT_DIR/backend/storage}"
 
 BACKEND_HOST="${BACKEND_HOST:-127.0.0.1}"
 BACKEND_PORT="${BACKEND_PORT:-8000}"
@@ -17,8 +19,12 @@ FRONTEND_PID_FILE="$DEV_DIR/frontend.pid"
 BACKEND_LOG="$DEV_DIR/backend.log"
 FRONTEND_LOG="$DEV_DIR/frontend.log"
 
-if [ -x "$ROOT_DIR/backend/.venv/bin/python" ]; then
-  PYTHON_BIN="$ROOT_DIR/backend/.venv/bin/python"
+if [ -z "$PYTHON_BIN" ]; then
+  if [ -x "$ROOT_DIR/backend/.venv/bin/python" ]; then
+    PYTHON_BIN="$ROOT_DIR/backend/.venv/bin/python"
+  else
+    PYTHON_BIN=python3
+  fi
 fi
 
 export ADMIN_TOKEN="${ADMIN_TOKEN:-dev-admin-token}"
