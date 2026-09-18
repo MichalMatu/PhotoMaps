@@ -1,0 +1,16 @@
+{
+  "id": "20260919-photomap-admin-gallery-race-020",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/photomap-frontend-deps-20260919",
+  "allow_write": true,
+  "resources": [],
+  "command_timeout": 3600,
+  "task_timeout": 7200,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail\ntest \"$(git rev-parse HEAD)\" = \"381639639cde9f0535af571d0a73080232177f75\"\npython3 - <<'PY'\nfrom pathlib import Path\np=Path('frontend/e2e/visual/admin.spec.ts')\ns=p.read_text()\nold='''    const photoPanelDialog = page.getByRole(\"dialog\", { name: \"Zdjęcia miejsca\" });\n    await expect(photoPanelDialog).toBeVisible();\n\n    if (width >= 1200) {\n      const panelBox = await getRoundedBox(photoPanelDialog);\n      expect(panelBox.width).toBeGreaterThanOrEqual(1400);\n\n      const photoCards = photoPanelDialog.locator(\".place-photo-strip .admin-media-item\");\n      await expect(photoCards).toHaveCount(adminPhotoList.length);\n'''\nnew='''    const photoPanelDialog = page.getByRole(\"dialog\", { name: \"Zdjęcia miejsca\" });\n    await expect(photoPanelDialog).toBeVisible();\n    const photoCards = photoPanelDialog.locator(\".place-photo-strip .admin-media-item\");\n    await expect(photoCards).toHaveCount(adminPhotoList.length);\n\n    if (width >= 1200) {\n      const panelBox = await getRoundedBox(photoPanelDialog);\n      expect(panelBox.width).toBeGreaterThanOrEqual(1400);\n\n'''\nif s.count(old) != 1:\n    raise SystemExit('expected admin gallery block exactly once')\np.write_text(s.replace(old,new))\nPY\ncd frontend\nnpx prettier --check e2e/visual/admin.spec.ts\ncd ..\ngit diff --check",
+    "set -euo pipefail\nVENV=$(mktemp -d /tmp/photomap-gallery-race-venv-XXXXXX)\ntrap 'rm -rf \"$VENV\"; ./scripts/devctl.sh stop >/dev/null 2>&1 || true' EXIT\npython3 -m venv \"$VENV\"\n\"$VENV/bin/python\" -m pip install -q -r backend/requirements.txt\ncd frontend\nnpm ci\nnpx playwright install chromium\nPYTHON=\"$VENV/bin/python\" npm run test:e2e -- --project=chromium e2e/visual/admin.spec.ts -g \"admin place photo gallery exposes moderator tools in responsive media viewer\" --repeat-each=10\ncd ..\ngit diff --check",
+    "set -euo pipefail\ngit add frontend/e2e/visual/admin.spec.ts\ngit diff --cached --check\ngit commit -m 'Stabilize admin gallery layout assertion'\ngit push origin HEAD:work/photomap-frontend-deps-20260919"
+  ]
+}
