@@ -1,0 +1,60 @@
+{
+  "id": "20260919-photomap-backend-isolation-verify-005",
+  "status": "done",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "started_at": "2026-09-18T22:29:02.068865+00:00",
+  "command_timeout": 1800,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail\ntest \"$(git rev-parse HEAD)\" = \"578281bf750d7c86792ba4d6ccde505a7678c01f\"\nVENV=$(mktemp -d /tmp/photomap-audit5-venv-XXXXXX)\nDATA=$(mktemp -d /tmp/photomap-audit5-data-XXXXXX)\nSTORAGE=$(mktemp -d /tmp/photomap-audit5-storage-XXXXXX)\ntrap 'rm -rf \"$VENV\" \"$DATA\" \"$STORAGE\"' EXIT\nmkdir -p \"$STORAGE/private\" \"$STORAGE/public\"\npython3 -m venv \"$VENV\"\n\"$VENV/bin/python\" -m pip install -q -r backend/requirements.txt\ncd backend\nPHOTOMAP_DATA_DIR=\"$DATA\" PHOTOMAP_STORAGE_DIR=\"$STORAGE\" ADMIN_TOKEN=dev-admin-token CLAIM_TOKEN_SECRET=audit-claim-secret \"$VENV/bin/python\" -m pytest -q\ncd ..\ngit status --short",
+      "exit_code": 0,
+      "output": "\n[notice] A new release of pip is available: 25.3 -> 26.2.1\n[notice] To update, run: /private/tmp/photomap-audit5-venv-df94D3/bin/python -m pip install --upgrade pip\n........................................................................ [ 22%]\n........................................................................ [ 44%]\n........................................................................ [ 67%]\n........................................................................ [ 89%]\n.................................                                        [100%]\n=============================== warnings summary ===============================\n../../../../../../../private/tmp/photomap-audit5-venv-df94D3/lib/python3.13/site-packages/fastapi/testclient.py:1\n  /private/tmp/photomap-audit5-venv-df94D3/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n../../../../../../../private/tmp/photomap-audit5-venv-df94D3/lib/python3.13/site-packages/starlette/testclient.py:53\n  /private/tmp/photomap-audit5-venv-df94D3/lib/python3.13/site-packages/starlette/testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.\n    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n321 passed, 2 warnings in 21.42s\n",
+      "elapsed_seconds": 49.814,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 3072,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": 237.8,
+      "output_policy": "stream",
+      "captured_output_chars": 1568,
+      "output_truncated": false,
+      "current_rss_mb": 204.0,
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "command-1",
+      "stage_index": 1,
+      "stage_total": 1,
+      "stage_phase": "commands",
+      "outcome": "passed",
+      "elapsed_seconds": 49.814
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.073
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.068
+  },
+  "finished_at": "2026-09-18T22:29:53.361549+00:00",
+  "task_digest": "79250fae6eff041859265e3de551eb77c5e5d337a92cde24eb0acbe5cfcaf377",
+  "idle_timeout": 300,
+  "task_timeout": 3600,
+  "memory_limit_mb": 3072,
+  "attempt_id": "9965db9ba65289d2c9e986ba",
+  "daemon_version": "4.18.22"
+}
