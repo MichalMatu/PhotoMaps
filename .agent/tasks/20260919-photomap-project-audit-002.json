@@ -1,0 +1,15 @@
+{
+  "id": "20260919-photomap-project-audit-002",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 2400,
+  "task_timeout": 7200,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail\ntest \"$(git rev-parse HEAD)\" = \"578281bf750d7c86792ba4d6ccde505a7678c01f\"\nprintf '%s\\n' '=== MAINTENANCE SIGNALS (portable scan) ==='\npython3 - <<'PY'\nfrom pathlib import Path\nroots=[Path('backend'),Path('frontend'),Path('scripts'),Path('server.py')]\npatterns=['TODO','FIXME','HACK','XXX','except Exception','type: ignore','eslint-disable','shell=True','os.system(','subprocess.']\nexts={'.py','.ts','.tsx','.js','.jsx','.css','.sh','.md'}\nfor pat in patterns:\n    print(f'-- {pat} --')\n    found=0\n    for root in roots:\n        paths=[root] if root.is_file() else root.rglob('*')\n        for p in paths:\n            if not p.is_file() or (p.suffix not in exts and p.name!='server.py') or 'node_modules' in p.parts or '.venv' in p.parts:\n                continue\n            try: lines=p.read_text(encoding='utf-8',errors='ignore').splitlines()\n            except OSError: continue\n            for i,line in enumerate(lines,1):\n                if pat in line:\n                    print(f'{p}:{i}:{line.strip()[:220]}')\n                    found += 1\n                    if found >= 80: break\n            if found >= 80: break\n        if found >= 80: break\n    print('count_shown',found)\nPY",
+    "set -euo pipefail\nVENV=$(mktemp -d /tmp/photomap-audit-venv-XXXXXX)\nDATA=$(mktemp -d /tmp/photomap-audit-data-XXXXXX)\nSTORAGE=$(mktemp -d /tmp/photomap-audit-storage-XXXXXX)\ntrap 'rm -rf \"$VENV\" \"$DATA\" \"$STORAGE\"; ./scripts/devctl.sh stop >/dev/null 2>&1 || true' EXIT\npython3 -m venv \"$VENV\"\n\"$VENV/bin/python\" -m pip install -q -r backend/requirements.txt\nif [ ! -d frontend/node_modules ]; then (cd frontend && npm ci); fi\nPYTHON=\"$VENV/bin/python\" PHOTOMAP_DATA_DIR=\"$DATA\" PHOTOMAP_STORAGE_DIR=\"$STORAGE\" ADMIN_TOKEN=dev-admin-token CLAIM_TOKEN_SECRET=audit-claim-secret make check\ngit diff --check\ntest -z \"$(git status --porcelain)\"\ntrap - EXIT\nrm -rf \"$VENV\" \"$DATA\" \"$STORAGE\"\n./scripts/devctl.sh stop >/dev/null 2>&1 || true"
+  ]
+}
