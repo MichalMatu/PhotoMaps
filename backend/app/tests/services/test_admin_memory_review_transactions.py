@@ -98,7 +98,9 @@ def test_memory_approval_commit_failure_removes_new_public_media(client_session,
     assert not public_memory_dir(tmp_path, place.id).exists()
 
 
-def test_memory_rejection_commit_failure_keeps_existing_public_media(client_session, tmp_path: Path, monkeypatch) -> None:
+def test_memory_rejection_commit_failure_keeps_existing_public_media(
+    client_session, tmp_path: Path, monkeypatch
+) -> None:
     client, session = client_session
     place = create_place(session)
     memory_id = upload_pending_memory(client, place.id)

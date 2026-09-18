@@ -3,9 +3,9 @@
 ensure_dirs() {
   mkdir -p \
     "$DEV_DIR" \
-    "$ROOT_DIR/backend/data" \
-    "$ROOT_DIR/backend/storage/private" \
-    "$ROOT_DIR/backend/storage/public"
+    "$DATA_DIR" \
+    "$STORAGE_DIR/private" \
+    "$STORAGE_DIR/public"
 }
 
 run_migrations() {
