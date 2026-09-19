@@ -55,6 +55,27 @@ ensure_runtime_dirs() {
     "$STORAGE_DIR/public"
 }
 
+rotate_log_if_needed() {
+  local log_file="$1"
+  local max_bytes="${2:-5242880}"
+  local size
+
+  if [ ! -f "$log_file" ]; then
+    return
+  fi
+
+  size="$(wc -c < "$log_file")"
+  if [ "$size" -lt "$max_bytes" ]; then
+    return
+  fi
+
+  rm -f "$log_file.2"
+  if [ -f "$log_file.1" ]; then
+    mv "$log_file.1" "$log_file.2"
+  fi
+  mv "$log_file" "$log_file.1"
+}
+
 start_detached() {
   local pid_file="$1"
   local log_file="$2"
@@ -112,6 +133,7 @@ start_server() {
 
   fail_if_port_busy "PhotoMap runtime" "$SERVER_PORT"
   build_frontend
+  rotate_log_if_needed "$SERVER_LOG" "${PHOTOMAP_SERVER_LOG_MAX_BYTES:-5242880}"
 
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] start server $SERVER_URL" >> "$SERVER_LOG"
   start_detached "$SERVER_PID_FILE" "$SERVER_LOG" "$PYTHON_BIN" "$ROOT_DIR/server.py"
@@ -138,7 +160,7 @@ stop_server() {
 }
 
 wait_server() {
-  local seconds="${SERVER_WAIT_SECONDS:-12}"
+  local seconds="${SERVER_WAIT_SECONDS:-30}"
   local i=0
   while [ "$i" -lt "$seconds" ]; do
     if command -v curl >/dev/null 2>&1 && curl -fsS --max-time 2 "$SERVER_URL/health" >/dev/null 2>&1; then
