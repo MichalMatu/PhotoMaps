@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260919-photomap-backend-deps-split-024",
+  "task_digest": "a7ac28b99b2a20602c851610178761007a51acc463c3984bccef02abba364e49",
+  "idle_timeout": 300,
+  "task_timeout": 7200,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-19T09:20:33.936273+00:00",
+  "attempt_id": "e42b8db36842d8e59017c6d8",
+  "daemon_version": "4.18.22",
+  "daemon_pid": 40595,
+  "updated_at": "2026-09-19T09:20:33.936353+00:00",
+  "pid": 40595
+}
