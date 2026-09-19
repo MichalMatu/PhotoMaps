@@ -82,6 +82,7 @@ It intentionally does not contain application data or a prebuilt virtual environ
 The dependency key changes when any of these inputs change:
 
 - `backend/requirements.txt`;
+- `backend/requirements-dev.txt`;
 - `backend/pyproject.toml`;
 - `frontend/package.json`;
 - `frontend/package-lock.json`;
