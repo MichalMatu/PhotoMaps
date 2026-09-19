@@ -413,11 +413,11 @@ describe("pinned media board helpers", () => {
         width: 294,
         x: 100,
         y: 100,
-       zIndex: 2,
+        zIndex: 2,
       },
       [other],
       bounds,
-     );
+    );
 
     expect(layout.x).toBe(100);
     expect(layout.y).toBe(100);
