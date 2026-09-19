@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 
 import type {
   AdminPlace,
@@ -22,7 +22,8 @@ import {
 } from "../placeCustomFields";
 import { validateAudioFile } from "../ui/audioAttachment";
 import { sortAdminCategoriesByLabel, sortAdminCitiesByName } from "./adminListSorting";
-import { hasPlaceLocationChanged, type PlaceLocation, type PlaceLocationAutoSaveStatus } from "./placeLocationAutoSave";
+import type { PlaceLocation } from "./placeLocationAutoSave";
+import { usePlaceLocationAutoSave } from "./usePlaceLocationAutoSave";
 import { EMPTY_PHOTO_ATTRIBUTION_DRAFT, type PhotoAttributionDraft } from "./placePhotoPanelState";
 import type { PlaceFormPayload } from "./useAdminPlaceManagement";
 
@@ -49,8 +50,9 @@ export function usePlaceFormDraft({
   const [cityId, setCityId] = useState("");
   const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const [location, setLocation] = useState(() => locationForCity(undefined, mapFallback));
-  const savedLocationRef = useRef(location);
-  const locationSaveQueueRef = useRef<Promise<void>>(Promise.resolve());
+  const { locationAutoSaveStatus, resetLocationAutoSave, saveLocation } = usePlaceLocationAutoSave({
+    onSave: place ? onLocationAutoSave : undefined,
+  });
   const [description, setDescription] = useState("");
   const [localComment, setLocalComment] = useState("");
   const [articleBlocks, setArticleBlocks] = useState<ContentBlock[]>([]);
@@ -66,7 +68,6 @@ export function usePlaceFormDraft({
   const [coverPhotoInputKey, setCoverPhotoInputKey] = useState(0);
   const [customFieldValues, setCustomFieldValues] = useState<PlaceCustomFieldFormValues>({});
   const [isSaving, setIsSaving] = useState(false);
-  const [locationAutoSaveStatus, setLocationAutoSaveStatus] = useState<PlaceLocationAutoSaveStatus>("idle");
 
   const generatedSlug = useMemo(() => slugify(title), [title]);
   const availableCities = useMemo(
@@ -105,12 +106,11 @@ export function usePlaceFormDraft({
   }, []);
 
   const resetCreateDraft = useCallback(() => {
-    savedLocationRef.current = defaultLocation;
+    resetLocationAutoSave(defaultLocation);
     setTitle("");
     setCityId(defaultCityId);
     setCategoryIds([]);
     setLocation(defaultLocation);
-    setLocationAutoSaveStatus("idle");
     setDescription("");
     setLocalComment("");
     setArticleBlocks([]);
@@ -118,7 +118,7 @@ export function usePlaceFormDraft({
     setStatus("draft");
     setCustomFieldValues(placeCustomFieldFormValues(sortedCustomFields, {}));
     resetCoverPhotoFields();
-  }, [defaultCityId, defaultLocation, resetCoverPhotoFields, sortedCustomFields]);
+  }, [defaultCityId, defaultLocation, resetCoverPhotoFields, resetLocationAutoSave, sortedCustomFields]);
 
   useEffect(() => {
     if (!place) {
@@ -130,9 +130,8 @@ export function usePlaceFormDraft({
     setCityId(place.city_id);
     setCategoryIds(place.category_ids);
     const placeLocation = { lat: place.lat, lon: place.lon };
-    savedLocationRef.current = placeLocation;
+    resetLocationAutoSave(placeLocation);
     setLocation(placeLocation);
-    setLocationAutoSaveStatus("idle");
     setDescription(place.description ?? "");
     setLocalComment(place.local_comment ?? "");
     setArticleBlocks(place.article_blocks);
@@ -140,7 +139,7 @@ export function usePlaceFormDraft({
     setStatus(place.status);
     setCustomFieldValues(placeCustomFieldFormValues(sortedCustomFields, place.custom_fields));
     resetCoverPhotoFields();
-  }, [place, resetCoverPhotoFields, resetCreateDraft, sortedCustomFields]);
+  }, [place, resetCoverPhotoFields, resetCreateDraft, resetLocationAutoSave, sortedCustomFields]);
 
   function toggleCategory(categoryId: string) {
     setCategoryIds((currentIds) =>
@@ -157,44 +156,17 @@ export function usePlaceFormDraft({
         availableCities.find((city) => city.id === nextCityId),
         mapFallback,
       );
-      savedLocationRef.current = nextLocation;
+      resetLocationAutoSave(nextLocation);
       setLocation(nextLocation);
-      setLocationAutoSaveStatus("idle");
     }
   }
 
   const handleLocationChange = useCallback(
     (nextLocation: PlaceLocation) => {
       setLocation(nextLocation);
-
-      if (!place || !onLocationAutoSave) {
-        return;
-      }
-
-      if (!hasPlaceLocationChanged(savedLocationRef.current, nextLocation)) {
-        setLocationAutoSaveStatus("idle");
-        return;
-      }
-
-      const requestedLocation = { ...nextLocation };
-      setLocationAutoSaveStatus("saving");
-      locationSaveQueueRef.current = locationSaveQueueRef.current
-        .catch(() => undefined)
-        .then(async () => {
-          if (!hasPlaceLocationChanged(savedLocationRef.current, requestedLocation)) {
-            return;
-          }
-
-          setLocationAutoSaveStatus("saving");
-          await onLocationAutoSave(requestedLocation);
-          savedLocationRef.current = requestedLocation;
-          setLocationAutoSaveStatus("saved");
-        })
-        .catch(() => {
-          setLocationAutoSaveStatus("error");
-        });
+      saveLocation(nextLocation);
     },
-    [onLocationAutoSave, place],
+    [saveLocation],
   );
 
   function addArticleBlock(type: ContentBlockType) {

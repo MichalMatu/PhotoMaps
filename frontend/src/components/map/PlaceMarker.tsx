@@ -13,9 +13,9 @@ import {
   galleryMotionStyle,
   getPlaceGalleryMotionLayout,
   isGalleryMotionItemInsideViewport,
-  placeMarkerEnterStyle,
   type GalleryMotionItem,
 } from "./mapMotion";
+import { placeMarkerEnterStyle } from "./placeMarkerMotion";
 import { MAP_MARKER_PANE, PHOTO_GALLERY_PANE } from "./mapPanes";
 import { getPlaceGalleryMaxSize } from "./placeGallerySizing";
 import { getPlacePreviewVisual, type PlaceMapVisualItem } from "./placePreview";

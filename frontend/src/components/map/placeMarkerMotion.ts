@@ -1,3 +1,7 @@
+import { MAP_DISPLAY_CONFIG } from "./mapDisplayConfig";
+
+const MARKER_TRANSITION_CONFIG = MAP_DISPLAY_CONFIG.markerTransition;
+
 type PlaceMarkerMotionSource = {
   cover_photo: { id: string } | null;
   id: string;
@@ -34,4 +38,15 @@ export function isPlaceMarkerEntering(
   currentSignature: string,
 ) {
   return previousSignaturesByPlaceId?.get(placeId) !== currentSignature;
+}
+
+export function getPlaceMarkerEnterDelayMs(index: number) {
+  return Math.min(
+    Math.max(0, index) * MARKER_TRANSITION_CONFIG.enterStaggerMs,
+    MARKER_TRANSITION_CONFIG.enterMaxDelayMs,
+  );
+}
+
+export function placeMarkerEnterStyle(index: number) {
+  return `--place-marker-enter-delay: ${getPlaceMarkerEnterDelayMs(index)}ms;`;
 }
