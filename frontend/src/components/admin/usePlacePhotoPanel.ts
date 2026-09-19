@@ -18,10 +18,10 @@ import { canSubmitPhotoUpload } from "./photoUploadState";
 import {
   EMPTY_PHOTO_ATTRIBUTION_DRAFT,
   type PhotoAttributionDraft,
-  photoAttributionDraftFromPhoto,
   photoPayloadFromDraft,
   sortPlacePhotosForPanel,
 } from "./placePhotoPanelState";
+import { usePhotoTextEditDraft } from "./usePhotoTextEditDraft";
 
 type UsePlacePhotoPanelParams = {
   onChanged: () => Promise<void>;
@@ -31,16 +31,24 @@ type UsePlacePhotoPanelParams = {
 
 export function usePlacePhotoPanel({ onChanged, photos, place }: UsePlacePhotoPanelParams) {
   const [caption, setCaption] = useState("");
-  const [captionDraft, setCaptionDraft] = useState("");
   const [descriptionBlocks, setDescriptionBlocks] = useState<ContentBlock[]>([]);
-  const [descriptionDraftBlocks, setDescriptionDraftBlocks] = useState<ContentBlock[]>([]);
-  const [attributionDraft, setAttributionDraft] = useState<PhotoAttributionDraft>({
-    ...EMPTY_PHOTO_ATTRIBUTION_DRAFT,
-  });
+  const {
+    addDescriptionDraftBlock,
+    attributionDraft,
+    captionDraft,
+    descriptionDraftBlocks,
+    editingPhotoId,
+    removeDescriptionDraftBlock,
+    resetPhotoTextEditDraft,
+    setAttributionDraft,
+    setCaptionDraft,
+    startPhotoTextEdit,
+    updateDescriptionDraftBlock,
+    updateDescriptionDraftBlockType,
+  } = usePhotoTextEditDraft();
   const [uploadAttributionDraft, setUploadAttributionDraft] = useState<PhotoAttributionDraft>({
     ...EMPTY_PHOTO_ATTRIBUTION_DRAFT,
   });
-  const [editingPhotoId, setEditingPhotoId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const reviewingPhotoIdsRef = useRef(new Set<string>());
   const [reviewingPhotoIds, setReviewingPhotoIds] = useState<Set<string>>(() => new Set());
@@ -178,17 +186,11 @@ export function usePlacePhotoPanel({ onChanged, photos, place }: UsePlacePhotoPa
   }
 
   function handleStartCaptionEdit(photo: AdminPhoto) {
-    setCaptionDraft(photo.caption ?? "");
-    setDescriptionDraftBlocks(photo.description_blocks);
-    setAttributionDraft(photoAttributionDraftFromPhoto(photo));
-    setEditingPhotoId(photo.id);
+    startPhotoTextEdit(photo);
   }
 
   function handleCancelCaptionEdit() {
-    setEditingPhotoId(null);
-    setCaptionDraft("");
-    setDescriptionDraftBlocks([]);
-    setAttributionDraft({ ...EMPTY_PHOTO_ATTRIBUTION_DRAFT });
+    resetPhotoTextEditDraft();
   }
 
   async function handleSaveCaption(photo: AdminPhoto) {
@@ -239,32 +241,6 @@ export function usePlacePhotoPanel({ onChanged, photos, place }: UsePlacePhotoPa
 
   function removeDescriptionBlock(index: number) {
     setDescriptionBlocks((currentBlocks) => currentBlocks.filter((_block, currentIndex) => currentIndex !== index));
-  }
-
-  function updateDescriptionDraftBlock(index: number, nextBlock: ContentBlock) {
-    setDescriptionDraftBlocks((currentBlocks) =>
-      currentBlocks.map((currentBlock, currentIndex) => (currentIndex === index ? nextBlock : currentBlock)),
-    );
-  }
-
-  function updateDescriptionDraftBlockType(index: number, type: ContentBlockType) {
-    setDescriptionDraftBlocks((currentBlocks) =>
-      currentBlocks.map((currentBlock, currentIndex) => {
-        if (currentIndex !== index) return currentBlock;
-        const nextBlock = emptyContentBlock(type);
-        return { ...nextBlock, text: currentBlock.text };
-      }),
-    );
-  }
-
-  function addDescriptionDraftBlock(type: ContentBlockType) {
-    setDescriptionDraftBlocks((currentBlocks) => [...currentBlocks, emptyContentBlock(type)]);
-  }
-
-  function removeDescriptionDraftBlock(index: number) {
-    setDescriptionDraftBlocks((currentBlocks) =>
-      currentBlocks.filter((_block, currentIndex) => currentIndex !== index),
-    );
   }
 
   return {
