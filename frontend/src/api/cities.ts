@@ -1,5 +1,5 @@
 import { request } from "./http";
-import type { City, CityPayload, CityUpdatePayload } from "./types";
+import type { City, CityPayload, CityUpdatePayload } from "./types/taxonomy";
 
 export function getAdminCities(): Promise<City[]> {
   return request<City[]>("/api/admin/cities");

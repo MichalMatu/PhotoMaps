@@ -1,123 +1,31 @@
-export type CategoryStatus = "active" | "archived";
+import type { ContentBlock } from "./types/content";
+import type { PlaceCustomFields } from "./types/config";
+import type { Category, City } from "./types/taxonomy";
 
-export type Category = {
-  id: string;
-  label: string;
-  description: string | null;
-  icon: string | null;
-  sort_order: number;
-  status: CategoryStatus;
-};
-
-export type CategoryPayload = {
-  id: string;
-  label: string;
-  description: string | null;
-  icon: string | null;
-  sort_order: number;
-  status: CategoryStatus;
-};
-
-export type CategoryUpdatePayload = Partial<Omit<CategoryPayload, "id">>;
-
-export type CityStatus = "active" | "archived";
-
-export type City = {
-  id: string;
-  name: string;
-  region: string;
-  lat: number;
-  lon: number;
-  default_zoom: number;
-  sort_order: number;
-  status: CityStatus;
-};
-
-export type CityPayload = {
-  id: string;
-  name: string;
-  region: string;
-  lat: number;
-  lon: number;
-  default_zoom: number;
-  sort_order: number;
-  status: CityStatus;
-};
-
-export type CityUpdatePayload = Partial<Omit<CityPayload, "id">>;
+export type { ContentBlock, ContentBlockType } from "./types/content";
+export type {
+  AppConfig,
+  AppConfigMap,
+  AppConfigMapMarkerDensity,
+  AppConfigMapMarkerPriority,
+  AppConfigMapMarkerScale,
+  PlaceCustomFieldDefinition,
+  PlaceCustomFields,
+  PlaceCustomFieldType,
+  PlaceCustomFieldValue,
+} from "./types/config";
+export type {
+  Category,
+  CategoryPayload,
+  CategoryStatus,
+  CategoryUpdatePayload,
+  City,
+  CityPayload,
+  CityStatus,
+  CityUpdatePayload,
+} from "./types/taxonomy";
 
 export type PlaceStatus = "draft" | "published" | "archived";
-
-export type PlaceCustomFieldType = "text" | "textarea" | "number" | "select" | "url" | "boolean" | "date";
-export type PlaceCustomFieldValue = string | number | boolean | null;
-export type PlaceCustomFields = Record<string, PlaceCustomFieldValue>;
-
-export type PlaceCustomFieldDefinition = {
-  key: string;
-  label: string;
-  type: PlaceCustomFieldType;
-  required: boolean;
-  public: boolean;
-  options: string[] | null;
-  sort_order: number;
-};
-
-type AppConfigMapMarkerSize = {
-  width: number;
-  height: number;
-};
-
-type AppConfigMapMarkerPriorityScale = {
-  min_scale: number;
-  max_scale: number;
-  curve: number;
-};
-
-export type AppConfigMapMarkerScale = {
-  base_size: AppConfigMapMarkerSize;
-  min_render_scale: number;
-  max_render_scale: number;
-  priority: AppConfigMapMarkerPriorityScale;
-};
-
-export type AppConfigMapMarkerDensity = {
-  marker_viewport_area: number;
-  min_zoom: number;
-  full_density_zoom: number;
-  min_zoom_fill_ratio: number;
-  max_zoom_fill_ratio: number;
-  zoom_curve: number;
-};
-
-export type AppConfigMapMarkerPriority = {
-  editorial_weight_multiplier: number;
-  photo_count_sqrt_multiplier: number;
-  memory_count_multiplier: number;
-  score_multiplier: number;
-};
-
-export type AppConfigMap = {
-  fallback_center: {
-    lat: number;
-    lon: number;
-  };
-  fallback_zoom: number;
-  marker_scale: AppConfigMapMarkerScale;
-  marker_density: AppConfigMapMarkerDensity;
-  marker_priority: AppConfigMapMarkerPriority;
-};
-
-export type AppConfig = {
-  product_name: string;
-  locale: string;
-  labels: Record<string, string>;
-  branding: {
-    primary_color: string;
-    logo_url: string | null;
-  };
-  map: AppConfigMap;
-  place_custom_fields: PlaceCustomFieldDefinition[];
-};
 
 type PublicPlace = {
   id: string;
@@ -142,23 +50,6 @@ export type Place = PublicPlace & {
   local_comment: string | null;
   status: PlaceStatus;
 };
-
-type ContentTextBlockType = "heading" | "subheading" | "paragraph";
-export type ContentBlockType = ContentTextBlockType | "link";
-
-type ContentTextBlock = {
-  type: ContentTextBlockType;
-  text: string;
-  url?: null;
-};
-
-type ContentLinkBlock = {
-  type: "link";
-  text: string;
-  url: string;
-};
-
-export type ContentBlock = ContentTextBlock | ContentLinkBlock;
 
 export type PlaceDetail = PublicPlace & {
   article_blocks: ContentBlock[];
