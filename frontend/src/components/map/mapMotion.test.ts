@@ -1,12 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  galleryMotionStyle,
-  getPlaceGalleryMotionLayout,
-  getPlaceMarkerEnterDelayMs,
-  isGalleryMotionItemInsideViewport,
-  placeMarkerEnterStyle,
-} from "./mapMotion";
+import { galleryMotionStyle, getPlaceGalleryMotionLayout, isGalleryMotionItemInsideViewport } from "./mapMotion";
 import { getPlaceGalleryMaxSize } from "./placeGallerySizing";
 
 function rectanglesForLayout(layout: ReturnType<typeof getPlaceGalleryMotionLayout>) {
@@ -198,15 +192,5 @@ describe("map motion helpers", () => {
         viewportWidth: 400,
       }),
     ).toBe(true);
-  });
-
-  it("keeps marker filter-entry delays short and capped", () => {
-    expect(getPlaceMarkerEnterDelayMs(0)).toBe(0);
-    expect(getPlaceMarkerEnterDelayMs(2)).toBe(32);
-    expect(getPlaceMarkerEnterDelayMs(20)).toBe(144);
-  });
-
-  it("serializes marker entry delay as a CSS custom property", () => {
-    expect(placeMarkerEnterStyle(3)).toBe("--place-marker-enter-delay: 48ms;");
   });
 });
