@@ -1,9 +1,0 @@
-{
-  "id": "20260913-photomap-pi-deploy-inspect-128",
-  "status": "failed",
-  "failure_reason": "invalid_task_file",
-  "started_at": null,
-  "finished_at": "2026-09-13T08:01:31.516358+00:00",
-  "daemon_version": "4.18.20",
-  "error": "JSONDecodeError: Invalid \\escape: line 12 column 1883 (char 2206)"
-}
