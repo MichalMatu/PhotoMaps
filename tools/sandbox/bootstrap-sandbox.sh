@@ -59,9 +59,10 @@ cp -a "$OFFLINE_DIR/npm-cache/." "$ROOT/npm-cache/"
   npm ci --offline --cache "$ROOT/npm-cache" --prefer-offline
 )
 
-# Knip 6.16 uses oxc-parser raw transfer on Node 22. That path reserves a ~6 GiB
-# ArrayBuffer and cannot run inside the current 4 GiB sandbox cgroup. Disable only
-# the experimental transfer mode in disposable node_modules; project source is untouched.
+# Knip uses oxc-parser raw transfer on Node 22. That path reserves a ~6 GiB
+# ArrayBuffer and cannot run inside the current 4 GiB sandbox cgroup. Current
+# Knip releases honor KNIP_DISABLE_RAW_TRANSFER; retain a fallback patch for the
+# older layout so a compatible cached dependency pack still bootstraps safely.
 KNIP_AST="$REPO_ROOT/frontend/node_modules/knip/dist/typescript/ast-nodes.js"
 "$ROOT/venv/bin/python" - "$KNIP_AST" <<'PY_PATCH'
 from pathlib import Path
@@ -69,11 +70,12 @@ import sys
 
 path = Path(sys.argv[1])
 text = path.read_text()
-old = "experimentalRawTransfer: rawTransferSupported(),"
-new = "experimentalRawTransfer: false,"
-if old in text:
-    path.write_text(text.replace(old, new, 1))
-elif new not in text:
+legacy = "experimentalRawTransfer: rawTransferSupported(),"
+env_aware = "experimentalRawTransfer: process.env.KNIP_DISABLE_RAW_TRANSFER !== '1' && rawTransferSupported(),"
+disabled = "experimentalRawTransfer: false,"
+if legacy in text:
+    path.write_text(text.replace(legacy, disabled, 1))
+elif env_aware not in text and disabled not in text:
     raise SystemExit("Unsupported Knip/oxc-parser layout; refresh sandbox bootstrap")
 PY_PATCH
 
@@ -85,6 +87,7 @@ export VIRTUAL_ENV="$ROOT/venv"
 export PYTHON="$ROOT/venv/bin/python"
 export NPM_CONFIG_CACHE="$ROOT/npm-cache"
 export PLAYWRIGHT_BROWSERS_PATH="$OFFLINE_DIR/ms-playwright"
+export KNIP_DISABLE_RAW_TRANSFER=1
 export TMPDIR="$ROOT/tmp"
 export CI=1
 export PATH="$ROOT/venv/bin:\$PATH"
