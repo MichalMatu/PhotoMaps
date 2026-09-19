@@ -1,8 +1,8 @@
 import { Play, Square } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import type { AudioAttachment } from "../../api/types";
-import { AudioAttachmentPlayer } from "../ui/AudioAttachmentPlayer";
+import type { AudioAttachment } from "../../../api/types";
+import { AudioAttachmentPlayer } from "../../ui/AudioAttachmentPlayer";
 
 type AudioPlaybackEventType = "ended" | "pause" | "play";
 type AudioPlaybackMode = "ambient" | "manual";

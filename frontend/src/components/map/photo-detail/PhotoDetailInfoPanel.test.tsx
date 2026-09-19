@@ -1,9 +1,9 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import type { MapMediaDisplay } from "./mediaDisplayText";
+import type { MapMediaDisplay } from "../mediaDisplayText";
 import { hasPhotoDetailInfo, PhotoDetailInfoPanel } from "./PhotoDetailInfoPanel";
-import type { PlaceMapVisualItem } from "./placePreview";
+import type { PlaceMapVisualItem } from "../placePreview";
 
 const emptyDisplay: MapMediaDisplay = { body: null, meta: null, title: null };
 

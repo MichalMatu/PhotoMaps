@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo } from "react";
 
-import { mediaUrl } from "../../api/http";
+import { mediaUrl } from "../../../api/http";
 import {
   nextPhotoDetailNavigationItem,
   photoDetailNavigationIndex,
   photoDetailNavigationItems,
   type PhotoDetailNavigationDirection,
 } from "./photoDetailNavigation";
-import type { PlaceMapVisualItem } from "./placePreview";
+import type { PlaceMapVisualItem } from "../placePreview";
 
 type Params = {
   item: PlaceMapVisualItem;

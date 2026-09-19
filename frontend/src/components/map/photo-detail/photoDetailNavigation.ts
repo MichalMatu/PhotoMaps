@@ -1,4 +1,4 @@
-import type { PlaceMapVisualItem } from "./placePreview";
+import type { PlaceMapVisualItem } from "../placePreview";
 
 export type PhotoDetailNavigationDirection = -1 | 1;
 

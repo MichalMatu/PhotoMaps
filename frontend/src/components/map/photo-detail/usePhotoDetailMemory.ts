@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getPlaceMemory } from "../../api/media";
-import type { PlaceMapItem } from "../../api/types";
-import type { PlaceMapVisualItem } from "./placePreview";
-import { useMemoryOwnerTools } from "./useMemoryOwnerTools";
+import { getPlaceMemory } from "../../../api/media";
+import type { PlaceMapItem } from "../../../api/types";
+import type { PlaceMapVisualItem } from "../placePreview";
+import { useMemoryOwnerTools } from "../useMemoryOwnerTools";
 
 type Params = {
   item: PlaceMapVisualItem;

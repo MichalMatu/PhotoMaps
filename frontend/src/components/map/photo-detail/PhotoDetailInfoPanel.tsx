@@ -1,9 +1,9 @@
 import { Info } from "lucide-react";
 import type { MouseEvent } from "react";
 
-import type { PlaceCustomFieldDisplayItem } from "../placeCustomFields";
-import type { MapMediaDisplay } from "./mediaDisplayText";
-import type { PlaceMapVisualItem } from "./placePreview";
+import type { PlaceCustomFieldDisplayItem } from "../../placeCustomFields";
+import type { MapMediaDisplay } from "../mediaDisplayText";
+import type { PlaceMapVisualItem } from "../placePreview";
 
 type PhotoAttributionDisplay = {
   licenseUrl: string | null;
