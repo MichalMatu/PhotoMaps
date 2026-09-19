@@ -1,5 +1,5 @@
 import { request } from "./http";
-import type { AppConfig } from "./types";
+import type { AppConfig } from "./types/config";
 
 export function getAppConfig(): Promise<AppConfig> {
   return request<AppConfig>("/api/app-config");
