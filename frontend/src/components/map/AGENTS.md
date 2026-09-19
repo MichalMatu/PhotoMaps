@@ -8,6 +8,8 @@ Publiczna mapa jest glownym produktem: wizualna tablica miniaturek miejsc, warst
 
 - `PlaceMap.tsx` sklada publiczne doswiadczenie mapy.
 - `PlaceMarker.tsx`, `mapHtml.ts` i `mapMarkerScale.ts` trzymaja marker, HTML Leafleta oraz skale zoomu.
+- `placeMarkerMotion.ts` trzyma marker motion signatures oraz marker-entry timing/style; marker-specific motion nie nalezy do `mapMotion.ts`.
+- `mapMotion.ts` trzyma motion/layout helpers galerii.
 - `placePreview.ts` trzyma transformacje danych do lekkiego podgladu.
 - `photo-detail/` trzyma modal medium, jego prezentacje, nawigacje i gesty.
 - `pinned-media/` trzyma przypiete media, ich board, layout, persistence i interakcje.
