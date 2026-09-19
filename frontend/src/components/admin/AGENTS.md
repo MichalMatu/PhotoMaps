@@ -8,6 +8,8 @@ Admin UI sluzy do korekt, moderacji i pojedynczych zmian w danych. Nie jest narz
 
 - Sekcje admina skladaja widoki dla miejsc, kategorii, zdjec, pamiatek, tras/kolekcji i raportow.
 - Hooki `use*Actions`, `useAdmin*` i helpery stanu trzymaja logike przeplywow, payloadow oraz wyborow.
+- `usePlaceFormDraft.ts` trzyma stan formularza miejsca i orchestration payloadu; `usePlaceLocationAutoSave.ts` trzyma kolejke, status i lifecycle autosave lokalizacji.
+- `LocationPickerMap.tsx` trzyma map adapter wyboru lokalizacji, a `locationPickerLookup.ts` lookup i formatowanie wynikow.
 - Modale formularzy trzymaja tylko dane potrzebne do danej akcji.
 - Kolejki mediow i raportow sa osobnymi trybami pracy, nie dodatkiem do formularzy tworzenia.
 
