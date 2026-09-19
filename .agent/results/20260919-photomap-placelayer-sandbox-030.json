@@ -1,0 +1,63 @@
+{
+  "id": "20260919-photomap-placelayer-sandbox-030",
+  "status": "failed",
+  "mode": "commands",
+  "work_branch": "work/photomap-placelayer-extract-20260919",
+  "allow_write": false,
+  "started_at": "2026-09-19T09:53:18.036896+00:00",
+  "command_timeout": 7200,
+  "edits": {},
+  "commands": [
+    {
+      "command": "set -euo pipefail\ntest \"$(git rev-parse HEAD)\" = \"5cd0bbd81ca09fafbbcab5422b2b5010a1312692\"\ntest -f /mnt/data/photomap-sandbox/env.sh\nsource /mnt/data/photomap-sandbox/env.sh\ntools/sandbox/sandbox-doctor.sh\ngit diff --check\ntest -z \"$(git status --short)\"",
+      "exit_code": 1,
+      "output": "",
+      "elapsed_seconds": 0.375,
+      "timed_out": false,
+      "idle_timed_out": false,
+      "memory_limit_mb": 4096,
+      "memory_limited": false,
+      "background_process_leak": false,
+      "peak_rss_mb": null,
+      "output_policy": "stream",
+      "captured_output_chars": 0,
+      "output_truncated": false,
+      "stage_name": "sandbox-doctor",
+      "stage_index": 1,
+      "stage_total": 3,
+      "stage_phase": "commands",
+      "stage_timeout": 900,
+      "verification_level": "work"
+    }
+  ],
+  "verification": [],
+  "stages": [
+    {
+      "stage_name": "sandbox-doctor",
+      "stage_index": 1,
+      "stage_total": 3,
+      "stage_phase": "commands",
+      "verification_level": "work",
+      "outcome": "failed",
+      "elapsed_seconds": 0.375
+    }
+  ],
+  "git_status": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.136
+  },
+  "git_diff": {
+    "exit_code": 0,
+    "output": "",
+    "elapsed_seconds": 0.072
+  },
+  "failure_reason": "command_failed",
+  "finished_at": "2026-09-19T09:53:20.250994+00:00",
+  "task_digest": "6e08e563a18df60523b569bb4d868745b58af6eb8a46d63b065654b90349eb92",
+  "idle_timeout": 300,
+  "task_timeout": 10800,
+  "memory_limit_mb": 4096,
+  "attempt_id": "6ef1e5f772122f408cb5b085",
+  "daemon_version": "4.18.22"
+}
