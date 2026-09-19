@@ -1,5 +1,7 @@
 import { request } from "./http";
-import type { AdminPlace, City, PlaceDetail, PlaceMapItem, PlacePayload, PlaceUpdatePayload } from "./types";
+import type { PlaceMapItem } from "./types";
+import type { AdminPlace, PlaceDetail, PlacePayload, PlaceUpdatePayload } from "./types/places";
+import type { City } from "./types/taxonomy";
 
 export function getPlace(idOrSlug: string): Promise<PlaceDetail> {
   return request<PlaceDetail>(`/api/places/${encodeURIComponent(idOrSlug)}`);

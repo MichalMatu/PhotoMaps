@@ -1,5 +1,5 @@
 import { request } from "./http";
-import type { AdminPlace } from "./types";
+import type { AdminPlace } from "./types/places";
 import type {
   AdminMediaAudioFilter,
   AdminMemory,
