@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260919-photomap-pin-playwright-021",
+  "task_digest": "9da4df5b61dc4211c3dfe521577f2453dfb4ad2bbf98b57e73c27497b18f0645",
+  "idle_timeout": 300,
+  "task_timeout": 7200,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-19T08:51:10.185197+00:00",
+  "attempt_id": "8c9080ef45d2769200c32049",
+  "daemon_version": "4.18.22",
+  "daemon_pid": 4658,
+  "updated_at": "2026-09-19T08:51:10.185272+00:00",
+  "pid": 4658
+}
