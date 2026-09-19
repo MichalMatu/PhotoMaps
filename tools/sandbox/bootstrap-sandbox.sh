@@ -48,7 +48,7 @@ fi
   --disable-pip-version-check \
   --no-index \
   --find-links "$OFFLINE_DIR/python-wheelhouse" \
-  -r "$REPO_ROOT/backend/requirements.txt"
+  -r "$REPO_ROOT/backend/requirements-dev.txt"
 
 rm -rf "$ROOT/npm-cache"
 mkdir -p "$ROOT/npm-cache"

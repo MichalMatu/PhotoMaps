@@ -36,6 +36,7 @@ jobs:
           printf '%s\n' "$GITHUB_SHA" > .sandbox-pack/meta/git-sha.txt
           {
             sha256sum backend/requirements.txt
+            sha256sum backend/requirements-dev.txt
             sha256sum backend/pyproject.toml
             sha256sum frontend/package.json
             sha256sum frontend/package-lock.json
@@ -104,7 +105,7 @@ jobs:
           python -m pip install --upgrade pip wheel
           python -m pip wheel \
             --wheel-dir .sandbox-pack/offline/python-wheelhouse \
-            -r backend/requirements.txt
+            -r backend/requirements-dev.txt
 
       - name: Warm npm cache
         if: steps.offline.outputs.enabled == 'true'
