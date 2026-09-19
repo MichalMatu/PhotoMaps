@@ -1,4 +1,4 @@
-import type { LocalDataCleanupReport, LocalDataDiagnostics } from "./types";
+import type { LocalDataCleanupReport, LocalDataDiagnostics } from "./types/localData";
 import { request } from "./http";
 
 export function getAdminLocalDataDiagnostics(): Promise<LocalDataDiagnostics> {
