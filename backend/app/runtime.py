@@ -78,7 +78,7 @@ def render_seo_head(metadata: FrontendSeoMetadata, csp_nonce: str | None = None)
         '<meta property="og:site_name" content="PhotoMap" />',
         f'<meta property="og:type" content="{escape(metadata.page_type, quote=True)}" />',
         f'<meta property="og:title" content="{escape(metadata.title, quote=True)}" />',
-        f'<meta property="og:description" content="{escape(metadata.description, quote=True)}" />',
+        f'<meta property="og:description" content="{escaped_description}" />',
         f'<meta property="og:url" content="{escaped_canonical_url}" />',
         f'<meta name="twitter:card" content="{twitter_card}" />',
         f'<meta name="twitter:title" content="{escape(metadata.title, quote=True)}" />',
