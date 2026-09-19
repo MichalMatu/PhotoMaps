@@ -1,24 +1,24 @@
 import { request } from "./http";
+import type { AdminPlace } from "./types";
 import type {
   AdminMediaAudioFilter,
   AdminMemory,
-  AdminPhotoAlbum,
   AdminMemoryUpdatePayload,
-  AdminPlace,
   AdminPhoto,
+  AdminPhotoAlbum,
   MediaRedactionPayload,
   MediaRedactionReport,
+  Memory,
   MemoryClaimRead,
   MemorySubmission,
-  Memory,
   MemoryUpdatePayload,
   Photo,
   PhotoDetail,
-  PhotoUploadPayload,
   PhotoUpdatePayload,
+  PhotoUploadPayload,
   ReviewFinalStatus,
   ReviewStatus,
-} from "./types";
+} from "./types/media";
 
 const ADMIN_REVIEW_QUEUE_LIMIT = 100;
 
