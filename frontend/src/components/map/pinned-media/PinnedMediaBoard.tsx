@@ -7,8 +7,8 @@ import {
   useState,
 } from "react";
 
-import type { PlaceMapItem } from "../../api/types";
-import { isInteractiveDragTarget } from "../ui/useDraggableWindow";
+import type { PlaceMapItem } from "../../../api/types";
+import { isInteractiveDragTarget } from "../../ui/useDraggableWindow";
 import { PinnedMediaCard } from "./PinnedMediaCard";
 import { PinnedMediaMapLink } from "./PinnedMediaMapLink";
 import { measurePinnedMediaCardRects, rectRecordsEqual } from "./pinnedMediaBoardDom";

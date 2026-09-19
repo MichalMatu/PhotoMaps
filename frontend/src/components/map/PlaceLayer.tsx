@@ -17,7 +17,7 @@ import { ReportSheet } from "./ReportSheet";
 import { useCenteredPlaceGallery } from "./useCenteredPlaceGallery";
 import { type MapViewport, useMapMarkerLayout } from "./useMapMarkerLayout";
 import { type PlaceVisualTarget, usePlaceGalleryData } from "./usePlaceGalleryData";
-import type { PinMediaRequest } from "./usePinnedMediaBoard";
+import type { PinMediaRequest } from "./pinned-media/usePinnedMediaBoard";
 
 type PlaceLayerProps = {
   isAudioAutoplayEnabled: boolean;

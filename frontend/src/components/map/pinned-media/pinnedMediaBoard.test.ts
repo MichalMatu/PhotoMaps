@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { Category, PlaceMapItem, PlaceMapPhoto, PlaceMapPreviewItem } from "../../api/types";
+import type { Category, PlaceMapItem, PlaceMapPhoto, PlaceMapPreviewItem } from "../../../api/types";
 import { bringPinnedMediaCardToFront, resolvePinnedMediaCards, upsertPinnedMediaCard } from "./pinnedMediaBoardCards";
 import {
   clampPinnedMediaLayout,

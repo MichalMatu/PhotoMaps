@@ -6,9 +6,9 @@ import type { AppConfigMap, PlaceCustomFieldDefinition, PlaceMapItem } from "../
 import { DistanceMeasureTool } from "./DistanceMeasureTool";
 import { MAP_DISPLAY_CONFIG } from "./mapDisplayConfig";
 import { MapTrackpadZoom } from "./MapTrackpadZoom";
-import { PinnedMediaBoard, type PinnedMediaPlaceProjector } from "./PinnedMediaBoard";
+import { PinnedMediaBoard, type PinnedMediaPlaceProjector } from "./pinned-media/PinnedMediaBoard";
 import { PlaceLayer } from "./PlaceLayer";
-import { type PinMediaRequest, usePinnedMediaBoard } from "./usePinnedMediaBoard";
+import { type PinMediaRequest, usePinnedMediaBoard } from "./pinned-media/usePinnedMediaBoard";
 
 type Props = {
   isAudioAutoplayEnabled: boolean;

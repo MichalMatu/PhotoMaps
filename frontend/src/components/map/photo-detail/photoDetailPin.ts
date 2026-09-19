@@ -1,4 +1,4 @@
-import type { RectLike } from "../pinnedMediaBoardTypes";
+import type { RectLike } from "../pinned-media/pinnedMediaBoardTypes";
 
 export type PhotoDetailPinRequest = {
   aspectRatio: number | null;

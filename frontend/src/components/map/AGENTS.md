@@ -10,6 +10,7 @@ Publiczna mapa jest glownym produktem: wizualna tablica miniaturek miejsc, warst
 - `PlaceMarker.tsx`, `mapHtml.ts` i `mapMarkerScale.ts` trzymaja marker, HTML Leafleta oraz skale zoomu.
 - `placePreview.ts` trzyma transformacje danych do lekkiego podgladu.
 - `photo-detail/` trzyma modal medium, jego prezentacje, nawigacje i gesty.
+- `pinned-media/` trzyma przypiete media, ich board, layout, persistence i interakcje.
 - Sheets i modale mapy obsluguja akcje uzytkownika przypiete do miejsca.
 
 ## Local Contracts
