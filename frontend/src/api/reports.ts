@@ -1,5 +1,5 @@
 import { request } from "./http";
-import type { Report, ReportPayload, ReportStatus, ReportUpdatePayload } from "./types";
+import type { Report, ReportPayload, ReportStatus, ReportUpdatePayload } from "./types/reports";
 
 const ADMIN_REPORT_QUEUE_LIMIT = 100;
 

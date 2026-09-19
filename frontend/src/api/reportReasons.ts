@@ -1,4 +1,4 @@
-import type { ReportReason } from "./types";
+import type { ReportReason } from "./types/reports";
 
 export const DEFAULT_REPORT_REASON: ReportReason = "wrong_data";
 
