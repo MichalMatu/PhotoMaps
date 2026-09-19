@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, Info, Maximize2, Minimize2, Pin } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2, Minimize2, Pin } from "lucide-react";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 
 import { mediaUrl } from "../../api/http";
@@ -18,6 +18,7 @@ import { useMediaFullscreen } from "../ui/useMediaFullscreen";
 import { mapMediaDisplay } from "./mediaDisplayText";
 import { MemoryOwnerTools } from "./MemoryOwnerTools";
 import { PhotoDetailAudioControl } from "./PhotoDetailAudioControl";
+import { hasPhotoDetailInfo, PhotoDetailInfoPanel } from "./PhotoDetailInfoPanel";
 import { photoDetailPinRequestFromTrigger, type PhotoDetailPinRequest } from "./photoDetailPin";
 import type { PlaceMapVisualItem } from "./placePreview";
 import { usePhotoDetailMemory } from "./usePhotoDetailMemory";
@@ -35,33 +36,6 @@ type Props = {
   onReport: () => void;
   place: PlaceMapItem;
 };
-
-type PhotoAttributionDisplay = {
-  licenseUrl: string | null;
-  sourceUrl: string | null;
-  text: string[];
-};
-
-function photoAttributionDisplay(item: PlaceMapVisualItem): PhotoAttributionDisplay | null {
-  if (item.kind !== "photo") {
-    return null;
-  }
-
-  const text = [
-    item.attribution_author ? `Autor: ${item.attribution_author}` : null,
-    item.attribution_license ? `Licencja: ${item.attribution_license}` : null,
-  ].filter((value): value is string => Boolean(value));
-
-  if (text.length === 0 && !item.attribution_source_url && !item.attribution_license_url) {
-    return null;
-  }
-
-  return {
-    licenseUrl: item.attribution_license_url,
-    sourceUrl: item.attribution_source_url,
-    text,
-  };
-}
 
 export function PhotoDetailModal({
   customFieldDefinitions,
@@ -90,11 +64,9 @@ export function PhotoDetailModal({
   const display = mapMediaDisplay(item.kind, item.caption, place.description, memorySource);
   const audio = item.kind === "memory" ? (memorySource?.audio ?? item.audio) : item.audio;
   const customFields = publicPlaceCustomFieldDisplayItems(customFieldDefinitions, place.custom_fields);
-  const photoAttribution = photoAttributionDisplay(item);
   const photoDescriptionBlocks = item.kind === "photo" ? (photoDetailQuery.data?.description_blocks ?? []) : [];
   const photoDescriptionText = textFromPhotoDescription(photoDescriptionBlocks);
-  const hasDisplayText = Boolean(display.title || display.body || display.meta);
-  const hasCopy = hasDisplayText || customFields.length > 0 || Boolean(photoAttribution);
+  const hasCopy = hasPhotoDetailInfo({ customFields, display, item });
   const hasPhotoDescription = Boolean(photoDescriptionText);
   const modalEyebrow = place.categories[0]?.label ?? "Miejsce";
   const pinLabel = item.kind === "memory" ? "Przypnij pamiątkę" : "Przypnij zdjęcie";
@@ -131,14 +103,6 @@ export function PhotoDetailModal({
       !(event.target instanceof HTMLElement) ||
       event.target.closest(".photo-detail-overlay, .photo-detail-description, button, a")
     ) {
-      return;
-    }
-
-    setIsCopyExpanded(false);
-  };
-
-  const handleCopyClick = (event: MouseEvent<HTMLDivElement>) => {
-    if (event.target instanceof HTMLElement && event.target.closest("a")) {
       return;
     }
 
@@ -249,64 +213,14 @@ export function PhotoDetailModal({
           />
         ) : null}
         <div className="photo-detail-overlay">
-          {hasCopy ? (
-            <button
-              className="photo-detail-copy-toggle"
-              type="button"
-              aria-expanded={isCopyExpanded}
-              aria-label={isCopyExpanded ? "Ukryj informacje" : "Pokaż informacje"}
-              title={isCopyExpanded ? "Ukryj informacje" : "Pokaż informacje"}
-              onClick={handleCopyToggle}
-            >
-              <Info aria-hidden="true" size={18} />
-            </button>
-          ) : null}
-          {hasCopy ? (
-            <div className="photo-detail-copy" onClick={handleCopyClick}>
-              {hasDisplayText ? (
-                <div className="photo-detail-text">
-                  {display.title ? <span className="photo-detail-text-title">{display.title}</span> : null}
-                  {display.body ? <span className="photo-detail-text-body">{display.body}</span> : null}
-                  {display.meta ? <span className="photo-detail-text-meta">{display.meta}</span> : null}
-                </div>
-              ) : null}
-              {customFields.length > 0 ? (
-                <dl className="photo-detail-custom-fields">
-                  {customFields.map((field) => (
-                    <div className="photo-detail-custom-field" key={field.key}>
-                      <dt>{field.label}</dt>
-                      <dd>
-                        {field.href ? (
-                          <a href={field.href} target="_blank" rel="noreferrer">
-                            {field.text}
-                          </a>
-                        ) : (
-                          field.text
-                        )}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              ) : null}
-              {photoAttribution ? (
-                <div className="photo-detail-attribution">
-                  {photoAttribution.text.map((text) => (
-                    <span key={text}>{text}</span>
-                  ))}
-                  {photoAttribution.sourceUrl ? (
-                    <a href={photoAttribution.sourceUrl} target="_blank" rel="noreferrer">
-                      Źródło
-                    </a>
-                  ) : null}
-                  {photoAttribution.licenseUrl ? (
-                    <a href={photoAttribution.licenseUrl} target="_blank" rel="noreferrer">
-                      Warunki licencji
-                    </a>
-                  ) : null}
-                </div>
-              ) : null}
-            </div>
-          ) : null}
+          <PhotoDetailInfoPanel
+            customFields={customFields}
+            display={display}
+            isExpanded={isCopyExpanded}
+            item={item}
+            onCollapse={() => setIsCopyExpanded(false)}
+            onToggle={handleCopyToggle}
+          />
           <div className="photo-detail-actions">
             {memorySource ? <MemoryOwnerTools tools={memoryOwnerTools} /> : null}
             <button className="photo-detail-report-link" type="button" aria-label="Zgłoś problem" onClick={onReport}>
