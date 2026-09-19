@@ -1,0 +1,15 @@
+{
+  "id": "20260919-photomap-product-doc-drift-025",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/photomap-product-doc-drift-20260919",
+  "allow_write": true,
+  "resources": [],
+  "command_timeout": 900,
+  "task_timeout": 1800,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail\ntest \"$(git rev-parse HEAD)\" = \"02a158935b48297da27845811bde440c24f7a58b\"\npython3 - <<'PY'\nfrom pathlib import Path\np = Path('docs/product-direction.md')\ns = p.read_text()\nold = '- wspolny edytor blokowy ma zastapic lokalne, powielone edytory dluzszych tresci; obecna logika pelnego opisu miejsca powinna zostac wydzielona do neutralnego komponentu `ContentBlockEditor` i wspolnego renderera blokow,\n'\nnew = '- wspolny edytor blokowy i renderer sa juz wydzielone jako `ContentBlockEditor` i `ContentBlocks`; sa reuzywane przez miejsca, trasy i opisy zdjec, a kolejne prace maja utrzymac jeden kontrakt blokow zamiast tworzyc lokalne edytory albo renderery,\n'\nif s.count(old) != 1:\n    raise SystemExit('expected stale ContentBlockEditor goal exactly once')\np.write_text(s.replace(old, new, 1))\nPY\ngrep -n 'ContentBlockEditor\|ContentBlocks' docs/product-direction.md\ngrep -RIl --exclude-dir=node_modules --exclude-dir=.git 'ContentBlockEditor' frontend/src/components frontend/src/pages | sort\ngrep -RIl --exclude-dir=node_modules --exclude-dir=.git 'ContentBlocks' frontend/src/components frontend/src/pages | sort\nif grep -Fq 'obecna logika pelnego opisu miejsca powinna zostac wydzielona' docs/product-direction.md; then exit 1; fi\ngit diff --check",
+    "set -euo pipefail\ngit add docs/product-direction.md\ngit diff --cached --check\ngit commit -m 'Refresh admin product direction status'\ngit push origin HEAD:work/photomap-product-doc-drift-20260919"
+  ]
+}
