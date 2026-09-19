@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, Info, Maximize2, Minimize2, Pin } from "lucide-react";
-import { useEffect, useRef, useState, type MouseEvent, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 
 import { mediaUrl } from "../../api/http";
 import { getPlacePhoto } from "../../api/media";
@@ -19,10 +19,10 @@ import { mapMediaDisplay } from "./mediaDisplayText";
 import { MemoryOwnerTools } from "./MemoryOwnerTools";
 import { PhotoDetailAudioControl } from "./PhotoDetailAudioControl";
 import { photoDetailPinRequestFromTrigger, type PhotoDetailPinRequest } from "./photoDetailPin";
-import { photoDetailSwipeDirection, type PhotoDetailSwipeStart } from "./photoDetailSwipe";
 import type { PlaceMapVisualItem } from "./placePreview";
 import { usePhotoDetailMemory } from "./usePhotoDetailMemory";
 import { usePhotoDetailNavigation } from "./usePhotoDetailNavigation";
+import { usePhotoDetailSwipeNavigation } from "./usePhotoDetailSwipeNavigation";
 
 type Props = {
   customFieldDefinitions: PlaceCustomFieldDefinition[];
@@ -40,10 +40,6 @@ type PhotoAttributionDisplay = {
   licenseUrl: string | null;
   sourceUrl: string | null;
   text: string[];
-};
-
-type PhotoDetailSwipeState = PhotoDetailSwipeStart & {
-  pointerId: number;
 };
 
 function photoAttributionDisplay(item: PlaceMapVisualItem): PhotoAttributionDisplay | null {
@@ -67,28 +63,6 @@ function photoAttributionDisplay(item: PlaceMapVisualItem): PhotoAttributionDisp
   };
 }
 
-function isPhotoDetailSwipeTargetBlocked(target: EventTarget | null) {
-  if (!(target instanceof HTMLElement)) {
-    return true;
-  }
-
-  return Boolean(
-    target.closest(
-      [
-        "a",
-        "audio",
-        "button",
-        "input",
-        "select",
-        "textarea",
-        "[role='button']",
-        ".photo-detail-description",
-        ".photo-detail-overlay",
-      ].join(","),
-    ),
-  );
-}
-
 export function PhotoDetailModal({
   customFieldDefinitions,
   isAudioAutoplayEnabled,
@@ -103,10 +77,10 @@ export function PhotoDetailModal({
   const [isCopyExpanded, setIsCopyExpanded] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
-  const swipeStateRef = useRef<PhotoDetailSwipeState | null>(null);
   const { isFullscreen, toggleFullscreen } = useMediaFullscreen(contentRef);
   const { memoryOwnerTools, memorySource } = usePhotoDetailMemory({ item, onDeleted: onClose, place });
   const photoNavigation = usePhotoDetailNavigation({ item, navigationItems, onNavigate });
+  const photoDetailSwipe = usePhotoDetailSwipeNavigation(photoNavigation);
   const photoDetailQuery = useQuery({
     queryKey: ["place", place.id, "photos", item.id, "detail"],
     queryFn: () => getPlacePhoto(place.id, item.id),
@@ -186,72 +160,6 @@ export function PhotoDetailModal({
     photoNavigation.navigate(direction);
   };
 
-  const setSwipeCapture = (element: HTMLDivElement, pointerId: number) => {
-    try {
-      element.setPointerCapture(pointerId);
-    } catch {
-      return;
-    }
-  };
-
-  const clearSwipeCapture = (element: HTMLDivElement, pointerId: number) => {
-    if (element.hasPointerCapture(pointerId)) {
-      element.releasePointerCapture(pointerId);
-    }
-  };
-
-  const handleSwipePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    swipeStateRef.current = null;
-
-    if (
-      !photoNavigation.canNavigate ||
-      (event.pointerType !== "touch" && event.pointerType !== "pen") ||
-      isPhotoDetailSwipeTargetBlocked(event.target)
-    ) {
-      return;
-    }
-
-    swipeStateRef.current = {
-      clientX: event.clientX,
-      clientY: event.clientY,
-      pointerId: event.pointerId,
-      viewportWidth: event.currentTarget.clientWidth,
-    };
-    setSwipeCapture(event.currentTarget, event.pointerId);
-  };
-
-  const handleSwipePointerEnd = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const swipeState = swipeStateRef.current;
-    if (!swipeState || swipeState.pointerId !== event.pointerId) {
-      return;
-    }
-
-    swipeStateRef.current = null;
-    clearSwipeCapture(event.currentTarget, event.pointerId);
-
-    const direction = photoDetailSwipeDirection(swipeState, {
-      clientX: event.clientX,
-      clientY: event.clientY,
-    });
-    if (!direction) {
-      return;
-    }
-
-    event.preventDefault();
-    event.stopPropagation();
-    photoNavigation.navigate(direction);
-  };
-
-  const handleSwipePointerCancel = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const swipeState = swipeStateRef.current;
-    if (!swipeState || swipeState.pointerId !== event.pointerId) {
-      return;
-    }
-
-    swipeStateRef.current = null;
-    clearSwipeCapture(event.currentTarget, event.pointerId);
-  };
-
   return (
     <SystemModal
       eyebrow={modalEyebrow}
@@ -300,9 +208,7 @@ export function PhotoDetailModal({
         className={contentClassName}
         onClick={handleContentClick}
         onDoubleClick={handleContentDoubleClick}
-        onPointerCancel={handleSwipePointerCancel}
-        onPointerDown={handleSwipePointerDown}
-        onPointerUp={handleSwipePointerEnd}
+        {...photoDetailSwipe}
       >
         <MediaImage
           alt={item.caption ?? place.title}
