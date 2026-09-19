@@ -1,0 +1,16 @@
+{
+  "id": "20260919-photomap-pin-playwright-021",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "work/photomap-frontend-deps-20260919",
+  "allow_write": true,
+  "resources": [],
+  "command_timeout": 3600,
+  "task_timeout": 7200,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail\ntest \"$(git rev-parse HEAD)\" = \"e6e9a3f596b9fde38f96aa3ff369e4e12288293f\"\ncd frontend\nnpm install --save-dev --save-exact @playwright/test@1.60.0\nnpm audit\nnode -e 'const p=require(\"./package.json\"); if (p.devDependencies[\"@playwright/test\"] !== \"1.60.0\") process.exit(1)'\nnpm ls @playwright/test playwright\ncd ..\ngit diff --check",
+    "set -euo pipefail\nVENV=$(mktemp -d /tmp/photomap-playwright-pin-venv-XXXXXX)\ntrap 'rm -rf \"$VENV\"; ./scripts/devctl.sh stop >/dev/null 2>&1 || true' EXIT\npython3 -m venv \"$VENV\"\n\"$VENV/bin/python\" -m pip install -q -r backend/requirements.txt\ncd frontend\nnpm ci\nnpm audit\nnpx playwright install chromium\nnpm run format:check\nnpm run lint\nnpm run knip\nnpm test\nnpm run build\nPYTHON=\"$VENV/bin/python\" npm run test:e2e -- --project=chromium e2e/visual/admin.spec.ts -g \"admin place photo gallery exposes moderator tools in responsive media viewer\" --repeat-each=5\nPYTHON=\"$VENV/bin/python\" npm run test:e2e -- --project=chromium e2e/smoke/public-map.spec.ts\ncd ..\ngit diff --check",
+    "set -euo pipefail\ngit add frontend/package.json frontend/package-lock.json\ngit diff --cached --check\ngit commit -m 'Pin Playwright for visual baselines'\ngit push origin HEAD:work/photomap-frontend-deps-20260919"
+  ]
+}
