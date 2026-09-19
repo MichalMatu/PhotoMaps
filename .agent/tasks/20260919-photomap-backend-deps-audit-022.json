@@ -1,0 +1,14 @@
+{
+  "id": "20260919-photomap-backend-deps-audit-022",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 1800,
+  "task_timeout": 3600,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail\ngit fetch origin main\ntest \"$(git rev-parse HEAD)\" = \"42ab06f5d545d261814a52bd2fb923e7fc83f847\"\nprintf '%s\\n' '=== requirements ==='\ncat backend/requirements.txt\nprintf '%s\\n' '=== references ==='\nrg -n --hidden --glob '!frontend/node_modules/**' --glob '!.git/**' 'requirements(\\-dev|\\-runtime)?\\.txt|pip install .*requirements' . || true\nprintf '%s\\n' '=== python imports for candidate dev packages ==='\nfor name in pytest httpx ruff coverage schemathesis; do echo \"--- $name\"; rg -n --glob '*.py' \"(^|[^A-Za-z0-9_])${name}([^A-Za-z0-9_]|$)\" backend scripts tools || true; done\nprintf '%s\\n' '=== workflows ==='\nsed -n '1,220p' .github/workflows/ci.yml\nsed -n '1,260p' .github/workflows/sandbox-pack.yml\nprintf '%s\\n' '=== bootstrap ==='\nsed -n '1,260p' tools/sandbox/bootstrap-sandbox.sh\nprintf '%s\\n' '=== docs refs ==='\nrg -n 'requirements\\.txt' README.md docs backend scripts tools .github || true"
+  ]
+}
