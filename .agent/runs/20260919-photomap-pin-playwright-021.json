@@ -1,16 +1,16 @@
 {
   "event": "command_started",
   "phase": "commands",
-  "index": 1,
+  "index": 2,
   "total": 3,
-  "command": "set -euo pipefail\ntest \"$(git rev-parse HEAD)\" = \"e6e9a3f596b9fde38f96aa3ff369e4e12288293f\"\ncd frontend\nnpm install --save-dev --save-exact @playwright/test@1.60.0\nnpm audit\nnode -e 'const p=require(\"./package.json\"); if (p.devDependencies[\"@playwright/test\"] !== \"1.60.0\") process.exit(1)'\nnpm ls @playwright/test playwright\ncd ..\ngit diff --check",
-  "pid": 4944,
+  "command": "set -euo pipefail\nVENV=$(mktemp -d /tmp/photomap-playwright-pin-venv-XXXXXX)\ntrap 'rm -rf \"$VENV\"; ./scripts/devctl.sh stop >/dev/null 2>&1 || true' EXIT\npython3 -m venv \"$VENV\"\n\"$VENV/bin/python\" -m pip install -q -r backend/requirements.txt\ncd frontend\nnpm ci\nnpm audit\nnpx playwright install chromium\nnpm run format:check\nnpm run lint\nnpm run knip\nnpm test\nnpm run build\nPYTHON=\"$VENV/bin/python\" npm run test:e2e -- --project=chromium e2e/visual/admin.spec.ts -g \"admin place photo gallery exposes moderator tools in responsive media viewer\" --repeat-each=5\nPYTHON=\"$VENV/bin/python\" npm run test:e2e -- --project=chromium e2e/smoke/public-map.spec.ts\ncd ..\ngit diff --check",
+  "pid": 5106,
   "timeout": 3600,
   "idle_timeout": 300,
   "memory_limit_mb": 4096,
-  "started_at": "2026-09-19T08:51:11.557214+00:00",
-  "stage_name": "command-1",
-  "stage_index": 1,
+  "started_at": "2026-09-19T08:51:15.901118+00:00",
+  "stage_name": "command-2",
+  "stage_index": 2,
   "stage_total": 3,
   "stage_phase": "commands",
   "task_id": "20260919-photomap-pin-playwright-021",
@@ -18,5 +18,5 @@
   "task_digest": "9da4df5b61dc4211c3dfe521577f2453dfb4ad2bbf98b57e73c27497b18f0645",
   "daemon_version": "4.18.22",
   "daemon_pid": 4658,
-  "updated_at": "2026-09-19T08:51:11.557334+00:00"
+  "updated_at": "2026-09-19T08:51:15.988871+00:00"
 }
