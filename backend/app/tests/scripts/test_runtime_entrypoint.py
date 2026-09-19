@@ -30,7 +30,9 @@ def test_mount_frontend_dist_serves_spa_without_hiding_api_404(tmp_path: Path) -
     assert client.get("/health").json() == {"status": "ok"}
     assert client.get("/").text == '<div id="root">PhotoMap</div>'
     assert client.get("/places/ostrow-tumski").text == '<div id="root">PhotoMap</div>'
-    assert client.get("/assets/app.js").text == "console.log('PhotoMap');"
+    asset_response = client.get("/assets/app.js")
+    assert asset_response.text == "console.log('PhotoMap');"
+    assert asset_response.headers["cache-control"] == "public, max-age=31536000, immutable"
     assert client.get("/api/missing").status_code == 404
 
 
@@ -175,6 +177,20 @@ def test_root_server_loads_local_env_without_overriding_existing_values(monkeypa
     assert module.os.environ["CLAIM_TOKEN_SECRET"] == "secret-from-file"
 
 
+def test_root_server_disables_uvicorn_access_log_in_production(monkeypatch) -> None:
+    spec = importlib.util.spec_from_file_location("photomap_server_access_log", ROOT_DIR / "server.py")
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    monkeypatch.setenv("PHOTOMAP_ENV", "production")
+    assert module.uvicorn_access_log_enabled() is False
+
+    monkeypatch.setenv("PHOTOMAP_ENV", "development")
+    assert module.uvicorn_access_log_enabled() is True
+
+
 def test_public_server_recovers_photo_quarantine_after_migrations(monkeypatch, tmp_path: Path) -> None:
     spec = importlib.util.spec_from_file_location("photomap_server_recovery", ROOT_DIR / "server.py")
     assert spec is not None
@@ -182,6 +198,7 @@ def test_public_server_recovers_photo_quarantine_after_migrations(monkeypatch, t
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     events: list[str] = []
+    uvicorn_kwargs: dict[str, object] = {}
 
     monkeypatch.setattr(module, "AUTOSTART_DISABLED_FILE", tmp_path / "autostart-disabled")
     monkeypatch.setattr(module, "load_local_env", lambda: None)
@@ -192,7 +209,13 @@ def test_public_server_recovers_photo_quarantine_after_migrations(monkeypatch, t
         "recover_photo_media_quarantine",
         lambda: events.append("quarantine-recovery") or {"discarded": 0, "restored": 0},
     )
-    monkeypatch.setattr(module.uvicorn, "run", lambda *_args, **_kwargs: events.append("uvicorn"))
+
+    def fake_uvicorn_run(*_args, **kwargs) -> None:
+        events.append("uvicorn")
+        uvicorn_kwargs.update(kwargs)
+
+    monkeypatch.setattr(module.uvicorn, "run", fake_uvicorn_run)
 
     assert module.main() == 0
     assert events.index("migrations") < events.index("quarantine-recovery") < events.index("uvicorn")
+    assert uvicorn_kwargs["access_log"] is True

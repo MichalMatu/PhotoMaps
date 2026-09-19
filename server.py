@@ -68,6 +68,10 @@ def validate_runtime_config() -> None:
     validate_runtime_security_config()
 
 
+def uvicorn_access_log_enabled() -> bool:
+    return os.getenv("PHOTOMAP_ENV", "development").strip().lower() != "production"
+
+
 def create_app():
     configure_import_path()
 
@@ -100,7 +104,14 @@ def main() -> int:
 
     host = os.getenv("PHOTOMAP_SERVER_HOST", "127.0.0.1")
     port = int(os.getenv("PHOTOMAP_SERVER_PORT", "8000"))
-    uvicorn.run(runtime_app, host=host, port=port, lifespan="off", server_header=False)
+    uvicorn.run(
+        runtime_app,
+        host=host,
+        port=port,
+        lifespan="off",
+        server_header=False,
+        access_log=uvicorn_access_log_enabled(),
+    )
     return 0
 
 

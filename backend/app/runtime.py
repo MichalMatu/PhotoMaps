@@ -7,6 +7,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
+from starlette.types import Scope
 
 from app.core.security_headers import CSP_NONCE_STATE_ATTRIBUTE
 
@@ -22,6 +23,15 @@ RESERVED_FRONTEND_PATHS = (
 SEO_BLOCK_START = "<!-- photomap-seo:start -->"
 SEO_BLOCK_END = "<!-- photomap-seo:end -->"
 FRONTEND_HTML_HEADERS = {"Cache-Control": "no-cache"}
+FRONTEND_ASSET_HEADERS = {"Cache-Control": "public, max-age=31536000, immutable"}
+
+
+class HashedAssetStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope: Scope) -> Response:
+        response = await super().get_response(path, scope)
+        if response.status_code < 400:
+            response.headers.update(FRONTEND_ASSET_HEADERS)
+        return response
 
 
 @dataclass(frozen=True)
@@ -118,7 +128,7 @@ def mount_frontend_dist(
 
     assets_dir = dist_dir / "assets"
     if assets_dir.is_dir():
-        app.mount("/assets", StaticFiles(directory=assets_dir), name="frontend-assets")
+        app.mount("/assets", HashedAssetStaticFiles(directory=assets_dir), name="frontend-assets")
 
     @app.get("/{frontend_path:path}", include_in_schema=False, response_model=None)
     def serve_frontend(frontend_path: str, request: Request) -> Response:
