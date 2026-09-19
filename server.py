@@ -84,9 +84,7 @@ def create_app():
 
 def main() -> int:
     if AUTOSTART_DISABLED_FILE.exists():
-        print(
-            f"PhotoMap server nie startuje: autostart wylaczony ({AUTOSTART_DISABLED_FILE})."
-        )
+        print(f"PhotoMap server nie startuje: autostart wylaczony ({AUTOSTART_DISABLED_FILE}).")
         return 0
 
     load_local_env()
@@ -102,10 +100,7 @@ def main() -> int:
     run_migrations()
     recovery = recover_photo_media_quarantine()
     if recovery["restored"] or recovery["discarded"]:
-        print(
-            "Photo media quarantine recovery: "
-            f"restored={recovery['restored']} discarded={recovery['discarded']}"
-        )
+        print("Photo media quarantine recovery: " f"restored={recovery['restored']} discarded={recovery['discarded']}")
 
     host = os.getenv("PHOTOMAP_SERVER_HOST", "127.0.0.1")
     port = int(os.getenv("PHOTOMAP_SERVER_PORT", "8000"))
