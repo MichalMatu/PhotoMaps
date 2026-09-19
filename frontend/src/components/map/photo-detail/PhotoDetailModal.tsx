@@ -2,25 +2,25 @@ import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, Maximize2, Minimize2, Pin } from "lucide-react";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 
-import { mediaUrl } from "../../api/http";
-import { getPlacePhoto } from "../../api/media";
-import type { PlaceCustomFieldDefinition, PlaceMapItem } from "../../api/types";
+import { mediaUrl } from "../../../api/http";
+import { getPlacePhoto } from "../../../api/media";
+import type { PlaceCustomFieldDefinition, PlaceMapItem } from "../../../api/types";
 import {
   PhotoDescriptionActions,
   PhotoDescriptionLayer,
   photoDescriptionText as textFromPhotoDescription,
-} from "../photos/PhotoDescriptionLayer";
-import { publicPlaceCustomFieldDisplayItems } from "../placeCustomFields";
-import { ErrorModal } from "../ui/ErrorModal";
-import { MediaImage } from "../ui/MediaImage";
-import { SystemModal } from "../ui/SystemModal";
-import { useMediaFullscreen } from "../ui/useMediaFullscreen";
-import { mapMediaDisplay } from "./mediaDisplayText";
-import { MemoryOwnerTools } from "./MemoryOwnerTools";
+} from "../../photos/PhotoDescriptionLayer";
+import { publicPlaceCustomFieldDisplayItems } from "../../placeCustomFields";
+import { ErrorModal } from "../../ui/ErrorModal";
+import { MediaImage } from "../../ui/MediaImage";
+import { SystemModal } from "../../ui/SystemModal";
+import { useMediaFullscreen } from "../../ui/useMediaFullscreen";
+import { mapMediaDisplay } from "../mediaDisplayText";
+import { MemoryOwnerTools } from "../MemoryOwnerTools";
 import { PhotoDetailAudioControl } from "./PhotoDetailAudioControl";
 import { hasPhotoDetailInfo, PhotoDetailInfoPanel } from "./PhotoDetailInfoPanel";
 import { photoDetailPinRequestFromTrigger, type PhotoDetailPinRequest } from "./photoDetailPin";
-import type { PlaceMapVisualItem } from "./placePreview";
+import type { PlaceMapVisualItem } from "../placePreview";
 import { usePhotoDetailMemory } from "./usePhotoDetailMemory";
 import { usePhotoDetailNavigation } from "./usePhotoDetailNavigation";
 import { usePhotoDetailSwipeNavigation } from "./usePhotoDetailSwipeNavigation";

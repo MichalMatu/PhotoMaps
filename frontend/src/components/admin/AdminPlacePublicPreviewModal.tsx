@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import { getPlacePhotos } from "../../api/media";
 import type { PlaceCustomFieldDefinition, PlaceMapItem } from "../../api/types";
-import { PhotoDetailModal } from "../map/PhotoDetailModal";
+import { PhotoDetailModal } from "../map/photo-detail/PhotoDetailModal";
 import { ReportSheet } from "../map/ReportSheet";
 import {
   findPlaceGalleryItem,

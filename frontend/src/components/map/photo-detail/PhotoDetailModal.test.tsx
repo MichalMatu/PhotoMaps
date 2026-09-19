@@ -3,16 +3,16 @@ import { renderToStaticMarkup } from "react-dom/server";
 import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { PlaceMapItem } from "../../api/types";
-import { TtsProvider } from "../ui/TtsProvider";
+import type { PlaceMapItem } from "../../../api/types";
+import { TtsProvider } from "../../ui/TtsProvider";
 import { PhotoDetailModal } from "./PhotoDetailModal";
-import type { PlaceMapVisualItem } from "./placePreview";
+import type { PlaceMapVisualItem } from "../placePreview";
 
-vi.mock("../../api/media", () => ({
+vi.mock("../../../api/media", () => ({
   getPlacePhoto: vi.fn(),
 }));
 
-vi.mock("../ui/SystemModal", () => ({
+vi.mock("../../ui/SystemModal", () => ({
   SystemModal: (props: { children?: ReactNode; headerActions?: ReactNode; title: string }) => (
     <div data-title={props.title}>
       <div data-testid="header-actions">{props.headerActions}</div>

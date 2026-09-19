@@ -9,7 +9,7 @@ import { MapCloseEvents } from "./MapCloseEvents";
 import { MapInteractionLock } from "./mapInteractionLock";
 import { MapPhotoGalleryGlass } from "./MapPhotoGalleryGlass";
 import { MapPhotoGalleryPane } from "./MapPhotoGalleryPane";
-import { PhotoDetailModal } from "./PhotoDetailModal";
+import { PhotoDetailModal } from "./photo-detail/PhotoDetailModal";
 import { PlaceMarker } from "./PlaceMarker";
 import { getPlaceMarkerMotionSignature, getPlaceMarkerMotionState, isPlaceMarkerEntering } from "./placeMarkerMotion";
 import type { PlaceMapVisualItem } from "./placePreview";

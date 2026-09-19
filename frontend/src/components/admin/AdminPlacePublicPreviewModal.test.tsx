@@ -22,7 +22,7 @@ vi.mock("../../api/media", () => ({
   getPlacePhotos: vi.fn(),
 }));
 
-vi.mock("../map/PhotoDetailModal", () => ({
+vi.mock("../map/photo-detail/PhotoDetailModal", () => ({
   PhotoDetailModal: (props: PhotoDetailModalMockProps) => {
     modalMocks.photoDetailProps.push(props);
     return <div data-testid="photo-detail-modal" />;

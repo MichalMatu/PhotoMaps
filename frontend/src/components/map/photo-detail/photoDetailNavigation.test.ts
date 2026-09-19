@@ -5,7 +5,7 @@ import {
   photoDetailNavigationIndex,
   photoDetailNavigationItems,
 } from "./photoDetailNavigation";
-import type { PlaceMapVisualItem } from "./placePreview";
+import type { PlaceMapVisualItem } from "../placePreview";
 
 function photo(id: string): PlaceMapVisualItem {
   return {
