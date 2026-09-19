@@ -1,5 +1,4 @@
 import "leaflet/dist/leaflet.css";
-import type { Map as LeafletMap } from "leaflet";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, useMap, useMapEvents, ZoomControl } from "react-leaflet";
 
