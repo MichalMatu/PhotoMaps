@@ -1,0 +1,14 @@
+{
+  "event": "task_started",
+  "task_id": "20260919-photomap-placelayer-sandbox-030",
+  "task_digest": "6e08e563a18df60523b569bb4d868745b58af6eb8a46d63b065654b90349eb92",
+  "idle_timeout": 300,
+  "task_timeout": 10800,
+  "memory_limit_mb": 4096,
+  "started_at": "2026-09-19T09:53:18.036840+00:00",
+  "attempt_id": "6ef1e5f772122f408cb5b085",
+  "daemon_version": "4.18.22",
+  "daemon_pid": 7976,
+  "updated_at": "2026-09-19T09:53:18.036954+00:00",
+  "pid": 7976
+}
