@@ -1,0 +1,366 @@
+name: Temporary final boundaries publisher
+
+on:
+  push:
+    branches:
+      - work/photomap-final-boundaries-20260919
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply verified refactor
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/final-boundaries.patch <<'PATCH'
+          diff --git a/frontend/src/components/admin/usePlaceFormDraft.ts b/frontend/src/components/admin/usePlaceFormDraft.ts
+          index e496480..3c75d23 100644
+          --- a/frontend/src/components/admin/usePlaceFormDraft.ts
+          +++ b/frontend/src/components/admin/usePlaceFormDraft.ts
+          @@ -1,4 +1,4 @@
+          -import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+          +import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+           
+           import type {
+             AdminPlace,
+          @@ -22,7 +22,8 @@ import {
+           } from "../placeCustomFields";
+           import { validateAudioFile } from "../ui/audioAttachment";
+           import { sortAdminCategoriesByLabel, sortAdminCitiesByName } from "./adminListSorting";
+          -import { hasPlaceLocationChanged, type PlaceLocation, type PlaceLocationAutoSaveStatus } from "./placeLocationAutoSave";
+          +import type { PlaceLocation } from "./placeLocationAutoSave";
+          +import { usePlaceLocationAutoSave } from "./usePlaceLocationAutoSave";
+           import { EMPTY_PHOTO_ATTRIBUTION_DRAFT, type PhotoAttributionDraft } from "./placePhotoPanelState";
+           import type { PlaceFormPayload } from "./useAdminPlaceManagement";
+           
+          @@ -49,8 +50,9 @@ export function usePlaceFormDraft({
+             const [cityId, setCityId] = useState("");
+             const [categoryIds, setCategoryIds] = useState<string[]>([]);
+             const [location, setLocation] = useState(() => locationForCity(undefined, mapFallback));
+          -  const savedLocationRef = useRef(location);
+          -  const locationSaveQueueRef = useRef<Promise<void>>(Promise.resolve());
+          +  const { locationAutoSaveStatus, resetLocationAutoSave, saveLocation } = usePlaceLocationAutoSave({
+          +    onSave: place ? onLocationAutoSave : undefined,
+          +  });
+             const [description, setDescription] = useState("");
+             const [localComment, setLocalComment] = useState("");
+             const [articleBlocks, setArticleBlocks] = useState<ContentBlock[]>([]);
+          @@ -66,7 +68,6 @@ export function usePlaceFormDraft({
+             const [coverPhotoInputKey, setCoverPhotoInputKey] = useState(0);
+             const [customFieldValues, setCustomFieldValues] = useState<PlaceCustomFieldFormValues>({});
+             const [isSaving, setIsSaving] = useState(false);
+          -  const [locationAutoSaveStatus, setLocationAutoSaveStatus] = useState<PlaceLocationAutoSaveStatus>("idle");
+           
+             const generatedSlug = useMemo(() => slugify(title), [title]);
+             const availableCities = useMemo(
+          @@ -105,12 +106,11 @@ export function usePlaceFormDraft({
+             }, []);
+           
+             const resetCreateDraft = useCallback(() => {
+          -    savedLocationRef.current = defaultLocation;
+          +    resetLocationAutoSave(defaultLocation);
+               setTitle("");
+               setCityId(defaultCityId);
+               setCategoryIds([]);
+               setLocation(defaultLocation);
+          -    setLocationAutoSaveStatus("idle");
+               setDescription("");
+               setLocalComment("");
+               setArticleBlocks([]);
+          @@ -118,7 +118,7 @@ export function usePlaceFormDraft({
+               setStatus("draft");
+               setCustomFieldValues(placeCustomFieldFormValues(sortedCustomFields, {}));
+               resetCoverPhotoFields();
+          -  }, [defaultCityId, defaultLocation, resetCoverPhotoFields, sortedCustomFields]);
+          +  }, [defaultCityId, defaultLocation, resetCoverPhotoFields, resetLocationAutoSave, sortedCustomFields]);
+           
+             useEffect(() => {
+               if (!place) {
+          @@ -130,9 +130,8 @@ export function usePlaceFormDraft({
+               setCityId(place.city_id);
+               setCategoryIds(place.category_ids);
+               const placeLocation = { lat: place.lat, lon: place.lon };
+          -    savedLocationRef.current = placeLocation;
+          +    resetLocationAutoSave(placeLocation);
+               setLocation(placeLocation);
+          -    setLocationAutoSaveStatus("idle");
+               setDescription(place.description ?? "");
+               setLocalComment(place.local_comment ?? "");
+               setArticleBlocks(place.article_blocks);
+          @@ -140,7 +139,7 @@ export function usePlaceFormDraft({
+               setStatus(place.status);
+               setCustomFieldValues(placeCustomFieldFormValues(sortedCustomFields, place.custom_fields));
+               resetCoverPhotoFields();
+          -  }, [place, resetCoverPhotoFields, resetCreateDraft, sortedCustomFields]);
+          +  }, [place, resetCoverPhotoFields, resetCreateDraft, resetLocationAutoSave, sortedCustomFields]);
+           
+             function toggleCategory(categoryId: string) {
+               setCategoryIds((currentIds) =>
+          @@ -157,44 +156,17 @@ export function usePlaceFormDraft({
+                   availableCities.find((city) => city.id === nextCityId),
+                   mapFallback,
+                 );
+          -      savedLocationRef.current = nextLocation;
+          +      resetLocationAutoSave(nextLocation);
+                 setLocation(nextLocation);
+          -      setLocationAutoSaveStatus("idle");
+               }
+             }
+           
+             const handleLocationChange = useCallback(
+               (nextLocation: PlaceLocation) => {
+                 setLocation(nextLocation);
+          -
+          -      if (!place || !onLocationAutoSave) {
+          -        return;
+          -      }
+          -
+          -      if (!hasPlaceLocationChanged(savedLocationRef.current, nextLocation)) {
+          -        setLocationAutoSaveStatus("idle");
+          -        return;
+          -      }
+          -
+          -      const requestedLocation = { ...nextLocation };
+          -      setLocationAutoSaveStatus("saving");
+          -      locationSaveQueueRef.current = locationSaveQueueRef.current
+          -        .catch(() => undefined)
+          -        .then(async () => {
+          -          if (!hasPlaceLocationChanged(savedLocationRef.current, requestedLocation)) {
+          -            return;
+          -          }
+          -
+          -          setLocationAutoSaveStatus("saving");
+          -          await onLocationAutoSave(requestedLocation);
+          -          savedLocationRef.current = requestedLocation;
+          -          setLocationAutoSaveStatus("saved");
+          -        })
+          -        .catch(() => {
+          -          setLocationAutoSaveStatus("error");
+          -        });
+          +      saveLocation(nextLocation);
+               },
+          -    [onLocationAutoSave, place],
+          +    [saveLocation],
+             );
+           
+             function addArticleBlock(type: ContentBlockType) {
+          diff --git a/frontend/src/components/admin/usePlaceLocationAutoSave.ts b/frontend/src/components/admin/usePlaceLocationAutoSave.ts
+          new file mode 100644
+          index 0000000..5420931
+          --- /dev/null
+          +++ b/frontend/src/components/admin/usePlaceLocationAutoSave.ts
+          @@ -0,0 +1,56 @@
+          +import { useCallback, useRef, useState } from "react";
+          +
+          +import { hasPlaceLocationChanged, type PlaceLocation, type PlaceLocationAutoSaveStatus } from "./placeLocationAutoSave";
+          +
+          +type UsePlaceLocationAutoSaveOptions = {
+          +  onSave?: (location: PlaceLocation) => Promise<void>;
+          +};
+          +
+          +export function usePlaceLocationAutoSave({ onSave }: UsePlaceLocationAutoSaveOptions) {
+          +  const savedLocationRef = useRef<PlaceLocation | null>(null);
+          +  const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
+          +  const [status, setStatus] = useState<PlaceLocationAutoSaveStatus>("idle");
+          +
+          +  const reset = useCallback((location: PlaceLocation) => {
+          +    savedLocationRef.current = location;
+          +    setStatus("idle");
+          +  }, []);
+          +
+          +  const save = useCallback(
+          +    (nextLocation: PlaceLocation) => {
+          +      if (!onSave || !savedLocationRef.current) {
+          +        return;
+          +      }
+          +
+          +      if (!hasPlaceLocationChanged(savedLocationRef.current, nextLocation)) {
+          +        setStatus("idle");
+          +        return;
+          +      }
+          +
+          +      const requestedLocation = { ...nextLocation };
+          +      setStatus("saving");
+          +      saveQueueRef.current = saveQueueRef.current
+          +        .catch(() => undefined)
+          +        .then(async () => {
+          +          if (!savedLocationRef.current || !hasPlaceLocationChanged(savedLocationRef.current, requestedLocation)) {
+          +            return;
+          +          }
+          +
+          +          setStatus("saving");
+          +          await onSave(requestedLocation);
+          +          savedLocationRef.current = requestedLocation;
+          +          setStatus("saved");
+          +        })
+          +        .catch(() => {
+          +          setStatus("error");
+          +        });
+          +    },
+          +    [onSave],
+          +  );
+          +
+          +  return {
+          +    resetLocationAutoSave: reset,
+          +    saveLocation: save,
+          +    locationAutoSaveStatus: status,
+          +  };
+          +}
+          diff --git a/frontend/src/components/map/PlaceMarker.tsx b/frontend/src/components/map/PlaceMarker.tsx
+          index 97b83a9..1aed500 100644
+          --- a/frontend/src/components/map/PlaceMarker.tsx
+          +++ b/frontend/src/components/map/PlaceMarker.tsx
+          @@ -13,9 +13,9 @@ import {
+             galleryMotionStyle,
+             getPlaceGalleryMotionLayout,
+             isGalleryMotionItemInsideViewport,
+          -  placeMarkerEnterStyle,
+             type GalleryMotionItem,
+           } from "./mapMotion";
+          +import { placeMarkerEnterStyle } from "./placeMarkerMotion";
+           import { MAP_MARKER_PANE, PHOTO_GALLERY_PANE } from "./mapPanes";
+           import { getPlaceGalleryMaxSize } from "./placeGallerySizing";
+           import { getPlacePreviewVisual, type PlaceMapVisualItem } from "./placePreview";
+          diff --git a/frontend/src/components/map/mapMotion.test.ts b/frontend/src/components/map/mapMotion.test.ts
+          index f850fa3..2de5959 100644
+          --- a/frontend/src/components/map/mapMotion.test.ts
+          +++ b/frontend/src/components/map/mapMotion.test.ts
+          @@ -1,12 +1,6 @@
+           import { describe, expect, it } from "vitest";
+           
+          -import {
+          -  galleryMotionStyle,
+          -  getPlaceGalleryMotionLayout,
+          -  getPlaceMarkerEnterDelayMs,
+          -  isGalleryMotionItemInsideViewport,
+          -  placeMarkerEnterStyle,
+          -} from "./mapMotion";
+          +import { galleryMotionStyle, getPlaceGalleryMotionLayout, isGalleryMotionItemInsideViewport } from "./mapMotion";
+           import { getPlaceGalleryMaxSize } from "./placeGallerySizing";
+           
+           function rectanglesForLayout(layout: ReturnType<typeof getPlaceGalleryMotionLayout>) {
+          @@ -199,14 +193,4 @@ describe("map motion helpers", () => {
+               }),
+             ).toBe(true);
+           });
+          -
+          -  it("keeps marker filter-entry delays short and capped", () => {
+          -    expect(getPlaceMarkerEnterDelayMs(0)).toBe(0);
+          -    expect(getPlaceMarkerEnterDelayMs(2)).toBe(32);
+          -    expect(getPlaceMarkerEnterDelayMs(20)).toBe(144);
+          -  });
+          -
+          -  it("serializes marker entry delay as a CSS custom property", () => {
+          -    expect(placeMarkerEnterStyle(3)).toBe("--place-marker-enter-delay: 48ms;");
+          -  });
+           });
+          diff --git a/frontend/src/components/map/mapMotion.ts b/frontend/src/components/map/mapMotion.ts
+          index 59b00d9..67013dd 100644
+          --- a/frontend/src/components/map/mapMotion.ts
+          +++ b/frontend/src/components/map/mapMotion.ts
+          @@ -1,7 +1,6 @@
+           import { MAP_DISPLAY_CONFIG } from "./mapDisplayConfig";
+           
+           const GALLERY_MOTION_CONFIG = MAP_DISPLAY_CONFIG.placeGallery.motion;
+          -const MARKER_TRANSITION_CONFIG = MAP_DISPLAY_CONFIG.markerTransition;
+           
+           type GalleryOffset = {
+             x: number;
+          @@ -319,14 +318,3 @@ export function isGalleryMotionItemInsideViewport(
+               centerY + height / 2 <= viewportHeight - padding
+             );
+           }
+          -
+          -export function getPlaceMarkerEnterDelayMs(index: number) {
+          -  return Math.min(
+          -    Math.max(0, index) * MARKER_TRANSITION_CONFIG.enterStaggerMs,
+          -    MARKER_TRANSITION_CONFIG.enterMaxDelayMs,
+          -  );
+          -}
+          -
+          -export function placeMarkerEnterStyle(index: number) {
+          -  return `--place-marker-enter-delay: ${getPlaceMarkerEnterDelayMs(index)}ms;`;
+          -}
+          diff --git a/frontend/src/components/map/placeMarkerMotion.test.ts b/frontend/src/components/map/placeMarkerMotion.test.ts
+          index 0f43f63..0403ee0 100644
+          --- a/frontend/src/components/map/placeMarkerMotion.test.ts
+          +++ b/frontend/src/components/map/placeMarkerMotion.test.ts
+          @@ -1,6 +1,12 @@
+           import { describe, expect, it } from "vitest";
+           
+          -import { getPlaceMarkerMotionSignature, getPlaceMarkerMotionState, isPlaceMarkerEntering } from "./placeMarkerMotion";
+          +import {
+          +  getPlaceMarkerEnterDelayMs,
+          +  getPlaceMarkerMotionSignature,
+          +  getPlaceMarkerMotionState,
+          +  isPlaceMarkerEntering,
+          +  placeMarkerEnterStyle,
+          +} from "./placeMarkerMotion";
+           
+           function place(id: string, coverId: string | null, previewIds: string[] = []) {
+             return {
+          @@ -51,4 +57,14 @@ describe("place marker motion", () => {
+               expect(after.signaturesByPlaceId.get("b")).toBe(before.signaturesByPlaceId.get("b"));
+               expect(after.placesMotionSignature).not.toBe(before.placesMotionSignature);
+             });
+          +
+          +  it("keeps marker filter-entry delays short and capped", () => {
+          +    expect(getPlaceMarkerEnterDelayMs(0)).toBe(0);
+          +    expect(getPlaceMarkerEnterDelayMs(2)).toBe(32);
+          +    expect(getPlaceMarkerEnterDelayMs(20)).toBe(144);
+          +  });
+          +
+          +  it("serializes marker entry delay as a CSS custom property", () => {
+          +    expect(placeMarkerEnterStyle(3)).toBe("--place-marker-enter-delay: 48ms;");
+          +  });
+           });
+          diff --git a/frontend/src/components/map/placeMarkerMotion.ts b/frontend/src/components/map/placeMarkerMotion.ts
+          index 8ccc71f..ef8984c 100644
+          --- a/frontend/src/components/map/placeMarkerMotion.ts
+          +++ b/frontend/src/components/map/placeMarkerMotion.ts
+          @@ -1,3 +1,7 @@
+          +import { MAP_DISPLAY_CONFIG } from "./mapDisplayConfig";
+          +
+          +const MARKER_TRANSITION_CONFIG = MAP_DISPLAY_CONFIG.markerTransition;
+          +
+           type PlaceMarkerMotionSource = {
+             cover_photo: { id: string } | null;
+             id: string;
+          @@ -35,3 +39,14 @@ export function isPlaceMarkerEntering(
+           ) {
+             return previousSignaturesByPlaceId?.get(placeId) !== currentSignature;
+           }
+          +
+          +export function getPlaceMarkerEnterDelayMs(index: number) {
+          +  return Math.min(
+          +    Math.max(0, index) * MARKER_TRANSITION_CONFIG.enterStaggerMs,
+          +    MARKER_TRANSITION_CONFIG.enterMaxDelayMs,
+          +  );
+          +}
+          +
+          +export function placeMarkerEnterStyle(index: number) {
+          +  return `--place-marker-enter-delay: ${getPlaceMarkerEnterDelayMs(index)}ms;`;
+          +}
+          PATCH
+          git apply --check /tmp/final-boundaries.patch
+          git apply /tmp/final-boundaries.patch
+          git rm .github/workflows/temp-final-boundaries.yml
+          git add frontend/src/components/admin/usePlaceFormDraft.ts \
+            frontend/src/components/admin/usePlaceLocationAutoSave.ts \
+            frontend/src/components/map/PlaceMarker.tsx \
+            frontend/src/components/map/mapMotion.test.ts \
+            frontend/src/components/map/mapMotion.ts \
+            frontend/src/components/map/placeMarkerMotion.test.ts \
+            frontend/src/components/map/placeMarkerMotion.ts
+          git diff --cached --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Separate final map and location responsibilities"
+          git push origin HEAD:work/photomap-final-boundaries-20260919
