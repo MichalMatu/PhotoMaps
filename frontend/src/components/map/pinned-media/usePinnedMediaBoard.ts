@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import type { PlaceMapItem } from "../../api/types";
+import type { PlaceMapItem } from "../../../api/types";
 import {
   bringPinnedMediaCardToFront,
   pinnedMediaCardListsEqual,
@@ -18,7 +18,7 @@ import type {
   ResolvedPinnedMediaCard,
   StoredPinnedMediaCard,
 } from "./pinnedMediaBoardTypes";
-import type { PlaceMapVisualItem } from "./placePreview";
+import type { PlaceMapVisualItem } from "../placePreview";
 
 export type PinMediaRequest = {
   aspectRatio?: number | null;

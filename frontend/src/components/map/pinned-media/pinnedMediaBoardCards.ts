@@ -1,5 +1,5 @@
-import type { PlaceMapItem } from "../../api/types";
-import { findPlaceGalleryItem } from "./placePreview";
+import type { PlaceMapItem } from "../../../api/types";
+import { findPlaceGalleryItem } from "../placePreview";
 import { clampPinnedMediaLayout, defaultPinnedMediaLayout, nextPinnedMediaZIndex } from "./pinnedMediaBoardLayout";
 import {
   MAX_PINNED_MEDIA_CARDS,

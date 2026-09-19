@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import type { Category, PlaceMapItem, PlaceMapPhoto } from "../../api/types";
+import type { Category, PlaceMapItem, PlaceMapPhoto } from "../../../api/types";
 import { PinnedMediaCard } from "./PinnedMediaCard";
 import type { ResolvedPinnedMediaCard } from "./pinnedMediaBoardTypes";
 

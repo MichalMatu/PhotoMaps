@@ -1,9 +1,9 @@
 import { MapPinned, X } from "lucide-react";
 import { type CSSProperties, type PointerEvent as ReactPointerEvent, type RefCallback } from "react";
 
-import { mediaUrl } from "../../api/http";
-import { stopFloatingWindowEvent } from "../ui/useDraggableWindow";
-import { mapMediaDisplay } from "./mediaDisplayText";
+import { mediaUrl } from "../../../api/http";
+import { stopFloatingWindowEvent } from "../../ui/useDraggableWindow";
+import { mapMediaDisplay } from "../mediaDisplayText";
 import type { PinnedMediaInteractionMode } from "./pinnedMediaBoardInteraction";
 import type { PinnedMediaNaturalSize, ResolvedPinnedMediaCard } from "./pinnedMediaBoardTypes";
 

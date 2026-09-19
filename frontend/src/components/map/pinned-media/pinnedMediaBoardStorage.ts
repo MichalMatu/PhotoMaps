@@ -1,5 +1,5 @@
-import type { AudioAttachment } from "../../api/types";
-import type { PlaceMapVisualItem } from "./placePreview";
+import type { AudioAttachment } from "../../../api/types";
+import type { PlaceMapVisualItem } from "../placePreview";
 import {
   MAX_PINNED_MEDIA_CARDS,
   type PinnedMediaLayout,

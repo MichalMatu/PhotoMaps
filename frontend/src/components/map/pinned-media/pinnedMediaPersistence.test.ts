@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import type { Category, PlaceMapItem, PlaceMapPhoto } from "../../api/types";
+import type { Category, PlaceMapItem, PlaceMapPhoto } from "../../../api/types";
 import { resolvePinnedMediaCards, upsertPinnedMediaCard } from "./pinnedMediaBoardCards";
 import { PINNED_MEDIA_STORAGE_KEY, readPinnedMediaCards, writePinnedMediaCards } from "./pinnedMediaBoardStorage";
-import type { PlaceMapVisualItem } from "./placePreview";
+import type { PlaceMapVisualItem } from "../placePreview";
 import type { StoredPinnedMediaCard } from "./pinnedMediaBoardTypes";
 
 class MemoryStorage implements Pick<Storage, "getItem" | "removeItem" | "setItem"> {

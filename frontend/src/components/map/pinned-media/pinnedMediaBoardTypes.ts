@@ -1,5 +1,5 @@
-import type { PlaceMapItem } from "../../api/types";
-import type { PlaceMapVisualItem } from "./placePreview";
+import type { PlaceMapItem } from "../../../api/types";
+import type { PlaceMapVisualItem } from "../placePreview";
 
 export const MAX_PINNED_MEDIA_CARDS = 8;
 
