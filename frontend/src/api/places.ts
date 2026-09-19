@@ -1,5 +1,5 @@
 import { request } from "./http";
-import type { PlaceMapItem } from "./types";
+import type { PlaceMapItem } from "./types/map";
 import type { AdminPlace, PlaceDetail, PlacePayload, PlaceUpdatePayload } from "./types/places";
 import type { City } from "./types/taxonomy";
 
