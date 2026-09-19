@@ -116,7 +116,7 @@ Nastepny wiekszy etap admina ma poprawic uzytkowosc panelu do korekt, moderacji 
 
 Podcele wykonawcze:
 
-- wspolny edytor blokowy ma zastapic lokalne, powielone edytory dluzszych tresci; obecna logika pelnego opisu miejsca powinna zostac wydzielona do neutralnego komponentu `ContentBlockEditor` i wspolnego renderera blokow,
+- wspolny edytor blokowy i renderer sa juz wydzielone jako `ContentBlockEditor` i `ContentBlocks`; sa reuzywane przez miejsca, trasy i opisy zdjec, a kolejne prace maja utrzymac jeden kontrakt blokow zamiast tworzyc lokalne edytory albo renderery,
 - trasy maja zachowac krotki opis do kart i list, ale dostac widoczny blokowy `Pelny opis trasy`; backend, API, frontend i TTS maja czytac te same bloki opisu trasy z kontrolowanym fallbackiem do krotkiego opisu,
 - dodawanie miejsc do trasy ma zaczynac sie od wyboru miasta, a dopiero potem pokazywac miejsca z tego miasta; wyszukiwarka ma dzialac w aktualnym kontekscie miasta, a lista juz dodanych miejsc pozostaje osobnym uporzadkowanym widokiem trasy,
 - opis zdjecia ma uzywac tego samego edytora blokowego co opisy miejsc i tras; istniejacy krotki opis tekstowy trzeba przemigrowac do jednego bloku akapitu albo zachowac tylko jako kompatybilne zrodlo migracji, bez konkurencyjnych pol w UI,
