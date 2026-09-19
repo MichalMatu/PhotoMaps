@@ -11,6 +11,7 @@ import { MapPhotoGalleryGlass } from "./MapPhotoGalleryGlass";
 import { MapPhotoGalleryPane } from "./MapPhotoGalleryPane";
 import { PhotoDetailModal } from "./PhotoDetailModal";
 import { PlaceMarker } from "./PlaceMarker";
+import { getPlaceMarkerMotionSignature, getPlaceMarkerMotionState, isPlaceMarkerEntering } from "./placeMarkerMotion";
 import type { PlaceMapVisualItem } from "./placePreview";
 import { ReportSheet } from "./ReportSheet";
 import { useCenteredPlaceGallery } from "./useCenteredPlaceGallery";
@@ -53,18 +54,8 @@ export function PlaceLayer({
   const refreshMapViewport = useCallback(() => {
     setMapViewport(readMapViewport(map));
   }, [map]);
-  const placesMotionSignature = useMemo(
-    () =>
-      places
-        .map((place) => {
-          const previewSignature = place.preview_items.map((item) => `${item.kind}:${item.id}`).join(",");
-          return `${place.id}:${place.cover_photo?.id ?? "none"}:${previewSignature}`;
-        })
-        .join("|"),
-    [places],
-  );
-  const previousPlacesMotionSignature = useRef<string | null>(null);
-  const shouldAnimateMarkers = previousPlacesMotionSignature.current !== placesMotionSignature;
+  const placeMarkerMotion = useMemo(() => getPlaceMarkerMotionState(places), [places]);
+  const previousPlaceMotionSignatures = useRef<Map<string, string> | null>(null);
   const [memoryPlace, setMemoryPlace] = useState<PlaceMapItem | null>(null);
   const [visualDetail, setVisualDetail] = useState<PlaceVisualTarget | null>(null);
   const [reportTarget, setReportTarget] = useState<PlaceVisualTarget | null>(null);
@@ -103,11 +94,11 @@ export function PlaceLayer({
 
   useEffect(() => {
     refreshMapViewport();
-  }, [placesMotionSignature, refreshMapViewport]);
+  }, [placeMarkerMotion.placesMotionSignature, refreshMapViewport]);
 
   useEffect(() => {
-    previousPlacesMotionSignature.current = placesMotionSignature;
-  }, [placesMotionSignature]);
+    previousPlaceMotionSignatures.current = placeMarkerMotion.signaturesByPlaceId;
+  }, [placeMarkerMotion.signaturesByPlaceId]);
 
   useEffect(() => {
     if (memoryPlace && !places.some((place) => place.id === memoryPlace.id)) {
@@ -132,24 +123,29 @@ export function PlaceLayer({
       <MapInteractionLock isLocked={isGalleryInteractionLocked} />
       <MapPhotoGalleryPane />
       <MapPhotoGalleryGlass place={expandedPlace} onClose={closePlaceGallery} />
-      {renderedMarkerPlaces.map((place, index) => (
-        <PlaceMarker
-          key={`${placesMotionSignature}:${place.id}`}
-          place={place}
-          galleryItems={galleryItemsByPlaceId.get(place.id) ?? EMPTY_PLACE_GALLERY_ITEMS}
-          isExpanded={expandedPlaceId === place.id}
-          enterIndex={index}
-          isEntering={shouldAnimateMarkers}
-          onMemoryOpen={setMemoryPlace}
-          onMediaOpen={(nextPlace, nextItem) => {
-            setVisualDetail({ id: nextItem.id, kind: nextItem.kind, placeId: nextPlace.id });
-          }}
-          onToggleGallery={() => togglePlaceGallery(place)}
-          displayOffset={markerDisplayOffsets.get(place.id)}
-          markerScale={mapSettings.marker_scale}
-          zoom={zoom}
-        />
-      ))}
+      {renderedMarkerPlaces.map((place, index) => {
+        const placeMotionSignature =
+          placeMarkerMotion.signaturesByPlaceId.get(place.id) ?? getPlaceMarkerMotionSignature(place);
+
+        return (
+          <PlaceMarker
+            key={`${placeMotionSignature}:${place.id}`}
+            place={place}
+            galleryItems={galleryItemsByPlaceId.get(place.id) ?? EMPTY_PLACE_GALLERY_ITEMS}
+            isExpanded={expandedPlaceId === place.id}
+            enterIndex={index}
+            isEntering={isPlaceMarkerEntering(previousPlaceMotionSignatures.current, place.id, placeMotionSignature)}
+            onMemoryOpen={setMemoryPlace}
+            onMediaOpen={(nextPlace, nextItem) => {
+              setVisualDetail({ id: nextItem.id, kind: nextItem.kind, placeId: nextPlace.id });
+            }}
+            onToggleGallery={() => togglePlaceGallery(place)}
+            displayOffset={markerDisplayOffsets.get(place.id)}
+            markerScale={mapSettings.marker_scale}
+            zoom={zoom}
+          />
+        );
+      })}
       <MemorySheet
         place={memoryPlace}
         onClose={() => setMemoryPlace(null)}
