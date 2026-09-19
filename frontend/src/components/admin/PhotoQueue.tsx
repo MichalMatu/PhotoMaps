@@ -10,31 +10,17 @@ import {
   updateAdminPhotoAudio,
 } from "../../api/media";
 import { updatePlaceCover } from "../../api/places";
-import type {
-  AdminPhoto,
-  Category,
-  City,
-  ContentBlock,
-  ContentBlockType,
-  Place,
-  ReviewFinalStatus,
-  ReviewStatus,
-} from "../../api/types";
-import { emptyContentBlock } from "../content/contentBlockUtils";
+import type { AdminPhoto, Category, City, Place, ReviewFinalStatus, ReviewStatus } from "../../api/types";
 import { AdminMediaCityAlbums } from "./AdminMediaCityAlbums";
 import { PhotoQueueItem } from "./PhotoQueueItem";
 import { PhotoTextEditModal } from "./PhotoTextEditModal";
 import { SystemModal } from "./SystemModal";
 import { groupAdminMediaPlaceGroupsByCity, groupAdminPhotoAlbumsByPlace } from "./adminMediaGroups";
 import type { AdminModerationFilters } from "./adminModerationFilters";
-import {
-  EMPTY_PHOTO_ATTRIBUTION_DRAFT,
-  type PhotoAttributionDraft,
-  photoAttributionDraftFromPhoto,
-  photoPayloadFromDraft,
-} from "./placePhotoPanelState";
+import { photoPayloadFromDraft } from "./placePhotoPanelState";
 import { useAdminMediaExpansion } from "./useAdminMediaExpansion";
 import { usePhotoQueueData } from "./usePhotoQueueData";
+import { usePhotoTextEditDraft } from "./usePhotoTextEditDraft";
 
 type Props = {
   categories: Category[];
@@ -55,12 +41,21 @@ export function PhotoQueue({
   refreshKey,
   statusFilter,
 }: Props) {
-  const [captionDraft, setCaptionDraft] = useState("");
-  const [descriptionDraftBlocks, setDescriptionDraftBlocks] = useState<ContentBlock[]>([]);
-  const [attributionDraft, setAttributionDraft] = useState<PhotoAttributionDraft>({
-    ...EMPTY_PHOTO_ATTRIBUTION_DRAFT,
-  });
-  const [editingPhotoId, setEditingPhotoId] = useState<string | null>(null);
+  const {
+    addDescriptionDraftBlock,
+    attributionDraft,
+    captionDraft,
+    clearPhotoTextEditSelection,
+    descriptionDraftBlocks,
+    editingPhotoId,
+    removeDescriptionDraftBlock,
+    resetPhotoTextEditDraft,
+    setAttributionDraft,
+    setCaptionDraft,
+    startPhotoTextEdit,
+    updateDescriptionDraftBlock,
+    updateDescriptionDraftBlockType,
+  } = usePhotoTextEditDraft();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const reviewingPhotoIdsRef = useRef(new Set<string>());
   const [reviewingPhotoIds, setReviewingPhotoIds] = useState<Set<string>>(() => new Set());
@@ -137,8 +132,7 @@ export function PhotoQueue({
   }
 
   function handleTogglePlace(placeId: string) {
-    setEditingPhotoId(null);
-    setDescriptionDraftBlocks([]);
+    clearPhotoTextEditSelection();
     if (expandedPlaceId !== placeId && !placePhotosById[placeId] && !loadingPlaceIds.has(placeId)) {
       loadPlacePhotos(placeId).catch(() => undefined);
     }
@@ -146,17 +140,13 @@ export function PhotoQueue({
   }
 
   function handleToggleCity(cityId: string) {
-    setEditingPhotoId(null);
-    setDescriptionDraftBlocks([]);
+    clearPhotoTextEditSelection();
     collapsePlace();
     setExpandedCityId((currentCityId) => (currentCityId === cityId ? null : cityId));
   }
 
   function handleStartCaptionEdit(photo: AdminPhoto) {
-    setCaptionDraft(photo.caption ?? "");
-    setDescriptionDraftBlocks(photo.description_blocks);
-    setAttributionDraft(photoAttributionDraftFromPhoto(photo));
-    setEditingPhotoId(photo.id);
+    startPhotoTextEdit(photo);
   }
 
   async function handleSaveCaption(photo: AdminPhoto) {
@@ -164,10 +154,7 @@ export function PhotoQueue({
     setErrorMessage(null);
     try {
       await updateAdminPhoto(photo.id, photoPayloadFromDraft(captionDraft, descriptionDraftBlocks, attributionDraft));
-      setEditingPhotoId(null);
-      setCaptionDraft("");
-      setDescriptionDraftBlocks([]);
-      setAttributionDraft({ ...EMPTY_PHOTO_ATTRIBUTION_DRAFT });
+      resetPhotoTextEditDraft();
       await onChanged();
     } catch (reason) {
       setErrorMessage(reason instanceof Error ? reason.message : "Nie udało się zapisać podpisu zdjęcia.");
@@ -204,32 +191,6 @@ export function PhotoQueue({
     await deleteAdminPhotoAudio(photo.id);
     bumpMediaCacheRevision();
     await onChanged();
-  }
-
-  function addDescriptionDraftBlock(type: ContentBlockType) {
-    setDescriptionDraftBlocks((currentBlocks) => [...currentBlocks, emptyContentBlock(type)]);
-  }
-
-  function updateDescriptionDraftBlock(index: number, nextBlock: ContentBlock) {
-    setDescriptionDraftBlocks((currentBlocks) =>
-      currentBlocks.map((currentBlock, currentIndex) => (currentIndex === index ? nextBlock : currentBlock)),
-    );
-  }
-
-  function updateDescriptionDraftBlockType(index: number, type: ContentBlockType) {
-    setDescriptionDraftBlocks((currentBlocks) =>
-      currentBlocks.map((currentBlock, currentIndex) => {
-        if (currentIndex !== index) return currentBlock;
-        const nextBlock = emptyContentBlock(type);
-        return { ...nextBlock, text: currentBlock.text };
-      }),
-    );
-  }
-
-  function removeDescriptionDraftBlock(index: number) {
-    setDescriptionDraftBlocks((currentBlocks) =>
-      currentBlocks.filter((_block, currentIndex) => currentIndex !== index),
-    );
   }
 
   return (
@@ -312,12 +273,7 @@ export function PhotoQueue({
           onAddDescriptionDraftBlock={addDescriptionDraftBlock}
           onAttributionDraftChange={setAttributionDraft}
           onCaptionDraftChange={setCaptionDraft}
-          onClose={() => {
-            setEditingPhotoId(null);
-            setCaptionDraft("");
-            setDescriptionDraftBlocks([]);
-            setAttributionDraft({ ...EMPTY_PHOTO_ATTRIBUTION_DRAFT });
-          }}
+          onClose={resetPhotoTextEditDraft}
           onRemoveDescriptionDraftBlock={removeDescriptionDraftBlock}
           onSave={handleSaveCaption}
           onUpdateDescriptionDraftBlock={updateDescriptionDraftBlock}
