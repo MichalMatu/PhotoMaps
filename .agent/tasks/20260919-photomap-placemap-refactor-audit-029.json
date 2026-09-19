@@ -1,0 +1,14 @@
+{
+  "id": "20260919-photomap-placemap-refactor-audit-029",
+  "agent_binding": "2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607",
+  "mode": "commands",
+  "work_branch": "main",
+  "allow_write": false,
+  "resources": [],
+  "command_timeout": 1200,
+  "task_timeout": 2400,
+  "memory_limit_mb": 4096,
+  "commands": [
+    "set -euo pipefail\ntest \"$(git rev-parse HEAD)\" = \"02a158935b48297da27845811bde440c24f7a58b\"\nprintf '%s\\n' '=== PlaceMap size/imports ==='\nwc -l frontend/src/components/map/PlaceMap.tsx\nsed -n '1,180p' frontend/src/components/map/PlaceMap.tsx\nprintf '%s\\n' '=== PlaceMap middle ==='\nsed -n '181,380p' frontend/src/components/map/PlaceMap.tsx\nprintf '%s\\n' '=== PlaceMap tail ==='\nsed -n '381,620p' frontend/src/components/map/PlaceMap.tsx\nprintf '%s\\n' '=== hook/state/effect counts ==='\nfor token in useState useMemo useEffect useCallback useQuery useMapEvents; do printf '%s ' \"$token\"; grep -o \"$token\" frontend/src/components/map/PlaceMap.tsx | wc -l; done\nprintf '%s\\n' '=== related gallery implementation ==='\ngrep -RInE --exclude-dir=node_modules --exclude-dir=.git 'useCenteredPlaceGallery|closePlaceGallery|togglePlaceGallery|expandedPlaceId' frontend/src/components/map frontend/src/components | head -n 120 || true\nprintf '%s\\n' '=== PlaceMap direct tests/usages ==='\ngrep -RInE --exclude-dir=node_modules --exclude-dir=.git 'PlaceMap|placesMotionSignature|renderedMarkerPlaces|galleryItemsByPlaceId' frontend/src frontend/e2e | head -n 180 || true\nprintf '%s\\n' '=== map component files ==='\nfind frontend/src/components/map -maxdepth 1 -type f -print | sort\nprintf '%s\\n' '=== working tree ==='\ngit status --short"
+  ]
+}
