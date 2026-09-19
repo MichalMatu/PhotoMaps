@@ -1,9 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
 import type { Map as LeafletMap } from "leaflet";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMap, useMapEvents } from "react-leaflet";
 
-import { getPlacePhotos } from "../../api/media";
 import type { AppConfigMap, PlaceCustomFieldDefinition, PlaceMapItem } from "../../api/types";
 import { SystemModal } from "../ui/SystemModal";
 import { MemorySheet } from "./MemorySheet";
@@ -13,17 +11,12 @@ import { MapPhotoGalleryGlass } from "./MapPhotoGalleryGlass";
 import { MapPhotoGalleryPane } from "./MapPhotoGalleryPane";
 import { PhotoDetailModal } from "./PhotoDetailModal";
 import { PlaceMarker } from "./PlaceMarker";
-import { findPlaceGalleryItem, getPlaceGalleryItems, type PlaceMapVisualItem } from "./placePreview";
+import type { PlaceMapVisualItem } from "./placePreview";
 import { ReportSheet } from "./ReportSheet";
 import { useCenteredPlaceGallery } from "./useCenteredPlaceGallery";
 import { type MapViewport, useMapMarkerLayout } from "./useMapMarkerLayout";
+import { type PlaceVisualTarget, usePlaceGalleryData } from "./usePlaceGalleryData";
 import type { PinMediaRequest } from "./usePinnedMediaBoard";
-
-type VisualTarget = {
-  id: string;
-  kind: PlaceMapVisualItem["kind"];
-  placeId: string;
-};
 
 type PlaceLayerProps = {
   isAudioAutoplayEnabled: boolean;
@@ -73,8 +66,8 @@ export function PlaceLayer({
   const previousPlacesMotionSignature = useRef<string | null>(null);
   const shouldAnimateMarkers = previousPlacesMotionSignature.current !== placesMotionSignature;
   const [memoryPlace, setMemoryPlace] = useState<PlaceMapItem | null>(null);
-  const [visualDetail, setVisualDetail] = useState<VisualTarget | null>(null);
-  const [reportTarget, setReportTarget] = useState<VisualTarget | null>(null);
+  const [visualDetail, setVisualDetail] = useState<PlaceVisualTarget | null>(null);
+  const [reportTarget, setReportTarget] = useState<PlaceVisualTarget | null>(null);
   const [isThanksOpen, setIsThanksOpen] = useState(false);
   const zoom = mapViewport.zoom;
   const { markerDisplayOffsets, markerPlaces } = useMapMarkerLayout({
@@ -85,43 +78,22 @@ export function PlaceLayer({
   });
   const { closePlaceGallery, expandedPlace, expandedPlaceId, isGalleryInteractionLocked, togglePlaceGallery } =
     useCenteredPlaceGallery(map, places);
-  const renderedMarkerPlaces = useMemo(() => {
-    if (!expandedPlace || markerPlaces.some((place) => place.id === expandedPlace.id)) {
-      return markerPlaces;
-    }
-
-    return [...markerPlaces, expandedPlace];
-  }, [expandedPlace, markerPlaces]);
-  const expandedPlacePhotosQuery = useQuery({
-    queryKey: ["place", expandedPlace?.id, "photos"],
-    queryFn: () => getPlacePhotos(expandedPlace?.id ?? ""),
-    enabled: expandedPlace !== null,
-    staleTime: 60_000,
+  const {
+    detailItem,
+    detailNavigationItems,
+    detailPlace,
+    galleryItemsByPlaceId,
+    renderedMarkerPlaces,
+    reportItem,
+    reportPlace,
+  } = usePlaceGalleryData({
+    expandedPlace,
+    expandedPlaceId,
+    markerPlaces,
+    places,
+    reportTarget,
+    visualDetail,
   });
-  const expandedPlacePhotos = expandedPlacePhotosQuery.data ?? null;
-  const galleryItemsByPlaceId = useMemo(() => {
-    return new Map(
-      renderedMarkerPlaces.map((place) => [
-        place.id,
-        getPlaceGalleryItems(place, expandedPlaceId === place.id ? expandedPlacePhotos : null),
-      ]),
-    );
-  }, [expandedPlaceId, expandedPlacePhotos, renderedMarkerPlaces]);
-  const detailPlace = visualDetail ? (places.find((place) => place.id === visualDetail.placeId) ?? null) : null;
-  const detailPlacePhotos = detailPlace?.id === expandedPlace?.id ? expandedPlacePhotos : null;
-  const detailItem =
-    detailPlace && visualDetail ? findPlaceGalleryItem(detailPlace, visualDetail, detailPlacePhotos) : null;
-  const detailNavigationItems = useMemo(
-    () =>
-      detailPlace && visualDetail?.kind === "photo"
-        ? getPlaceGalleryItems(detailPlace, detailPlacePhotos).filter((item) => item.kind === "photo")
-        : [],
-    [detailPlace, detailPlacePhotos, visualDetail?.kind],
-  );
-  const reportPlace = reportTarget ? (places.find((place) => place.id === reportTarget.placeId) ?? null) : null;
-  const reportPlacePhotos = reportPlace?.id === expandedPlace?.id ? expandedPlacePhotos : null;
-  const reportItem =
-    reportPlace && reportTarget ? findPlaceGalleryItem(reportPlace, reportTarget, reportPlacePhotos) : null;
 
   useMapEvents({
     moveend: refreshMapViewport,
