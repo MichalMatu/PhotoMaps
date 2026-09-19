@@ -8,7 +8,7 @@ import type {
   GuideUpdatePayload,
   PublicGuide,
   PublicGuideDetail,
-} from "./types";
+} from "./types/guides";
 
 export function getGuides(): Promise<PublicGuide[]> {
   return request<PublicGuide[]>("/api/guides");
