@@ -50,21 +50,10 @@ type Props = {
 
 export function TtsProvider({ children }: Props) {
   const [activeKey, setActiveKey] = useState<string | null>(null);
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>(readSpeechVoices);
-  const isSupported = isSpeechSynthesisSupported() && voices.length > 0;
+  const isSupported = isSpeechSynthesisSupported();
   const activeKeyRef = useRef<string | null>(null);
   const runIdRef = useRef(0);
   const utterancesRef = useRef<SpeechSynthesisUtterance[]>([]);
-  const startTimeoutRef = useRef<number | null>(null);
-
-  const clearPendingStart = useCallback(() => {
-    if (startTimeoutRef.current === null || typeof window === "undefined") {
-      return;
-    }
-
-    window.clearTimeout(startTimeoutRef.current);
-    startTimeoutRef.current = null;
-  }, []);
 
   const setCurrentActiveKey = useCallback((ttsKey: string | null) => {
     activeKeyRef.current = ttsKey;
@@ -73,13 +62,12 @@ export function TtsProvider({ children }: Props) {
 
   const stop = useCallback(() => {
     runIdRef.current += 1;
-    clearPendingStart();
     if (isSpeechSynthesisSupported()) {
       window.speechSynthesis.cancel();
     }
     utterancesRef.current = [];
     setCurrentActiveKey(null);
-  }, [clearPendingStart, setCurrentActiveKey]);
+  }, [setCurrentActiveKey]);
 
   const stopKey = useCallback(
     (ttsKey: string) => {
@@ -90,22 +78,6 @@ export function TtsProvider({ children }: Props) {
     [stop],
   );
 
-  useEffect(() => {
-    if (!isSpeechSynthesisSupported()) {
-      return undefined;
-    }
-
-    const syncVoices = () => setVoices(readSpeechVoices());
-    const timeoutId = window.setTimeout(syncVoices, 250);
-    syncVoices();
-    window.speechSynthesis.addEventListener("voiceschanged", syncVoices);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-      window.speechSynthesis.removeEventListener("voiceschanged", syncVoices);
-    };
-  }, []);
-
   const speak = useCallback(
     (ttsKey: string, text: string, lang?: string | null) => {
       if (!isSpeechSynthesisSupported()) return;
@@ -114,12 +86,10 @@ export function TtsProvider({ children }: Props) {
       if (chunks.length === 0) return;
       const availableVoices = readSpeechVoices();
       const voice = preferredSpeechVoice(availableVoices, lang);
-      if (!voice) return;
 
       runIdRef.current += 1;
       const runId = runIdRef.current;
-      const speechLang = voice.lang || defaultSpeechLang(lang);
-      clearPendingStart();
+      const speechLang = voice?.lang || defaultSpeechLang(lang);
       window.speechSynthesis.cancel();
       utterancesRef.current = [];
       setCurrentActiveKey(ttsKey);
@@ -146,7 +116,9 @@ export function TtsProvider({ children }: Props) {
         nextChunkIndex += 1;
         const utterance = new window.SpeechSynthesisUtterance(chunk.text);
         utterance.lang = speechLang;
-        utterance.voice = voice;
+        if (voice) {
+          utterance.voice = voice;
+        }
         utterance.onend = speakNextChunk;
         utterance.onerror = finish;
         utterancesRef.current = [...utterancesRef.current, utterance];
@@ -155,12 +127,9 @@ export function TtsProvider({ children }: Props) {
         window.speechSynthesis.speak(utterance);
       };
 
-      startTimeoutRef.current = window.setTimeout(() => {
-        startTimeoutRef.current = null;
-        speakNextChunk();
-      }, 0);
+      speakNextChunk();
     },
-    [clearPendingStart, setCurrentActiveKey],
+    [setCurrentActiveKey],
   );
 
   useEffect(() => stop, [stop]);

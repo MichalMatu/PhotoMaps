@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties, PointerEvent as ReactPointerEvent, ReactNode } from "react";
 import { GripHorizontal, X } from "lucide-react";
 
 import { lockDocumentScroll, unlockDocumentScroll } from "./documentScrollLock";
@@ -15,6 +15,7 @@ type Props = {
   confirmFormId?: string;
   confirmLabel?: string;
   details?: string | null;
+  dragMode?: "handle" | "surface";
   eyebrow?: string;
   headerActions?: ReactNode;
   isBusy?: boolean;
@@ -41,6 +42,7 @@ export function SystemModal({
   confirmFormId,
   confirmLabel = "OK",
   details = null,
+  dragMode = "handle",
   eyebrow = "Komunikat systemowy",
   headerActions = null,
   isBusy = false,
@@ -95,6 +97,18 @@ export function SystemModal({
   const modalStyle =
     isFullscreen || (!style && !draggableWindow.style) ? undefined : { ...style, ...draggableWindow.style };
 
+  const handleModalPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    stopFloatingWindowEvent(event);
+    if (
+      dragMode === "surface" &&
+      !isFullscreen &&
+      event.target instanceof Element &&
+      event.target.closest("[data-modal-drag-surface]")
+    ) {
+      draggableWindow.handleProps.onPointerDown(event);
+    }
+  };
+
   return createPortal(
     <div
       className={motionClassName(
@@ -127,7 +141,7 @@ export function SystemModal({
         onContextMenu={stopFloatingWindowEvent}
         onDoubleClick={stopFloatingWindowEvent}
         onMouseDown={stopFloatingWindowEvent}
-        onPointerDown={stopFloatingWindowEvent}
+        onPointerDown={handleModalPointerDown}
         onTouchStart={stopFloatingWindowEvent}
         onWheel={stopFloatingWindowEvent}
       >
@@ -138,7 +152,7 @@ export function SystemModal({
           </div>
           <div className="system-modal-header-actions">
             {headerActions}
-            {isFullscreen ? null : (
+            {isFullscreen || dragMode !== "handle" ? null : (
               <div
                 className="system-modal-drag-handle"
                 aria-label="Przesuń modal"

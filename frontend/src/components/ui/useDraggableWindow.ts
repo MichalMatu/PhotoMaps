@@ -18,9 +18,11 @@ type DragState = {
   startTop: number;
   startX: number;
   startY: number;
+  started: boolean;
 };
 
 const VIEWPORT_MARGIN = 8;
+const DRAG_START_DISTANCE = 6;
 const COMPACT_MEDIA_QUERY = "(max-width: 640px), (max-height: 520px)";
 
 function shouldUseDefaultPosition() {
@@ -84,19 +86,32 @@ export function useDraggableWindow<TElement extends HTMLElement>(isActive = true
         return;
       }
 
-      setPosition(
-        clampWindowPosition(
-          element,
-          dragState.startLeft + event.clientX - dragState.startX,
-          dragState.startTop + event.clientY - dragState.startY,
-        ),
-      );
+      const deltaX = event.clientX - dragState.startX;
+      const deltaY = event.clientY - dragState.startY;
+      if (!dragState.started) {
+        if (Math.hypot(deltaX, deltaY) < DRAG_START_DISTANCE) {
+          return;
+        }
+
+        dragState.started = true;
+        setPosition(clampWindowPosition(element, dragState.startLeft, dragState.startTop));
+        setIsDragging(true);
+      }
+
+      event.preventDefault();
+      setPosition(clampWindowPosition(element, dragState.startLeft + deltaX, dragState.startTop + deltaY));
     };
 
     const handlePointerEnd = (event: PointerEvent) => {
       const dragState = dragStateRef.current;
       const element = windowRef.current;
       if (!dragState || !element || event.pointerId !== dragState.pointerId) {
+        return;
+      }
+
+      if (!dragState.started) {
+        dragStateRef.current = null;
+        setIsDragging(false);
         return;
       }
 
@@ -138,13 +153,8 @@ export function useDraggableWindow<TElement extends HTMLElement>(isActive = true
       startTop: rect.top,
       startX: event.clientX,
       startY: event.clientY,
+      started: false,
     };
-
-    setPosition(clampWindowPosition(element, rect.left, rect.top));
-    setIsDragging(true);
-    event.currentTarget.setPointerCapture(event.pointerId);
-    event.preventDefault();
-    event.stopPropagation();
   }, []);
 
   const style: CSSProperties | undefined = position

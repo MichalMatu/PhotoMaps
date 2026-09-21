@@ -13,8 +13,8 @@ vi.mock("../../../api/media", () => ({
 }));
 
 vi.mock("../../ui/SystemModal", () => ({
-  SystemModal: (props: { children?: ReactNode; headerActions?: ReactNode; title: string }) => (
-    <div data-title={props.title}>
+  SystemModal: (props: { children?: ReactNode; dragMode?: string; headerActions?: ReactNode; title: string }) => (
+    <div data-title={props.title} data-drag-mode={props.dragMode}>
       <div data-testid="header-actions">{props.headerActions}</div>
       {props.children}
     </div>
@@ -139,5 +139,15 @@ describe("PhotoDetailModal", () => {
 
     expect(markup).not.toContain("Pokaż opis zdjęcia");
     expect(markup).not.toContain("Odczytaj opis zdjęcia");
+  });
+
+  it("uses the photo surface for dragging and keeps fullscreen off the action bar", () => {
+    stubSpeechSynthesis();
+
+    const markup = renderModal(photoItem());
+
+    expect(markup).toContain('data-drag-mode="surface"');
+    expect(markup).toContain('data-modal-drag-surface="true"');
+    expect(markup).not.toContain('aria-label="Pełny ekran"');
   });
 });

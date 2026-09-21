@@ -430,12 +430,36 @@ test("visual: map markers, gallery and photo detail", async ({ page }) => {
   expect(desktopLayout.imageWidth).toBeGreaterThanOrEqual(desktopLayout.dialogWidth - 4);
   expect(desktopLayout.imageHeight).toBeGreaterThanOrEqual(desktopLayout.dialogHeight - 4);
 
-  await detailDialog.getByRole("button", { name: "Pełny ekran" }).click();
+  const detailContent = detailDialog.locator(".photo-detail-content");
+  await expect(detailDialog.getByRole("button", { name: "Pełny ekran" })).toHaveCount(0);
+  await expect(detailDialog.locator(".system-modal-drag-handle")).toHaveCount(0);
+
+  const dialogBeforeDrag = await detailDialog.boundingBox();
+  const contentBeforeDrag = await detailContent.boundingBox();
+  expect(dialogBeforeDrag).not.toBeNull();
+  expect(contentBeforeDrag).not.toBeNull();
+  await page.mouse.move(
+    contentBeforeDrag!.x + contentBeforeDrag!.width / 2,
+    contentBeforeDrag!.y + Math.min(140, contentBeforeDrag!.height / 3),
+  );
+  await page.mouse.down();
+  await page.mouse.move(
+    contentBeforeDrag!.x + contentBeforeDrag!.width / 2 - 14,
+    contentBeforeDrag!.y + Math.min(140, contentBeforeDrag!.height / 3) + 10,
+    { steps: 4 },
+  );
+  await page.mouse.up();
+  const dialogAfterDrag = await detailDialog.boundingBox();
+  expect(dialogAfterDrag).not.toBeNull();
+  expect(
+    Math.abs(dialogAfterDrag!.x - dialogBeforeDrag!.x) + Math.abs(dialogAfterDrag!.y - dialogBeforeDrag!.y),
+  ).toBeGreaterThan(5);
+
+  await detailContent.dblclick({ position: { x: 32, y: 160 } });
   await expect
     .poll(async () => page.evaluate(() => Boolean(document.fullscreenElement?.classList.contains("system-modal"))))
     .toBe(true);
   await expect(detailDialog).toHaveClass(/system-modal--fullscreen/);
-  await expect(detailDialog.locator(".system-modal-drag-handle")).toHaveCount(0);
 
   const fullscreenLayout = await detailDialog.evaluate((element) => {
     const rect = element.getBoundingClientRect();
@@ -453,10 +477,10 @@ test("visual: map markers, gallery and photo detail", async ({ page }) => {
   expect(fullscreenLayout.width).toBeGreaterThanOrEqual(viewport!.width - 2);
   expect(fullscreenLayout.height).toBeGreaterThanOrEqual(viewport!.height - 2);
 
-  await detailDialog.locator(".photo-detail-content").dblclick({ position: { x: 32, y: 160 } });
+  await detailContent.dblclick({ position: { x: 32, y: 160 } });
   await expect.poll(async () => page.evaluate(() => document.fullscreenElement === null)).toBe(true);
   await expect(detailDialog).not.toHaveClass(/system-modal--fullscreen/);
-  await expect(detailDialog.getByRole("button", { name: "Pełny ekran" })).toBeVisible();
+  await expect(detailDialog.getByRole("button", { name: "Pełny ekran" })).toHaveCount(0);
 
   await page.keyboard.press("Escape");
   await expect(detailDialog).toBeHidden();
@@ -701,7 +725,7 @@ test("photo detail swipe navigates photos in mobile, landscape and fullscreen", 
   await swipePhotoDetailContent(page, "next");
   await expect(detailImage).toHaveAttribute("alt", rynekSide.caption ?? "");
 
-  await detailDialog.getByRole("button", { name: "Pełny ekran" }).click();
+  await detailImage.dblclick();
   await expect
     .poll(async () => page.evaluate(() => Boolean(document.fullscreenElement?.classList.contains("system-modal"))))
     .toBe(true);
