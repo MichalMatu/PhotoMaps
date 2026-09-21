@@ -139,10 +139,13 @@ export async function mockSharedApi(
   mapPlaces: SharedMapPlace[] = places,
   guideList = guides,
   cityList: SharedCity[] = [city],
+  dismissModeratorRecruitment = true,
 ) {
-  await page.addInitScript(() => {
-    window.localStorage.setItem("photomap:moderator-recruitment:v1", "dismissed");
-  });
+  if (dismissModeratorRecruitment) {
+    await page.addInitScript(() => {
+      window.localStorage.setItem("photomap:moderator-recruitment:v1", "dismissed");
+    });
+  }
   await page.route("https://*.tile.openstreetmap.org/**", (route) =>
     route.fulfill({ body: tileSvg(), contentType: "image/svg+xml" }),
   );
