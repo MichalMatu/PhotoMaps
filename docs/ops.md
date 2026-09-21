@@ -89,13 +89,15 @@ Audio jest opcjonalnym załącznikiem do `photo` albo `memory`. Oryginał trafia
 
 `photo.caption` pozostaje krótkim podpisem zdjęcia. `photo.description_blocks` jest opcjonalnym dłuższym opisem redakcyjnym/narracją przygotowaną pod tekst na ekranie i TTS; nie jest plikiem audio i nie zastępuje atrybucji źródła. Zasady stylu, struktury bloków i edutainment dla opisów zdjęć są w [`docs/create_tts.md`](create_tts.md).
 
-TTS dla opisów zdjęć, miejsc i tras korzysta w przeglądarce z Web Speech API (`speechSynthesis`), a nie z backendowego generatora audio. Na Debianie/Raspberry Pi Brave lub Chromium mogą wystawiać API bez żadnych głosów, co daje niemą ikonę albo brak przycisku po poprawnej detekcji. Runtime powinien mieć lokalny silnik głosu:
+TTS dla opisów zdjęć, miejsc i tras korzysta w przeglądarce z Web Speech API (`speechSynthesis`), a nie z backendowego generatora audio. Przycisk TTS jest dostępny, gdy przeglądarka udostępnia API i istnieje tekst do przeczytania; nie czeka na niepusty wynik `speechSynthesis.getVoices()`. To istotne na przeglądarkach mobilnych, które potrafią uzupełnić listę głosów dopiero po czasie. Jeśli lista jest jeszcze pusta, aplikacja nie przypina konkretnego głosu i pozwala przeglądarce wybrać głos domyślny. Pierwsze `speechSynthesis.speak()` jest wykonywane bezpośrednio z gestu użytkownika, bez opóźniającego timera.
+
+Na Debianie/Raspberry Pi Brave lub Chromium mogą wystawiać samo API bez działającego lokalnego silnika głosu. W takim środowisku kontrolka może być widoczna, ale odczyt nadal pozostać niemy. Runtime powinien mieć lokalny silnik głosu:
 
 ```bash
 sudo apt install speech-dispatcher espeak-ng
 ```
 
-Po instalacji zrestartuj Brave/Chromium i sprawdź, czy `window.speechSynthesis.getVoices()` zwraca co najmniej jeden głos. Aplikacja renderuje przycisk TTS tylko wtedy, gdy przeglądarka ma realnie dostępny głos.
+Po instalacji zrestartuj Brave/Chromium i sprawdź `window.speechSynthesis.getVoices()`. Niepusta lista potwierdza dostępność wykrytych głosów; pusta lista nie jest już powodem do ukrycia kontrolki TTS.
 
 ```bash
 python3 scripts/diagnose_local_data.py
