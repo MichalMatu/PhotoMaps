@@ -6,7 +6,7 @@ Glownym bytem systemu jest `place`. Zdjecia, pamiatki, kolekcje i zgloszenia sa 
 
 ## Local Agent integration
 
-PhotoMap jest zarejestrowany jako `photomaps` w wielorepozytoryjnym workflow [`local-agent`](https://github.com/MichalMatu/local-agent). Nowy chat powinien zaczac od przeczytania aktualnego `AGENTS.md`; zadania lokalne dla tego repo trafiaja wylacznie przez branch `agent-control` PhotoMap. Szczegolowy bootstrap i kontrakt kolejki sa zapisane w `AGENTS.md`.
+PhotoMaps jest zarejestrowany jako `photomaps` w wielorepozytoryjnym workflow [`local-agent`](https://github.com/MichalMatu/local-agent). Nowy chat powinien zaczac od przeczytania aktualnego `AGENTS.md`; zadania lokalne dla tego repo trafiaja wylacznie przez branch `agent-control` PhotoMaps. Szczegolowy bootstrap i kontrakt kolejki sa zapisane w `AGENTS.md`.
 
 Dokumentacja celowo nie przypina tej integracji do numeru wersji `local-agent` — aktualny kontrakt wykonawczy jest utrzymywany w repozytorium agenta.
 

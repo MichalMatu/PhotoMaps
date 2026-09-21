@@ -1,12 +1,12 @@
-# PhotoMap — handoff do następnego czatu
+# PhotoMaps — handoff do następnego czatu
 
 Data stanu: 2026-09-19
 
 ## Repo / binding
 
-- Repozytorium: `MichalMatu/PhotoMap`
+- Repozytorium: `MichalMatu/PhotoMaps`
 - Local Agent binding: `2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607`
-- Local Agent repo binding: `photomaps` / `MichalMatu/PhotoMap`
+- Local Agent repo binding: `photomaps` / `MichalMatu/PhotoMaps`
 - `docs/SANDBOX_EXECUTION_FLOW.md` ma status ACTIVE: ChatGPT sandbox jest domyślnym workerem software, GitHub Actions canonical verifierem, a Local Agent jest używany tylko do pracy wymagającej lokalnego Maca, lokalnych danych albo usług.
 
 ## Obowiązkowy fresh start
