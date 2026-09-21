@@ -45,7 +45,7 @@ describe("TtsButton", () => {
     expect(renderTtsButton("  ")).toBe("");
   });
 
-  it("does not render when speech synthesis has no available voices", () => {
+  it("renders when the API is available even before voices are populated", () => {
     vi.stubGlobal("window", {
       SpeechSynthesisUtterance: function SpeechSynthesisUtterance() {
         return {};
@@ -53,7 +53,9 @@ describe("TtsButton", () => {
       speechSynthesis: speechSynthesisStub([]),
     });
 
-    expect(renderTtsButton("Tekst trasy")).toBe("");
+    const markup = renderTtsButton("Tekst trasy");
+
+    expect(markup).toContain('aria-label="Odczytaj tekst"');
   });
 
   it("renders an accessible read action when text and speech synthesis are available", () => {

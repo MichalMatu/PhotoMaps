@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, Maximize2, Minimize2, Pin } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pin } from "lucide-react";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 
 import { mediaUrl } from "../../../api/http";
@@ -70,7 +70,6 @@ export function PhotoDetailModal({
   const hasPhotoDescription = Boolean(photoDescriptionText);
   const modalEyebrow = place.categories[0]?.label ?? "Miejsce";
   const pinLabel = item.kind === "memory" ? "Przypnij pamiątkę" : "Przypnij zdjęcie";
-  const fullscreenLabel = isFullscreen ? "Wyjdź z pełnego ekranu" : "Pełny ekran";
   const contentClassName = [
     "photo-detail-content",
     (hasCopy || hasPhotoDescription) && "has-copy",
@@ -137,16 +136,6 @@ export function PhotoDetailModal({
             ttsKey={`photo:${item.id}:description`}
             onToggle={handleDescriptionToggle}
           />
-          <button
-            className="system-modal-icon-action"
-            type="button"
-            aria-label={fullscreenLabel}
-            aria-pressed={isFullscreen}
-            title={fullscreenLabel}
-            onClick={toggleFullscreen}
-          >
-            {isFullscreen ? <Minimize2 aria-hidden="true" size={18} /> : <Maximize2 aria-hidden="true" size={18} />}
-          </button>
           {onPin ? (
             <button
               className="system-modal-icon-action"
@@ -160,6 +149,7 @@ export function PhotoDetailModal({
           ) : null}
         </>
       }
+      dragMode="surface"
       isFullscreen={isFullscreen}
       showActions={false}
       size="large"
@@ -170,6 +160,7 @@ export function PhotoDetailModal({
       <div
         ref={contentRef}
         className={contentClassName}
+        data-modal-drag-surface
         onClick={handleContentClick}
         onDoubleClick={handleContentDoubleClick}
         {...photoDetailSwipe}
@@ -212,7 +203,7 @@ export function PhotoDetailModal({
             contentClassName="photo-description-rich-text photo-detail-description-blocks"
           />
         ) : null}
-        <div className="photo-detail-overlay">
+        <div className="photo-detail-overlay" data-drag-ignore>
           <PhotoDetailInfoPanel
             customFields={customFields}
             display={display}

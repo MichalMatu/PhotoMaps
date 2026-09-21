@@ -66,7 +66,7 @@ export function PhotoDescriptionLayer({ blocks, className, contentClassName }: P
   }
 
   return (
-    <section className={className} role="note" aria-label="Opis zdjęcia">
+    <section className={className} role="note" aria-label="Opis zdjęcia" data-drag-ignore>
       <ContentBlocks blocks={normalizedBlocks} className={contentClassName} />
     </section>
   );
