@@ -1,6 +1,6 @@
-# Prompt startowy do następnego czatu — PhotoMaps
+# Prompt startowy do następnego czatu — PhotoMap
 
-Kontynuujemy pracę nad `MichalMatu/PhotoMaps` z aktualnego stanu repozytorium.
+Kontynuujemy pracę nad `MichalMatu/PhotoMap` z aktualnego stanu repozytorium.
 
 Najpierw przeczytaj świeże:
 
@@ -12,7 +12,7 @@ Najpierw przeczytaj świeże:
 
 Przed jakimkolwiek zapisem pobierz świeży `main` i sprawdź otwarte PR-y. GitHub jest źródłem prawdy; nie zakładaj, że SHA zapisane w handoffie nadal jest HEAD.
 
-Local Agent binding tego projektu to `2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607`, repo binding `photomaps` / `MichalMatu/PhotoMaps`. Zgodnie z aktywnym sandbox flow używaj ChatGPT sandbox jako domyślnego workera software i GitHub Actions jako canonical verifiera. Local Agenta używaj tylko, jeżeli zadanie naprawdę wymaga lokalnego Maca, lokalnych danych albo usług; wtedy najpierw sprawdź świeży `agent-control:.agent/status/daemon.json` i brak duplikatu zdrowego taska.
+Local Agent binding tego projektu to `2e5d59f8-f6e4-4d75-8d1a-dce7b6bf6607`, repo binding `photomaps` / `MichalMatu/PhotoMap`. Zgodnie z aktywnym sandbox flow używaj ChatGPT sandbox jako domyślnego workera software i GitHub Actions jako canonical verifiera. Local Agenta używaj tylko, jeżeli zadanie naprawdę wymaga lokalnego Maca, lokalnych danych albo usług; wtedy najpierw sprawdź świeży `agent-control:.agent/status/daemon.json` i brak duplikatu zdrowego taska.
 
 Autonomiczna behavior-preserving fala structural cleanupu #15–#33 została zakończona i zweryfikowana. Public map, API types, photo-detail, pinned-media, LocationPicker, photo text draft, marker motion ownership i place-location autosave mają już rozdzielone odpowiedzialności opisane w handoffie.
 

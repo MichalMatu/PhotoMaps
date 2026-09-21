@@ -4,7 +4,7 @@ import { useState } from "react";
 export const MODERATOR_RECRUITMENT_STORAGE_KEY = "photomap:moderator-recruitment:v1";
 const MODERATOR_RECRUITMENT_DISMISSED_VALUE = "dismissed";
 const MODERATOR_RECRUITMENT_URL =
-  "https://github.com/MichalMatu/PhotoMaps/issues/new?title=Chc%C4%99%20pom%C3%B3c%20przy%20PhotoMap";
+  "https://github.com/MichalMatu/PhotoMap/issues/new?title=Chc%C4%99%20pom%C3%B3c%20przy%20PhotoMap";
 
 function browserStorage(): Storage | null {
   if (typeof window === "undefined") return null;
