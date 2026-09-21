@@ -99,13 +99,7 @@ export function useDraggableWindow<TElement extends HTMLElement>(isActive = true
       }
 
       event.preventDefault();
-      setPosition(
-        clampWindowPosition(
-          element,
-          dragState.startLeft + deltaX,
-          dragState.startTop + deltaY,
-        ),
-      );
+      setPosition(clampWindowPosition(element, dragState.startLeft + deltaX, dragState.startTop + deltaY));
     };
 
     const handlePointerEnd = (event: PointerEvent) => {
