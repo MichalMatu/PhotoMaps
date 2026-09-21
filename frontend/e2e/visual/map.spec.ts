@@ -725,7 +725,7 @@ test("photo detail swipe navigates photos in mobile, landscape and fullscreen", 
   await swipePhotoDetailContent(page, "next");
   await expect(detailImage).toHaveAttribute("alt", rynekSide.caption ?? "");
 
-  await detailDialog.getByRole("button", { name: "Pełny ekran" }).click();
+  await detailImage.dblclick();
   await expect
     .poll(async () => page.evaluate(() => Boolean(document.fullscreenElement?.classList.contains("system-modal"))))
     .toBe(true);
