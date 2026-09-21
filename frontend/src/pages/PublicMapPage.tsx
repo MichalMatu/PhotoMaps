@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAppConfig } from "../api/appConfig";
 import { getMapPlaces } from "../api/places";
 import { AppShell } from "../components/layout/AppShell";
+import { ModeratorRecruitmentPrompt } from "../components/layout/ModeratorRecruitmentPrompt";
 import {
   filterMapPlacesByCategories,
   getMapCategoryFilterItems,
@@ -134,6 +135,7 @@ export function PublicMapPage() {
               ) : null}
             </div>
           ) : null}
+          <ModeratorRecruitmentPrompt />
           {!isMapLoading && !isMapError ? (
             <div className="map-frame">
               <PlaceMap
