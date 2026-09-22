@@ -2,7 +2,7 @@
 set -euo pipefail
 
 cd frontend
-npx playwright test e2e/visual/map-polish-targeted.spec.ts
+npm run test:e2e -- e2e/visual/map-polish-targeted.spec.ts
 cd ..
 
 rm frontend/e2e/visual/map-polish-targeted.spec.ts scripts/dev/run_map_polish_targeted_verify.sh
