@@ -10,6 +10,10 @@ PhotoMaps jest zarejestrowany jako `photomaps` w wielorepozytoryjnym workflow [`
 
 Dokumentacja celowo nie przypina tej integracji do numeru wersji `local-agent` — aktualny kontrakt wykonawczy jest utrzymywany w repozytorium agenta.
 
+### Experimental distributed verification
+
+Branch `dev/distributed-verify-v1` zawiera odseparowany prototyp równoległego testowania jednego exact SHA na Macu i S22+/Termux przez `host-ops`. Nie zmienia on produkcyjnego `main`, `make check`, `make quality` ani CI. Kontrakt, podział pracy i sposób uruchomienia są w [docs/DISTRIBUTED_VERIFICATION_V1.md](docs/DISTRIBUTED_VERIFICATION_V1.md).
+
 ## Sandbox i ChatGPT Library
 
 Software-only buildy i testy moga byc wykonywane w sandboxie ChatGPT z zaleznosciami odtwarzanymi offline z ChatGPT Library. GitHub Actions generuje snapshot zrodel po dokladnym SHA oraz paczke Python/npm/Playwright. Szczegolowy flow, nazwy artefaktow i bootstrap sa w [docs/SANDBOX_EXECUTION_FLOW.md](docs/SANDBOX_EXECUTION_FLOW.md).
@@ -17,6 +21,7 @@ Software-only buildy i testy moga byc wykonywane w sandboxie ChatGPT z zaleznosc
 ## Dokumenty
 
 - [Kierunek produktu](docs/product-direction.md)
+- [Distributed verification V1](docs/DISTRIBUTED_VERIFICATION_V1.md)
 - [Sandbox / ChatGPT Library](docs/SANDBOX_EXECUTION_FLOW.md)
 - [Content pipeline](docs/content-pipeline.md)
 - [Workflow mediow redakcyjnych](docs/editorial-media-workflow.md)

@@ -33,6 +33,11 @@ The canonical Local Agent implementation and operational documentation live in `
 
 For substantial coding tasks, prefer `workflow_policy: "efficient-verification-v1"` with explicit `work` / `focused` stages and exactly one final `full` verification stage. Task payloads are immutable: a claimed or interrupted task is not replayed automatically, so changed work or an intentional retry must use a new unique task id. A successful local task proves execution and verification; source publication remains an explicit final step.
 
+
+### Experimental distributed verification V1
+
+This section applies only when the active source branch is `dev/distributed-verify-v1`. It does not change the production `main` workflow. When the user explicitly asks to compile/test PhotoMaps using both the Mac and S22+, keep one PhotoMaps Local Agent task with `resources: []` and run `bash scripts/distributed_verify.sh --profile full --target termux-phone`. The runner, not Local Agent, coordinates the Mac and S22 lanes, enforces one exact Git SHA and serializes S22 work with the shared kernel lock. Do not split V1 into two Local Agent tasks and do not merge this branch to `main` without a separate review decision. Read `docs/DISTRIBUTED_VERIFICATION_V1.md` before changing or running this experimental flow.
+
 ## Cel projektu
 
 PhotoMap to globalny produkt: wizualna mapa miejsc z klimatem. Uzytkownik ma wejsc na mape miasta i od razu zobaczyc atrakcyjna tablice miniaturek miejsc: zdjecia, covery, pamiatki ludzi i proste trasy/kolekcje.
