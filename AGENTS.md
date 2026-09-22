@@ -240,7 +240,7 @@ Pracuj etapami, ale kazdy etap ma zostawic repozytorium w domknietym stanie:
 
 ## Praca Na Dwoch Komputerach
 
-Repozytorium ma jeden kod i dwa tryby uruchomienia: lokalny dev oraz publiczny runtime, ktory moze dzialac na Raspberry Pi 5. To nie sa osobne linie kompatybilnosci.
+Repozytorium ma jeden kod i dwa tryby uruchomienia: lokalny dev oraz publiczny runtime, ktory moze dzialac na Raspberry Pi runtime. To nie sa osobne linie kompatybilnosci.
 
 - `main` traktuj jako stabilna wersje kodu gotowa do wystawienia. Nie prowadz zwyklej pracy bezposrednio na `main`, chyba ze uzytkownik wyraznie prosi o hotfix albo publikacje gotowego etapu.
 - Nowa prace zaczynaj na tematycznym branchu z aktualnego `main`, np. `work/admin-ui-cleanup`, `work/place-collections` albo `fix/moderation-counts`. Unikaj jednego stalego brancha `dev`, ktory miesza kilka tematow.
@@ -274,7 +274,7 @@ git push
 - Nie rob `git pull` ani `git pull --rebase` na brudnym worktree bez swiadomej decyzji uzytkownika. Najpierw pokaz `git status --short --branch` i ustal, czy zmiany trzeba commitowac, stashowac albo zostawic lokalnie.
 - Unikaj dlugiej rownoleglej pracy na obu komputerach w tych samych plikach. To jest normalne zrodlo konfliktow Git, nie problem kompatybilnosci PhotoMap.
 - Lokalne artefakty nie sa synchronizowane przez Git: `.env`, `.dev`, `.cloudflared`, `backend/.venv`, `node_modules`, `frontend/dist`, `backend/data` oraz `backend/storage`.
-- Tryb dev uruchamiaj przez `make start`. Publiczny runtime uruchamiaj przez `make server-start`, `make autostart-start` albo alias `make serwerstart`. Raspberry Pi 5 najlepiej traktowac jako runtime/deploy, chyba ze uzytkownik jawnie koduje tam zmiany.
+- Tryb dev uruchamiaj przez `make start`. Publiczny runtime uruchamiaj przez `make server-start`, `make autostart-start` albo alias `make serwerstart`. Raspberry Pi najlepiej traktowac jako runtime/deploy, chyba ze uzytkownik jawnie koduje tam zmiany. Aktualny flow dla Pi Zero 2W jest w `docs/deploy-pi-zero2w.md`.
 
 ## Testowanie
 

@@ -25,6 +25,7 @@ Software-only buildy i testy moga byc wykonywane w sandboxie ChatGPT z zaleznosc
 - [Prompt miniatur miejsc](docs/image_generation/place-thumbnails.md)
 - [Assety redakcyjne](assets/README.md)
 - [Uruchamianie i testy](docs/dev.md)
+- [Deploy na Raspberry Pi Zero 2W](docs/deploy-pi-zero2w.md)
 - [Skrypty i Make](scripts/README.md)
 - [Struktura kodu](docs/code-structure.md)
 
