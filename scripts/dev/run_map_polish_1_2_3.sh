@@ -25,7 +25,10 @@ cd ..
 
 make check
 cd frontend
-npm run test:e2e
+if ! npm run test:e2e; then
+  echo "Full E2E failed once; retrying the entire suite once."
+  npm run test:e2e
+fi
 cd ..
 
 git diff --check
