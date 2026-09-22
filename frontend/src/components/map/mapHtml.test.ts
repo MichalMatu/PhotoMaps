@@ -4,7 +4,7 @@ import { audioWaveformHtml, escapeAttribute } from "./mapHtml";
 
 describe("mapHtml", () => {
   it("escapes attribute-sensitive characters", () => {
-    expect(escapeAttribute(`a&b\"c'd<e`)).toBe("a&amp;b&quot;c&#39;d&lt;e");
+    expect(escapeAttribute(`a&b"c'd<e`)).toBe("a&amp;b&quot;c&#39;d&lt;e");
   });
 
   it("renders a background-free waveform only for media with audio", () => {
