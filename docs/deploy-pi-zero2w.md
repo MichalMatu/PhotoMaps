@@ -41,11 +41,14 @@ VITE_API_BASE_URL= npm run build
 cd ..
 test -f frontend/dist/index.html
 
-ssh -i "$SSH_KEY" -o BatchMode=yes -o StrictHostKeyChecking=yes "$PI"   "cd '$PI_REPO' && test -z "\$(git status --porcelain)" && git fetch origin main && git switch main && git merge --ff-only origin/main"
+ssh -i "$SSH_KEY" -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=8 "$PI" \
+  'cd /home/michal/src/PhotoMaps && test -z "$(git status --porcelain)" && git fetch origin main && git switch main && git merge --ff-only origin/main'
 
-RSYNC_RSH="ssh -i $SSH_KEY -o BatchMode=yes -o StrictHostKeyChecking=yes"   rsync -az frontend/dist/ "$PI:$PI_REPO/frontend/dist/"
+RSYNC_RSH="ssh -i $SSH_KEY -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=8" \
+  rsync -az frontend/dist/ "$PI:$PI_REPO/frontend/dist/"
 
-ssh -i "$SSH_KEY" -o BatchMode=yes -o StrictHostKeyChecking=yes "$PI"   "cd '$PI_REPO' && PHOTOMAP_SKIP_FRONTEND_BUILD=1 make server-restart && curl -fsS --max-time 5 http://127.0.0.1:8000/health >/dev/null && test "\$(git rev-parse HEAD)" = '$TARGET_SHA' && make server-status"
+ssh -i "$SSH_KEY" -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=8 "$PI" \
+  "cd /home/michal/src/PhotoMaps && PHOTOMAP_SKIP_FRONTEND_BUILD=1 make server-restart && curl -fsS --max-time 5 http://127.0.0.1:8000/health >/dev/null && test \"\$(git rev-parse HEAD)\" = \"$TARGET_SHA\" && make server-status"
 ```
 
 `PHOTOMAP_SKIP_FRONTEND_BUILD=1` jest celowe: gotowy build jest już skopiowany z Maca.
@@ -53,9 +56,11 @@ ssh -i "$SSH_KEY" -o BatchMode=yes -o StrictHostKeyChecking=yes "$PI"   "cd '$PI
 ## Kontrola i logi
 
 ```bash
-ssh -i /Users/michal/.ssh/id_ed25519 michal@192.168.0.23   'cd /home/michal/src/PhotoMaps && git status --short --branch && make server-status && make tunnel-status'
+ssh -i /Users/michal/.ssh/id_ed25519 michal@192.168.0.23 \
+  'cd /home/michal/src/PhotoMaps && git status --short --branch && make server-status && make tunnel-status'
 
-ssh -i /Users/michal/.ssh/id_ed25519 michal@192.168.0.23   'cd /home/michal/src/PhotoMaps && make server-logs'
+ssh -i /Users/michal/.ssh/id_ed25519 michal@192.168.0.23 \
+  'cd /home/michal/src/PhotoMaps && make server-logs'
 ```
 
 Oczekiwany stan: `main`, właściwy SHA, czysty worktree, port 8000, `PhotoMap runtime health: OK` i działający systemowy `cloudflared`.
