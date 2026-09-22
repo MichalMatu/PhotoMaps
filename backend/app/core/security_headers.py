@@ -55,6 +55,10 @@ def is_public_media_path(path: str) -> bool:
     return path.startswith("/media/")
 
 
+def is_public_media_thumbnail_path(path: str) -> bool:
+    return is_public_media_path(path) and "-thumb." in path.rsplit("/", 1)[-1]
+
+
 def is_public_photo_image_path(path: str) -> bool:
     return path.startswith("/api/places/") and "/photos/" in path and path.endswith("/media/image")
 
@@ -81,8 +85,12 @@ async def security_headers_middleware(
         response.headers["Pragma"] = "no-cache"
     elif is_public_media_path(request.url.path):
         response.headers["Cache-Control"] = PUBLIC_MEDIA_CACHE_CONTROL
-        response.headers["CDN-Cache-Control"] = PUBLIC_MEDIA_CDN_CACHE_CONTROL
-        response.headers["Cloudflare-CDN-Cache-Control"] = PUBLIC_MEDIA_CDN_CACHE_CONTROL
+        if is_public_media_thumbnail_path(request.url.path):
+            response.headers["CDN-Cache-Control"] = PUBLIC_MEDIA_CDN_CACHE_CONTROL
+            response.headers["Cloudflare-CDN-Cache-Control"] = PUBLIC_MEDIA_CDN_CACHE_CONTROL
+        else:
+            response.headers["CDN-Cache-Control"] = "no-store"
+            response.headers["Cloudflare-CDN-Cache-Control"] = "no-store"
     elif is_public_photo_image_path(request.url.path):
         response.headers["Cache-Control"] = PUBLIC_IMAGE_REVALIDATE_CACHE_CONTROL
         response.headers["CDN-Cache-Control"] = "no-store"
