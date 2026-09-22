@@ -52,12 +52,7 @@ function markerIcon(
 function galleryVisualIcon(item: PlaceMapVisualItem, motion: GalleryMotionItem) {
   const imageUrl = escapeAttribute(mediaUrl(item.thumb_path));
   return L.divIcon({
-    className: [
-      "photo-gallery-marker",
-      item.kind === "memory" ? "is-memory" : "is-photo",
-    ]
-      .filter(Boolean)
-      .join(" "),
+    className: ["photo-gallery-marker", item.kind === "memory" ? "is-memory" : "is-photo"].filter(Boolean).join(" "),
     html: `<span style="--photo-gallery-image: url('${imageUrl}'); ${galleryMotionStyle(motion)}">${audioWaveformHtml(Boolean(item.audio))}</span>`,
     iconAnchor: [0, 0],
     iconSize: [1, 1],
