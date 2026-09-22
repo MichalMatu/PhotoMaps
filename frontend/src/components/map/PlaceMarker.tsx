@@ -5,7 +5,7 @@ import { Marker, useMap } from "react-leaflet";
 import { mediaUrl } from "../../api/http";
 import type { AppConfigMapMarkerScale, PlaceMapItem } from "../../api/types";
 import { MAP_DISPLAY_CONFIG } from "./mapDisplayConfig";
-import { escapeAttribute } from "./mapHtml";
+import { audioWaveformHtml, escapeAttribute } from "./mapHtml";
 import { isMapKeyboardActivationKey } from "./mapKeyboardActivation";
 import { placeMarkerOffsetStyle, type MarkerDisplayOffset } from "./mapMarkerDisplayOffset";
 import { getPlaceMarkerLayout, type PlaceMarkerLayout } from "./mapMarkerScale";
@@ -39,12 +39,11 @@ function markerIcon(
       "place-photo-marker",
       enterClassName,
       previewItem.kind === "memory" ? "is-memory" : "is-photo",
-      previewItem.audio ? "has-audio" : null,
       isSelected ? "is-selected" : null,
     ]
       .filter(Boolean)
       .join(" "),
-    html: `<span style="--place-marker-width: ${layout.width}px; --place-marker-height: ${layout.height}px; --place-marker-image: url('${imageUrl}'); ${markerOffsetStyle} ${markerEnterStyle}"></span>`,
+    html: `<span style="--place-marker-width: ${layout.width}px; --place-marker-height: ${layout.height}px; --place-marker-image: url('${imageUrl}'); ${markerOffsetStyle} ${markerEnterStyle}">${audioWaveformHtml(Boolean(previewItem.audio))}</span>`,
     iconAnchor: [Math.round(layout.width / 2), Math.round(layout.height / 2)],
     iconSize: [layout.width, layout.height],
   });
@@ -53,14 +52,8 @@ function markerIcon(
 function galleryVisualIcon(item: PlaceMapVisualItem, motion: GalleryMotionItem) {
   const imageUrl = escapeAttribute(mediaUrl(item.thumb_path));
   return L.divIcon({
-    className: [
-      "photo-gallery-marker",
-      item.kind === "memory" ? "is-memory" : "is-photo",
-      item.audio ? "has-audio" : null,
-    ]
-      .filter(Boolean)
-      .join(" "),
-    html: `<span style="--photo-gallery-image: url('${imageUrl}'); ${galleryMotionStyle(motion)}"></span>`,
+    className: ["photo-gallery-marker", item.kind === "memory" ? "is-memory" : "is-photo"].filter(Boolean).join(" "),
+    html: `<span style="--photo-gallery-image: url('${imageUrl}'); ${galleryMotionStyle(motion)}">${audioWaveformHtml(Boolean(item.audio))}</span>`,
     iconAnchor: [0, 0],
     iconSize: [1, 1],
   });

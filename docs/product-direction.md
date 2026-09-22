@@ -154,6 +154,5 @@ To lista rzeczy odlozonych. Nie wybieramy ich jako kolejnych prac bez osobnej de
 - duze nowe funkcje admina,
 - backendowy fallback TTS generujacy tymczasowe `audio/wav` w odpowiedzi HTTP bez zapisu do storage,
 - pelne galerie albo pelne pamiatki w pierwszym renderze mapy.
-- wskaznik audio na miniaturkach mapy: zastapic obecna kropke malym symbolem fali dzwiekowej bez tla; ma informowac o warstwie audio, a nie udawac osobny przycisk play.
 
 Nowa praca wchodzi tylko wtedy, gdy poprawia czytelnosc mapy, pokazanie miejsca albo utrzymanie danych.

@@ -257,18 +257,29 @@
   box-shadow: var(--elevation-marker-selected);
 }
 
-.place-photo-marker.has-audio span::after,
-.photo-gallery-marker.has-audio span::after {
-  background: var(--surface-media-glass-action);
-  border: 1px solid var(--border-on-media-subtle);
-  border-radius: var(--radius-full);
+.map-audio-waveform {
   bottom: var(--space-1);
-  box-shadow: var(--shadow-media-glass-action);
-  content: "";
   height: var(--space-3);
+  left: var(--space-1);
+  pointer-events: none;
   position: absolute;
-  right: var(--space-1);
-  width: var(--space-3);
+  width: var(--space-4);
+}
+
+.map-audio-waveform path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.map-audio-waveform-outline {
+  stroke: var(--content-on-media-glass-note);
+  stroke-width: 3.8;
+}
+
+.map-audio-waveform-line {
+  stroke: var(--content-on-media);
+  stroke-width: 1.8;
 }
 
 @media (hover: hover) and (pointer: fine) {
