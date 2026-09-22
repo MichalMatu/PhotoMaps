@@ -5,59 +5,94 @@ import { useCallback, useEffect } from "react";
 import { mediaUrl } from "../../api/http";
 import type { Photo, PlaceMapItem } from "../../api/types";
 import { placeGalleryQueryOptions } from "./placeGalleryQuery";
-import { getPlaceGalleryItems, type PlaceMapVisualItem } from "./placePreview";
+import { getPlaceGalleryItems, getPlacePreviewVisual, type PlaceMapVisualItem } from "./placePreview";
+
+type ThumbnailFetchPriority = "high" | "low";
+
+type ActiveThumbnailPreload = {
+  image: HTMLImageElement;
+  promise: Promise<void>;
+};
 
 const loadedThumbnailUrls = new Set<string>();
-const activeThumbnailPreloads = new Map<string, HTMLImageElement>();
+const activeThumbnailPreloads = new Map<string, ActiveThumbnailPreload>();
 
 export function uniqueGalleryThumbPaths(items: Array<Pick<PlaceMapVisualItem, "thumb_path">>): string[] {
   return [...new Set(items.map((item) => item.thumb_path).filter(Boolean))];
+}
+
+export function visiblePlaceCoverThumbPaths(
+  places: Array<Pick<PlaceMapItem, "cover_photo" | "preview_items">>,
+): string[] {
+  return uniqueGalleryThumbPaths(
+    places.map((place) => getPlacePreviewVisual(place)).filter((item): item is PlaceMapVisualItem => Boolean(item)),
+  );
 }
 
 function galleryThumbPaths(place: PlaceMapItem, photos: Photo[]): string[] {
   return uniqueGalleryThumbPaths(getPlaceGalleryItems(place, photos));
 }
 
-function preloadGalleryThumbPaths(paths: string[]): void {
+function preloadThumbnailPath(path: string, priority: ThumbnailFetchPriority): Promise<void> {
   if (typeof Image === "undefined") {
-    return;
+    return Promise.resolve();
   }
 
-  for (const path of paths) {
-    const url = mediaUrl(path);
-    if (loadedThumbnailUrls.has(url) || activeThumbnailPreloads.has(url)) {
-      continue;
+  const url = mediaUrl(path);
+  if (loadedThumbnailUrls.has(url)) {
+    return Promise.resolve();
+  }
+
+  const activePreload = activeThumbnailPreloads.get(url);
+  if (activePreload) {
+    if (priority === "high") {
+      activePreload.image.fetchPriority = "high";
     }
-
-    const image = new Image();
-    activeThumbnailPreloads.set(url, image);
-
-    image.addEventListener(
-      "load",
-      () => {
-        activeThumbnailPreloads.delete(url);
-        loadedThumbnailUrls.add(url);
-      },
-      { once: true },
-    );
-    image.addEventListener(
-      "error",
-      () => {
-        activeThumbnailPreloads.delete(url);
-      },
-      { once: true },
-    );
-    image.src = url;
+    return activePreload.promise;
   }
+
+  const image = new Image();
+  image.fetchPriority = priority;
+  image.decoding = "async";
+
+  const promise = new Promise<void>((resolve) => {
+    const settle = (loaded: boolean) => {
+      activeThumbnailPreloads.delete(url);
+      if (loaded) {
+        loadedThumbnailUrls.add(url);
+      }
+      resolve();
+    };
+
+    image.addEventListener("load", () => settle(true), { once: true });
+    image.addEventListener("error", () => settle(false), { once: true });
+  });
+
+  activeThumbnailPreloads.set(url, { image, promise });
+  image.src = url;
+  return promise;
 }
 
-async function preloadPlaceGallery(queryClient: QueryClient, place: PlaceMapItem): Promise<void> {
+async function preloadThumbnailPaths(paths: string[], priority: ThumbnailFetchPriority): Promise<void> {
+  await Promise.all(paths.map((path) => preloadThumbnailPath(path, priority)));
+}
+
+async function preloadPlaceGalleryThumbs(
+  queryClient: QueryClient,
+  place: PlaceMapItem,
+  primaryThumbPaths: ReadonlySet<string>,
+): Promise<void> {
   const photos = await queryClient.fetchQuery(placeGalleryQueryOptions(place.id));
-  preloadGalleryThumbPaths(galleryThumbPaths(place, photos));
+  const backgroundThumbPaths = galleryThumbPaths(place, photos).filter((path) => !primaryThumbPaths.has(path));
+  await preloadThumbnailPaths(backgroundThumbPaths, "low");
 }
 
-function preloadPlaceGallerySafely(queryClient: QueryClient, place: PlaceMapItem): void {
-  void preloadPlaceGallery(queryClient, place).catch(() => undefined);
+function preloadPlaceGalleryThumbsSafely(
+  queryClient: QueryClient,
+  place: PlaceMapItem,
+  primaryThumbPaths: ReadonlySet<string>,
+): void {
+  void preloadPlaceGalleryThumbs(queryClient, place, primaryThumbPaths).catch(() => undefined);
 }
 
 export function usePlaceGalleryPrefetch() {
@@ -65,7 +100,7 @@ export function usePlaceGalleryPrefetch() {
 
   return useCallback(
     (place: PlaceMapItem) => {
-      preloadPlaceGallerySafely(queryClient, place);
+      void queryClient.prefetchQuery(placeGalleryQueryOptions(place.id));
     },
     [queryClient],
   );
@@ -80,27 +115,23 @@ export function useVisiblePlaceGalleriesPreload(places: PlaceMapItem[]): void {
     }
 
     let cancelled = false;
-    const preloadVisibleGalleries = () => {
+    const primaryThumbPaths = visiblePlaceCoverThumbPaths(places);
+    const primaryThumbPathSet = new Set(primaryThumbPaths);
+
+    const preloadInPriorityOrder = async () => {
+      await preloadThumbnailPaths(primaryThumbPaths, "high");
       if (cancelled) {
         return;
       }
+
       for (const place of places) {
-        preloadPlaceGallerySafely(queryClient, place);
+        preloadPlaceGalleryThumbsSafely(queryClient, place, primaryThumbPathSet);
       }
     };
 
-    if (typeof window.requestIdleCallback === "function") {
-      const idleCallbackId = window.requestIdleCallback(preloadVisibleGalleries, { timeout: 800 });
-      return () => {
-        cancelled = true;
-        window.cancelIdleCallback(idleCallbackId);
-      };
-    }
-
-    const timeoutId = window.setTimeout(preloadVisibleGalleries, 200);
+    void preloadInPriorityOrder();
     return () => {
       cancelled = true;
-      window.clearTimeout(timeoutId);
     };
   }, [places, queryClient]);
 }
