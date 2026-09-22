@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-import { getPlacePhotos } from "../../api/media";
 import type { PlaceMapItem } from "../../api/types";
+import { placeGalleryQueryOptions } from "./placeGalleryQuery";
 import { findPlaceGalleryItem, getPlaceGalleryItems, type PlaceMapVisualItem } from "./placePreview";
 
 export type PlaceVisualTarget = {
@@ -36,10 +36,8 @@ export function usePlaceGalleryData({
     return [...markerPlaces, expandedPlace];
   }, [expandedPlace, markerPlaces]);
   const expandedPlacePhotosQuery = useQuery({
-    queryKey: ["place", expandedPlace?.id, "photos"],
-    queryFn: () => getPlacePhotos(expandedPlace?.id ?? ""),
+    ...placeGalleryQueryOptions(expandedPlace?.id ?? ""),
     enabled: expandedPlace !== null,
-    staleTime: 60_000,
   });
   const expandedPlacePhotos = expandedPlacePhotosQuery.data ?? null;
   const galleryItemsByPlaceId = useMemo(() => {

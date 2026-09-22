@@ -7,6 +7,7 @@ import { SystemModal } from "../ui/SystemModal";
 import { MemorySheet } from "./MemorySheet";
 import { MapCloseEvents } from "./MapCloseEvents";
 import { MapInteractionLock } from "./mapInteractionLock";
+import { isSameMapAudioTarget, type MapAudioTarget } from "./mapAudioPlayback";
 import { MapPhotoGalleryGlass } from "./MapPhotoGalleryGlass";
 import { MapPhotoGalleryPane } from "./MapPhotoGalleryPane";
 import { PhotoDetailModal } from "./photo-detail/PhotoDetailModal";
@@ -15,6 +16,7 @@ import { getPlaceMarkerMotionSignature, getPlaceMarkerMotionState, isPlaceMarker
 import type { PlaceMapVisualItem } from "./placePreview";
 import { ReportSheet } from "./ReportSheet";
 import { useCenteredPlaceGallery } from "./useCenteredPlaceGallery";
+import { usePlaceGalleryPrefetch } from "./placeGalleryQuery";
 import { type MapViewport, useMapMarkerLayout } from "./useMapMarkerLayout";
 import { type PlaceVisualTarget, usePlaceGalleryData } from "./usePlaceGalleryData";
 import type { PinMediaRequest } from "./pinned-media/usePinnedMediaBoard";
@@ -57,10 +59,12 @@ export function PlaceLayer({
   const placeMarkerMotion = useMemo(() => getPlaceMarkerMotionState(places), [places]);
   const previousPlaceMotionSignatures = useRef<Map<string, string> | null>(null);
   const [memoryPlace, setMemoryPlace] = useState<PlaceMapItem | null>(null);
+  const [activeAudioTarget, setActiveAudioTarget] = useState<MapAudioTarget | null>(null);
   const [visualDetail, setVisualDetail] = useState<PlaceVisualTarget | null>(null);
   const [reportTarget, setReportTarget] = useState<PlaceVisualTarget | null>(null);
   const [isThanksOpen, setIsThanksOpen] = useState(false);
   const zoom = mapViewport.zoom;
+  const prefetchPlaceGallery = usePlaceGalleryPrefetch();
   const { markerDisplayOffsets, markerPlaces } = useMapMarkerLayout({
     map,
     mapSettings,
@@ -106,6 +110,7 @@ export function PlaceLayer({
     }
     if (visualDetail && !places.some((place) => place.id === visualDetail.placeId)) {
       setVisualDetail(null);
+      setActiveAudioTarget(null);
     }
     if (reportTarget && !places.some((place) => place.id === reportTarget.placeId)) {
       setReportTarget(null);
@@ -130,12 +135,14 @@ export function PlaceLayer({
         return (
           <PlaceMarker
             key={`${placeMotionSignature}:${place.id}`}
+            activeAudioTarget={activeAudioTarget}
             place={place}
             galleryItems={galleryItemsByPlaceId.get(place.id) ?? EMPTY_PLACE_GALLERY_ITEMS}
             isExpanded={expandedPlaceId === place.id}
             enterIndex={index}
             isEntering={isPlaceMarkerEntering(previousPlaceMotionSignatures.current, place.id, placeMotionSignature)}
             onMemoryOpen={setMemoryPlace}
+            onPrefetchGallery={() => prefetchPlaceGallery(place.id)}
             onMediaOpen={(nextPlace, nextItem) => {
               setVisualDetail({ id: nextItem.id, kind: nextItem.kind, placeId: nextPlace.id });
             }}
@@ -161,6 +168,19 @@ export function PlaceLayer({
           item={detailItem}
           navigationItems={detailNavigationItems}
           place={detailPlace}
+          onAudioPlaybackChange={(isPlaying) => {
+            const nextTarget: MapAudioTarget = {
+              id: detailItem.id,
+              kind: detailItem.kind,
+              placeId: detailPlace.id,
+            };
+            setActiveAudioTarget((currentTarget) => {
+              if (isPlaying) {
+                return nextTarget;
+              }
+              return isSameMapAudioTarget(currentTarget, nextTarget) ? null : currentTarget;
+            });
+          }}
           onPin={(pinRequest) => {
             const didPin = onPinMedia({ item: detailItem, place: detailPlace, ...pinRequest });
             if (didPin) {
@@ -170,10 +190,12 @@ export function PlaceLayer({
             return didPin;
           }}
           onNavigate={(nextItem) => {
+            setActiveAudioTarget(null);
             setVisualDetail({ id: nextItem.id, kind: nextItem.kind, placeId: detailPlace.id });
           }}
           onReport={() => setReportTarget({ id: detailItem.id, kind: detailItem.kind, placeId: detailPlace.id })}
           onClose={() => {
+            setActiveAudioTarget(null);
             setVisualDetail(null);
           }}
         />

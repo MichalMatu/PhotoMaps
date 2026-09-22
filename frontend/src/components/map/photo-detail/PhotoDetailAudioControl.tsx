@@ -60,20 +60,40 @@ export function audioControlPlaybackStateAfterEvent(
 export function PhotoDetailAudioControl({
   audio,
   isAutoplayEnabled,
+  onPlaybackChange,
 }: {
   audio: AudioAttachment | null;
   isAutoplayEnabled: boolean;
+  onPlaybackChange?: (isPlaying: boolean) => void;
 }) {
   const controlRef = useRef<HTMLDivElement>(null);
   const fadeFrameRef = useRef<number | null>(null);
+  const onPlaybackChangeRef = useRef(onPlaybackChange);
   const playbackStateRef = useRef<AudioControlPlaybackState>(audioControlState(false, false));
   const [isExpanded, setIsExpanded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  useEffect(() => {
+    onPlaybackChangeRef.current = onPlaybackChange;
+  }, [onPlaybackChange]);
+
   const setPlaybackState = useCallback((nextState: AudioControlPlaybackState) => {
+    const wasPlaying = playbackStateRef.current.isPlaying;
     playbackStateRef.current = nextState;
     setIsExpanded(nextState.isExpanded);
     setIsPlaying(nextState.isPlaying);
+    if (wasPlaying !== nextState.isPlaying) {
+      onPlaybackChangeRef.current?.(nextState.isPlaying);
+    }
   }, []);
+
+  useEffect(
+    () => () => {
+      if (playbackStateRef.current.isPlaying) {
+        onPlaybackChangeRef.current?.(false);
+      }
+    },
+    [],
+  );
   const stopAmbientFadeIn = useCallback(() => {
     if (fadeFrameRef.current !== null) {
       window.cancelAnimationFrame(fadeFrameRef.current);

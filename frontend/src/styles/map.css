@@ -263,7 +263,12 @@
   left: var(--space-1);
   pointer-events: none;
   position: absolute;
+  transform-origin: center;
   width: var(--space-4);
+}
+
+.map-audio-waveform.is-playing {
+  animation: map-audio-waveform-playing var(--motion-duration-slow) var(--motion-ease-standard) infinite alternate;
 }
 
 .map-audio-waveform path {
@@ -280,6 +285,37 @@
 .map-audio-waveform-line {
   stroke: var(--content-on-media);
   stroke-width: 1.8;
+}
+
+.place-map .place-marker-hover-tooltip {
+  background: var(--surface-media-glass-action);
+  backdrop-filter: var(--blur-glass);
+  border: 1px solid var(--border-on-media-subtle);
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-media-glass-action);
+  color: var(--content-on-media);
+  font-size: var(--text-caption);
+  font-weight: 650;
+  line-height: 1.15;
+  padding: var(--space-1) var(--space-2);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.place-map .leaflet-tooltip-top.place-marker-hover-tooltip::before {
+  border-top-color: var(--surface-media-glass-action);
+}
+
+@keyframes map-audio-waveform-playing {
+  from {
+    opacity: 0.76;
+    transform: scaleY(0.78);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleY(1.12);
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -569,6 +605,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .map-audio-waveform.is-playing {
+    animation: none;
+  }
+
   .place-photo-marker {
     transition: none;
   }
