@@ -46,12 +46,16 @@ SECURITY_HEADERS = {
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "DENY",
 }
+PUBLIC_MEDIA_CACHE_CONTROL = "public, max-age=604800, stale-while-revalidate=86400"
+PUBLIC_IMAGE_REVALIDATE_CACHE_CONTROL = "public, max-age=0, must-revalidate"
 
 
-def is_public_image_path(path: str) -> bool:
-    return path.startswith("/media/") or (
-        path.startswith("/api/places/") and "/photos/" in path and path.endswith("/media/image")
-    )
+def is_public_media_path(path: str) -> bool:
+    return path.startswith("/media/")
+
+
+def is_public_photo_image_path(path: str) -> bool:
+    return path.startswith("/api/places/") and "/photos/" in path and path.endswith("/media/image")
 
 
 async def security_headers_middleware(
@@ -74,8 +78,12 @@ async def security_headers_middleware(
     if request.url.path == "/admin" or request.url.path.startswith("/api/admin/"):
         response.headers["Cache-Control"] = "no-store"
         response.headers["Pragma"] = "no-cache"
-    elif is_public_image_path(request.url.path):
-        response.headers["Cache-Control"] = "public, max-age=0, must-revalidate"
+    elif is_public_media_path(request.url.path):
+        response.headers["Cache-Control"] = PUBLIC_MEDIA_CACHE_CONTROL
+        response.headers["CDN-Cache-Control"] = "no-store"
+        response.headers["Cloudflare-CDN-Cache-Control"] = "no-store"
+    elif is_public_photo_image_path(request.url.path):
+        response.headers["Cache-Control"] = PUBLIC_IMAGE_REVALIDATE_CACHE_CONTROL
         response.headers["CDN-Cache-Control"] = "no-store"
         response.headers["Cloudflare-CDN-Cache-Control"] = "no-store"
 
