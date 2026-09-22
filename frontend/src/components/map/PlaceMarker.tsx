@@ -1,10 +1,11 @@
 import L from "leaflet";
-import { useMemo } from "react";
-import { Marker, useMap } from "react-leaflet";
+import { useEffect, useMemo, useRef } from "react";
+import { Marker, Tooltip, useMap } from "react-leaflet";
 
 import { mediaUrl } from "../../api/http";
 import type { AppConfigMapMarkerScale, PlaceMapItem } from "../../api/types";
 import { MAP_DISPLAY_CONFIG } from "./mapDisplayConfig";
+import { isMapAudioTarget, type MapAudioTarget } from "./mapAudioPlayback";
 import { audioWaveformHtml, escapeAttribute } from "./mapHtml";
 import { isMapKeyboardActivationKey } from "./mapKeyboardActivation";
 import { placeMarkerOffsetStyle, type MarkerDisplayOffset } from "./mapMarkerDisplayOffset";
@@ -29,6 +30,7 @@ function markerIcon(
   enterIndex: number,
   isEntering: boolean,
   displayOffset: MarkerDisplayOffset | null | undefined,
+  isAudioPlaying: boolean,
 ) {
   const markerEnterStyle = placeMarkerEnterStyle(enterIndex);
   const enterClassName = isEntering ? "is-entering" : null;
@@ -43,17 +45,17 @@ function markerIcon(
     ]
       .filter(Boolean)
       .join(" "),
-    html: `<span style="--place-marker-width: ${layout.width}px; --place-marker-height: ${layout.height}px; --place-marker-image: url('${imageUrl}'); ${markerOffsetStyle} ${markerEnterStyle}">${audioWaveformHtml(Boolean(previewItem.audio))}</span>`,
+    html: `<span style="--place-marker-width: ${layout.width}px; --place-marker-height: ${layout.height}px; --place-marker-image: url('${imageUrl}'); ${markerOffsetStyle} ${markerEnterStyle}">${audioWaveformHtml(Boolean(previewItem.audio), isAudioPlaying)}</span>`,
     iconAnchor: [Math.round(layout.width / 2), Math.round(layout.height / 2)],
     iconSize: [layout.width, layout.height],
   });
 }
 
-function galleryVisualIcon(item: PlaceMapVisualItem, motion: GalleryMotionItem) {
+function galleryVisualIcon(item: PlaceMapVisualItem, motion: GalleryMotionItem, isAudioPlaying: boolean) {
   const imageUrl = escapeAttribute(mediaUrl(item.thumb_path));
   return L.divIcon({
     className: ["photo-gallery-marker", item.kind === "memory" ? "is-memory" : "is-photo"].filter(Boolean).join(" "),
-    html: `<span style="--photo-gallery-image: url('${imageUrl}'); ${galleryMotionStyle(motion)}">${audioWaveformHtml(Boolean(item.audio))}</span>`,
+    html: `<span style="--photo-gallery-image: url('${imageUrl}'); ${galleryMotionStyle(motion)}">${audioWaveformHtml(Boolean(item.audio), isAudioPlaying)}</span>`,
     iconAnchor: [0, 0],
     iconSize: [1, 1],
   });
@@ -82,6 +84,7 @@ function activateMarkerFromKeyboard(event: L.LeafletKeyboardEvent, onActivate: (
 }
 
 type Props = {
+  activeAudioTarget: MapAudioTarget | null;
   displayOffset?: MarkerDisplayOffset;
   place: PlaceMapItem;
   galleryItems: PlaceMapVisualItem[];
@@ -90,12 +93,14 @@ type Props = {
   markerScale: AppConfigMapMarkerScale;
   onMediaOpen: (place: PlaceMapItem, item: PlaceMapVisualItem) => void;
   onMemoryOpen: (place: PlaceMapItem) => void;
+  onPrefetchGallery: () => void;
   onToggleGallery: () => void;
   enterIndex: number;
   zoom: number;
 };
 
 export function PlaceMarker({
+  activeAudioTarget,
   displayOffset,
   place,
   galleryItems,
@@ -104,11 +109,13 @@ export function PlaceMarker({
   markerScale,
   onMediaOpen,
   onMemoryOpen,
+  onPrefetchGallery,
   onToggleGallery,
   enterIndex,
   zoom,
 }: Props) {
   const map = useMap();
+  const markerRef = useRef<L.Marker | null>(null);
   const galleryItemCount = galleryItems.length + 1;
   const previewItem = useMemo(() => getPlacePreviewVisual(place), [place]);
   const placeLayout = useMemo(
@@ -116,12 +123,55 @@ export function PlaceMarker({
     [markerScale, place.weight, zoom],
   );
   const markerVisualOffset = isExpanded ? null : displayOffset;
+  const isPreviewAudioPlaying = previewItem ? isMapAudioTarget(activeAudioTarget, place.id, previewItem) : false;
   const placeIcon = useMemo(
     () =>
-      previewItem ? markerIcon(previewItem, isExpanded, placeLayout, enterIndex, isEntering, markerVisualOffset) : null,
-    [enterIndex, isEntering, isExpanded, markerVisualOffset, placeLayout, previewItem],
+      previewItem
+        ? markerIcon(
+            previewItem,
+            isExpanded,
+            placeLayout,
+            enterIndex,
+            isEntering,
+            markerVisualOffset,
+            isPreviewAudioPlaying,
+          )
+        : null,
+    [enterIndex, isEntering, isExpanded, isPreviewAudioPlaying, markerVisualOffset, placeLayout, previewItem],
   );
   const markerTitle = place.title;
+
+  useEffect(() => {
+    if (isExpanded) {
+      return;
+    }
+
+    const marker = markerRef.current;
+    const element = marker?.getElement();
+    if (!marker || !element) {
+      return;
+    }
+
+    const handlePrefetch = () => onPrefetchGallery();
+    const handleFocus = () => {
+      onPrefetchGallery();
+      marker.openTooltip();
+    };
+    const handleBlur = () => marker.closeTooltip();
+
+    element.addEventListener("pointerenter", handlePrefetch, { passive: true });
+    element.addEventListener("pointerdown", handlePrefetch, { passive: true });
+    element.addEventListener("focus", handleFocus);
+    element.addEventListener("blur", handleBlur);
+
+    return () => {
+      element.removeEventListener("pointerenter", handlePrefetch);
+      element.removeEventListener("pointerdown", handlePrefetch);
+      element.removeEventListener("focus", handleFocus);
+      element.removeEventListener("blur", handleBlur);
+    };
+  }, [isExpanded, onPrefetchGallery, placeIcon]);
+
   const mapSize = map.getSize();
   const markerPoint = map.latLngToContainerPoint([place.lat, place.lon]);
   const placePosition = L.latLng(place.lat, place.lon);
@@ -170,9 +220,11 @@ export function PlaceMarker({
   const galleryVisualIcons = useMemo(
     () =>
       galleryItems.map((item, index) =>
-        galleryLayout[index] ? galleryVisualIcon(item, galleryLayout[index].motion) : null,
+        galleryLayout[index]
+          ? galleryVisualIcon(item, galleryLayout[index].motion, isMapAudioTarget(activeAudioTarget, place.id, item))
+          : null,
       ),
-    [galleryItems, galleryLayout],
+    [activeAudioTarget, galleryItems, galleryLayout, place.id],
   );
   const galleryAddLayout = galleryLayout[galleryItems.length] ?? null;
   const galleryAddMarkerIcon = useMemo(
@@ -189,6 +241,7 @@ export function PlaceMarker({
       <Marker
         alt={`Pokaż media miejsca ${place.title}`}
         icon={placeIcon}
+        ref={markerRef}
         key={isExpanded ? PHOTO_GALLERY_PANE : MAP_MARKER_PANE}
         keyboard
         pane={isExpanded ? PHOTO_GALLERY_PANE : MAP_MARKER_PANE}
@@ -203,7 +256,18 @@ export function PlaceMarker({
           },
           keydown: (event) => activateMarkerFromKeyboard(event, onToggleGallery),
         }}
-      />
+      >
+        {!isExpanded ? (
+          <Tooltip
+            className="place-marker-hover-tooltip"
+            direction="top"
+            offset={[0, -Math.round(placeLayout.height / 2) - 6]}
+            opacity={1}
+          >
+            {place.title}
+          </Tooltip>
+        ) : null}
+      </Marker>
 
       {isExpanded
         ? galleryItems.map((item, index) => {

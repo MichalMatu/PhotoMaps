@@ -30,6 +30,7 @@ type Props = {
   isAudioAutoplayEnabled: boolean;
   item: PlaceMapVisualItem;
   navigationItems?: PlaceMapVisualItem[];
+  onAudioPlaybackChange?: (isPlaying: boolean) => void;
   onClose: () => void;
   onNavigate?: (item: PlaceMapVisualItem) => void;
   onPin?: (request: PhotoDetailPinRequest) => boolean;
@@ -42,6 +43,7 @@ export function PhotoDetailModal({
   isAudioAutoplayEnabled,
   item,
   navigationItems = [],
+  onAudioPlaybackChange,
   onClose,
   onNavigate,
   onPin,
@@ -128,7 +130,11 @@ export function PhotoDetailModal({
       eyebrow={modalEyebrow}
       headerActions={
         <>
-          <PhotoDetailAudioControl audio={audio} isAutoplayEnabled={isAudioAutoplayEnabled} />
+          <PhotoDetailAudioControl
+            audio={audio}
+            isAutoplayEnabled={isAudioAutoplayEnabled}
+            onPlaybackChange={onAudioPlaybackChange}
+          />
           <PhotoDescriptionActions
             actionClassName="system-modal-icon-action"
             descriptionText={photoDescriptionText}

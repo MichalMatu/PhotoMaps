@@ -16,4 +16,10 @@ describe("mapHtml", () => {
     expect(html).toContain('class="map-audio-waveform-line"');
     expect(html).not.toContain("background");
   });
+
+  it("marks only the actively playing waveform", () => {
+    expect(audioWaveformHtml(true, true)).toContain('class="map-audio-waveform is-playing"');
+    expect(audioWaveformHtml(true, false)).not.toContain("is-playing");
+    expect(audioWaveformHtml(false, true)).toBe("");
+  });
 });
