@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
@@ -47,7 +48,6 @@ from app.core.request_context import (
 )
 from app.core.security_headers import security_headers_middleware
 from app.db.session import create_db_and_tables
-from app.media_static import PublicMediaStaticFiles
 
 
 @asynccontextmanager
@@ -101,7 +101,7 @@ app.include_router(admin_moderation.router)
 app.include_router(admin_guides.router)
 app.include_router(admin_reports.router)
 app.include_router(admin_local_data.router)
-app.mount("/media", PublicMediaStaticFiles(directory=PUBLIC_STORAGE_DIR, check_dir=False), name="media")
+app.mount("/media", StaticFiles(directory=PUBLIC_STORAGE_DIR, check_dir=False), name="media")
 
 
 @app.get("/health")
