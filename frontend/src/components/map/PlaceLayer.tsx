@@ -16,7 +16,7 @@ import { getPlaceMarkerMotionSignature, getPlaceMarkerMotionState, isPlaceMarker
 import type { PlaceMapVisualItem } from "./placePreview";
 import { ReportSheet } from "./ReportSheet";
 import { useCenteredPlaceGallery } from "./useCenteredPlaceGallery";
-import { usePlaceGalleryPrefetch } from "./placeGalleryQuery";
+import { usePlaceGalleryPrefetch, useVisiblePlaceGalleriesPreload } from "./placeGalleryPreload";
 import { type MapViewport, useMapMarkerLayout } from "./useMapMarkerLayout";
 import { type PlaceVisualTarget, usePlaceGalleryData } from "./usePlaceGalleryData";
 import type { PinMediaRequest } from "./pinned-media/usePinnedMediaBoard";
@@ -71,6 +71,7 @@ export function PlaceLayer({
     mapViewport,
     places,
   });
+  useVisiblePlaceGalleriesPreload(markerPlaces);
   const { closePlaceGallery, expandedPlace, expandedPlaceId, isGalleryInteractionLocked, togglePlaceGallery } =
     useCenteredPlaceGallery(map, places);
   const {
@@ -142,7 +143,7 @@ export function PlaceLayer({
             enterIndex={index}
             isEntering={isPlaceMarkerEntering(previousPlaceMotionSignatures.current, place.id, placeMotionSignature)}
             onMemoryOpen={setMemoryPlace}
-            onPrefetchGallery={() => prefetchPlaceGallery(place.id)}
+            onPrefetchGallery={() => prefetchPlaceGallery(place)}
             onMediaOpen={(nextPlace, nextItem) => {
               setVisualDetail({ id: nextItem.id, kind: nextItem.kind, placeId: nextPlace.id });
             }}
