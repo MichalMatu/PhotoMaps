@@ -287,25 +287,6 @@
   stroke-width: 1.8;
 }
 
-.place-map .place-marker-hover-tooltip {
-  background: var(--surface-media-glass-action);
-  backdrop-filter: var(--blur-glass);
-  border: 1px solid var(--border-on-media-subtle);
-  border-radius: var(--radius-control);
-  box-shadow: var(--shadow-media-glass-action);
-  color: var(--content-on-media);
-  font-size: var(--text-caption);
-  font-weight: 650;
-  line-height: 1.15;
-  padding: var(--space-1) var(--space-2);
-  pointer-events: none;
-  white-space: nowrap;
-}
-
-.place-map .leaflet-tooltip-top.place-marker-hover-tooltip::before {
-  border-top-color: var(--surface-media-glass-action);
-}
-
 @keyframes map-audio-waveform-playing {
   from {
     opacity: 0.76;

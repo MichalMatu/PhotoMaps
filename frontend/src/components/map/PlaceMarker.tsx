@@ -1,6 +1,6 @@
 import L from "leaflet";
 import { useEffect, useMemo, useRef } from "react";
-import { Marker, Tooltip, useMap } from "react-leaflet";
+import { Marker, useMap } from "react-leaflet";
 
 import { mediaUrl } from "../../api/http";
 import type { AppConfigMapMarkerScale, PlaceMapItem } from "../../api/types";
@@ -139,8 +139,6 @@ export function PlaceMarker({
         : null,
     [enterIndex, isEntering, isExpanded, isPreviewAudioPlaying, markerVisualOffset, placeLayout, previewItem],
   );
-  const markerTitle = place.title;
-
   useEffect(() => {
     if (isExpanded) {
       return;
@@ -153,22 +151,16 @@ export function PlaceMarker({
     }
 
     const handlePrefetch = () => onPrefetchGallery();
-    const handleFocus = () => {
-      onPrefetchGallery();
-      marker.openTooltip();
-    };
-    const handleBlur = () => marker.closeTooltip();
+    const handleFocus = () => onPrefetchGallery();
 
     element.addEventListener("pointerenter", handlePrefetch, { passive: true });
     element.addEventListener("pointerdown", handlePrefetch, { passive: true });
     element.addEventListener("focus", handleFocus);
-    element.addEventListener("blur", handleBlur);
 
     return () => {
       element.removeEventListener("pointerenter", handlePrefetch);
       element.removeEventListener("pointerdown", handlePrefetch);
       element.removeEventListener("focus", handleFocus);
-      element.removeEventListener("blur", handleBlur);
     };
   }, [isExpanded, onPrefetchGallery, placeIcon]);
 
@@ -247,7 +239,7 @@ export function PlaceMarker({
         pane={isExpanded ? PHOTO_GALLERY_PANE : MAP_MARKER_PANE}
         position={placePosition}
         riseOnHover
-        title={markerTitle}
+        title={place.title}
         zIndexOffset={isExpanded ? 1280 : placeLayout.zIndexOffset}
         eventHandlers={{
           click: (event) => {
@@ -256,18 +248,7 @@ export function PlaceMarker({
           },
           keydown: (event) => activateMarkerFromKeyboard(event, onToggleGallery),
         }}
-      >
-        {!isExpanded ? (
-          <Tooltip
-            className="place-marker-hover-tooltip"
-            direction="top"
-            offset={[0, -Math.round(placeLayout.height / 2) - 6]}
-            opacity={1}
-          >
-            {place.title}
-          </Tooltip>
-        ) : null}
-      </Marker>
+      />
 
       {isExpanded
         ? galleryItems.map((item, index) => {
