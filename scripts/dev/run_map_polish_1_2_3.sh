@@ -23,7 +23,13 @@ npm run test -- src/components/map
 npm run build
 cd ..
 
+make check
+cd frontend
+npm run test:e2e
+cd ..
+
 git diff --check
 git status --short
 git add -A
 git commit -m "Polish map discovery and audio feedback"
+git push origin HEAD:work/map-polish-label-prefetch-audio-motion
