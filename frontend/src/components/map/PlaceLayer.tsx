@@ -16,7 +16,7 @@ import { getPlaceMarkerMotionSignature, getPlaceMarkerMotionState, isPlaceMarker
 import type { PlaceMapVisualItem } from "./placePreview";
 import { ReportSheet } from "./ReportSheet";
 import { useCenteredPlaceGallery } from "./useCenteredPlaceGallery";
-import { usePlaceGalleryPrefetch, useVisiblePlaceGalleriesPreload } from "./placeGalleryPreload";
+import { usePlaceGalleryPreloadControls, useVisiblePlaceGalleriesPreload } from "./placeGalleryPreload";
 import { type MapViewport, useMapMarkerLayout } from "./useMapMarkerLayout";
 import { type PlaceVisualTarget, usePlaceGalleryData } from "./usePlaceGalleryData";
 import type { PinMediaRequest } from "./pinned-media/usePinnedMediaBoard";
@@ -64,7 +64,7 @@ export function PlaceLayer({
   const [reportTarget, setReportTarget] = useState<PlaceVisualTarget | null>(null);
   const [isThanksOpen, setIsThanksOpen] = useState(false);
   const zoom = mapViewport.zoom;
-  const prefetchPlaceGallery = usePlaceGalleryPrefetch();
+  const { prefetchPlaceGallery, prioritizeMediaItem, prioritizePlaceGallery } = usePlaceGalleryPreloadControls();
   const { markerDisplayOffsets, markerPlaces } = useMapMarkerLayout({
     map,
     mapSettings,
@@ -145,9 +145,15 @@ export function PlaceLayer({
             onMemoryOpen={setMemoryPlace}
             onPrefetchGallery={() => prefetchPlaceGallery(place)}
             onMediaOpen={(nextPlace, nextItem) => {
+              prioritizeMediaItem(nextItem);
               setVisualDetail({ id: nextItem.id, kind: nextItem.kind, placeId: nextPlace.id });
             }}
-            onToggleGallery={() => togglePlaceGallery(place)}
+            onToggleGallery={() => {
+              if (expandedPlaceId !== place.id) {
+                prioritizePlaceGallery(place);
+              }
+              togglePlaceGallery(place);
+            }}
             displayOffset={markerDisplayOffsets.get(place.id)}
             markerScale={mapSettings.marker_scale}
             zoom={zoom}
@@ -191,6 +197,7 @@ export function PlaceLayer({
             return didPin;
           }}
           onNavigate={(nextItem) => {
+            prioritizeMediaItem(nextItem);
             setActiveAudioTarget(null);
             setVisualDetail({ id: nextItem.id, kind: nextItem.kind, placeId: detailPlace.id });
           }}

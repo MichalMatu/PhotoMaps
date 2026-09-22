@@ -1,6 +1,7 @@
 from app.core.security_headers import (
     PUBLIC_IMAGE_REVALIDATE_CACHE_CONTROL,
     PUBLIC_MEDIA_CACHE_CONTROL,
+    PUBLIC_MEDIA_CDN_CACHE_CONTROL,
     SECURITY_HEADERS,
 )
 
@@ -55,14 +56,15 @@ def assert_cdn_no_store(response) -> None:
     assert response.headers["cloudflare-cdn-cache-control"] == "no-store"
 
 
-def test_public_media_uses_reusable_browser_cache_without_cdn_storage(client_session) -> None:
+def test_public_media_uses_reusable_browser_and_cdn_cache(client_session) -> None:
     client, _session = client_session
 
     response = client.get("/media/missing.jpg")
 
     assert response.status_code == 404
     assert response.headers["cache-control"] == PUBLIC_MEDIA_CACHE_CONTROL
-    assert_cdn_no_store(response)
+    assert response.headers["cdn-cache-control"] == PUBLIC_MEDIA_CDN_CACHE_CONTROL
+    assert response.headers["cloudflare-cdn-cache-control"] == PUBLIC_MEDIA_CDN_CACHE_CONTROL
 
 
 def test_public_photo_original_revalidates_without_cdn_storage(client_session) -> None:
