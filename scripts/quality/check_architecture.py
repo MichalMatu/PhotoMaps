@@ -22,7 +22,9 @@ def load_diagnostics_module():
         "photomap_architecture_diagnostics", DIAGNOSTICS_PATH
     )
     if spec is None or spec.loader is None:
-        raise RuntimeError(f"cannot load architecture diagnostics from {DIAGNOSTICS_PATH}")
+        raise RuntimeError(
+            f"cannot load architecture diagnostics from {DIAGNOSTICS_PATH}"
+        )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
