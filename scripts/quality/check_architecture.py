@@ -18,13 +18,9 @@ FORBIDDEN_RISK_COUNTS = {
 
 
 def load_diagnostics_module():
-    spec = importlib.util.spec_from_file_location(
-        "photomap_architecture_diagnostics", DIAGNOSTICS_PATH
-    )
+    spec = importlib.util.spec_from_file_location("photomap_architecture_diagnostics", DIAGNOSTICS_PATH)
     if spec is None or spec.loader is None:
-        raise RuntimeError(
-            f"cannot load architecture diagnostics from {DIAGNOSTICS_PATH}"
-        )
+        raise RuntimeError(f"cannot load architecture diagnostics from {DIAGNOSTICS_PATH}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -44,9 +40,7 @@ def collect_violations(report: dict) -> list[str]:
     risky_patterns = report["risky_patterns"]
     broad_excepts = len(risky_patterns["broad_excepts"])
     if broad_excepts > MAX_BROAD_EXCEPTS:
-        violations.append(
-            f"broad exception handlers increased: {broad_excepts} > baseline {MAX_BROAD_EXCEPTS}"
-        )
+        violations.append(f"broad exception handlers increased: {broad_excepts} > baseline {MAX_BROAD_EXCEPTS}")
 
     for key, allowed in FORBIDDEN_RISK_COUNTS.items():
         count = len(risky_patterns[key])
@@ -67,10 +61,7 @@ def main() -> int:
             print(f"- {violation}")
         return 1
 
-    print(
-        "architecture gate: OK "
-        f"(cycles=0, parse_errors=0, broad_excepts<={MAX_BROAD_EXCEPTS}, risky_patterns=0)"
-    )
+    print("architecture gate: OK " f"(cycles=0, parse_errors=0, broad_excepts<={MAX_BROAD_EXCEPTS}, risky_patterns=0)")
     return 0
 
 
