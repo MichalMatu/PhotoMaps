@@ -18,7 +18,9 @@ FORBIDDEN_RISK_COUNTS = {
 
 
 def load_diagnostics_module():
-    spec = importlib.util.spec_from_file_location("photomap_architecture_diagnostics", DIAGNOSTICS_PATH)
+    spec = importlib.util.spec_from_file_location(
+        "photomap_architecture_diagnostics", DIAGNOSTICS_PATH
+    )
     if spec is None or spec.loader is None:
         raise RuntimeError(f"cannot load architecture diagnostics from {DIAGNOSTICS_PATH}")
     module = importlib.util.module_from_spec(spec)
