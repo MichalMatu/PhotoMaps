@@ -26,7 +26,7 @@ Systemowy `cloudflared` działa niezależnie od aplikacji. Zwykły deploy nie re
 
 ```bash
 set -eu
-REPO=/Users/michal/agent-workspace/repos/photomaps/work
+REPO=/Users/michal/agent-workspace/repos/photomap/work
 SSH_KEY=/Users/michal/.ssh/id_ed25519
 PI=michal@192.168.0.23
 PI_REPO=/home/michal/src/PhotoMaps
